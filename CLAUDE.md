@@ -1,4 +1,4 @@
-# CLAUDE.md — mixer-dub
+# CLAUDE.md — maelcum_mixer
 
 ## Cos'è questo progetto
 
@@ -21,7 +21,7 @@ Mixer dub modulare 100% analogico, **esemplare unico**, per il soundsystem a 5 v
 ## Struttura
 
 ```
-mixer-dub/
+maelcum_mixer/
 ├── CLAUDE.md              ← questo file (contesto per Claude)
 ├── SPECIFICA.md           ← specifica consolidata (ora scheletro, si compila post-export)
 └── docs/

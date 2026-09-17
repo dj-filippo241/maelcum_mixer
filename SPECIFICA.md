@@ -1,4 +1,4 @@
-# SPECIFICA — Mixer dub modulare analogico (esemplare unico)
+# SPECIFICA — MAELCUM MIXER (mixer dub modulare analogico, esemplare unico)
 
 > **STATO: SCHELETRO.** Questo documento diventerà la specifica unica e autorevole.
 > Si compila DOPO la revisione critica dell'export completo di ChatGPT (vedi
