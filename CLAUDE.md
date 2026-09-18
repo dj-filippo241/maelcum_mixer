@@ -6,7 +6,7 @@ Mixer dub modulare 100% analogico, **esemplare unico**, per il soundsystem a 5 v
 
 ## Fase attuale
 
-**Corpus ChatGPT CHIUSO (2026-09-18).** Non arriverà un export migliore: resoconto (`docs/00-...`) + due status doc (`docs/export-chatgpt/`) = referenza completa (decisione 58). Revisione critica FATTA: `docs/03-revisione-critica.md` (citazioni verificate vere, matematica corretta, contraddizioni phono registrate, filtro esterno ai canali chiarito dal proprietario). Prossimo: gain-staging sheet globale, poi compilazione `SPECIFICA.md`.
+**Corpus ChatGPT CHIUSO (2026-09-18).** Non arriverà un export migliore: resoconto (`docs/00-...`) + due status doc (`docs/export-chatgpt/`) = referenza completa (decisione 58). Revisione critica FATTA: `docs/03-revisione-critica.md`. Architettura filtro decisa: `docs/04-architettura-filtro-e-diagramma.md` + decisioni 67/70/74 (B′, 2 sezioni full-range 10 Hz–35 kHz). Gain-staging sheet FATTO: `docs/fase1/gain-staging-sheet.md` (chiude questioni 31/47/52, gain phono 42 dB, mappa domini). IN CORSO: compilazione `SPECIFICA.md` v0.1.
 
 **Deroga registrata (2026-09-18)**: Filippo ha autorizzato l'avvio del design di fase 1 SENZA attendere l'export. Si lavora solo su sezioni già giudicate solide dalla review o con architettura bloccata. Stato design: **MASTER OUT v0.2** (risposte di Filippo integrate, decisioni 49-55) e **CANALE CDJ/LINE v0.1** (phono escluso per ora, decisione 56) in `docs/fase1/`. Entrambi restano da verificare contro l'export — voci [EXPORT] in `docs/02-questioni-aperte.md` (38-44).
 
@@ -19,6 +19,7 @@ Mixer dub modulare 100% analogico, **esemplare unico**, per il soundsystem a 5 v
 5. **Ordine di costruzione rispettato**: fase 1 = modulo canale + FX + master out + PSU base (valida il backplane); fase 2 = 5-way e filtro. Non progettare la fase 2 nei dettagli prima che la fase 1 abbia insegnato qualcosa.
 6. **Documenti in italiano**; la terminologia tecnica audio/elettronica resta in inglese dove è standard (headroom, summing, feedback, taper...).
 7. Niente emoji nei file (hook attivo).
+8. **Lingua e registro (feedback Filippo 2026-09-18)**: quando il discorso tocca l'orecchio — sensazioni sonore, impatto musicale di una scelta tecnica — usare un linguaggio disteso e concreto: spiegare cosa si sente, in che situazione, con che gesto. La sintesi va bene per la contabilità di progetto, non per la musica.
 
 ## Struttura
 
