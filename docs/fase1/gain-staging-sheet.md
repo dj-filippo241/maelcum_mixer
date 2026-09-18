@@ -54,7 +54,7 @@ vero esiste solo all'uscita XLR, dove lo stadio discreto lavora su ±24 V.
 | DJ BUS (somma 4 canali) | 0 dBu | +12 dBu (4 canali correlati a 0) | ±18 V | doc: somma correlata +12 dB |
 | 5-way IN pad **−6 dB** [C] | −6 dBu | +6 dBu | ±18 V | il pad libera headroom per i boost di banda; makeup +6 in uscita → nessun effetto udibile |
 | Celle banda (+15 max) | −6 dBu | +15 dBu interno (boost estremi) | ±18 V | worst +21 dBu: entro capability +23 |
-| Drive 5-way (taper决策: CCW=0, 50%=ottimale +7 clean, >50%=saturazione progressiva) | — | saturazione voluta | ±18 V | taper da tradurre in law elettrica (dec. 24) |
+| Drive 5-way (taper da decisione 24: CCW=0, 50%=ottimale +7 clean, >50%=saturazione progressiva) | — | saturazione voluta | ±18 V | taper da tradurre in law elettrica (dec. 24) |
 | 5-way OUT makeup **+6 dB** [C] | 0 dBu | +18 dBu | ±18 V | → MASTER SUM |
 
 ### Modulo FX
