@@ -98,11 +98,11 @@ Chiusure:
 Nuovi aperti:
 49. **[APERTO-F]** HPF min: estendere a ~10 Hz (filtro utilizzabile anche con programma infrasub; range 10 Hz–1,5 kHz = 150:1) oppure tenere 20 Hz e usare la posizione OFF per l'infrasub? Raccomandazione di Claude: estendere a 10 Hz se la simulazione SVF conferma la fattibilità del converter log.
 50. **ACTION PRIORITARIA** — Gain-staging sheet globale: tabella unica di tutti i nodi (da testina/line in fino a XLR) con nominale/max/dominio — richiesta esplicita di Filippo ("tutti i gain vanno bilanciati col resto del progetto"). Risolve insieme: phono 40 vs 42 dB, margine VCA master (voce 31), headroom bus FX (voce 31/K3), dominio overdrive (K5).
-51. Tracking tra i core filtro: ora che gli 8 core stanno sullo STESSO PCB (modulo filtro), specificare tolleranza (es. ≤2% in frequenza a pari CV) + trim per core + distribuzione CV a stella bufferizzata (K2 ridimensionato).
+51. Tracking tra i core filtro: 8 core mono (decisione 67, architettura B′) sullo stesso PCB + 6 CV condivisi (HPF freq/res/drive, LPF freq/res/drive). Specificare tolleranza (es. ≤2% in frequenza a pari CV), trim per core, distribuzione CV a stella bufferizzata, e il mux del drive (il CV di overdrive segue la sezione selezionata dallo switch di canale).
 52. Calcolo headroom bus FX con ~12 contributori (K3) e regola di gain-staging dei ritorni: livello_in × gain ≤ max dominio (K4) → design modulo FX.
 53. Metodo per tracking EQ stereo ≤0,25 dB (K6): pot doppi selezionati + trim vs celle a contribuzione con CV — da decidere nel design EQ v0.2.
 54. Procedura di calibrazione identica dei meter DJ tra canali (K7): trimmer o componenti matched — da definire col modulo meter.
 55. Soppressione transiente assign FX: usare break-before-make + ramp 1-5 ms come per il filtro (i documenti lo prescrivono solo per il selettore filtro)?
 56. Compilazione SPECIFICA.md: il corpus è chiuso, non c'è più motivo di attendere — capitolo per capitolo, dai documenti + decisioni.
-57. **[APERTO-F]** Conferma interpretazione risposta "7 rca": connettore RCA e loading NON accessibile all'utente (solo tecnico, solder jumper/DIP)?
+57. **CHIUSA (decisione 69)**: interpretazione confermata; capacità selezionabile resta opzione interna economica (veto possibile).
 58. Requisito infrasub 10 Hz (decisione 65) — implicazioni da sviluppare nel design: SUB filter bank 10-90 Hz, corner AC ≤5 Hz su tutto il percorso, ballistica meter a 10 Hz, escursione/protzioni altoparlanti restano responsabilità del DSP esterno.

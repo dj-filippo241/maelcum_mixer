@@ -163,3 +163,31 @@ sotto, (2) gain-staging sheet globale (voce 50), (3) compilazione SPECIFICA.md (
 - Xone:96 User Guide (stessa architettura VCF): https://support.allen-heath.com/hc/en-gb/articles/43053562464017-Xone-96-User-Guide
 - Dettagli pratici assign/resonance (community): https://www.reddit.com/r/Beatmatch/comments/1bjdyjd/xone_92_filters/ e https://forum.djtechtools.com/t/question-about-xone-92-filters/51474
 - Nota Mk2 (Sonic State): https://sonicstate.com/amped/2024-10-10/popular-dj-mixer-gets-an-update/
+
+## 9. ESITO della decisione (2026-09-18) — architettura B′
+
+Filippo non ha scelto né A né B pure: ha descritto il pannello che vuole, e quel pannello
+corrisponde a una variante di B (decisione 67):
+
+- Sul canale: switch 3 posizioni **HPF / OFF / LPF** (BPF escluso)
+- Sul modulo filtro: **6 knob** = HPF freq + HPF res + HPF drive | LPF freq + LPF res + LPF drive
+- Un core dedicato per canale (4 stereo = 8 mono, stesso PCB) con trimming
+
+```
+PANNELLO MODULO FILTRO (B′):
+┌────────────────────────────────────────────────┐
+│  SEZIONE HPF          │        SEZIONE LPF     │
+│  [FREQ] [RES] [DRIVE] │  [FREQ] [RES] [DRIVE]  │
+│  10 Hz–1,5 kHz        │  500 Hz–20 kHz         │
+└────────────────────────────────────────────────┘
+   Ogni canale: switch HPF/OFF/LPF → segue i knob della sua sezione
+```
+
+Perché i core devono essere per-canale (e non 2 condivisi): la catena bloccata mette il
+filtro PRIMA del fader e il meter DOPO il filtro — con 2 soli core condivisi i canali
+dovrebbero essere sommati prima del filtro, e i fader individuali non controllerebbero
+più il proprio segnale filtrato. Nello Xone infatti il filtro lavora su un submix
+(post-fader): è l'unico modo di farlo con 2 core. La B′ mantiene invece il controllo
+individuale pre-fader, al costo di 4 core.
+
+HPF min: 10 Hz (decisione 68, derivata dal requisito infrasub, verifica in simulazione).
