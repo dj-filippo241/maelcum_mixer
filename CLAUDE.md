@@ -6,7 +6,9 @@ Mixer dub modulare 100% analogico, **esemplare unico**, per il soundsystem a 5 v
 
 ## Fase attuale
 
-**In attesa dell'export completo di ChatGPT.** Il progetto nasce da mesi di conversazioni con ChatGPT; il resoconto parziale ricevuto il 2026-09-17 è in `docs/00-resoconto-chatgpt-2026-09-17.md`. Quando arriva l'export: revisione critica completa PRIMA di qualunque progettazione (contraddizioni, versioni superate, dettagli mancanti), poi si compila `SPECIFICA.md`.
+**In attesa dell'export completo di ChatGPT.** Il progetto nasce da mesi di conversazioni con ChatGPT; il resoconto parziale ricevuto il 2026-09-17 è in `docs/00-resoconto-chatgpt-2026-09-17.md`. Quando arriva l'export: revisione critica completa, poi si compila `SPECIFICA.md`.
+
+**Deroga registrata (2026-09-18)**: Filippo ha autorizzato l'avvio del design di fase 1 SENZA attendere l'export. Si lavora solo su sezioni già giudicate solide dalla review o con architettura bloccata. Primo modulo: **MASTER OUT** — design v0.1 in `docs/fase1/master-out.md`; resta da verificare contro l'export (in particolare: chi esegue il summing, standard I/O del backplane, posizione del meter).
 
 ## Regole del progetto
 
@@ -27,7 +29,9 @@ maelcum_mixer/
 └── docs/
     ├── 00-resoconto-chatgpt-2026-09-17.md  ← materiale grezzo parziale
     ├── 01-decisioni-bloccate.md            ← cosa è deciso (48 voci)
-    └── 02-questioni-aperte.md              ← cosa manca + roadmap
+    ├── 02-questioni-aperte.md              ← cosa manca + roadmap
+    └── fase1/
+        └── master-out.md                   ← design circuitale modulo master (v0.1)
 ```
 
 ## Prossimo passo concreto

@@ -42,13 +42,25 @@
 28. Frequenze di taglio/zone delle 5 vie del suo soundsystem (serve per il filter bank del 5-way — voce 8).
 29. Nome/cognome del progetto per il telaio, vincoli meccanici di ingombro (il design del pannello è suo).
 
+## Nati dal design fase 1 — modulo MASTER OUT (2026-09-18, docs/fase1/master-out.md)
+
+31. Margine VCA a +6 dB di trim con picchi programma +16 dBu: il dominio ±18 V è al limite (level plan §4). La simulazione deve dire dove inizia il clipping del VCA e quanto è morbido. Alternative se è brutto: summing a −6 dB interni, rail VCA più alto, o accettare documentando.
+32. **[APERTO-F]** Connettore BOOTH: XLR o TRS?
+33. **[APERTO-F]** MASTER LEVEL: detent meccanico a unity, sì/no?
+34. **[APERTO-F]** Metering: ballistica (nervoso/rilassato) e numero LED per canale (6 o 8).
+35. **[APERTO-F]** Rail ±15 V low-noise con LT3045/LT3094 (~10 € a modulo): opzione qualità sì/no.
+36. **[APERTO-F]** Soglie zone meter: verde sul nominale (tabella §3.6) o 0 dBu a metà scala?
+37. Verificare esistenza/reperibilità THAT 2181 (doppio VCA); in subordine 2× THAT 2180 su stessa CV o equivalenti ADI (SSM2164/2122, legacy).
+38. **[EXPORT]** Confermare da export: chi esegue il summing finale (modulo master o modulo 5-way), standard elettrico I/O del backplane (proposta provvisoria: single-ended 0 dBu tra moduli, bilanciato solo verso l'esterno), numero esatto di ingressi del master summing.
+
 ## Verifiche strumentazione
 
 30. Strumentazione di misura disponibile: oscilloscopio? generatore di funzioni? (per le misure audio: scheda audio + REW/ARTA bastano; lo Zoom c'è già). Da comprare solo il necessario, in fase 1.
 
 ## Roadmap (unica, sostituisce i "next step" sparsi)
 
-- **ORA**: attendere export ChatGPT → revisione critica completa → specifica consolidata unica (`SPECIFICA.md`).
+- **ORA (in parallelo)**: attendere export ChatGPT → revisione critica completa → specifica consolidata unica (`SPECIFICA.md`). Deroga Filippo 2026-09-18: il design di fase 1 parte prima dell'export, sulle sezioni già solide.
+- **IN CORSO — design fase 1**: MASTER OUT v0.1 fatto (`docs/fase1/master-out.md`); prossime: simulazioni LTspice §6, poi risposte di Filippo alle 7 voci §8.
 - **POI — Fase 1 di costruzione**: modulo canale (phono o CDJ) + modulo FX + master out + PSU di base → valida il backplane.
 - **POI — Fase 2**: 5-way preamp e filtro globale (i due blocchi difficili).
 - **INFINE**: mic, moduli generici, CUE, metering completo, telaio definitivo, integrazione, taratura sul soundsystem.
