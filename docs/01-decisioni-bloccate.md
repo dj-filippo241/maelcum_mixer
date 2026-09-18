@@ -83,3 +83,18 @@
 
 47. **[F]** Fader = slider; tutto il resto = potenziometri rotativi.
 48. **[R]** Il design del pannello frontale è di Filippo; da Claude solo i requisiti elettrici (consumi modulo, pin connector, correnti backplane, contatti di massa, schermature, accessi di servizio/test).
+
+## Modulo MASTER OUT — decisioni di Filippo (2026-09-18)
+
+49. **[F]** MASTER OUT universale: deve lavorare con la maggior parte dei DSP standard, nessun processor specifico di riferimento (XLR bilanciato, 0 dBu nominale, capace di pilotare ingressi pro +4 dBu con trim, Z out < 50 Ω).
+50. **[F]** REC OUT universale: compatibile con la maggior parte dei registratori standard (Zoom o equivalente): jack TRS con cablaggio unbalanced-compatible, attenuazione fissa a −10 dBV [PROVVISORIO], jumper −10/−20 dB opzionale sul PCB.
+51. **[F]** Connettore BOOTH: XLR bilanciato.
+52. **[F]** MASTER LEVEL con detent meccanico a unity. L'hardware di tutte le manopole (marca/modello pot, slider, cap) si rivede globalmente in una sessione dedicata più avanti.
+53. **[F]** Metering master alla massima precisione possibile: scala logaritmica 20 segmenti per canale a passi 3 dB (LM3915 in cascata come candidato), attacco < 1 ms, decay regolabile, purple = clip detector indipendente con latch 0,5 s.
+54. **[F]** Rail ±15 V low-noise con LT3045/LT3094 confermati (summing, CV del VCA, meter).
+55. **[F]** La logica colori/zone del meter NON si reinventa: è definita nel backlog con ChatGPT e si recupera dall'export [EXPORT]. La scala elettrica a 20 segmenti è progettata indipendentemente dai colori.
+
+## Modulo CANALE CDJ/LINE (2026-09-18)
+
+56. **[F]** Scope fase 1 del canale: SOLO ingresso line (CDJ/line). La sezione phono/RIAA non si progetta ora; il modulo lascia spazio a una variante phono futura. Design v0.1 in `docs/fase1/cdj-line-channel.md`.
+57. **[R derivato]** Split CUE e FX send sono PRE-FADER (derivato dalla catena bloccata del resoconto, voce 15): canale chiuso non zittisce CUE né FX send.

@@ -37,21 +37,34 @@
 23. Chi esegue la costruzione fisica (Filippo, tecnico, PCB assemblati).
 24. Formato e layout dei comandi del 5-way (slider vs rotativi per banda; il principio generale "fader=slider, resto=pot" è bloccato, il layout no).
 25. Che pedali userà davvero (chitarra e/o rack studio: il principio "pad selezionabile" è bloccato, i valori no).
-26. Quale DSP/processore e quali finali ha l'impianto a valle (determina livello nominale d'uscita e calibrazione meter).
-27. Modello esatto dello Zoom per l'uscita REC.
+26. Quale DSP/processore e quali finali ha l'impianto a valle. **CHIUSA come requisito 2026-09-18**: uscita universale per DSP standard (decisione 49). Il modello specifico resta utile solo per la calibrazione finale al banco, non blocca nulla.
+27. Modello esatto dello Zoom per l'uscita REC. **CHIUSA come requisito 2026-09-18**: REC universale per registratori standard (decisione 50).
 28. Frequenze di taglio/zone delle 5 vie del suo soundsystem (serve per il filter bank del 5-way — voce 8).
 29. Nome/cognome del progetto per il telaio, vincoli meccanici di ingombro (il design del pannello è suo).
 
 ## Nati dal design fase 1 — modulo MASTER OUT (2026-09-18, docs/fase1/master-out.md)
 
 31. Margine VCA a +6 dB di trim con picchi programma +16 dBu: il dominio ±18 V è al limite (level plan §4). La simulazione deve dire dove inizia il clipping del VCA e quanto è morbido. Alternative se è brutto: summing a −6 dB interni, rail VCA più alto, o accettare documentando.
-32. **[APERTO-F]** Connettore BOOTH: XLR o TRS?
-33. **[APERTO-F]** MASTER LEVEL: detent meccanico a unity, sì/no?
-34. **[APERTO-F]** Metering: ballistica (nervoso/rilassato) e numero LED per canale (6 o 8).
-35. **[APERTO-F]** Rail ±15 V low-noise con LT3045/LT3094 (~10 € a modulo): opzione qualità sì/no.
-36. **[APERTO-F]** Soglie zone meter: verde sul nominale (tabella §3.6) o 0 dBu a metà scala?
+32. **[CHIUSA 2026-09-18]** Connettore BOOTH: XLR (decisione 51).
+33. **[CHIUSA 2026-09-18]** Detent a unity: sì (decisione 52); hardware manopole rimandato → nuova voce 40.
+34. **[CHIUSA 2026-09-18]** Metering: precisione massima, 20 segmenti/canale 3 dB (decisione 53).
+35. **[CHIUSA 2026-09-18]** Rail low-noise LT3045/LT3094: sì (decisione 54).
+36. **[RINVIATA ALL'EXPORT]** Soglie/colori zone meter: la logica è nel backlog ChatGPT (decisione 55) → voce 39.
 37. Verificare esistenza/reperibilità THAT 2181 (doppio VCA); in subordine 2× THAT 2180 su stessa CV o equivalenti ADI (SSM2164/2122, legacy).
 38. **[EXPORT]** Confermare da export: chi esegue il summing finale (modulo master o modulo 5-way), standard elettrico I/O del backplane (proposta provvisoria: single-ended 0 dBu tra moduli, bilanciato solo verso l'esterno), numero esatto di ingressi del master summing.
+39. **[EXPORT]** Logica colori/zone del meter sulla scala a 20 segmenti: recuperare la definizione dal backlog ChatGPT e mapparla sui segmenti (decisione 55).
+40. **[APERTO-F]** Hardware di tutte le manopole del mixer (marca/modello potenziometri, slider, cap, detent): sessione dedicata quando il design elettrico dei controlli è stabile — serve sapere quanti pot servono, di che legge e con quale albero.
+
+## Nati dal design fase 1 — modulo CANALE CDJ/LINE (2026-09-18, docs/fase1/cdj-line-channel.md)
+
+41. **[EXPORT]** Canale stereo vs mono: il design assume stereo con controlli singoli (coerente con decisione 12), ma il resoconto non lo dichiara esplicitamente.
+42. **[EXPORT]** Interfaccia filtro: send/return per canale via backplane (ipotesi di lavoro) oppure filtro sul bus DJ a valle dei canali? Critico: decide le connessioni audio del modulo canale.
+43. **[EXPORT]** Logica assignment switch FX: 1-of-4 esclusivo o destinazioni multiple? E metodo di soppressione transiente di commutazione (FET-switch vs mini-relay make-before-break).
+44. **[EXPORT]** Punto esatto del pickup CUE (il design assume post-EQ pre-split).
+45. **[APERTO-F]** Boost EQ per banda: ok +9 dB proposto o più cattivo (+12/+15)?
+46. **[APERTO-F]** Trim ingresso: ok −10…+10 dB proposto, o ±6 basta conoscendo i livelli dei suoi CDJ?
+47. Margine headroom canale: trim +10 dB + boost multipli possono saturare il dominio ±15 V — la simulazione deve mostrare dove e quanto è morbido il clipping; alternativa: trim max +6 dB.
+48. Rumore dei potenziometri come dominante nel canale: la simulazione §6.3 decide il valore ohmico dei pot (47 k vs 10 k) prima della sessione hardware (questione 40).
 
 ## Verifiche strumentazione
 
@@ -60,7 +73,7 @@
 ## Roadmap (unica, sostituisce i "next step" sparsi)
 
 - **ORA (in parallelo)**: attendere export ChatGPT → revisione critica completa → specifica consolidata unica (`SPECIFICA.md`). Deroga Filippo 2026-09-18: il design di fase 1 parte prima dell'export, sulle sezioni già solide.
-- **IN CORSO — design fase 1**: MASTER OUT v0.1 fatto (`docs/fase1/master-out.md`); prossime: simulazioni LTspice §6, poi risposte di Filippo alle 7 voci §8.
+- **IN CORSO — design fase 1**: MASTER OUT v0.2 fatto; CANALE CDJ/LINE v0.1 fatto (phono escluso per ora, decisione 56). Prossimi: risposte di Filippo a §7 del canale (boost EQ, trim), poi simulazioni LTspice di entrambi i moduli (primi candidati: composite amplifier del master, EQ a contribuzione del canale).
 - **POI — Fase 1 di costruzione**: modulo canale (phono o CDJ) + modulo FX + master out + PSU di base → valida il backplane.
 - **POI — Fase 2**: 5-way preamp e filtro globale (i due blocchi difficili).
 - **INFINE**: mic, moduli generici, CUE, metering completo, telaio definitivo, integrazione, taratura sul soundsystem.

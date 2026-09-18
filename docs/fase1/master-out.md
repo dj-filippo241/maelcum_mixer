@@ -1,4 +1,9 @@
-# FASE 1 — Modulo MASTER OUT: design circuitale v0.1
+# FASE 1 — Modulo MASTER OUT: design circuitale v0.2
+
+> **v0.2 (2026-09-18)**: integrate le risposte di Filippo alle 7 voci (§8): uscite
+> universali per DSP/registratori standard, booth XLR, detent a unity, meter di
+> precisione, rail low-noise confermati. La logica colori/zone del meter resta
+> [EXPORT] (backlog ChatGPT) — la scala elettrica è già progettata indipendentemente.
 
 > **Stato**: bozza di ingegneria. Le topologie sono candidate [PROVVISORIO]; nessun valore
 > è congelato (regola 3 del progetto). Le scelte marcate [APERTO-F] aspettano Filippo.
@@ -95,7 +100,7 @@ pot lineare 10 kΩ → generatore CV (mappa rotazione → legge dB voluta)
 ```
 - Legge target: −∞ (≤ −90 dB) a full CCW · 0 dB (unity) al ~75-80% della corsa · +6 dB a fine corsa
 - Il tratto sotto unity occupa la maggior parte della corsa (uso normale), +6 dB è trim fine in cima — coerente con "positive gain only above unity"
-- Detent meccanico a unity: [APERTO-F] lo vuoi? (consigliato: al buio, in console, sapere dov'è lo 0 vale più di 2 € di pot con detent)
+- Detent meccanico a unity: **SI [BLOCCATO-F 2026-09-18]**. Nota: l'hardware di tutte le manopole (marca/modello pot) si rivede globalmente in un secondo momento — qui conta solo che il pot del master abbia il detent
 
 **Dominio di alimentazione VCA**: ±18 V locali (massimo assoluto THAT 218x; verificare raccomandazione datasheet — se indica ±16,8 max operativi, il rail locale diventa ±16 V). Con +6 dB su picchi +16 dBu in ingresso, l'uscita VCA arriva a ~+22 dBu: il dominio ±18 V è necessario, il ±15 V non basterebbe.
 
@@ -131,32 +136,40 @@ stadio diamond discreto in class AB (±24 V, dentro il feedback globale dell'OPA
 - TVS bidirezionale low-capacitance sulla linea (es. serie PESD/CDSOT a bassa capacità) per ESD
 - Pin 1 XLR → chassis con rete RC di lifting (1 kΩ // 4,7 nF in serie al legame diretto, punto di star grounding del modulo — coerente con la questione aperta 21 sul grounding)
 
+**Compatibilità d'uscita [BLOCCATO-F 2026-09-18]**: nessun DSP specifico di riferimento — l'uscita deve lavorare con la maggior parte dei DSP/processor standard. Traduzione tecnica: XLR bilanciato, nominale 0 dBu, capace di pilotare senza sforzo ingressi pro +4 dBu (che hanno trim), Z out < 50 Ω, stabile con cavi lunghi. La capacità ≥ +24 dBu già progettata copre qualunque ingresso standard.
+
 ### 3.4 [B] BOOTH
 
 - Buffer d'ingresso dedicato ([B], OPA1612 unity, ±18 V — picchi +16 dBu ok)
 - BOOTH LEVEL: stesso approccio del master — VCA con singola CV, range −∞ → 0 dB (solo trim negativo, il requisito non chiede +6). Opzione economica: 1× THAT 2180 singolo stereo-linked... serve doppia sezione → un 2181 dedicato o metà di un secondo 2181 [PROVVISORIO — dipende da cosa si trova]
 - Driver d'uscita: qui il +24 dBu NON è richiesto (max ~0 dBu, picchi +16-18 dBu): basta OPA1612 + diamond piccolo su ±18 V, o anche OPA1612 diretto su carico ≥ 2 kΩ con corrente di picco < 5 mA
-- Connettore: [APERTO-F] XLR (coerente col master, più robusto) o TRS jack (più comodo per monitor attivi)? Il resoconto dice "balanced output" senza specificare
+- Connettore: **XLR bilanciato [BLOCCATO-F 2026-09-18]** — coerente col master, robusto, driver bilanciato dedicato
 
 ### 3.5 [C] REC (verso Zoom)
 
 - Buffer dedicato unity ([C], OPA1612, ±15 V sufficienti: livello ≤ nominale)
-- Attenuatore fisso a resistenze (precisione 0,1%): da 0 dBu a **−10 dBV** (0,245 Vrms), cioè pad ≈ −10 dB — livello consumer/line-in di registratore portatile, impossibile da overdrivare per lo Zoom in uso normale [PROVVISORIO: da ricalibrare sul modello esatto]
-- Uscita sbilanciata su TRS cablato TS o mini-jack: [APERTO-F] modello Zoom → connettore
-- Niente limiter (bloccato): se Filippo spinge il mixer a +18 dBu interni, lo Zoom prende un segnale caldo ma l'attenuatore lo riporta nel suo range; la responsabilità del gain staging resta a monte, come da filosofia
+- **Requisito aggiornato [BLOCCATO-F 2026-09-18]**: compatibile con la maggior parte dei registratori standard (Zoom o equivalente), non tarato su un modello specifico
+- Connettore: **TRS jack**, cablaggio unbalanced-compatible (tip = hot, sleeve = ground, ring = cold collegato a sleeve: funziona sia con cavi TS che TRS)
+- Attenuatore fisso a resistenze (precisione 0,1%): da 0 dBu a **−10 dBV** (0,245 Vrms), pad ≈ −10 dB [PROVVISORIO]: è il livello line-in tipico dei registratori portatili; gli ingressi pro con trim lo gestiscono comunque. Opzione: jumper interno a 2 posizioni (−10/−20 dB) per registratori molto sensibili — costo zero, si decide al prototipo
+- Niente limiter (bloccato): se il mixer viene spinto a +18 dBu interni, il registratore prende un segnale caldo ma l'attenuatore lo riporta nel suo range; la responsabilità del gain staging resta a monte, come da filosofia
 
-### 3.6 [E] Metering master (post-level, 6 zone)
+### 3.6 [E] Metering master — precisione massima [BLOCCATO-F 2026-09-18]
+
+Requisito di Filippo: **«il più preciso possibile»**. Traduzione tecnica:
 
 **Catena per canale**:
 ```
 pickup post-VCA (prima del [F]) → precision peak detector (opamp + diodi in
-feedback, C_hold 1 µF) → catena di 6 window comparator (2× LM339 quad)
-→ driver LED (ULN2803 o transistor discreti) → colonna LED
+feedback, C_hold 1 µF, attacco < 1 ms) → 2× LM3915 in cascata (bar mode)
+→ 20 LED per canale, passi 3 dB → scala −42 … +18 dBu [PROVVISORIO]
 ```
-- **Ballistica [PROVVISORIO + APERTO-F]**: attacco < 1 ms (vero peak), decay ~ −20 dB/s con hold; il latch purple (clip) resta acceso ~0,5 s poi si autoresetta. Preferisci meter nervosi (vedono tutto, leggibili a fatica) o rilassati (leggibili, nascondono i transienti)? Proposta di partenza: via di mezzo stile VU-moderno.
-- **Soglie di zona [PROVVISORIO — APERTO-F]** (in dBu riferiti all'uscita master):
+- **Scala**: 20 segmenti per canale, 3 dB a segmento — è la risoluzione nativa dell'LM3915 (driver logaritmico classico per meter, 10 segmenti per chip, due chip in cascata per canale). È il massimo ottenibile restando 100% analogici (niente ADC/display digitali, per coerenza col progetto).
+- **Accuratezza**: ±0,5-1 dB per segmento tipica dell'LM3915 + tolleranza delle referenze [PROVVISORIO — verificare a datasheet e calibrare al banco con tone a livelli noti].
+- **Ballistica**: attacco < 1 ms (vero peak), decay ~ −20 dB/s con trimmer sul modulo (sperimentabile senza rifare il PCB), hold del picco.
+- **Clip detector purple**: comparatore indipendente (LM339) sull'uscita del diamond con soglia = rail − 2 V (≈ ±22 V), latch ~0,5 s con autoreset. Scatta SOLO quando lo stadio d'uscita arriva davvero al limite, non "quando l'ultimo LED si accende" — implementa la correzione 20 della review.
+- **Colori e zone [EXPORT]**: la logica a 6 zone (blue → purple) è nel backlog con ChatGPT. La mappatura colori sulla scala a 20 segmenti si decide con l'export. La tabella sotto resta segnaposto per le SOLE soglie elettriche provvisorie:
 
-| Zona | Intervallo | Significato |
+| Zona (provvisoria) | Intervallo | Significato |
 |---|---|---|
 | blue | < −20 dBu | poco segnale |
 | green | −20 … −6 dBu | safe (programma normale intorno allo 0) |
@@ -165,9 +178,7 @@ feedback, C_hold 1 µF) → catena di 6 window comparator (2× LM339 quad)
 | red | +6 … +18 dBu | extreme |
 | purple | clip detector indipendente | clipping reale allo stadio d'uscita |
 
-  Nota: con questa tabella il verde copre il nominale. Se vuoi che lo 0 dBu stia a metà scala (giallo/amber), le soglie si spostano: è una scelta tua, musicale/ergonomica.
-- **Clip detector purple**: comparatore sull'uscita del diamond con soglia = rail − 2 V (≈ ±22 V): scatta SOLO quando lo stadio d'uscita sta davvero arrivando al limite, non "quando l'ultimo LED si accende" — implementa la correzione 20 della review
-- Numero LED per canale: [APERTO-F] proposta 8 (6 zone + 2 gradazioni intermedie) o 6 secchi
+- Conseguenza pratica sui LED: 20 segmenti × 2 canali + clip = ~42 LED sul pannello del modulo master. Con bar mode e LED ad alta efficienza il consumo resta < 150 mA a +5 V [PROVVISORIO]. Se il pannello diventa troppo fitto, l'alternativa è 10 segmenti per canale (1 chip, 3 dB, range −12…+18): stesso circuito, metà LED — si decide con il layout del pannello (che è di Filippo).
 
 ### 3.7 [L] Mute controller (power-on/power-off)
 
@@ -213,12 +224,12 @@ Conseguenza onesta da registrare: a MASTER LEVEL a +6 dB con programma già a +1
 | VCA master + booth level | THAT 2181 (dual) o 2× 2180 | verificare esistenza/disponibilità 2181; in subordine SSM2164/SSM2122 (Analog Devices, legacy) | ~5-8 € |
 | Transistor diamond output | MJE340/MJE350 o BD139/BD140 | TO-126, 500 mA — abbondanti per linea | ~0,5-1 € la coppia |
 | Coppia d'ingresso diamond (se serve matching) | KSC1845/KSA992 | sostituti moderni dei classici Toshiba 2SC2240/2SA970 | ~1 € la coppia |
-| Comparator meter | LM339 ×2 | quad, open-collector, economici | ~0,5 € |
-| Driver LED | ULN2803 | 8 canali | ~0,5 € |
+| Comparator clip purple | LM339 ×1 | quad, open-collector | ~0,5 € |
+| Scale meter | LM3915 ×4 | 10 segmenti log 3 dB cad., 2 in cascata per canale, bar mode | ~1-2 € cad |
 | Relay mute | Omron G6K-2 o G5V-1 | segnale, contatti dorati | ~2-3 € ×3 |
-| Regolatori low-noise | LT3045 + LT3094 | opzione qualità [APERTO-F] | ~4-5 € cad |
+| Regolatori low-noise | LT3045 + LT3094 | **CONFERMATI [BLOCCATO-F]** per summing, CV del VCA e meter | ~4-5 € cad |
 | Regolatori standard | LM317/LM337, 78L05 | | ~1 € |
-| XLR femmina pannello | Neutrik NC3FAH o equivalente | pin1 → rete RC → star ground modulo | ~3-4 € |
+| XLR femmina pannello ×4 | Neutrik NC3FAH o equivalente | master L/R + booth L/R; pin1 → rete RC → star ground modulo | ~3-4 € cad |
 | TVS/connettore | PESD5V0 low-cap | ESD | ~0,5 € |
 
 **Stima BOM modulo master out: ~60-90 €** (esclusi PCB, connettori backplane, manopole). [PROVVISORIO]
@@ -239,19 +250,23 @@ Metodo corretto imposto dalla review (correzione 13): per stadio, non "−90 dBu
 - Stima grezza [PROVVISORIO]: −92…−86 dBu A-wtd residuo all'XLR a unity, con i rail low-noise; senza LT3045/3094 aggiungere 2-4 dB
 - Il verdetto arriva dalla simulazione 1+3+6, non da questa riga
 
-## 8. Cosa serve da Filippo per chiudere questo modulo [APERTO-F]
+## 8. Risposte di Filippo (ricevute 2026-09-18) — esito
 
-1. **DSP a valle**: marca/modello o almeno livello d'ingresso e impedenza che si aspetta (calibra il livello nominale XLR) — questione aperta 26
-2. **Modello Zoom** (calibra il pad REC e il connettore) — questione aperta 27
-3. **Connettore booth**: XLR o TRS?
-4. **Detent a unity sul master level**: sì/no
-5. **Ballistica meter** (nervoso/rilassato) e **numero LED per canale** (6 o 8)
-6. **Rail low-noise LT3045/3094**: opzione qualità (~10 €) sì/no
-7. **Soglie delle zone meter**: va bene la tabella §3.6 (verde sul nominale) o preferisci lo 0 dBu a metà scala?
+| # | Domanda | Risposta | Conseguenza sul design |
+|---|---|---|---|
+| 1 | DSP a valle | Irrilevante: deve lavorare con la maggior parte dei DSP standard | XLR universale: bilanciato, 0 dBu nom, pilota ingressi pro +4 dBu, Z out < 50 Ω (§3.3) |
+| 2 | Zoom per REC | Uguale: compatibile con la maggior parte dei registratori | REC su TRS unbalanced-compatible, pad −10 dBV, jumper −10/−20 opzionale (§3.5) |
+| 3 | Connettore booth | XLR | Booth bilanciato su XLR (§3.4) |
+| 4 | Detent unity | Sì; hardware di tutte le manopole da rivedere dopo | Pot con detent a unity; selezione hardware rimandata a sessione dedicata (§3.2) |
+| 5 | Ballistica/LED | Il più preciso possibile | 20 segmenti/canale a passi 3 dB, LM3915 in cascata, attacco < 1 ms (§3.6) |
+| 6 | Rail LT3045/3094 | Sì | Confermati su summing, CV VCA, meter (§3.8, §5) |
+| 7 | Soglie/colori zone | La logica colori è nel backlog con ChatGPT | [EXPORT]: mappatura colori da definire sull'export; scala elettrica già fatta (§3.6) |
+
+Restano utili ma NON bloccanti: modello del DSP e del registratore quando ci saranno, per la calibrazione finale al banco.
 
 ## 9. Prossimi passi
 
-1. Risposte di Filippo alle 7 voci sopra → aggiornamento di questo documento a v0.2
-2. Simulazioni LTspice §6 (i file `.asc` versionati in `sim/master-out/`)
-3. Alla chiusura dell'export ChatGPT: verifica che questa sezione non contraddica decisioni prese là (in particolare: chi fa il summing, standard I/O del backplane, posizione esatta del meter)
+1. [FATTO 2026-09-18] Risposte di Filippo integrate → questo documento è v0.2
+2. Simulazioni LTspice §6 (i file `.asc` versionati in `sim/master-out/`) — primo candidato: composite amplifier §3.3 (è il cuore elettrico del modulo)
+3. Alla chiusura dell'export ChatGPT: verifica che questa sezione non contraddica decisioni prese là (in particolare: chi fa il summing, standard I/O del backplane, posizione esatta del meter, logica colori)
 4. Solo dopo: schema elettrico definitivo e PCB del modulo
