@@ -64,7 +64,7 @@
 45. **[APERTO-F]** Boost EQ per banda: ok +9 dB proposto o più cattivo (+12/+15)?
 46. **[APERTO-F]** Trim ingresso: ok −10…+10 dB proposto, o ±6 basta conoscendo i livelli dei suoi CDJ?
 47. **CHIUSA dal gain-staging sheet**: dominio audio del canale portato a ±18 V (capability +23 dBu); worst user error +18 con 5 dB di margine.
-48. Rumore dei potenziometri come dominante nel canale: la simulazione §6.3 decide il valore ohmico dei pot (47 k vs 10 k) prima della sessione hardware (questione 40).
+48. **CHIUSA (scelta ingegneristica CDJ v0.2 §5, conferma dalla sim)**: pot delle celle EQ a 10 kΩ — rumore di wiper ~2,5 kΩ equivalenti, trascurabile rispetto alla catena op-amp.
 
 ## Verifiche strumentazione
 
@@ -105,4 +105,5 @@ Nuovi aperti:
 55. Soppressione transiente assign FX: usare break-before-make + ramp 1-5 ms come per il filtro (i documenti lo prescrivono solo per il selettore filtro)?
 56. Compilazione SPECIFICA.md: il corpus è chiuso, non c'è più motivo di attendere — capitolo per capitolo, dai documenti + decisioni.
 57. **CHIUSA (decisione 69)**: interpretazione confermata; capacità selezionabile resta opzione interna economica (veto possibile).
+59. **[NUOVA da CDJ v0.2]** All-kill leak dell'EQ a celle bipolari: con tutte e 4 le bande a −∞ restano ~−2,6 dB @2,5 kHz e @150 Hz (cancellazione di fase tra le sottrazioni). Mitigazioni: (a) comportamento documentato + fader per il silenzio vero; (b) auto-mute con 4 switch di fine corsa + FET shunt (~2 €). Da ratificare con Filippo. Singole bande: kill profondo (−50…−60 dB) ✓.
 58. Requisito infrasub 10 Hz (decisione 65) — implicazioni da sviluppare nel design: SUB filter bank 10-90 Hz, corner AC ≤5 Hz su tutto il percorso, ballistica meter a 10 Hz, escursione/protzioni altoparlanti restano responsabilità del DSP esterno.

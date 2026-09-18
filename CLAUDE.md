@@ -33,11 +33,13 @@ maelcum_mixer/
     ├── 02-questioni-aperte.md              ← cosa manca + roadmap
     ├── 03-revisione-critica.md             ← analisi status doc (findings + correzioni)
     ├── export-chatgpt/                     ← PDF/DOCX di stato + estrazioni testo
-    └── fase1/
-        ├── master-out.md                   ← design modulo master out (v0.2, risposte integrate)
-        └── cdj-line-channel.md             ← design modulo canale CDJ/line (v0.1, no phono)
+    ├── fase1/
+    │   ├── master-out.md                   ← design modulo master out (v0.2 + addendum REC)
+    │   ├── cdj-line-channel.md             ← design modulo canale CDJ/line (v0.2, EQ validata)
+    │   └── gain-staging-sheet.md           ← tabella unica livelli e domini (referenza)
+    └── (radice) sim/                       ← analisi e simulazioni (eq_analysis.py, eq_results.txt)
 ```
 
 ## Prossimo passo concreto
 
-Gain-staging sheet globale (voce 50 delle questioni aperte), poi compilazione di `SPECIFICA.md` capitolo per capitolo dai documenti + decisioni, mostrandoli uno alla volta. In parallelo: revisione CDJ v0.2 e prime simulazioni LTspice.
+FATTI: gain-staging sheet, SPECIFICA.md v0.1, CDJ v0.2 con EQ validata matematicamente (sim/eq_analysis.py). IN ATTESA: feedback di Filippo sui documenti (in lettura), autorizzazione a installare LTspice per le simulazioni circuitali, ratifica voce 59 (all-kill leak). Poi: simulazioni LTspice e design modulo filtro.
