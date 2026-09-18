@@ -1,0 +1,55 @@
+* ============================================================
+* MASTER OUT — stadio composito: comportamento di corto
+* Test 3: uscita verso massa, nessuna protezione (primo passaggio)
+* Riferimento: docs/fase1/master-out.md §3.3 (target <60 mA per ramo)
+* ============================================================
+* Modelli [PROVVISORIO] — stesse note di comp-swing.cir
+* DOMANDA A CUI RISPONDE: quanta corrente circola in corto e
+* quanto dissipano i transistor SENZA limitazione? Serve a
+* dimensionare la protezione (R emettitore + clamp Vbe).
+
+.subckt OPAMAC inp inn out vp vm
+E1 x 0 value={1000*(V(inp)-V(inn))}
+R1 x p1 1k
+C1 p1 0 1.99u
+E2 y 0 p1 0 1000
+R2 y p2 1k
+C2 p2 0 3.98p
+E3 out 0 value={limit(V(p2),V(vm)+1.5,V(vp)-1.5)}
+.ends OPAMAC
+
+.model MJE340 NPN(IS=1e-13 BF=150 VAF=150 IKF=0.5 BR=5 CJC=4p CJE=15p TF=2n TR=20n RB=5 RC=1 RE=0.1 Vceo=300 Icrating=500m mfg=ON)
+.model MJE350 PNP(IS=1e-13 BF=100 VAF=120 IKF=3.5 BR=3 CJC=4p CJE=15p TF=5n TR=50n RB=5 RC=1.5 RE=0.15 Vceo=300 Icrating=500m mfg=ON)
+.model QMULT NPN(IS=1e-14 BF=200 VAF=100 CJC=8p CJE=25p TF=400p)
+
+Vp24 vp24 0 DC 24
+Vm24 vm24 0 DC -24
+Vp18 vp18 0 DC 18
+Vm18 vm18 0 DC -18
+
+* Ingresso a livello programma alto: 10 Vpico (circa +20 dBu)
+V1 in 0 SINE(0 10 1k)
+
+X1 in out drv vp18 vm18 OPAMAC
+Q3 drv mid b2 QMULT
+Ra drv mid 2.2k
+Rb mid b2 1k
+Q1 vp24 drv e1 MJE340
+Q2 vm24 b2 e2 MJE350
+Re1 e1 out 33
+Re2 e2 out 33
+* CORTO: 1 Ohm verso massa (resistenza di contatto realistica)
+RL out 0 1
+
+* ---------- Analisi ----------
+.tran 0 40m 0 5u
+* Corrente di picco nei rami di uscita
+.meas tran iq1_pk MAX I(Re1) FROM 30m TO 40m
+.meas tran iq2_pk MIN I(Re2) FROM 30m TO 40m
+* Dissipazione istantanea di picco Q1: Vce * Ic
+.meas tran pq1_pk MAX V(vp24,e1)*I(Re1) FROM 30m TO 40m
+* Dissipazione media Q1 sul periodo misurato (riscaldamento reale)
+.meas tran pq1_avg AVG V(vp24,e1)*I(Re1) FROM 30m TO 40m
+* Tensione residua in uscita durante il corto
+.meas tran vout_pk MAX V(out) FROM 30m TO 40m
+.end

@@ -1,0 +1,74 @@
+* ============================================================
+* MASTER OUT — stadio composito OPA1612 + diamond class AB
+* Test 1: swing massimo in uscita (verifica requisito +24 dBu)
+* Riferimento: docs/fase1/master-out.md §3.3 e §6.2
+* ============================================================
+* STATO DEI MODELLI [PROVVISORIO — regola 3 del progetto]:
+* - OPA1612: macromodello a 2 poli tarato su datasheet
+*   (GBW 80 MHz, A0 120 dB, secondo polo 40 MHz,
+*    clamp uscita ±16,5 V = swing reale su rail ±18 V).
+*   Rumore e distorsione interna NON modellati: primo passaggio.
+*   Da sostituire col modello ufficiale TI quando disponibile.
+* - MJE340/MJE350: modelli rappresentativi TO-126 300 V/0,5 A
+*   (parametri tipici di datasheet, non il modello del produttore).
+* - QMULT: NPN small-signal generico per il moltiplicatore Vbe.
+* Semplificazioni deliberate di questo primo passaggio:
+* - niente servo DC (sorgente DC-accoppiata, offset non modellato)
+* - niente protezioni (R serie connettore, TVS, clamp Vbe)
+* - carico resistivo puro 10 kOhm (capacitivo e corto nei test dedicati)
+
+* ---------- Macromodello OPA1612 ----------
+.subckt OPAMAC inp inn out vp vm
+E1 x 0 value={1000*(V(inp)-V(inn))}
+R1 x p1 1k
+C1 p1 0 1.99u
+E2 y 0 p1 0 1000
+R2 y p2 1k
+C2 p2 0 3.98p
+E3 out 0 value={limit(V(p2),V(vm)+1.5,V(vp)-1.5)}
+.ends OPAMAC
+
+* ---------- Modelli transistor [PROVVISORIO] ----------
+.model MJE340 NPN(IS=1e-13 BF=150 VAF=150 IKF=0.5 BR=5 CJC=4p CJE=15p TF=2n TR=20n RB=5 RC=1 RE=0.1 Vceo=300 Icrating=500m mfg=ON)
+.model MJE350 PNP(IS=1e-13 BF=100 VAF=120 IKF=0.4 BR=3 CJC=4p CJE=15p TF=5n TR=50n RB=5 RC=1.5 RE=0.15 Vceo=300 Icrating=500m mfg=ON)
+.model QMULT NPN(IS=1e-14 BF=200 VAF=100 CJC=8p CJE=25p TF=400p)
+
+* ---------- Alimentazioni ----------
+Vp24 vp24 0 DC 24
+Vm24 vm24 0 DC -24
+Vp18 vp18 0 DC 18
+Vm18 vm18 0 DC -18
+
+* ---------- Ingresso ----------
+V1 in 0 SINE(0 {amp} 1k)
+
+* ---------- Stadio composito ----------
+* OPA1612: non-invertente, feedback globale da OUT (unity)
+X1 in out drv vp18 vm18 OPAMAC
+* Moltiplicatore Vbe: Ra/Rb = 2.2k/1k -> ~2,1 V tra le basi
+* -> idle ~12 mA con Re = 33 Ohm (target design 10-15 mA)
+Q3 drv mid b2 QMULT
+Ra drv mid 2.2k
+Rb mid b2 1k
+* Push-pull class AB, Re 33 Ohm (range doc: 10-100)
+Q1 vp24 drv e1 MJE340
+Q2 vm24 b2 e2 MJE350
+Re1 e1 out 33
+Re2 e2 out 33
+* Carico primo passaggio: linea leggera 10 kOhm
+RL out 0 10k
+
+* ---------- Analisi ----------
+.op
+.tran 0 12m 0 1u
+* Sweep ampiezza: da 10 V a 22 V pico (il requisito +24 dBu = 17,37 Vp)
+.step param amp 10 22 2
+* Picco positivo e negativo negli ultimi 6 ms (a regime)
+.meas tran vpk_max MAX V(out) FROM 6m TO 12m
+.meas tran vpk_min MIN V(out) FROM 6m TO 12m
+* Corrente di picco nel carico
+.meas tran il_pk MAX I(RL) FROM 6m TO 12m
+* Corrente di picco nei rami di emettitore (= corrente transistor)
+.meas tran iq1_pk MAX I(Re1) FROM 6m TO 12m
+.meas tran iq2_pk MIN I(Re2) FROM 6m TO 12m
+.end

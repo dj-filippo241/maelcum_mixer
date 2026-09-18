@@ -1,0 +1,54 @@
+* ============================================================
+* MASTER OUT — stadio composito: THD
+* Test 4: distorsione a 1 kHz e 35 kHz, carichi 600 Ohm e 10 kOhm
+* Riferimento: docs/fase1/master-out.md §6.2
+* ============================================================
+* NOTA LIVELLO: il requisito doc e' THD a +24 dBu (17,37 Vp), ma il
+* test di swing (comp-swing) mostra saturazione a ±15,85 V.
+* Qui si misura a 14 Vp (~+21,2 dBu): massimo livello pulito.
+* Modelli [PROVVISORIO] — stesse note di comp-swing.cir.
+* Il macromodello opamp e' lineare: la THD misurata viene dallo
+* stadio di uscita + correzione d'anello. Con l'OPA1612 reale la
+* THD sara' uguale o peggiore (il modello TI aggiunge la sua).
+
+.subckt OPAMAC inp inn out vp vm
+E1 x 0 value={1000*(V(inp)-V(inn))}
+R1 x p1 1k
+C1 p1 0 1.99u
+E2 y 0 p1 0 1000
+R2 y p2 1k
+C2 p2 0 3.98p
+E3 out 0 value={limit(V(p2),V(vm)+1.5,V(vp)-1.5)}
+.ends OPAMAC
+
+.model MJE340 NPN(IS=1e-13 BF=150 VAF=150 IKF=0.5 BR=5 CJC=4p CJE=15p TF=2n TR=20n RB=5 RC=1 RE=0.1 Vceo=300 Icrating=500m mfg=ON)
+.model MJE350 PNP(IS=1e-13 BF=100 VAF=120 IKF=0.4 BR=3 CJC=4p CJE=15p TF=5n TR=50n RB=5 RC=1.5 RE=0.15 Vceo=300 Icrating=500m mfg=ON)
+.model QMULT NPN(IS=1e-14 BF=200 VAF=100 CJC=8p CJE=25p TF=400p)
+
+Vp24 vp24 0 DC 24
+Vm24 vm24 0 DC -24
+Vp18 vp18 0 DC 18
+Vm18 vm18 0 DC -18
+
+V1 in 0 SINE(0 14 {f})
+
+X1 in out drv vp18 vm18 OPAMAC
+Q3 drv mid b2 QMULT
+Ra drv mid 2.2k
+Rb mid b2 1k
+Q1 vp24 drv e1 MJE340
+Q2 vm24 b2 e2 MJE350
+Re1 e1 out 33
+Re2 e2 out 33
+RL out 0 {rl}
+
+* Sweep: frequenza x carico
+.step param f LIST 1k 35k
+.step param rl LIST 600 10k
+
+* 20 ms a 1 kHz = 20 cicli; a 35 kHz servono finestre diverse:
+* uso tempo fisso 40 ms (abbastanza per entrambe, .four taglia)
+.tran 0 40m 0 100n
+.four {f} 9 V(out)
+.meas tran voutpk MAX V(out) FROM 30m TO 40m
+.end
