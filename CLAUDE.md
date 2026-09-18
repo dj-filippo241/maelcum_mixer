@@ -42,4 +42,4 @@ maelcum_mixer/
 
 ## Prossimo passo concreto
 
-FATTI: gain-staging sheet, SPECIFICA.md v0.1, CDJ v0.2 con EQ validata matematicamente (sim/eq_analysis.py). IN ATTESA: feedback di Filippo sui documenti (in lettura), autorizzazione a installare LTspice per le simulazioni circuitali, ratifica voce 59 (all-kill leak). Poi: simulazioni LTspice e design modulo filtro.
+FATTI: gain-staging sheet, SPECIFICA.md v0.1, CDJ v0.2 con EQ validata matematicamente (sim/eq_analysis.py), LTspice 26.0.2 installato e verificato in batch CLI via `sim/run_ltspice.sh` (2026-09-18 — il launcher ufficiale perde i flag CLI, usare il wrapper). IN ATTESA: feedback di Filippo sui documenti (in lettura), ratifica voce 59 (all-kill leak). Poi: simulazioni LTspice dei moduli di fase 1 e design modulo filtro.
