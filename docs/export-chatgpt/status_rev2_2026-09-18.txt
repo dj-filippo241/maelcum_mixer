@@ -1,0 +1,312 @@
+CUSTOM ANALOGUE DJ / DUB MIXER
+Project status, engineering summary, and current phono-input design - 18 September 2026
+Purpose: consolidated reference of the project as currently defined, separating locked decisions, proposed engineering targets, open
+decisions, and superseded ideas.
+Important: this remains a design-status document, not a production-ready schematic, PCB or BOM. Values marked proposed require
+simulation and measurement after topology selection.
+Status labels
+• LOCKED - explicitly established functional/design decision.
+• PROPOSED - useful starting value or engineering target; not frozen.
+• OPEN - requires technical or creative decision.
+• SUPERSEDED - earlier idea replaced by the current architecture.
+1. Executive status
+The overall system is technically feasible as a high-end custom analogue DJ / dub mixer. No major subsystem identified so far is
+fundamentally impossible. The project is now moving from architecture into actual circuit engineering.
+The main difficult blocks are the global state-variable filter, resonance/self-oscillation, the five-way KILL/filter bank, five-band creative EQ,
+analogue CV distribution, the complete noise budget, power/ground architecture, and the modular backplane.
+Engineering method from this point: requirement -> transfer function -> topology -> component values -> simulation -> PCB/layout ->
+prototype -> measurement -> revision.
+Feasibility snapshot
+Area Status
+Overall analogue concept LOCKED / feasible
+4 DJ channels LOCKED / feasible
+Phono/RIAA Function locked; circuit now in Rev A design
+DJ 4-band EQ Function locked; topology open
+Global filter Function locked; technically demanding
+5-way isolator/EQ Function locked; major circuit task
+4 FX buses + cross-feedback LOCKED / feasible
+Mic + generic mono Function locked; topology open
+Master/booth/record Architecture locked; output topology open
+Modular backplane Concept locked; implementation open
+Noise / bandwidth targets Proposed; require validation
+2. Global locked principles
+• 100% analogue audio. No ADC, DAC, DSP or digital audio processing.
+• Stereo master L/R. Mono sound-system operation is downstream.
+• No pan or separate L/R user controls. Stereo controls are linked.
+• Modular/serviceable construction. Functional cards/modules use defined interfaces; not necessarily literal Eurorack electrical standard.
+• No hidden digital audio control.
+• Extreme settings allowed for filtering, saturation and feedback, while electrical operation remains non-destructive.
+• No intentional master compressor/limiter/clipping. Electrical protection is still required.
+• No hot swapping.
+3. Master architecture
+Stage Signal flow
+DJ CH1-4 -> DJ BUS -> ONE 5-WAY -> MASTER SUM
+FX returns -> MASTER SUM; post-5-way only
+MIC -> MASTER SUM
+Custom Analogue DJ / Dub Mixer - Project Status 18 Sep 2026 - Rev 2 Page 1
+Stage Signal flow
+GENERIC MONO -> MASTER SUM
+MASTER MASTER SUM -> MASTER LEVEL -> MASTER METER -> MASTER OUT
+BOOTH Independent level -> BOOTH L/R
+REC Fixed pre-master-level feed -> REC L/R
+Outputs
+Output Specification
+MASTER Balanced XLR; -infinity -> +6 dB; main DSP feed
+BOOTH L/R; independent -infinity -> 0 dB
+REC Fixed pre-master-level; about 0 dBu nominal
+Driver Active balanced low-Z; ideally <50 ohm
+Headroom Target >= +24 dBu clean where practical
+Protection Current/short-circuit, DC/RF/transient as appropriate; power mute
+Dynamics No limiter/compressor
+4. Global gain and headroom reference
+Level Vrms Vpk Vpp Use
+0 dBu 0.775 1.096 2.19 Nominal internal reference
++4 dBu 1.228 1.736 3.47 Professional line reference
++10 dBu 2.451 3.466 6.93 Hot programme
++18 dBu 6.155 8.704 17.41 Extreme internal level
++24 dBu 12.283 17.37 34.74 High-headroom target
+• Normal programme around 0 dBu; +10 dBu hot; +18 dBu extreme.
+• Critical stages: proposed >= +24 dBu clean where practical.
+• Correction: +/-24 V may be the main system rail, but is not a universal op-amp supply. Local +/-15 V or +/-12 V rails may be required.
+• Correction: +24 dBu is a stage/system headroom target, not a requirement that every IC itself handle that level.
+5. DJ channels - four identical stereo channels
+Signal flow: stereo RCA -> protection -> PHONO/LINE architecture -> GAIN -> 4-band EQ -> split to CUE / FX SEND / filter path -> meter ->
+fader -> DJ BUS.
+Architecture correction introduced by the phono design: PHONO and LINE should be treated as two dedicated input paths that are
+selected after their respective front ends, rather than one switch being assumed to precede both RIAA and line buffering.
+Function Current specification
+Input Stereo RCA; PHONO/LINE
+Ground Dedicated turntable ground
+Gain -infinity -> 0 -> +10 dB; centre detent 0
+Gain tracking Stereo linked; target <=0.5 dB L/R
+EQ 4 bands; -infinity -> 0 -> +6 dB
+EQ tracking Target <=0.25 dB L/R
+CUE Post-EQ, pre-filter, pre-fader
+Fader DJ-style conductive plastic; 0 dB max -> -infinity
+Fader buffer Target <=50 ohm
+DJ EQ - proposed values
+Band Centre Territory Q
+LOW 70 Hz 20-150 Hz ~0.7
+LOW-MID 250 Hz 100-600 Hz ~0.8
+MID-HIGH 1 kHz 400 Hz-2.5 kHz ~0.9
+HIGH 5 kHz 1.5-20 kHz ~0.7
+• Broad musical DJ correction/matching; not sound-system band pushing.
+Custom Analogue DJ / Dub Mixer - Project Status 18 Sep 2026 - Rev 2 Page 2
+• 0 = flat/unity. Current topology concept: reference + controlled band contribution paths.
+• Control law: faster action near extreme cut/boost; slower near the useful centre.
+6. NEW ENGINEERING STEP - PHONO INPUT DESIGN (Rev A)
+Scope: one identical stereo MM phono front end per DJ channel, feeding the common DJ gain stage. Rev A is intentionally MM-focused; MC
+is not included unless later requested.
+Recommended architecture
+Block Recommended Rev A design
+Connector Stereo RCA L/R + dedicated turntable ground
+Input protection 100 ohm series resistor per leg; low-capacitance protection physically after the resistor; avoid large TVS capacitance
+directly across cartridge
+MM load 47.0 k ohm to signal ground, 0.1%
+MM capacitance 100 pF C0G/NP0 default; provision for internal 0 / 47 / 100 / 150 pF selection so cable capacitance can be included
+First gain stage OPA1654 JFET-input audio op-amp; one stereo DJ channel uses four amplifier sections (two per L/R path); high-Z
+cartridge interface
+First-stage gain Target 21.3 dB (gain = 11.615); starting resistors 17.0 k ohm / 1.60 k ohm in a non-inverting gain cell
+RIAA topology Hybrid active/passive approach: first gain stage -> passive 75 us section -> second gain stage implementing remaining
+RIAA time constants
+Second gain stage OPA1654; active RIAA network implementing 3180 us and 318 us portions; total 1 kHz gain target initially 40-42 dB
+DC strategy Rev A candidate: low-frequency AC coupling between stages with sufficiently large low-leakage capacitor and 100 k
+ohm bias; direct-coupled servo remains a Rev B option
+RIAA accuracy Target <= +/-0.5 dB; preferred <= +/-0.25 dB from 20 Hz to 20 kHz after simulation/measurement
+Output drive Low-Z buffer into PHONO/LINE selector and DJ gain; target >= +18 dBu clean from the phono block
+Local supply Prefer regulated +/-15 V analogue rails for the phono module, with strong local decoupling and physical separation from
+control/PSU noise
+Why OPA1654 for the phono front end
+The MM cartridge is a high-impedance, inductive source. A FET-input audio amplifier is attractive at the cartridge interface because input
+current noise is extremely low. TI specifies the OPA1652/1654 family at about 4.5 nV/sqrt(Hz) voltage noise at 1 kHz, 3 fA/sqrt(Hz) current
+noise, 18 MHz GBW, unity-gain stability and operation up to +/-18 V. That makes the family a credible MM front-end choice. The OPA1612
+remains a strong candidate for lower-impedance downstream stages, but its bipolar input makes it less attractive as the first MM device when
+cartridge impedance rises with frequency.
+RIAA topology choice
+For this mixer I recommend the two-stage hybrid active/passive RIAA approach rather than putting the complete equalization into one
+aggressive feedback loop. A real, measured MM implementation from audioXpress uses a JFET-input OPA1642, a first-stage gain of 21.3
+dB, a passive 75 us section, a second stage implementing the 318 us and 3180 us constants, and about 42 dB total gain at 1 kHz. Its
+reported measurement showed about +/-0.1 dB RIAA deviation from 20 Hz to 10 kHz. A Texas Instruments application report likewise
+documents passive and active/passive RIAA topologies and emphasizes gain distribution for noise versus overload. These are references for
+topology, not a claim that their exact values are already final for this mixer.
+RIAA component policy
+• Use 0.1% metal-film resistors in the RIAA network.
+• Use low-DA film capacitors, preferably polypropylene, for the RIAA time-constant network; C0G/NP0 is appropriate for small-value RF/load
+capacitors.
+• Keep the 47 k ohm cartridge load physically at the RCA input connector.
+• Keep the selectable cartridge capacitance physically close to the input connector.
+• Keep the phono input area physically away from PSU switching nodes, control CVs, LEDs and headphone circuitry.
+• Use a defined local phono signal-ground reference and a controlled chassis/earth connection rather than relying on arbitrary cable shields.
+• No intentional 8-15 Hz rumble filter in Rev A; preserve the specified RIAA transfer and evaluate rumble filtering later as an optional function.
+Preliminary electrical targets for the phono block
+Target Rev A starting value
+Cartridge type MM only
+Load resistance 47.0 k ohm
+On-board load capacitance 100 pF default; selectable alternatives internally
+First-stage gain 21.3 dB
+Custom Analogue DJ / Dub Mixer - Project Status 18 Sep 2026 - Rev 2 Page 3
+Target Rev A starting value
+Total gain at 1 kHz 40-42 dB target
+Overload target Aim for >=20 dB above nominal 5 mV @ 1 kHz cartridge signal at the input, subject to final gain distribution
+Phono output nominal Designed to be in the sub-line-level region so the DJ GAIN stage can normalize it
+Bandwidth Full RIAA 20 Hz-20 kHz; no intentional LF truncation in Rev A
+Noise First-stage noise is the priority; final module noise to be budgeted separately
+Verification Inverse-RIAA measurement + 1 kHz gain + overload + noise + channel tracking + crosstalk
+What is still needed from you for the phono design
+• 1. Cartridge scope: Is V1 definitely MM-only? If you want high-output MC or low-output MC, the front end changes materially.
+• 2. Cartridge loading: Do you want a fixed 100 pF on-board capacitance, or internal selectable 0/47/100/150 pF? My recommendation is
+selectable internally, with 100 pF as the default.
+• 3. Gain target: Should I freeze 40 dB or 42 dB at 1 kHz? I currently favour about 42 dB because it works well with common 5-8 mV DJ
+cartridges while leaving the following DJ GAIN stage useful.
+• 4. User access: Should cartridge loading be technician/solder-jumper only, or do you want a rear-panel/user-accessible selector?
+Current recommendation pending your answers: MM-only, 47 k ohm load, 100 pF default with internal alternatives, OPA1654 JFET-input
+front end, 21.3 dB first stage, hybrid RIAA, 40-42 dB total at 1 kHz, and no intentional rumble filter in Rev A.
+7. Global DJ filter system
+Locked correction: frequency, resonance and overdrive are shared controls; each DJ channel only selects HPF / OFF / LPF.
+• HPF: 20 Hz -> 1.5 kHz.
+• LPF: 500 Hz -> 20 kHz.
+• 24 dB/oct target.
+• Candidate: 4-pole state-variable architecture, conceptually two cascaded 2-pole sections.
+• 0-5 V is only a proposed control interface convention.
+• Resonance: 0-70% normal, 70-90% aggressive, 90-100% self-oscillation.
+• Proposed oscillation level: about +6 to +10 dBu, softly bounded.
+• Overdrive follows filter/resonance and precedes the DJ meter; JFET then asymmetric-BJT prototypes.
+• Filter mode switching: break-before-make with about 1-5 ms click suppression.
+8. Five-way sound-system / isolator stage
+DJ BUS -> ONE 5-WAY -> MASTER SUM. FX returns bypass the 5-way. External DSP performs the acoustic crossover.
+• Physical KILL map: SUB ~20-90 Hz; KICK ~90-300/400 Hz; MID ~300/400 Hz-1.2 kHz; HIGH ~1.2-3.5 kHz; SUPER HI ~3.5-20 kHz.
+• Creative ranges: 20-120 Hz, 80-400 Hz, 250 Hz-1.5 kHz, 800 Hz-5 kHz, 3-20 kHz.
+• Max boosts: +15, +15, +15, +12, +9 dB respectively.
+• Width target: narrow ~Q3, medium ~Q1, broad ~Q0.5.
+• KILL must be designed as a coherent complementary filter bank and positioned so creative EQ cannot restore killed material.
+• Five-way drive follows the EQ sum and precedes the 5-way meter.
+9. FX system
+Element Current specification
+Buses Exactly 4
+Sources DJ, mic, generic mono, FX returns
+Send point Post-EQ / pre-filter
+Send level -infinity -> 0 dB
+Send EQ LOW ~120 Hz / HIGH ~4.5 kHz; -infinity -> 0 -> +6 dB
+Return gain -infinity -> 0 -> +20 dB
+Return EQ LOW ~100-150 Hz / HIGH ~4-6 kHz; -infinity -> 0 -> +6 dB
+Reroutes 3 other FX destinations per return; -infinity -> 0 dB; no self-route
+Loops Cross-FX feedback allowed
+Custom Analogue DJ / Dub Mixer - Project Status 18 Sep 2026 - Rev 2 Page 4
+Element Current specification
+CUE No FX CUE
+• Active virtual-earth bus summing; nominal bus target ~0 dBu; earlier 10 k ohm injection / 10 k ohm feedback values are starting points only.
+• Reroute path: return EQ -> VCA/attenuator -> low-Z driver -> injection resistor -> destination bus.
+• Proposed reroute law: 0-20% -infinity->-40 dB; 20-45% -40->-20; 45-70% -20->-10; 70-85% -10->-4; 85-95% -4->-1; 95-100% -1->0 dB.
+• Pedal pad ~-20 dB is prototype only. Return input target >=1 Mohm. Pedal interface target ~5 Hz-40 kHz.
+10. Microphone and generic mono
+Function MIC GENERIC MONO
+Input Balanced XLR Mono jack
+Gain ~30-60 dB -infinity -> 0 -> +10 dB
+Input Z ~2 k ohm >=100 k ohm
+EQ LOW ~120 / HIGH ~5 kHz LOW ~120 / HIGH ~5 kHz
+Other No CUE/filter/5-way/fader No CUE/filter/5-way/fader
+11. CUE / headphones
+Function Specification
+CUE DJ channels only; post-EQ/pre-filter/pre-fader
+Headphone outputs 2
+CUE/MASTER mix CCW CUE / centre 50:50 / CW MASTER
+Level Shared
+Other sources FX/mic/ext excluded
+Amp Dedicated high-current isolated headphone amplifier
+12. Metering
+Colour Meaning
+BLUE Little signal
+GREEN Safe
+YELLOW Loud
+AMBER Hard
+RED Extreme
+PURPLE Actual clipping
+• DJ: post-EQ -> post-filter/drive -> pre-fader.
+• 5-way: after drive, before master sum.
+• Master: after master level.
+• FX returns: after gain/EQ, pre-fader; proposed clip latch ~300-500 ms.
+• Mic/generic: warning-only.
+13. Power, grounding and backplane
+Category Current definition
+Main rail +/-24 V candidate
+Analogue rail +/-15 V candidate
+Control +5 / +3.3 V as required
+Audio buses DJ BUS, FX1-4, 5-WAY, MASTER, CUE all L/R
+Grounds Analogue 0 V, control ground, chassis/shield
+Module rule No internal-node access across modules
+Hot swap No
+Test points Every module and critical intermediate node
+• Phono, mic and FX return circuitry must be physically separated from PSU, headphone and control-noise sources.
+Custom Analogue DJ / Dub Mixer - Project Status 18 Sep 2026 - Rev 2 Page 5
+• Control CVs must be buffered and smoothed.
+• Backplane impedance, loading, crosstalk and grounding remain open engineering tasks.
+14. Noise, bandwidth and protection
+Target Current status
+Critical-path noise Proposed >= -90 dBu under defined reference conditions
+Control->audio Proposed >= -100 dB
+Overall bandwidth Proposed ~8 Hz-35 kHz with filters OFF
+Protection Required; not audio limiting
+Power transitions Output muting required
+Correction: the -90 dBu complete-mixer figure and 8 Hz-35 kHz bandwidth remain targets to be calculated and measured, not assumed.
+15. Major open engineering decisions
+• Exact DJ EQ topology and values.
+• Final RIAA schematic and cartridge-loading implementation.
+• Global filter OTA and frequency-control architecture.
+• Filter resonance/self-oscillation loop.
+• Filter overdrive transfer curve.
+• Five-way KILL filter-bank mathematics.
+• Five-way creative EQ topology.
+• FX VCA and control law.
+• Pedal attenuation strategy.
+• Master/booth/REC output topology.
+• Power supply, grounding and EMC strategy.
+• Backplane pinout, loading and isolation.
+• Complete noise budget and PCB stack-up.
+16. Recommended engineering build sequence
+Step Work package
+1 One complete DJ channel, including the newly designed phono block
+2 One FX send + pedal interface + return
+3 Two FX buses with controlled feedback
+4 One complete 5-way section
+5 Master sum + output + booth/REC
+6 CUE/headphones
+7 Power/protection/muting
+8 Backplane replication
+9 Full measurement and integration
+17. Reference calculations already discussed
+• RIAA time constants: 3180 us, 318 us, 75 us.
+• Simple RC reference: R = 1/(2 pi f C). With 10 nF: 70 Hz ~227 k ohm; 250 Hz ~63.7 k ohm; 1 kHz ~15.9 k ohm; 5 kHz ~3.18 k ohm. These are
+not final EQ values.
+• A provisional 4.7 nF SVF integrator capacitor illustrated the 20 Hz-20 kHz control problem: estimated gm ~0.59 uS at 20 Hz and ~0.59 mS at
+20 kHz.
+• 10 k ohm injection / 10 k ohm feedback is a provisional active-summing starting point only.
+18. Superseded / do not use
+• Local per-channel filter frequency/resonance/overdrive controls - superseded.
+• Mono final master - superseded; current architecture is stereo L/R.
+Custom Analogue DJ / Dub Mixer - Project Status 18 Sep 2026 - Rev 2 Page 6
+• -20 dB pedal attenuation as a frozen universal value - prototype only.
+• RIAA example RC values as a finished circuit - not authoritative.
+• 0-5 V as mandatory native CV inside every circuit - not authoritative.
+• +/-24 V as a universal op-amp supply - incorrect.
+• Any provisional component value before topology selection - not frozen.
+19. Phono design questions to close before Rev B
+• Confirm that V1 is MM-only.
+• Choose internal loading capacitance scheme: fixed 100 pF or technician-selectable 0/47/100/150 pF.
+• Choose nominal 1 kHz gain: 40 dB or 42 dB. Current recommendation: about 42 dB.
+• Choose whether loading should be technician-only or user-accessible on the rear panel.
+• After these decisions, derive the complete RIAA schematic and simulate channel-to-channel tolerance, noise, overload and RIAA deviation
+before freezing component values.
+20. Current bottom line
+The project remains feasible. The phono section can now be treated as a concrete engineering work package rather than only a functional
+requirement. The current Rev A direction is MM-only, 47 k ohm load, 100 pF default with internal alternatives, JFET-input op-amp front end,
+approximately 21.3 dB first gain, hybrid active/passive RIAA, and approximately 40-42 dB total gain at 1 kHz.
+Next engineering target: once the four phono questions are answered, freeze the actual RIAA topology and calculate the complete
+component network, then move to the DJ EQ or global filter.
+21. Technical references consulted
+• Texas Instruments, OPA1652/OPA1654 SoundPlus FET-input audio op-amp documentation. Relevant data: low input voltage/current noise,
+18 MHz GBW, +/-18 V maximum supply range.
+• Texas Instruments, AN-1651 / SNAA046A, Keeping Up with the Expanding Demands of High-Performance Audio. Documents passive and
+active/passive RIAA topologies and gain-distribution considerations.
+• audioXpress, PhL-100 high-quality MM phono preamp article (2022/2023 web publication). Uses OPA1642, 21.3 dB first stage, passive 75 us
+section, second stage for 318 us and 3180 us, about 42 dB total gain, and reports measured RIAA accuracy.
+Custom Analogue DJ / Dub Mixer - Project Status 18 Sep 2026 - Rev 2 Page 7

@@ -270,3 +270,9 @@ Restano utili ma NON bloccanti: modello del DSP e del registratore quando ci sar
 2. Simulazioni LTspice §6 (i file `.asc` versionati in `sim/master-out/`) — primo candidato: composite amplifier §3.3 (è il cuore elettrico del modulo)
 3. Alla chiusura dell'export ChatGPT: verifica che questa sezione non contraddica decisioni prese là (in particolare: chi fa il summing, standard I/O del backplane, posizione esatta del meter, logica colori)
 4. Solo dopo: schema elettrico definitivo e PCB del modulo
+
+---
+
+## ADDENDUM 2026-09-18 — correzione REC (decisione 63)
+
+REC OUT: **0 dBu nominali fissi** («la cosa più semplice e standard»), nessun controllo utente. I pad solder-only 0/−10/−20 dB sul PCB (accesso tecnico) sostituiscono il jumper utente proposto in §3.5. Il resto della v0.2 resta valido; gli status doc confermano il master meter come "most precise meter" (compatibile con la scala 20 segmenti, decisione 53).

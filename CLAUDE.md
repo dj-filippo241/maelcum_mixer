@@ -6,7 +6,7 @@ Mixer dub modulare 100% analogico, **esemplare unico**, per il soundsystem a 5 v
 
 ## Fase attuale
 
-**In attesa dell'export completo di ChatGPT.** Il progetto nasce da mesi di conversazioni con ChatGPT; il resoconto parziale ricevuto il 2026-09-17 è in `docs/00-resoconto-chatgpt-2026-09-17.md`. Quando arriva l'export: revisione critica completa, poi si compila `SPECIFICA.md`.
+**Corpus ChatGPT CHIUSO (2026-09-18).** Non arriverà un export migliore: resoconto (`docs/00-...`) + due status doc (`docs/export-chatgpt/`) = referenza completa (decisione 58). Revisione critica FATTA: `docs/03-revisione-critica.md` (citazioni verificate vere, matematica corretta, contraddizioni phono registrate, filtro esterno ai canali chiarito dal proprietario). Prossimo: gain-staging sheet globale, poi compilazione `SPECIFICA.md`.
 
 **Deroga registrata (2026-09-18)**: Filippo ha autorizzato l'avvio del design di fase 1 SENZA attendere l'export. Si lavora solo su sezioni già giudicate solide dalla review o con architettura bloccata. Stato design: **MASTER OUT v0.2** (risposte di Filippo integrate, decisioni 49-55) e **CANALE CDJ/LINE v0.1** (phono escluso per ora, decisione 56) in `docs/fase1/`. Entrambi restano da verificare contro l'export — voci [EXPORT] in `docs/02-questioni-aperte.md` (38-44).
 
@@ -28,8 +28,10 @@ maelcum_mixer/
 ├── SPECIFICA.md           ← specifica consolidata (ora scheletro, si compila post-export)
 └── docs/
     ├── 00-resoconto-chatgpt-2026-09-17.md  ← materiale grezzo parziale
-    ├── 01-decisioni-bloccate.md            ← cosa è deciso (48 voci)
+    ├── 01-decisioni-bloccate.md            ← cosa è deciso (66 voci)
     ├── 02-questioni-aperte.md              ← cosa manca + roadmap
+    ├── 03-revisione-critica.md             ← analisi status doc (findings + correzioni)
+    ├── export-chatgpt/                     ← PDF/DOCX di stato + estrazioni testo
     └── fase1/
         ├── master-out.md                   ← design modulo master out (v0.2, risposte integrate)
         └── cdj-line-channel.md             ← design modulo canale CDJ/line (v0.1, no phono)
@@ -37,4 +39,4 @@ maelcum_mixer/
 
 ## Prossimo passo concreto
 
-Appena Filippo consegna l'export di ChatGPT: salvarlo in `docs/export-chatgpt/`, leggerlo tutto, produrre `docs/03-revisione-critica.md` (coerente / contraddittorio / mancante / superato), poi iniziare a compilare `SPECIFICA.md` capitolo per capitolo, mostrandoli uno alla volta.
+Gain-staging sheet globale (voce 50 delle questioni aperte), poi compilazione di `SPECIFICA.md` capitolo per capitolo dai documenti + decisioni, mostrandoli uno alla volta. In parallelo: revisione CDJ v0.2 e prime simulazioni LTspice.

@@ -182,3 +182,17 @@ Dal resoconto (decisioni 26-27): i 4 controlli del filtro sono CONDIVISI (nel mo
 2. Simulazioni §6 (file `.asc` in `sim/cdj-channel/`) — prima: EQ completo, è la firma sonora del canale
 3. Alla chiusura dell'export: risolvere [EXPORT] (stereo/mono, send/return filtro, assignment FX, punto CUE, standard backplane)
 4. Solo dopo: schema definitivo e PCB
+
+---
+
+## ADDENDUM 2026-09-18 (post status document + risposte di Filippo) — revisione v0.2 in coda
+
+Voci di questo v0.1 SUPERATE o AGGIORNATE (decisioni 58-66, docs/03 §8):
+
+- §3.2 trim −10…+10 dB → **gain −∞→0→+10 dB con detent centrale**, stereo-linked, tracking ≤0,5 dB (locked)
+- §3.3 EQ: boost **+6 dB (locked**, non +9); frequenze baseline **70/250/1k/5k Hz** (proposte dai documenti, Q ~0,7-0,9); nomi bande LOW/LOW-MID/**MID-HIGH**/HIGH; law di controllo: lenta al centro, rapida agli estremi; requisito nuovo: **tracking stereo ≤0,25 dB** (metodo da decidere — voce 53)
+- §3.5 FX assign: **multiple simultanee** (non 1-of-4), precision analogue switch, JFET scartati
+- §3.6 interfaccia filtro: **ipotesi originale CONFERMATA dal proprietario** — send/return verso il MODULO FILTRO esterno, il canale ha solo il selettore HPF/OFF/LPF (decisione 60)
+- §3.8 meter: **meter DJ completo** post-filter/overdrive pre-fader, peak con persistenza, calibrazione identica tra canali (non solo clip-warn)
+- §7 domande: superate (risposte integrate nelle decisioni 58-66)
+- Nota fase 1: finché il modulo filtro non esiste, il selettore resta su OFF/bypass e il canale lavora dry (decisione 61)

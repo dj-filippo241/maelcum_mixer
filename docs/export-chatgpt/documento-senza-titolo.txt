@@ -1,0 +1,1102 @@
+CUSTOM ANALOGUE DJ / DUB MIXER
+Project status & engineering study
+Status date: 18 September 2026
+Purpose
+This document consolidates the project as currently defined. It separates:
+	•	LOCKED — functional/design decisions established by the project.
+	•	PROPOSED — useful engineering starting points, not yet frozen.
+	•	OPEN — requires further technical or creative decisions.
+	•	SUPERSEDED — earlier ideas that have been replaced and should not remain active specifications.
+This is not yet a production-ready schematic, PCB design or BOM. The overall architecture is considered feasible, but several circuit blocks still require proper topology selection, mathematical derivation, simulation, prototyping and measurement.
+
+1. EXECUTIVE STATUS
+The overall system is technically feasible as a high-end custom analogue DJ / sound-system mixer.
+There is no major subsystem identified so far that is fundamentally impossible.
+The project has reached an important transition point:
+Previous phase: functional requirements → plausible analogue concepts → provisional numerical values
+Next phase: functional requirement → transfer function → circuit topology → component selection → simulation → PCB/layout → prototype → measurement → revision
+The most technically demanding sections are:
+	•	the global DJ filter,
+	•	its resonance/self-oscillation system,
+	•	the five-way KILL/filter-bank architecture,
+	•	the five-band creative EQ,
+	•	analogue control-voltage distribution,
+	•	the complete noise budget,
+	•	the power/ground architecture,
+	•	the modular backplane.
+
+2. GLOBAL PROJECT PRINCIPLES — LOCKED
+Audio
+	•	The complete audio path is 100% analogue.
+	•	No ADC, DAC, DSP or digital audio processing.
+	•	Stereo master L/R.
+	•	The mixer must remain stereo-capable even though it may often feed a mono sound system.
+	•	No pan controls.
+	•	No separate user-controlled L/R controls.
+	•	Stereo controls are linked.
+Modular architecture
+	•	Functional modules/cards.
+	•	Serviceable and replaceable.
+	•	Backplane-based architecture.
+	•	Inspired by Eurorack conceptually, but not required to follow the Eurorack electrical standard.
+	•	No direct access from one module to another module's internal analogue nodes.
+	•	Modules communicate through defined audio/control/power interfaces.
+	•	No hot swapping.
+Performance philosophy
+	•	Extreme settings are intentionally allowed.
+	•	Filter resonance may self-oscillate.
+	•	Filter and 5-way stages may deliberately overload.
+	•	Cross-FX feedback loops are allowed.
+	•	These behaviours must remain electrically non-destructive.
+Dynamics
+	•	No intentional master limiter.
+	•	No master compressor.
+	•	No hidden automatic gain control.
+	•	Protection circuitry is required, but this is electrical protection rather than audio dynamics processing.
+	•	Fast overload recovery is desirable throughout the analogue path.
+
+3. MASTER ARCHITECTURE — LOCKED
+Core signal flow
+DJ CH1–4 → DJ BUS → ONE 5-WAY → MASTER SUM
+Other sources:
+FX RETURNS → MASTER SUM
+MIC → MASTER SUM
+GENERIC MONO → MASTER SUM
+Then:
+MASTER SUM → MASTER LEVEL → MASTER METER → MASTER OUT
+Important
+FX returns, mic and generic mono inputs do not pass through the 5-way.
+The 5-way is specifically the processing stage for the combined DJ bus.
+Outputs
+MASTER
+	•	Stereo L/R.
+	•	Balanced XLR.
+	•	Main output for the external sound-system DSP.
+	•	Level: −∞ → +6 dB.
+	•	Active balanced low-impedance output.
+	•	Target output impedance: ideally <50 Ω.
+	•	Clean headroom target: ≥+24 dBu where practical.
+	•	No limiter/compressor.
+BOOTH
+	•	Stereo L/R.
+	•	Independent level.
+	•	−∞ → 0 dB.
+	•	Independently buffered.
+REC
+	•	Stereo L/R.
+	•	Fixed level.
+	•	Taken before master level.
+	•	Approximately 0 dBu nominal.
+	•	No REC level control.
+Output protection
+Expected:
+	•	current/short-circuit protection,
+	•	DC protection,
+	•	RF/transient protection as appropriate,
+	•	controlled power-up mute,
+	•	controlled power-down mute.
+
+4. GLOBAL LEVEL / HEADROOM REFERENCE
+The working internal reference is:
+0 dBu = 0.775 Vrms = 1.096 Vpk = 2.19 Vpp
+Level
+Vrms
+Vpk
+Vpp
+Interpretation
+0 dBu
+0.775 V
+1.096 V
+2.19 V
+Nominal internal level
++4 dBu
+1.228 V
+1.736 V
+3.47 V
+Professional line reference
++10 dBu
+2.451 V
+3.466 V
+6.93 V
+Hot programme
++18 dBu
+6.155 V
+8.704 V
+17.41 V
+Extreme internal level
++24 dBu
+12.283 V
+17.37 V
+34.74 V
+High-headroom target
+Working philosophy
+	•	Normal programme: approximately 0 dBu.
+	•	Hot material: approximately +10 dBu.
+	•	Extreme internal level: approximately +18 dBu.
+	•	Critical analogue stages: target roughly +24 dBu clean capability where practical.
+Important engineering correction
+±24 V should not be treated as a universal op-amp supply.
+It may be a main system rail, but individual ICs must operate inside their own supply limits.
+Likely architecture:
+	•	±24 V main rail,
+	•	±15 V and/or ±12 V local analogue rails,
+	•	+5 V / +3.3 V where control/LED electronics need them.
+Likewise, +24 dBu is a system/stage headroom target, not a requirement that every IC must itself process +24 dBu.
+
+5. DJ CHANNELS — 4 IDENTICAL STEREO CHANNELS
+Locked signal flow
+Stereo RCA → input protection → PHONO/LINE → input buffer/RIAA → GAIN → 4-band EQ
+Then the signal splits into:
+CUE branch
+post-EQ → CUE
+FX branch
+post-EQ → SEND LEVEL → SEND EQ → S1–S4 → FX buses
+Dry branch
+post-EQ → HPF/OFF/LPF → filter/resonance → overdrive → meter → fader → low-Z buffer → DJ BUS
+
+DJ input
+RCA input
+	•	Stereo L/R RCA.
+	•	PHONO/LINE selection.
+	•	Dedicated turntable ground.
+	•	Dedicated Technics-style ground arrangement.
+Gain
+	•	−∞ → 0 → +10 dB
+	•	Centre detent at 0 dB.
+	•	Stereo linked.
+	•	Target L/R tracking: ≤0.5 dB.
+	•	Proposed +10 dB maximum = approximately ×3.16 voltage.
+DJ fader
+	•	Professional DJ-style conductive-plastic fader.
+	•	−∞ → 0 dB.
+	•	Stereo linked.
+	•	Target tracking ≤0.5 dB.
+	•	Low-Z buffer following it.
+	•	Target output impedance approximately ≤50 Ω.
+
+6. DJ 4-BAND EQ
+Locked behaviour
+Each channel has:
+	•	LOW
+	•	LOW-MID
+	•	MID-HIGH
+	•	HIGH
+Gain:
+−∞ → 0 → +6 dB
+0 = flat/unity.
+The EQ is intended for:
+	•	programme matching,
+	•	tonal correction,
+	•	musical DJ manipulation.
+It is not the sound-system five-way EQ.
+Proposed frequencies
+Band
+Centre
+Proposed territory
+Q target
+LOW
+70 Hz
+20–150 Hz
+~0.7
+LOW-MID
+250 Hz
+100–600 Hz
+~0.8
+MID-HIGH
+1 kHz
+400 Hz–2.5 kHz
+~0.9
+HIGH
+5 kHz
+1.5–20 kHz
+~0.7
+Control-law preference
+The current desired behaviour is:
+	•	slower around the useful central region,
+	•	increasingly fast near extreme cut/boost,
+	•	rather than a simple uniform-per-degree control.
+Proposed topology concept
+A reference signal plus controlled band-contribution paths:
+Vout = reference + controlled band contribution
+The idea is that:
+	•	0 = unity,
+	•	negative control removes the band contribution,
+	•	positive control adds it.
+This is a conceptual architecture, not yet the final circuit.
+
+7. PHONO / LINE INPUT
+PHONO
+Proposed
+	•	47 kΩ MM input.
+	•	Conventional MM cartridge loading.
+	•	Active RIAA.
+	•	Approximately 35–40 dB total phono gain.
+	•	Low noise.
+	•	High overload margin.
+	•	Good stereo matching.
+Proposed stage distribution
+	•	First stage: approximately 20–25 dB.
+	•	Second stage: approximately 15–20 dB.
+RIAA reference constants
+	•	3180 µs
+	•	318 µs
+	•	75 µs
+Accuracy target
+	•	≤±0.5 dB.
+	•	Preferably ≤±0.25 dB.
+Input capacitance
+Provisional:
+100–300 pF total
+This must be understood as the combined cartridge/cable/PCB/input network situation rather than simply one capacitor on the board.
+Engineering note
+The RIAA constants are correct, but the actual circuit is not three independent RC filters.
+The final RIAA network must be derived from the selected topology.
+
+8. GLOBAL DJ FILTER SYSTEM
+This was an important architecture correction.
+LOCAL per-channel control
+Each DJ channel has only:
+HPF / OFF / LPF
+selection.
+SHARED FILTER CONTROLS
+There is only one shared set of:
+	•	HPF frequency
+	•	LPF frequency
+	•	Resonance
+	•	Overdrive
+These common controls feed all four DJ filter cores.
+So four channels can independently choose:
+	•	HPF
+	•	OFF
+	•	LPF
+while the actual filter parameter values remain common.
+
+9. GLOBAL FILTER — PROPOSED ENGINEERING VALUES
+Frequency
+HPF
+20 Hz → 1.5 kHz
+LPF
+500 Hz → 20 kHz
+Thus:
+500 Hz → 1.5 kHz is the intentional control overlap.
+Slope
+Target:
+24 dB/octave
+Candidate topology
+A four-pole analogue state-variable architecture.
+Conceptually:
+2-pole SVF + 2-pole SVF
+with matched frequency control.
+Possible implementation:
+	•	OTA-based,
+	•	current-controlled integrators,
+	•	logarithmic frequency-control architecture.
+This is not yet the final circuit topology.
+
+10. FILTER CONTROL VOLTAGES
+Current proposal:
+0–5 V analogue CV convention
+CV
+Proposed mapping
+HPF frequency
+0–5 V → 20 Hz–1.5 kHz
+LPF frequency
+0–5 V → 500 Hz–20 kHz
+Resonance
+0–5 V → nonlinear resonance law
+Overdrive
+0–5 V → nonlinear drive law
+Important:
+0–5 V is an interface convention, not necessarily the native control format of every internal circuit.
+An OTA, VCA, or nonlinear stage may internally operate as a current-controlled or differently scaled circuit.
+
+11. FILTER RESONANCE
+Proposed control behaviour
+	•	0–70%: normal musical resonance.
+	•	70–90%: aggressive / near oscillation.
+	•	90–100%: self-oscillation.
+The oscillation should approximately follow the selected cutoff.
+Proposed internal oscillation level
+Approximately:
++6 to +10 dBu maximum target
+The intent is to use soft nonlinear control of the feedback/output rather than a crude hard diode clamp.
+Major engineering tasks
+The actual circuit must guarantee:
+	•	stable normal operation,
+	•	predictable transition to oscillation,
+	•	bounded oscillation amplitude,
+	•	acceptable behaviour at 20 Hz,
+	•	acceptable behaviour at 20 kHz,
+	•	no unwanted parasitic oscillation,
+	•	musical overload behaviour.
+This is one of the most technically demanding circuits in the project.
+
+12. FILTER SWITCHING
+The individual channel filter cores remain operational, while the channel chooses:
+	•	HPF,
+	•	OFF,
+	•	LPF.
+Switching should use:
+	•	break-before-make,
+	•	approximately 1–5 ms click suppression/ramp.
+Goal:
+no audible switching click while changing filter mode live.
+
+13. FILTER OVERDRIVE
+Position:
+after filter/resonance → before DJ meter
+Behaviour
+0 = genuinely clean / approximately unity.
+Increasing drive:
+clean → subtle → warm → gritty → aggressive → hard dub overload
+Prototype concepts
+First:
+JFET soft saturation
+Second:
+asymmetric BJT saturation
+Proposed technical targets
+	•	input stage tolerance: approximately +18 dBu clean,
+	•	post-drive recovery stage,
+	•	low-Z output,
+	•	roughly 20–50 Ω target,
+	•	≥+24 dBu clean recovery capability where practical.
+No makeup compression.
+
+14. FIVE-WAY SOUND-SYSTEM STAGE
+Position
+DJ BUS → FIVE-WAY → MASTER SUM
+FX returns, mic and generic mono bypass it.
+Function
+This is an analogue sound-system / dub preamp-inspired five-way instrument.
+It is not the acoustic crossover.
+The external DSP performs the actual loudspeaker crossover.
+
+15. SPEAKER-WAY REFERENCE
+Current sound-system reference:
+SUB
+2 × 18 Sound 18LW2400 Mogale Super Scooper
+KICK
+2 × HD15 15MB1000
+MID
+2 × 18 Sound 12MB700
+HIGH / TOP
+2 × 18 Sound ND1460
+SUPER HI
+2 × Super Hi approximately 3.5–20 kHz
+Amplifiers discussed:
+	•	Crown XLi800
+	•	CVR D-1002
+	•	CVR D-2002
+	•	CVR DSP-3002
+Future expansion concept:
+	•	4 × SUB
+	•	4 × KICK
+
+16. FIVE-WAY KILL MAP
+This map is still provisional.
+KILL
+Physical territory
+K1 SUB
+~20–90 Hz
+K2 KICK
+~90–300/400 Hz
+K3 MID
+~300/400 Hz–1.2 kHz
+K4 HIGH
+~1.2–3.5 kHz
+K5 SUPER HI
+~3.5–20 kHz
+Nominal transition frequencies:
+	•	~90 Hz
+	•	~350 Hz
+	•	~1.2 kHz
+	•	3.5 kHz
+Initial KILL slope:
+24 dB/octave
+with deliberate overlap and no unintended holes.
+Important architecture
+KILL is not the same thing as the creative EQ.
+KILL should be positioned conceptually before the creative EQ so that:
+killed material cannot be restored by boosting the creative EQ.
+The five KILL sections need to be designed as one coherent filter-bank system rather than five arbitrary standalone filters.
+
+17. FIVE-WAY CREATIVE EQ
+Each band has:
+	•	gain,
+	•	frequency position,
+	•	width.
+Gain:
+−∞ / 0 / maximum boost
+Proposed frequency maps
+EQ
+Frequency range
+Maximum boost
+EQ1
+20–120 Hz
++15 dB
+EQ2
+80–400 Hz
++15 dB
+EQ3
+250 Hz–1.5 kHz
++15 dB
+EQ4
+800 Hz–5 kHz
++12 dB
+EQ5
+3–20 kHz
++9 dB
+Proposed width behaviour
+	•	Narrow: approximately Q3
+	•	Medium: approximately Q1
+	•	Broad: approximately Q0.5
+Frequency position should move the centre rather than substantially changing the nominal gain/Q relationship.
+Use cases:
+	•	broad + modest gain = tonal shaping,
+	•	narrow + high gain = precise dub hit,
+	•	broad + high gain = broad aggressive coloration/distortion.
+
+18. FIVE-WAY DRIVE
+Position:
+five-band EQ sum → nonlinear drive → 5-way meter → MASTER SUM
+Input level
+	•	Full CCW = 0 dB.
+	•	Clockwise = positive gain only.
+Provisional operating references:
+	•	normal: −6 to 0 dBu,
+	•	hot: +10 dBu,
+	•	extreme tolerance: +18 dBu,
+	•	clean headroom target: ≥+24 dBu where practical.
+Drive concept
+Input stage:
+clean → warm → saturated → hard overload
+Prototype concepts:
+	•	JFET soft saturation,
+	•	asymmetric BJT saturation.
+
+19. FX SYSTEM — 4 BUSES
+Exactly four FX buses:
+FX1 / FX2 / FX3 / FX4
+Sources
+Any of:
+	•	DJ channels,
+	•	mic,
+	•	generic mono,
+	•	FX returns.
+Cross-FX routing is allowed.
+Example:
+FX1 → FX2 → FX1
+But:
+FX1 → FX1
+is physically prohibited as direct self-routing.
+
+20. DJ FX SEND
+DJ signal is taken:
+post-EQ / pre-filter
+Then:
+SEND LEVEL → SEND EQ → S1/S2/S3/S4
+Send level
+−∞ → 0 dB
+No positive send gain.
+Send EQ
+Proposed:
+	•	LOW ≈120 Hz
+	•	HIGH ≈4.5 kHz
+	•	gain: −∞ → 0 → +6 dB
+Desired control laws:
+Low
+Preserve bass for most of the travel, then remove it quickly near the extreme cut.
+High
+Remove high frequencies relatively quickly at first, then more gradually through the remainder of the control.
+
+21. FX ASSIGNMENT
+Each source has:
+S1 S2 S3 S4
+Multiple assignments can be active simultaneously.
+The assignments are not simple passive hard-wire connections.
+They use:
+	•	buffered signal injection,
+	•	analogue switching,
+	•	defined isolation.
+Proposed assignment technology
+Precision analogue switch with:
+	•	low RON,
+	•	low leakage,
+	•	low charge injection,
+	•	low distortion,
+	•	sufficient signal range.
+JFET switching was discussed and rejected as the preferred primary assignment switch because of signal-dependent resistance and nonlinearity.
+
+22. FX RETURNS
+Each return is stereo-capable and can operate with mono sources centred correctly.
+Return gain
+−∞ → 0 → +20 dB
+Centre:
+0 dB
+Return EQ
+Proposed:
+	•	LOW ≈100–150 Hz
+	•	HIGH ≈4–6 kHz
+	•	gain −∞ → 0 → +6 dB
+Broad, no resonance, no intentional saturation.
+Meter
+After:
+return gain + return EQ
+but before:
+return fader
+Fader
+Stereo linked DJ-style fader.
+Important behaviour
+The return fader controls audibility into MASTER.
+It does not control the internal cross-FX loop gain.
+Therefore:
+	•	fader down = audible return disappears,
+	•	internal cross-FX routing can continue operating.
+This was considered desirable for live feedback manipulation.
+
+23. FX RETURN REROUTING
+Each FX return has three destinations:
+the other three FX buses
+No self-route.
+Example:
+FX1 return can route to:
+	•	FX2
+	•	FX3
+	•	FX4
+but not FX1.
+Reroute level
+−∞ → 0 dB
+Proposed law
+Control region
+Level behaviour
+0–20%
+−∞ → −40 dB
+20–45%
+−40 → −20 dB
+45–70%
+−20 → −10 dB
+70–85%
+−10 → −4 dB
+85–95%
+−4 → −1 dB
+95–100%
+−1 → 0 dB
+This is designed to give much finer control near the fully open state.
+Technology
+Proposed:
+low-distortion audio VCA / variable attenuator
+used only as attenuation, not positive gain.
+Control path:
+pot/control → buffered CV → nonlinear CV map → smoothing → VCA
+Proposed smoothing:
+~1–5 ms
+No limiter.
+
+24. FX BUS SUMMING
+Current architecture:
+active virtual-earth summing
+Current nominal bus target:
+approximately 0 dBu
+with substantial internal headroom.
+Earlier provisional values:
+	•	injection resistor ≈10 kΩ,
+	•	feedback resistor ≈10 kΩ.
+These are not frozen.
+Planning assumption:
+approximately 12 stereo contributors per bus.
+
+25. PEDAL INTERFACE
+Current conceptual chain:
+FX bus → high-headroom driver → attenuation → protection → pedal → protection/DC control → high-Z return
+Provisional values
+Send pad:
+approximately −20 dB
+But this is not locked.
+Example:
+0 dBu FX bus → −20 dB → approximately −20 dBu pedal input
+Hot example:
++18 dBu FX bus → −20 dB → approximately −2 dBu pedal input
+Electrical targets
+Send output impedance:
+≤50–100 Ω
+Possible series resistor:
+22–100 Ω
+Return input:
+≥1 MΩ
+Return accepts approximately:
+−20 dBu → +18 dBu
+Return stage clean headroom:
+≥+24 dBu target
+Interface bandwidth:
+approximately 5 Hz → 40 kHz
+Mono pedals
+Controlled mono sum.
+Never hard-short L and R together.
+Stereo pedals
+L/R independent.
+Important correction
+The −20 dB pad should remain:
+a prototype starting point or a selectable/adjustable option
+rather than a universally frozen value.
+
+26. MIC INPUT
+Input
+	•	Mono balanced XLR.
+Chain
+XLR → protection → mic preamp → 2-band EQ → FX/master
+Proposed preamp
+	•	gain ~30–60 dB,
+	•	input impedance ~2 kΩ,
+	•	low noise,
+	•	high CMRR,
+	•	high overload margin,
+	•	fast recovery.
+V1
+No phantom power.
+EQ
+Provisional:
+	•	LOW ≈120 Hz
+	•	HIGH ≈5 kHz
+	•	gain −∞ → 0 → +6 dB
+Broad, no saturation.
+Meter
+Warning-only.
+After preamp, before EQ.
+No:
+	•	CUE,
+	•	filter,
+	•	5-way,
+	•	fader.
+
+27. GENERIC MONO PERFORMANCE INPUT
+Input
+Mono jack.
+Chain
+jack → protection → high-Z buffer → gain → 2-band EQ → FX/master
+Input impedance
+≥100 kΩ, preferably higher.
+Gain
+−∞ → 0 → +10 dB
+Input tolerance
+Approximately +18 dBu without damage, preferably without clipping.
+EQ
+	•	LOW ≈120 Hz
+	•	HIGH ≈5 kHz
+	•	−∞ → 0 → +6 dB
+No:
+	•	CUE,
+	•	filter,
+	•	5-way,
+	•	fader.
+Mono is distributed properly to L/R rather than hard-shortting outputs.
+Warning-only meter.
+
+28. CUE / HEADPHONE SYSTEM
+CUE is available on:
+DJ channels only
+Cue point:
+post-EQ / pre-filter / pre-fader
+Multiple CUEs can be active and summed.
+Headphones
+	•	2 outputs.
+	•	Shared headphone level.
+	•	Dedicated headphone amp.
+	•	Isolated power/ground.
+CUE / MASTER mix
+Full CCW:
+CUE
+Centre:
+50% CUE / 50% MASTER
+Full CW:
+MASTER
+Both headphone outputs receive the same mix.
+No:
+	•	FX CUE,
+	•	mic CUE,
+	•	generic input CUE,
+	•	headphone meter.
+
+29. METERING
+Universal colour system
+Colour
+Meaning
+BLUE
+Little signal
+GREEN
+Safe
+YELLOW
+Loud
+AMBER
+Hard
+RED
+Extreme
+PURPLE
+Actual clipping
+Purple should be driven by an actual clip detector rather than simply representing the top LED level.
+Meter locations
+DJ
+post-EQ → post-filter/overdrive → pre-fader
+Identical calibration across channels.
+Peak-oriented with persistence.
+5-way
+After:
+5-way drive
+before:
+master sum
+Detailed manipulation meter.
+Master
+After:
+master level
+Most precise meter.
+Represents actual electrical master level.
+FX returns
+After:
+return gain + EQ
+Before:
+fader
+Fast detector.
+Provisional clip latch:
+~300–500 ms
+MIC / GENERIC
+Warning-only.
+No separate meters for:
+	•	booth,
+	•	record,
+	•	headphones,
+	•	sends.
+
+30. POWER ARCHITECTURE
+Candidate rails:
+Main
++24 / −24 V
+Secondary analogue
++15 / −15 V
+possibly ±12 V where useful.
+Control
++5 V / +3.3 V
+if needed for LEDs/control electronics.
+Ground concepts
+	•	analogue 0 V,
+	•	control ground,
+	•	chassis/shield,
+	•	protective earth where applicable.
+Important:
+These should not simply be treated as arbitrary "separate grounds". The final grounding strategy must be engineered as a complete system.
+
+31. NOISE / LAYOUT TARGETS
+Proposed:
+Critical analogue paths
+Approximately:
+≥−90 dBu noise performance
+under defined reference conditions.
+Control → audio isolation
+Approximately:
+≥−100 dB target
+These are currently design targets, not verified specifications.
+Particularly important areas:
+	•	phono preamps,
+	•	mic preamp,
+	•	FX returns,
+	•	power supply,
+	•	control lines,
+	•	summing buses,
+	•	VCA control feedthrough,
+	•	backplane,
+	•	grounding.
+FX return noise is especially important because feedback loops amplify noise along with signal.
+
+32. BANDWIDTH
+Current overall target:
+approximately 8 Hz → 35 kHz
+when filters are OFF and the signal path is otherwise unrestricted.
+This is a system-level target.
+It must be verified through:
+	•	phono,
+	•	EQ,
+	•	filters,
+	•	VCAs,
+	•	FX interfaces,
+	•	summing,
+	•	master stages,
+	•	output drivers.
+The 20 kHz LPF is deliberately a filtering function, not the inherent bandwidth limit of the whole mixer.
+
+33. MODULAR BACKPLANE
+Functional modules
+	•	DJ CH1
+	•	DJ CH2
+	•	DJ CH3
+	•	DJ CH4
+	•	MIC
+	•	generic mono source(s)
+	•	FX RETURN 1
+	•	FX RETURN 2
+	•	FX RETURN 3
+	•	FX RETURN 4
+	•	5-way
+	•	MASTER
+	•	CUE / HEADPHONE
+	•	utility / future source module
+Audio buses
+	•	DJ BUS L/R
+	•	FX1 L/R
+	•	FX2 L/R
+	•	FX3 L/R
+	•	FX4 L/R
+	•	5-WAY L/R
+	•	MASTER L/R
+	•	CUE L/R
+Power buses
+	•	+24 V
+	•	−24 V
+	•	+15 V
+	•	−15 V
+	•	+5 V
+	•	+3.3 V
+	•	analogue 0 V
+	•	control ground
+	•	chassis/shield
+Rules
+	•	No module accesses another module's internal analogue node.
+	•	All communication occurs through defined buses/interfaces.
+	•	Each module has a defined inactive state.
+	•	No undefined floating buses.
+	•	Robust card-edge/board-to-board connectors.
+	•	No hot swap.
+	•	Test points on every module and important intermediate node.
+
+34. IMPORTANT ENGINEERING CORRECTIONS FROM THE FEASIBILITY REVIEW
+These are particularly important when studying the project.
+1. ±24 V is not a universal op-amp supply
+It can be a system rail.
+Individual ICs may require:
+	•	±15 V,
+	•	±12 V,
+	•	±18 V,
+	•	or another suitable supply.
+
+2. +24 dBu should not be interpreted as "every IC handles +24 dBu"
++24 dBu is:
+34.7 Vpp
+Only selected stages may need to swing this much.
+Other circuits can operate at reduced internal levels.
+
+3. RIAA RC calculations were not a finished RIAA circuit
+The values were useful for understanding the time constants.
+They do not constitute the final schematic.
+
+4. 0–5 V CV is not compulsory inside every analogue stage
+It is a useful control interface.
+Internal circuits may instead use:
+	•	currents,
+	•	logarithmic conversion,
+	•	dB/V relationships,
+	•	device-specific control characteristics.
+
+5. −20 dB pedal pad is not a final value
+It was a prototype starting point.
+The actual pedal population should influence the final interface.
+
+6. −90 dBu is not yet a guaranteed full-mixer specification
+A complete stage-by-stage noise budget is required.
+
+7. 8 Hz–35 kHz is a target, not an assumed result
+The final design must be measured.
+
+8. Five-way KILL cannot simply be five unrelated filters
+The bands need to be designed as a coherent filter bank.
+
+9. The state-variable filter is not solved yet
+The architecture is credible.
+The actual:
+	•	OTA,
+	•	integrator,
+	•	frequency converter,
+	•	resonance loop,
+	•	stability compensation,
+still need to be designed.
+
+35. PROVISIONAL CALCULATIONS ALREADY DISCUSSED
+RIAA
+Reference time constants:
+	•	3180 µs
+	•	318 µs
+	•	75 µs
+
+Simple RC frequency reference
+Formula:
+R = 1 / (2πfC)
+Using 10 nF gives approximately:
+Frequency
+R
+70 Hz
+227 kΩ
+250 Hz
+63.7 kΩ
+1 kHz
+15.9 kΩ
+5 kHz
+3.18 kΩ
+Again:
+reference calculation only
+
+DJ bus example
+A provisional:
+10 kΩ injection resistor / 10 kΩ feedback resistor
+gives approximately unity contribution.
+Four correlated 0 dBu channels can sum to approximately:
++12 dB
+This illustrates why the bus requires substantial headroom.
+
+SVF frequency-control example
+With a provisional:
+4.7 nF integrator capacitor
+the estimated gm was approximately:
+	•	0.59 µS at 20 Hz
+	•	0.59 mS at 20 kHz
+This is approximately a:
+1000:1 gm range
+which is why a simple linear OTA control is not considered sufficient.
+
+36. MAJOR OPEN ENGINEERING DECISIONS
+These are the major things still to be properly designed.
+DJ section
+	•	actual DJ EQ topology,
+	•	exact component values,
+	•	exact gain law.
+Phono
+	•	complete RIAA topology,
+	•	final capacitance/loading strategy,
+	•	op-amp selection,
+	•	overload strategy.
+Global filter
+	•	exact SVF topology,
+	•	OTA choice,
+	•	integrator architecture,
+	•	log frequency converter,
+	•	resonance law,
+	•	self-oscillation amplitude control,
+	•	stability compensation,
+	•	exact drive stage.
+Five-way
+	•	exact KILL filter-bank mathematics,
+	•	complementary reconstruction,
+	•	exact EQ topology,
+	•	frequency-position circuit,
+	•	width/Q circuit,
+	•	drive circuit.
+FX
+	•	exact VCA,
+	•	exact control law,
+	•	pedal attenuation strategy,
+	•	bus resistor values,
+	•	protection architecture.
+Master
+	•	exact summing topology,
+	•	exact output driver,
+	•	output headroom strategy,
+	•	booth architecture,
+	•	REC driver.
+Power
+	•	PSU topology,
+	•	transformer/SMPS choice,
+	•	current budget,
+	•	regulators,
+	•	decoupling,
+	•	power sequencing.
+Grounding / EMC
+	•	analogue ground architecture,
+	•	control-ground implementation,
+	•	chassis/earth connections,
+	•	shield strategy,
+	•	backplane routing.
+Backplane
+	•	connector pinout,
+	•	bus impedance,
+	•	loading,
+	•	crosstalk,
+	•	module removal behaviour,
+	•	control CV distribution.
+PCB
+	•	stack-up,
+	•	analogue/control separation,
+	•	phono/mic isolation,
+	•	PSU placement,
+	•	shielding,
+	•	return-current control.
+
+37. RECOMMENDED ENGINEERING BUILD SEQUENCE
+The current recommended development sequence is:
+1. One complete DJ channel
+Input → phono/line → gain → EQ → filter → drive → meter → fader → DJ bus
+2. One complete FX path
+Send → pedal interface → return
+3. Two FX buses
+Introduce controlled cross-FX feedback.
+4. One complete five-way stage
+Design one complete validated architecture before replicating/matching.
+5. Master
+Master sum → master level → output → booth → REC
+6. CUE / headphones
+7. Power / protection / muting
+8. Backplane / modular replication
+9. Full integration
+Then test:
+	•	frequency response,
+	•	THD,
+	•	noise,
+	•	headroom,
+	•	channel tracking,
+	•	filter stability,
+	•	feedback behaviour,
+	•	control bleed,
+	•	power transients,
+	•	EMI/crosstalk.
+
+38. SUPERSEDED MATERIAL — DO NOT REINTRODUCE
+Superseded
+Local DJ filter frequency/resonance/overdrive controls
+The final architecture has one shared set.
+Superseded
+Mono final master
+The current architecture is stereo L/R.
+Not frozen
+−20 dB pedal pad
+Prototype only.
+Not authoritative
+RIAA example RC values
+These illustrate time constants rather than define the final circuit.
+Not authoritative
+0–5 V as mandatory native CV
+It is an interface convention.
+Incorrect as a universal rule
+±24 V for every op-amp
+Not acceptable as a literal component-level rule.
+Not frozen
+Any component value proposed before its topology is selected.
+
+39. CURRENT BOTTOM LINE
+The project is feasible.
+The current concept is coherent enough to move from architectural design into genuine analogue circuit engineering.
+The main challenge is not that the concept is impossible. The main challenge is that several sections are complex enough that they now need proper circuit derivation instead of additional plausible-looking assumptions.
+The most important distinction going forward is:
+WHAT YOU HAVE DECIDED versus WHAT WAS PROPOSED AS AN ENGINEERING STARTING POINT
+The current project is strongest when those two are kept separate.
+The next major engineering step should therefore be the actual topology and derivation of the critical analogue blocks, rather than adding more features or provisional component values.
+
+ADDENDUM 
+It seems like I can’t do more advanced data analysis right now. Please try again later.
+I did, however, update the project specification with the phono decisions so they are now part of the active design:
+	•	Rev A: MM-focused, compatible with standard DJ cartridges and suitable for higher-quality MM cartridges.
+	•	47 kΩ cartridge load.
+	•	Internal selectable capacitance: 0 / 100 / 220 / 330 pF, with 100 pF default.
+	•	Standard RCA L/R + separate turntable ground; no user-facing loading connector.
+	•	Provisional 42 dB phono gain at 1 kHz, chosen in the context of the entire DJ-channel gain structure rather than in isolation.
+	•	Dedicated PHONO and LINE front ends, followed by the PHONO/LINE selector → common DJ GAIN → EQ.
+	•	Proposed first phono stage: OPA1654, ±15 V, 20× / 26.0 dB, using 19.0 kΩ / 1.00 kΩ as provisional feedback resistors.
+	•	Hybrid active/passive RIAA architecture.
+	•	Exact RIAA component values remain open until topology derivation + SPICE verification.
+	•	Input protection target: approximately 100 Ω series resistance + low-capacitance RF/ESD protection.
+	•	RIAA capacitors: low-DA/low-DF film preferred; precision resistors approximately 0.1%.
+I also saved these decisions as part of the ongoing project specification.
+

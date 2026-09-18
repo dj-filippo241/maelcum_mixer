@@ -73,7 +73,36 @@
 ## Roadmap (unica, sostituisce i "next step" sparsi)
 
 - **ORA (in parallelo)**: attendere export ChatGPT → revisione critica completa → specifica consolidata unica (`SPECIFICA.md`). Deroga Filippo 2026-09-18: il design di fase 1 parte prima dell'export, sulle sezioni già solide.
-- **IN CORSO — design fase 1**: MASTER OUT v0.2 fatto; CANALE CDJ/LINE v0.1 fatto (phono escluso per ora, decisione 56). Prossimi: risposte di Filippo a §7 del canale (boost EQ, trim), poi simulazioni LTspice di entrambi i moduli (primi candidati: composite amplifier del master, EQ a contribuzione del canale).
+- **IN CORSO — riallineamento post-documenti (decisioni 58-66)**: MASTER OUT v0.2 valido (correzione REC: 0 dBu fissi + pad solder, decisione 63); CANALE CDJ v0.1 da revisionare a v0.2 (filtro esterno confermato = §3.6 ipotesi valida; gain/EQ/meter/assignment da allineare — addendum in coda al documento). Prossimi in ordine: (1) gain-staging sheet globale (voce 50), (2) compilazione SPECIFICA.md (voce 56), (3) revisione CDJ v0.2, (4) simulazioni LTspice (composite amplifier master, celle EQ, poi SVF del modulo filtro).
 - **POI — Fase 1 di costruzione**: modulo canale (phono o CDJ) + modulo FX + master out + PSU di base → valida il backplane.
 - **POI — Fase 2**: 5-way preamp e filtro globale (i due blocchi difficili).
 - **INFINE**: mic, moduli generici, CUE, metering completo, telaio definitivo, integrazione, taratura sul soundsystem.
+
+## Chiusure e nuovi aperti — 2026-09-18 pomeriggio (risposte di Filippo + status document, decisioni 58-66)
+
+**Corpus CHIUSO**: nessun export migliore ottenibile, nessuna specifica separata lato ChatGPT (decisione 58). Le voci [EXPORT] si risolvono contro gli status doc o restano definitivamente aperte.
+
+Chiusure:
+- Voci 1-4 [EXPORT]: CHIUSE — verifica fatta in `docs/03-revisione-critica.md` (contraddizioni phono registrate; versioni superate già marcate nei documenti §38/§18).
+- Voce 5 (freq EQ): baseline dai documenti 70/250/1k/5k Hz PROPOSED, boost +6 dB LOCKED (decisioni 59/64); la review con Filippo resta aperta ma c'è una baseline solida.
+- Voce 7 (testine/capacità): CHIUSA (decisione 62: MM DJ + MM alta qualità; 100 pF default, selezionabile interno, solo tecnico).
+- Voce 11 (SVF): si sposta nel design del MODULO FILTRO esterno (decisione 60).
+- Voce 19/39 (metering): semantica colori LOCKED dai documenti; soglie numeriche = proposta master-out §3.6, da validare al banco. Nessun backlog recuperabile.
+- Voci 26/27 (DSP/Zoom): CHIUSE — uscite universali (decisioni 49/50/63); i modelli specifici non rilevano per il design.
+- Voce 28 (vie impianto): CHIUSA (decisione 66: typologia 5-way dub soundsystem, crossover ~90/350/1,2k/3,5k PROVVISORI).
+- Voce 38: summing nel modulo MASTER CONFERMATO dai documenti §3; pinout backplane resta aperto.
+- Voci 41/44/45/46: CHIUSE dai documenti (stereo locked; CUE point locked; +6 dB locked; gain −∞→0→+10 locked).
+- Voce 42: CHIUSA dalla decisione 60 — modulo filtro ESTERNO, send/return via backplane (l'ipotesi CDJ v0.1 §3.6 era quella giusta).
+- Voce 43: CHIUSA in parte — assignment multiple locked; resta aperto il metodo di soppressione transiente (voce 55).
+
+Nuovi aperti:
+49. **[APERTO-F]** HPF min: estendere a ~10 Hz (filtro utilizzabile anche con programma infrasub; range 10 Hz–1,5 kHz = 150:1) oppure tenere 20 Hz e usare la posizione OFF per l'infrasub? Raccomandazione di Claude: estendere a 10 Hz se la simulazione SVF conferma la fattibilità del converter log.
+50. **ACTION PRIORITARIA** — Gain-staging sheet globale: tabella unica di tutti i nodi (da testina/line in fino a XLR) con nominale/max/dominio — richiesta esplicita di Filippo ("tutti i gain vanno bilanciati col resto del progetto"). Risolve insieme: phono 40 vs 42 dB, margine VCA master (voce 31), headroom bus FX (voce 31/K3), dominio overdrive (K5).
+51. Tracking tra i core filtro: ora che gli 8 core stanno sullo STESSO PCB (modulo filtro), specificare tolleranza (es. ≤2% in frequenza a pari CV) + trim per core + distribuzione CV a stella bufferizzata (K2 ridimensionato).
+52. Calcolo headroom bus FX con ~12 contributori (K3) e regola di gain-staging dei ritorni: livello_in × gain ≤ max dominio (K4) → design modulo FX.
+53. Metodo per tracking EQ stereo ≤0,25 dB (K6): pot doppi selezionati + trim vs celle a contribuzione con CV — da decidere nel design EQ v0.2.
+54. Procedura di calibrazione identica dei meter DJ tra canali (K7): trimmer o componenti matched — da definire col modulo meter.
+55. Soppressione transiente assign FX: usare break-before-make + ramp 1-5 ms come per il filtro (i documenti lo prescrivono solo per il selettore filtro)?
+56. Compilazione SPECIFICA.md: il corpus è chiuso, non c'è più motivo di attendere — capitolo per capitolo, dai documenti + decisioni.
+57. **[APERTO-F]** Conferma interpretazione risposta "7 rca": connettore RCA e loading NON accessibile all'utente (solo tecnico, solder jumper/DIP)?
+58. Requisito infrasub 10 Hz (decisione 65) — implicazioni da sviluppare nel design: SUB filter bank 10-90 Hz, corner AC ≤5 Hz su tutto il percorso, ballistica meter a 10 Hz, escursione/protzioni altoparlanti restano responsabilità del DSP esterno.
