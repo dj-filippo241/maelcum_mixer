@@ -44,7 +44,7 @@
 
 ## Nati dal design fase 1 — modulo MASTER OUT (2026-09-18, docs/fase1/master-out.md)
 
-31. Margine VCA a +6 dB di trim con picchi programma +16 dBu: il dominio ±18 V è al limite (level plan §4). La simulazione deve dire dove inizia il clipping del VCA e quanto è morbido. Alternative se è brutto: summing a −6 dB interni, rail VCA più alto, o accettare documentando.
+31. **CHIUSA dal gain-staging sheet §2/§4**: VCA su ±18 V, uso normale con ≥5 dB di margine; estremo (+6 su programma +18) = saturazione morbida intenzionale. Resta solo la verifica in simulazione del carattere del clipping THAT 218x.
 32. **[CHIUSA 2026-09-18]** Connettore BOOTH: XLR (decisione 51).
 33. **[CHIUSA 2026-09-18]** Detent a unity: sì (decisione 52); hardware manopole rimandato → nuova voce 40.
 34. **[CHIUSA 2026-09-18]** Metering: precisione massima, 20 segmenti/canale 3 dB (decisione 53).
@@ -63,7 +63,7 @@
 44. **[EXPORT]** Punto esatto del pickup CUE (il design assume post-EQ pre-split).
 45. **[APERTO-F]** Boost EQ per banda: ok +9 dB proposto o più cattivo (+12/+15)?
 46. **[APERTO-F]** Trim ingresso: ok −10…+10 dB proposto, o ±6 basta conoscendo i livelli dei suoi CDJ?
-47. Margine headroom canale: trim +10 dB + boost multipli possono saturare il dominio ±15 V — la simulazione deve mostrare dove e quanto è morbido il clipping; alternativa: trim max +6 dB.
+47. **CHIUSA dal gain-staging sheet**: dominio audio del canale portato a ±18 V (capability +23 dBu); worst user error +18 con 5 dB di margine.
 48. Rumore dei potenziometri come dominante nel canale: la simulazione §6.3 decide il valore ohmico dei pot (47 k vs 10 k) prima della sessione hardware (questione 40).
 
 ## Verifiche strumentazione
