@@ -101,12 +101,9 @@ decisione dentro la voce 53, costo +4 VCA/canale.
 
 ## 5. Scelte aperte (a Filippo — regola 2)
 
-1. **Profondità di kill (nuova questione 66)**: −30 dB (Rp/R = 31, impedenze
-   basse, rumore contenuto) oppure −40 dB (Rp/R = 100, più rumore/impedenza)?
-   Per riferimento: −30 dB = il basso percepito sparisce del tutto in un mix
-   (la cassa a 20 Hz resta a ~3% di ampiezza); −40 dB aggiunge margine sulle
-   sovrapposizioni di banda. Raccomandazione: −30…−35 dB, il silenzio totale
-   resta lavoro del fader.
+1. **Profondità di kill — DECISA 2026-09-24 (decisione 77 [F])**: **−30 dB**
+   (Rp/R ≈ 31). Il silenzio assoluto resta lavoro del fader. Reti della
+   v0.3-beta dimensionate su questa profondità per tutte e 4 le bande.
 2. **Taper custom**: conferma la law asimmetrica (cut: tutta la corsa;
    boost: +6 in ~metà corsa elettrica) — dettaglio feel nella sessione
    hardware (voce 40).
