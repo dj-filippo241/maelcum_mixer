@@ -74,6 +74,7 @@
 
 - **FATTO (2026-09-18 → 2026-09-24)**: corpus chiuso (dec. 58), revisione critica, gain-staging sheet, SPECIFICA v0.1, CDJ v0.2, simulazioni master-out composite (questione 60) e EQ CDJ (finding critico → decisione 76: EQ in serie), design modulo filtro v0.1 con fattibilità converter dimostrata (49 chiusa, 51 aggiornata).
 - **ORA**: EQ v0.3 in serie Baxandall (decisione 76 — priorità; include questione 65 sulle EQ2 di FX send/return); decisioni di Filippo su 59/60/61/63/64; poi modulo filtro v0.2 (RES, law shaper, mirror/tracking 8 core, overdrive) e simulazioni CDJ §7 residue (VCA THAT 2181, peak detector, summing DJ BUS).
+- **ORA — traccia parallela (dec. 78, 2026-09-24)**: prototipo Max for Live del mixer completo, fasi P0-P4 (`docs/proto-max/piano.md`): P0 = `MC-CHANNEL` (gain + EQ serie con curve v0.3) + montaggio in Live. Il prototipo valida la musica (curve, law, carattere) e chiude a orecchio 61/63/64/67; il millefori resta la porta elettrica. Le scelte approvate a orecchio diventano requisiti del design circuitale.
 - **POI — Fase 1 di costruzione**: modulo canale (phono o CDJ) + modulo FX + master out + PSU di base → valida il backplane.
 - **POI — Fase 2**: 5-way preamp e filtro globale (i due blocchi difficili).
 - **INFINE**: mic, moduli generici, CUE, metering completo, telaio definitivo, integrazione, taratura sul soundsystem.
@@ -117,3 +118,7 @@ Nuovi aperti:
 64. **[NUOVA da `docs/fase2/filter-module.md` §8 — APERTO-F]** Allineamento a 4 poli dei core filtro (2 sezioni 2-poli in cascata): Butterworth (piatto in banda, transiente preciso), Bessel (morbido sui transienti, fase lineare) o Linkwitz-Riley — è il carattere del filtro sulle sweep. Da scegliere con Filippo: curve a confronto + ascolti al prototipo.
 65. **[NUOVA da review di completezza 2026-09-24 — derivata da 62/76]** EQ 2 bande dell'FX SEND (CDJ v0.2 §3.5: "celle a contribuzione semplificate, stesse math della §3.3") e degli FX RETURN (SPECIFICA §7): ereditano il finding di fase che ha bocciato le celle dell'EQ principale (kill/bump irrealizzabili sulle bande shelf). Da verificare e allineare alla topologia serie dentro EQ v0.3; il requisito comportamentale (−∞→0→+6, law dedicate) è locked e immutato.
 66. **[CHIUSA 2026-09-24 → decisione 77]** Profondità del kill EQ per banda: Filippo sceglie **−30 dB** (Rp/R ≈ 31, opzione raccomandata). Il silenzio assoluto resta lavoro del fader. Numeri e griglie: `docs/fase1/eq-serie-v0.3.md` §2, `sim/eq-serie/`; testo in `docs/01-decisioni-bloccate.md` voce 77.
+
+## Prototipo Max for Live (2026-09-24, decisione 78)
+
+67. **[NUOVA — APERTO-F, fase P2 del prototipo]** Frequenze di banda del 5-way: confermare o spostare a orecchio i ~90/350/1,2k/3,5 kHz [PROVVISORI, dec. 66 delle decisioni] sul dispositivo `MC-5WAY` del prototipo M4L (`docs/proto-max/piano.md` §6). Lo stesso prototipo chiude a orecchio anche 61 (referenze drive), 63 (mux filtro), 64 (allineamento 4 poli) e la review dei centri EQ.
