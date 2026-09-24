@@ -1,0 +1,45 @@
+* EQ SERIE v0.3 — Cella LOW (Baxandall attivo, proof-of-concept)
+* Architettura (docs/fase1/eq-serie-v0.3.md): cella invertente,
+*   Zin = R + Za,  Za = (x*Rp) || (1/sC)        [vin -> R -> na -> Za -> S]
+*   Zf  = R + Zb,  Zb = ((1-x)*Rp) || (1/sC)    [S -> R -> nc -> Zb -> out]
+*   x = posizione ELETTRICA del pot (0..1); sezioni matched.
+* G = -(R + Zb)/(R + Za):
+*   x=0,5   -> G = -1 esatto a ogni f (detent piatto per costruzione)
+*   x->1    -> cut LF: G = -R/(R+x*Rp) ~ -30 dB (monotono, partitore reale)
+*   x=0,323 -> boost LF +6,0 dB (law del pot: theta 0,5..1 -> x 0,5..0,32)
+*   HF      -> sempre -1 (shelf: C cortocircuita le sezioni)
+* Valori [PROVVISORIO — regola 3]: R = 1k, Rp = 31k, C = 100n.
+* err = mismatch tra sezioni del pot doppio (anteprima tracking stereo).
+.param x=0.5
+.param err=0
+.step param x LIST 0.323 0.40 0.5 0.60 0.75 0.90 0.97 0.999
+*
+.subckt OPAMP inp inn out vp vm
+E1 xx 0 value={1000*(V(inp)-V(inn))}
+R1 xx p1 1k
+C1 p1 0 159p
+E2 out 0 value={limit(V(p1),V(vm)+1.5,V(vp)-1.5)}
+.ends OPAMP
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+*
+V1 vin 0 DC 0 AC 1
+* --- Zin: Rin + (Rza || Cza) ---
+Rin vin na 1k
+Rza na nb {31k*x*(1+err/2)+1m}
+Cza na nb 100n
+* --- Zf: Rf + (Rzb || Czb) ---
+Rf nb nc 1k
+Rzb nc outp {31k*(1-x)*(1-err/2)+1m}
+Czb nc outp 100n
+* --- Op-amp: S = nb ---
+X1 0 nb outp vcc vee OPAMP
+*
+.ac dec 500 1 100k
+.meas ac g20 FIND mag(V(outp)) AT 20
+.meas ac g70 FIND mag(V(outp)) AT 70
+.meas ac g150 FIND mag(V(outp)) AT 150
+.meas ac g1k FIND mag(V(outp)) AT 1k
+.meas ac g10k FIND mag(V(outp)) AT 10k
+.meas ac gmin MIN mag(V(outp))
+.end
