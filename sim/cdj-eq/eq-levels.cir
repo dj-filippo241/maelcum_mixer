@@ -1,0 +1,31 @@
+* EQ CDJ — Test livelli: worst boost (tutte le bande a +6) con
+* programma caldo. Verifica che nessun nodo interno clippi
+* (clamp macromodello a ±16,5 V = limite reale op-amp su ±18 V).
+* cfg 1: 1 kHz, +16 dBu (6,93 Vp) — max programma da sheet §2
+* cfg 2: 1 kHz, +18 dBu (8,69 Vp) — estremo user error
+* cfg 3: 20 Hz, +18 dBu — estremo basso (caso infrasub)
+.step param cfg LIST 1 2 3
+.param err=0
+.param aL=1
+.param aLM=1
+.param aMH=1
+.param aH=1
+.param frq = if(cfg==3, 20, 1k)
+.param amp = if(cfg==1, 6.93, 8.69)
+V1 src 0 SINE(0 {amp} {frq})
+Rsrc src in 100
+.include eq-circuit.inc
+.tran 0 200m 0 1u
+* Picchi in uscita EQ (positivo e negativo)
+.meas tran out_max MAX V(eq_out) FROM 100m TO 200m
+.meas tran out_min MIN V(eq_out) FROM 100m TO 200m
+* Picchi sui nodi interni: nessuno deve toccare 16,5 (clamp)
+.meas tran lop_max MAX V(lo_p) FROM 100m TO 200m
+.meas tran lon_max MAX V(lo_n) FROM 100m TO 200m
+.meas tran lmn_max MAX V(lm_n) FROM 100m TO 200m
+.meas tran lmp_max MAX V(lm_p) FROM 100m TO 200m
+.meas tran mhn_max MAX V(mh_n) FROM 100m TO 200m
+.meas tran mhp_max MAX V(mh_p) FROM 100m TO 200m
+.meas tran hip_max MAX V(hi_p) FROM 100m TO 200m
+.meas tran hin_max MAX V(hi_n) FROM 100m TO 200m
+.end

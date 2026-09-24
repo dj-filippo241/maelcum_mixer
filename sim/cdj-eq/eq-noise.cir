@@ -1,0 +1,19 @@
+* EQ CDJ — Test rumore: tutto al detent, banda 20 Hz-20 kHz
+* Rumore op-amp modellato con resistenze equivalenti (OPCELL 2,2k
+* = ~6 nV/rtHz classe OPA1654 [da verificare]; OPSUM 73R = 1,1 nV
+* classe OPA1612). Termica dei resistori/pot inclusa automaticamente.
+* Sorgente con 100R serie (uscita buffer di gain).
+.param err=0
+.param aL=0.5
+.param aLM=0.5
+.param aMH=0.5
+.param aH=0.5
+V1 src 0 DC 0
+Rsrc src in 100
+.include eq-circuit.inc
+.noise V(eq_out) V1 dec 200 20 20k
+* Rumore totale integrato: sqrt(vn2) in volt rms (calcolo offline)
+.meas noise vn2 INTEG V(onoise)*V(onoise)
+* Densita' a 1 kHz per riferimento
+.meas noise ndens FIND V(onoise) AT 1k
+.end

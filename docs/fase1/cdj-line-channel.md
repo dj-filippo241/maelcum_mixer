@@ -65,7 +65,20 @@ CV 0-5 V (generatore su ±15 V LN). Law: −∞ a full CCW, 0 dB al detent (~50%
 +10 dB a fine CW. Alternativa economica da scartare solo se la sim dice che il VCA
 colora: pot doppio selezionato + trim (più lavoro di calibrazione, tracking a rischio).
 
-### 3.3 [C] EQ 4 bande — celle a contribuzione bipolare (VALIDATA MATEMATICAMENTE)
+### 3.3 [C] EQ 4 bande — celle a contribuzione bipolare (MATH VALIDA SOLO PER I MEDI — vedi correzione)
+
+> **CORREZIONE 2026-09-24 [SUPERATO in parte] — simulazione LTspice `sim/cdj-eq/`**:
+> la validazione matematica trattava i filtri LOW/HIGH come zero-fase (solo magnitudine);
+> i filtri reali ruotano la fase e la sottrazione non si azzera. Misure reali: kill LOW
+> = −8 dB @20 Hz invece di −49,6, con bump +1,5 dB @70 Hz; il boost LOW scende a −1,7 dB
+> @150 Hz; il leak all-kill di picco è −0,67 dB (non −2,6). Il requisito §1 "−∞ → 0 → +6"
+> è rispettato solo dai medi al centro e dal detent (a meno del carico di sorgente).
+> Il matching 0,1% non compra profondità di kill: il pavimento è fisico, non resistivo.
+> Topologia in revisione → questione 62 in `docs/02-questioni-aperte.md`.
+> Dettagli e opzioni: `sim/cdj-eq/RISULTATI-eq.md`. Le proprietà 1-5 qui sotto restano
+> valide solo per detent (1), bande MID al centro (2, 3 in banda stretta) e sono
+> da ricalcolare per leak (5) e worst boost (4: misurato +5,9 dB, non +6,64).
+
 **Topologia** (per banda, per lato): il segnale di banda H_i·V viene presentato al pot in
 DUE polarità (+H_i e −H_i); il wiper del pot (lineare, 10 kΩ) sta al centro esatto
 (k=0) e va al nodo di summing. Il riferimento (V_in via −1) completa la somma:
@@ -138,7 +151,7 @@ tracking ≤0,5 dB con selezione/trim; buffer OPA1612 ≤50 Ω → DJ BUS (injec
 |---|---|---|---|---|
 | Ingresso RCA | 0 dBu | +8 dBu | — | ±18 V |
 | Post-GAIN | 0 dBu | +10 dBu | +18 dBu (user error: sorgente calda + gain max) | ±18 V |
-| Post-EQ | 0 dBu | +16 dBu | **+18,6 dBu** (worst boost misurato +6,64 dB) | ±18 V (+23) |
+| Post-EQ | 0 dBu | +16 dBu | **+18,6 dBu** (worst boost calcolato +6,64 dB; reale +5,9 dB da LTspice 2026-09-24, e il rail ±16,5 V = +23,5 dBu fa comunque da tetto — `sim/cdj-eq/RISULTATI-eq.md`) | ±18 V (+23) |
 | Filter return | 0 dBu | +16…+20 (drive inserito) | saturazione voluta | ±18 V |
 | Post-FADER / out | 0 dBu | +16 dBu | — | ±18 V |
 

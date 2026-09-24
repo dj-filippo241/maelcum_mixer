@@ -1,0 +1,28 @@
+* EQ CDJ — Test AC: risposta in frequenza, 5 configurazioni x 3 matching
+* Modi (m): 1=detent, 2=LOW boost, 3=LOW kill, 4=all-kill, 5=all-boost
+* err: 0 = ideale, 0.002 = resistori 0,1%, 0.02 = resistori 1%
+* Circuito: eq-circuit.inc — convenzione a=0 kill, a=0.5 detent, a=1 boost
+.step param m LIST 1 2 3 4 5
+.step param err LIST 0 0.002 0.02
+.param aL = if(m==2, 1, if(m==3, 0, if(m==4, 0, if(m==5, 1, 0.5))))
+.param aLM = if(m==4, 0, if(m==5, 1, 0.5))
+.param aMH = if(m==4, 0, if(m==5, 1, 0.5))
+.param aH = if(m==4, 0, if(m==5, 1, 0.5))
+V1 src 0 DC 0 AC 1
+Rsrc src in 100
+.include eq-circuit.inc
+.ac dec 200 10 40k
+* Livelli alle frequenze chiave (dB): detent deve stare a 0,00 ovunque
+.meas ac g20 FIND mag(V(eq_out)) AT 20
+.meas ac g70 FIND mag(V(eq_out)) AT 70
+.meas ac g150 FIND mag(V(eq_out)) AT 150
+.meas ac g250 FIND mag(V(eq_out)) AT 250
+.meas ac g1k FIND mag(V(eq_out)) AT 1k
+.meas ac g2k5 FIND mag(V(eq_out)) AT 2.5k
+.meas ac g5k FIND mag(V(eq_out)) AT 5k
+.meas ac g10k FIND mag(V(eq_out)) AT 10k
+.meas ac g20k FIND mag(V(eq_out)) AT 20k
+.meas ac g35k FIND mag(V(eq_out)) AT 35k
+* Picco massimo su tutta la banda (worst boost / leak all-kill)
+.meas ac gmax MAX mag(V(eq_out))
+.end

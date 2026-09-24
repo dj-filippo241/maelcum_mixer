@@ -1,0 +1,22 @@
+* EQ CDJ — Test sorgente: isola il carico della rete EQ sulla sorgente.
+* Solo detent (tutti i pot a meta'), err = 0. Confronto Rsrc 1 vs 100 ohm.
+* Se il detent e' piatto con Rsrc=1, il droop misurato in eq-ac e' tutto
+* imputabile all'impedenza della sorgente (finding carico, non celle).
+.param aL=0.5
+.param aLM=0.5
+.param aMH=0.5
+.param aH=0.5
+.param err=0
+.step param rsrc LIST 1 100
+V1 src 0 DC 0 AC 1
+Rsrc src in {rsrc}
+.include eq-circuit.inc
+.ac dec 200 10 40k
+.meas ac g20 FIND mag(V(eq_out)) AT 20
+.meas ac g150 FIND mag(V(eq_out)) AT 150
+.meas ac g1k FIND mag(V(eq_out)) AT 1k
+.meas ac g10k FIND mag(V(eq_out)) AT 10k
+.meas ac g20k FIND mag(V(eq_out)) AT 20k
+.meas ac g35k FIND mag(V(eq_out)) AT 35k
+.meas ac gmax MAX mag(V(eq_out))
+.end
