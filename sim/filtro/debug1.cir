@@ -1,0 +1,106 @@
+* MODULO FILTRO — Fattibilita' core SVF OTA + converter esponenziale
+* Requisiti: decisione 74 (2 sezioni full-range 10 Hz-35 kHz, ~3500:1),
+*   questione 51 (converter expo + tempco, OTA reali, tolleranza ±5-10%),
+*   decisione 67 (8 core mono, 6 CV condivise).
+* Topologia [PROVVISORIO — regola 3]: SVF 2 poli = 2 integratori OTA
+*   (macromodello gm = 19,2*Iabc come LM13700) non invertenti + summer
+*   op-amp invertente; Q fisso 0,707 (controllo risonanza = design v0.2).
+*   Iabc da differential pair BJT (2N3904: in v0.2 coppia matched monolitica),
+*   coda 400 uA. DeltaV di comando = 212,5 - 57,7*vc mV (vc = CV 0-5 V):
+*   vc=0 -> ~10 Hz, vc=5 -> ~35 kHz (estremi da verificare in misura).
+* PTAT: ptat=1 scala DeltaV con T assoluta (compensazione V_T, tecnica
+*   standard da synth: moltiplicatore PTAT reale in v0.2); ptat=0 = non
+*   compensato (confronto deriva). temp = 0/27/50 C.
+* C integratori 33 nF [PROVVISORIO]: gm 2,1 uS-7,3 mS -> Iabc 108 nA-380 uA.
+* Limite del macromodello: OTA senza rail/limiti reali (G ideale); la
+*   verifica del carattere sonoro va fatta col modello reale + prototipo.
+*
+.param vc=4.2466
+.param ptat=1
+
+
+
+*
+* ---------- Alimentazioni ----------
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+*
+* (DeltaV generato nel blocco converter, sorgente B flottante va->vb2)
+*
+* ---------- Converter esponenziale tempcompensato ----------
+* Architettura classica da synth: Q1 diodo con I_ref, Q2 con Vbe2 = Vbe1 - DeltaV
+* -> Ic2 = Ic1 * exp(-DeltaV/VT): rapporto puro, Is si cancella (coppia matched
+* allo stesso T), NESSUN limite di coda (a differenza del diff pair single-ended,
+* che comprime le ottave alte contro I_tail). Vce1 = Vce2 (collettori entrambi
+* a V(va)) -> Early cancellato. DeltaV = 210,95 mV * (1 - vc/5), scalato PTAT.
+* Range: Ic2 = 114 nA (vc=0, ~10,5 Hz) .. 397 uA (vc=5, ~37 kHz) = 3500:1.
+* Modello 2N3904 standard (LTspice batch non carica la libreria componenti;
+* in v0.2: coppia matched monolitica reale, es. classe MAT12/SSM2212/DMMT3904
+* [reperibilita DA VERIFICARE, come per THAT 2181 — voce 37])
+.model Q2N3904 NPN(Is=6.734f Rs=1.077 Vbf=74.08 Ise=1.068p Nr=2.009
++ Ikf=66.78m Xti=3 Eg=1.11 Cje=4.966p Vje=.75 Mje=.3556 Cjc=3.465p
++ Vjc=.75 Mjc=.3085 Xtb=1.5 Fc=.5 Tf=301.2p Tr=239.5n Br=.7306 Rb=1 Vaf=111.3)
+Iref vcc va DC 400u
+Q1 va va 0 Q2N3904
+Bd va vb2 V={(0.21095-0.04219*vc)*if(ptat==1,(temp+273.15)/300.15,1)}
+Vabc iabc va DC 0
+Q2 iabc vb2 0 Q2N3904
+*
+* ---------- Summer op-amp (macro 1 polo, GBW ~1 GHz: ideale audio) ----------
+.subckt OPAMP inp inn out vp vm
+E1 x 0 value={1000*(V(inp)-V(inn))}
+R1 x p1 1k
+C1 p1 0 159p
+E2 out 0 value={limit(V(p1),V(vm)+1.5,V(vp)-1.5)}
+.ends OPAMP
+*
+* ---------- Ingresso ----------
+V1 vin 0 DC 0 AC 1
+*
+* ---------- SVF 2 poli: summer + 2 integratori OTA ----------
+* HP = -(VIN + LP + BP/Q), BP = +(w0/s)HP, LP = +(w0/s)BP  [D stabile]
+Rvin vin ns 10k
+Rlp lp ns 10k
+Rbp bp ns 7.07k
+Rf ns hp 10k
+Xsum 0 ns hp vcc vee OPAMP
+* Segno: LTspice definisce I(Vabc) uscente dal nodo +; il collettore NPN
+* assorbe corrente -> I(Vabc) = -Ic -> gm = -19,2*I(Vabc) (positivo).
+G1 0 bp value={-19.2*I(Vabc)*V(hp)}
+C1i bp 0 33n
+G2 0 lp value={-19.2*I(Vabc)*V(bp)}
+C2i lp 0 33n
+*
+.op
+.print op I(Vabc) Ic(Q1) Ic(Q2) Ib(Q2) V(va) V(vb2) V(iabc) V(hp) V(bp) V(lp)
+.ac dec 1000 1 100k
+* LP Butterworth (Q=0,707): |LP| = 0,707 esattamente a w0 -> fc robusta
+.meas ac fc WHEN mag(V(lp))=0.707
+* sanity: picco BP deve stare ~Q = 0,707 a ogni step
+.meas ac bpk MAX mag(V(bp))
+.meas ac lp1k FIND mag(V(lp)) AT 1k
+.meas ac lp_at_fc FIND mag(V(lp)) AT 10806
+.meas ac lp10 FIND mag(V(lp)) AT 10
+.meas ac lp100 FIND mag(V(lp)) AT 100
+.meas ac lp500 FIND mag(V(lp)) AT 500
+.meas ac lp1000 FIND mag(V(lp)) AT 1000
+.meas ac lp2000 FIND mag(V(lp)) AT 2000
+.meas ac lp4000 FIND mag(V(lp)) AT 4000
+.meas ac lp6000 FIND mag(V(lp)) AT 6000
+.meas ac lp7010 FIND mag(V(lp)) AT 7010
+.meas ac lp8000 FIND mag(V(lp)) AT 8000
+.meas ac lp9000 FIND mag(V(lp)) AT 9000
+.meas ac lp10806 FIND mag(V(lp)) AT 10806
+.meas ac lp12000 FIND mag(V(lp)) AT 12000
+.meas ac lp20000 FIND mag(V(lp)) AT 20000
+.meas ac lp50000 FIND mag(V(lp)) AT 50000
+.meas ac bp10 FIND mag(V(bp)) AT 10
+.meas ac bp100 FIND mag(V(bp)) AT 100
+.meas ac bp500 FIND mag(V(bp)) AT 500
+.meas ac bp1000 FIND mag(V(bp)) AT 1000
+.meas ac bp2000 FIND mag(V(bp)) AT 2000
+.meas ac bp4000 FIND mag(V(bp)) AT 4000
+.meas ac bp6000 FIND mag(V(bp)) AT 6000
+.meas ac bp7010 FIND mag(V(bp)) AT 7010
+.end
+.meas ac lp_at_fc FIND mag(V(lp)) AT 10806

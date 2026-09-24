@@ -1,0 +1,238 @@
+# FASE 2 — Modulo FILTRO: design v0.1 (architettura + fattibilità)
+
+> **v0.1 (2026-09-24)**: primo design del modulo filtro esterno. Copre architettura,
+> funzioni di trasferimento, topologia del core e VERIFICA DI FATTIBILITÀ del
+> converter esponenziale (questione 51, condizione della decisione 74). NON congela
+> valori (regola 3): tutto [PROVVISORIO] salvo i requisiti [BLOCCATO] citati.
+> Risonanza, overdrive, law shaper e distribuzione CV = design v0.2 (questioni 11/12 aperte).
+> Fonti: SPECIFICA §5, decisioni 67/68/70/74, gain-staging sheet §2, `docs/04-...` §9.
+
+## 1. Requisiti (stato: BLOCCATO salvo dove indicato)
+
+| Requisito | Valore | Fonte |
+|---|---|---|
+| Architettura | B′: core dedicato per canale, 4 stereo = 8 mono, stesso PCB | dec. 67 |
+| Sezioni | HPF e LPF indipendenti, entrambe full-range **10 Hz–35 kHz** | dec. 74 |
+| Pendenza | 24 dB/ott (4 poli = 2 sezioni 2-poli in cascata per core) | SPECIFICA §5 |
+| Pannello | 6 knob: FREQ/RES/DRIVE per sezione; per canale solo switch HPF/OFF/LPF | dec. 67 |
+| Legge knob | musicale ~90% centrale, accelerazione ultimi ~5%; estremo di taglio = silenzio totale | dec. 70/74 |
+| Risonanza | 0-70% normale; 70-90% aggressiva; 90-100% auto-oscillazione che segue il cutoff, +6…+10 dBu con soft limiting (carattere Sherman) | SPECIFICA §5 |
+| Overdrive | dopo filtro, prima del meter di canale; clean → hard dub overload; JFET prima / BJT asimmetrico poi; recovery low-Z 20-50 Ω, +23 dBu clean | SPECIFICA §5, sheet §2 |
+| Tracking | ≤2% in frequenza tra core a pari CV; trim per core; CV bufferizzate a stella | dec. 67, voce 51 |
+| Tolleranza freq | ±5-10% (più lasca di un VCO: un filtro non deve essere "intonato") | dec. 74 |
+| Commutazione | break-before-make + ramp 1-5 ms, nel modulo filtro | SPECIFICA §4 |
+| Livelli | send 0 dBu nom / +16 max; dominio ±18 V audio, ±15 V LN per CV | sheet §2 |
+| Range gm | ~3500:1 (11,8 ottave) via converter esponenziale + tempco | dec. 74 |
+
+## 2. Architettura del modulo
+
+```
+                    MODULO FILTRO (v0.1)
+ IN from backplane (4× stereo send + 2 bit modo per canale)
+  │
+  ├─ CH1 L/R ─► buffer in ─► CORE 1L/1R ─┬─► mux modo ─► drive HPF/LPF ─► recovery ─► buffer out ─► return CH1
+  ├─ CH2 L/R ─► buffer in ─► CORE 2L/2R ─┤   (HPF/OFF/     (mux CV: la sezione attiva
+  ├─ CH3 L/R ─► buffer in ─► CORE 3L/3R ─┤    LPF/OFF+bypass)  decide il set di drive)
+  └─ CH4 L/R ─► buffer in ─► CORE 4L/4R ─┘
+  SEZIONE CV HPF ┐ 6 knob (0-5 V) ─► law shaper (dec. 70) ─► converter expo (§4)
+  SEZIONE CV LPF ┘        ├─► FREQ: 1 master per sezione → distribuzione a 8 core + trim
+                          ├─► RES: distribuzione a stella bufferizzata [v0.2]
+                          └─► DRIVE: mux per canale segue il bit di modo [v0.2]
+  Commutazione modo: break-before-make + ramp 1-5 ms (generatore di rampa nel modulo)
+```
+
+- Ogni core mono = SVF 4 poli (2 sezioni 2-poli in cascata): produce HP e LP
+  contemporaneamente; il mux di canale sceglie HP, LP o OFF (bypass). BPF escluso (dec. 67).
+- Le due sezioni di un core condividono la stessa frequenza? NO: HPF e LPF sono sezioni
+  indipendenti con FREQ proprie — il core fisico lavora nella modalità selezionata dal
+  canale: la CV di frequenza arriva dal master della sezione attiva (mux CV prima del core).
+  Un solo percorso filtro attivo per canale alla volta (HPF oppure LPF), coerente con
+  "switch 3 posizioni sul canale" (dec. 67). [Interpretazione da confermare con Filippo:
+  la alternativa è core doppio per canale (HPF e LPF sempre attivi in serie) = 16 core.]
+
+## 3. Core SVF — funzione di trasferimento e topologia
+
+Sezione 2-poli, stato HP/BP/LP (solo HP e LP usati; BP serve alla risonanza):
+
+    HP(s) = −Vin·s²/D(s)    BP(s) = +Vin·ω0·s/D(s)    LP(s) = −Vin·ω0²/D(s)
+    D(s)  = s² + s·ω0/Q + ω0²    ω0 = gm/C = 19,2·Iabc/C    Q = R_in,Rf del summer
+
+- **Integratori**: OTA (LM13700 [PROVVISORIO]) su C = 33 nF [PROVVISORIO, C0G/PP
+  matched 2%]: Iabc 114 nA → fc 10,6 Hz; Iabc 397 µA → fc 37 kHz.
+- **BUFFER DI STATO OBBLIGATORI** (lezione dalla simulazione, §6): le uscite OTA vedono
+  solo il condensatore (Z = 1/sC); i resistori del summer le caricano e creano un polo
+  parassita a 1/(2π·R·C) ≈ 500-700 Hz che sotto quella soglia rompe l'integrazione
+  (misurato: −8% in banda, fc compressa del 35%). Con buffer follower sui nodi bp/lp
+  il loop torna esatto: Q misurata = 0,707 (±0,001) su tutti i 78 punti della griglia.
+- **Summer**: op-amp invertente, 3 ingressi (Vin, LP, BP/Q); Q fissato dai resistori
+  (0,1%): Q = 0,707 nella simulazione di fattibilità; il controllo RES è design v0.2
+  (candidati: OTA come resistenza controllata in tensione sul percorso BP, oppure
+  VCA — questione 11).
+- Cascata per i 4 poli: sezione 1 (Q1) → sezione 2 (Q2) [allineamento esatto v0.2:
+  Butterworth 4 poli = Q 0,541/1,307, oppure Bessel/LR a seconda del carattere —
+  scelta musicale da proporre a Filippo con curve d'ascolto].
+- Conteggio silicon per sezione 2-poli: 1 LM13700 (2 OTA) + 3 sezioni op-amp
+  (summer + 2 buffer). Per core 4 poli: 2 LM13700 + 6 sezioni op-amp.
+  Modulo: 8 core = **16 LM13700 + 48 sezioni op-amp** (~12 quad) + CV + drive.
+  Conferma la "conseguenza elettrica accettata" della decisione 67.
+
+## 4. Controllo di frequenza — converter esponenziale tempcompensato
+
+Problema: spazzare 10 Hz–35 kHz (3500:1 = 11,8 ottave) con law esponenziale
+(1 ottava = ΔV fisso) e deriva termica entro ±5-10% (dec. 74). La fisica: in un
+bipolare Ic ∝ exp(Vbe/V_T) e V_T = kT/q cresce +0,085%/K → senza compensazione
+le 11,8 ottave derivano del ~70% su 0-50 °C (misurato, §6).
+
+**Topologia scelta [PROVVISORIA]** (classica da sintesi analogica):
+
+```
+            +15V
+             │
+            Iref 400 µA          BJT matched Q1/Q2 (stesso die, stesso T)
+             ├──┐                ΔV = Vbe1 − Vbe2 (comando, scalato PTAT)
+             │  │                Ic2 = Ic1·exp(−ΔV/V_T)  ← Is SI CANCELLA
+        ┌────┴──┴────┐           (rapporto puro: il drift di Is/T non entra)
+        │ Q1 (diodo) │
+        va───────────┤ΔV (B: PTAT-scaled)
+        │ Q2         ├──► vb2
+        └─ c: iabc ──┘   Vce2 = 0,5 V FISSO da rail dedicato (NON da va!)
+             │
+          [Vabc 0V] → Iabc = Ic2 → mirror/trim → OTA dei core
+             │
+            GND
+```
+
+- ΔV span: 0…211 mV = V_T·ln(3500) a 300 K → **scaling PTAT** (ΔV generato proporzionale
+  a T assoluta: moltiplicatore ΔVbe/bandgap, tecnica standard) → la law esponenziale
+  resta identica a ogni temperatura. Misurato: deriva residua ~±0,5% su 0-50 °C (§6).
+- **Due trappole evitate** (entrambe trovate in simulazione, §6):
+  1. il differential pair single-ended comprime le ottave alte contro la corrente di
+     coda (Ic ≤ I_tail): legge esponenziale persa sopra ~1 ottava dal fondo scala;
+  2. alimentare il collettore di Q2 dal nodo di riferimento (va) fa sì che Iref debba
+     fornire ANCHE Ic2 → stessa compressione rientra dalla finestra (misurato: −27…−53%
+     a vc alto). Il collettore va alimentato da un rail proprio a Vce fisso.
+- ΔV viene dal CV bus (0-5 V) attraverso: law shaper a tratti (dec. 70: punti di piega
+  regolabili a banco) → divisore di precisione (~1/24) → stadio PTAT. Lo shaper può
+  anche pre-distorcere gli errori residui del converter: la law finale si rifinisce
+  al prototipo (metodo della fase circuitale: misura → revisione).
+- **Distribuzione** (questione 51): 1 converter master per sezione (HPF, LPF) →
+  Iabc di riferimento → mirror di corrente verso gli 8 core (mirror sullo stesso die/PCB,
+  accoppiati termicamente) + trim per core (target ≤2%). Design v0.2.
+- Coppia matched: candidati [reperibilità DA VERIFICARE, come voce 37 per THAT 2181]:
+  MAT12 (ADI), SSM2212 (legacy), DMMT3904W (Diodes Inc.), BC847BPDW; in subordine
+  coppia discreta selezionata + accoppiamento termico (stessa piazzola, colla termica).
+
+## 5. Risonanza, overdrive, commutazione (design v0.2 — requisiti qui sotto)
+
+- **RES** (questione 11): Q variabile 0,7 → auto-oscillazione. Il BP torna nel summer
+  con coefficiente 1/Q: candidati per il controllo — OTA in configurazione resistore
+  controllato (gm·V sul nodo BP), oppure VCA (THAT 2181, famiglia unica col resto del
+  mixer) sul percorso BP. Auto-oscillazione a +6…+10 dBu con soft limiting PREVEDIBILE
+  (no clamp a diodi crudi — SPECIFICA §5): rete di limiting dentro l'anello (diodi in
+  feedback su stadio dedicato, carattere da definire con Filippo — riferimento Sherman,
+  questione 61: referenze sonore in raccolta).
+- **DRIVE/overdrive** (questioni 12/61): JFET prima / BJT asimmetrico poi (SPECIFICA §5);
+  dominio ±18 V, recovery low-Z 20-50 Ω con +23 dBu clean (sheet §2/K5). La curva
+  clean→gritty→hard dub è sound design: aspetta le referenze di Filippo (questione 61).
+  Mux CV: il drive di canale segue la sezione attiva (dec. 67).
+- **Modo OFF**: bypass secco del core (return = send) con break-before-make + ramp
+  1-5 ms generata nel modulo (SPECIFICA §4). Switch analogici famiglia ADG14xx
+  [PROVVISORIO, stessi candidati dell'assign FX — voce 55 per il metodo].
+- Livelli interni: send 0 dBu nom/+16 max → buffer in → core (picco risonanza
+  +10 dBu sopra il livello, sheet) → drive → recovery → return. Il dominio ±18 V
+  del canale resta valido su tutto il modulo (sheet §2).
+
+## 6. Simulazione di fattibilità (2026-09-24, `sim/filtro/`)
+
+### Stato dei modelli — [PROVVISORIO] (regola 3)
+
+- OTA: macromodello comportamentale gm = 19,2·Iabc (relazione datasheet LM13700),
+  senza rail/limiti propri → il carattere sonoro e la conformità a basso bias
+  (offset, rumore) vanno verificati col modello reale e al prototipo.
+- BJT: 2N3904 discreti (modello SPICE standard) → in v0.2 coppia monolitica matched.
+- Buffer/summer: macromodello op-amp 1 polo GBW ~1 GHz (ideale audio) → la scelta
+  op-amp reale (rumore, offset, GBW minimo) è v0.2.
+- PTAT: sorgente comportamentale ∝ T assoluta → assume moltiplicatore ΔVbe reale
+  (tecnica standard, da disegnare in v0.2). Q fisso 0,707 (il controllo RES è v0.2).
+- File: `feas-svf.cir` (griglia completa), `debug1.cir` / `debug2-conv.cir` (diagnostica).
+
+### Metodo
+
+Griglia 78 punti: 13 valori di CV (ottave 10,6 Hz → 37 kHz) × temperatura 0/27/50 °C
+× PTAT on/off. Misure: fc = attraversamento −3 dB di |LP| (esatto per Q = 0,707);
+Q_eff dal picco di |BP|. Legge target: fc(vc) = 10,6·2^(vc/0,4247) Hz.
+
+### Risultati
+
+78/78 step validi. Q_eff = 0,707 esatta (±0,001) su tutta la griglia: con i buffer
+di stato il loop SVF è ideale da 10 Hz a 37 kHz.
+
+fc misurata (PTAT attivo, 27 °C) al variare del CV 0-5 V:
+
+| CV [V] | 0 | 0,42 | 0,85 | 1,27 | 1,70 | 2,12 | 2,55 | 2,97 | 3,40 | 3,82 | 4,25 | 4,67 | 5,00 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| fc [Hz] | 10 | 20 | 41 | 81 | 162 | 324 | 647 | 1291 | 2573 | 5115 | 10134 | 19957 | 33500 |
+
+- Spaziatura a ottave esatta nella parte centrale (rapporti 1,99-2,00 per step).
+- Errore contro la legge esponenziale ideale (27 °C): −3,6% a 10 Hz, −4,4% a centro
+  corsa, −9,4% a 33,5 kHz. Curva liscia e monotona → si assorbe con la calibrazione
+  dello shaper (dec. 70: punti di piega regolabili a banco) + trim degli endpoint.
+- Dopo calibrazione endpoint (10 Hz e 35 kHz esatti agli estremi): residuo stimato
+  ±2-3% su tutta la corsa → dentro la tolleranza ±5-10% della decisione 74.
+- Temperatura 0→50 °C a pari CV: deriva ≤2,4% (PTAT attivo). Senza PTAT: −57% a 0 °C,
+  +73% a 50 °C → la compensazione PTAT è indispensabile, e funziona.
+
+### Verdetto
+
+**Fattibilità DIMOSTRATA**: il converter esponenziale tempcompensato + core SVF OTA
+copre 10 Hz–35 kHz con law e stabilità termica entro la tolleranza della decisione 74,
+con procedura di calibrazione a banco. La condizione della questione 51 (e quindi
+della 49) è soddisfatta. Resta per la v0.2: mirror e distribuzione a 8 core con trim,
+controllo RES, law shaper concreto, modello OTA reale, prototipo su millefori.
+
+### Lezioni registrate (oneste, per il prototipo)
+
+1. Il diff pair single-ended comprime le ottave alte (limite di coda) → NO.
+2. Collettore del ramo exp alimentato dal nodo di riferimento → ricompressione → NO:
+   Vce fisso da rail dedicato.
+3. I resistori del summer caricano i nodi di stato OTA → buffer obbligatori.
+4. Convenzione LTspice: I(Vxxx) uscente dal nodo + → gm = −19,2·I(Vabc).
+
+## 7. BOM di massima v0.1 [molto PROVVISORIA — regola 3]
+
+| Voce | Qtà | Note |
+|---|---|---|
+| LM13700 (dual OTA) | 16 | 8 core × 2 sezioni [PROVVISORIO] |
+| Quad op-amp low-noise (classe OPA1654) | ~12 | summer + buffer di stato |
+| Coppia BJT matched | 2 (+ selezione) | MAT12/DMMT3904W [reperibilità da verificare] |
+| Switch analogici (mux modo, mux drive CV) | ~6 | ADG14xx [PROVVISORIO] |
+| C integratori C0G/PP 33 nF 2% matched | 32 | tracking L/R e tra sezioni |
+| R 0,1% (summer/Q, scala PTAT) + trimmer per core | ~16 | tracking ≤2% (voce 51) |
+| Rete law shaper (diodi/R) + riferimento PTAT | 2 sezioni | dec. 70, punti di piega a banco |
+| Stadio drive JFET + recovery (per sezione) | 2 | questioni 12/61 |
+| Stima costo | ~100-140 € | esclusi pannello/connettori/PSU |
+
+## 8. Questioni toccate da questa v0.1
+
+- **51** (tracking/converter): fattibilità converter DIMOSTRATA in simulazione (range,
+  law, PTAT); resta il design v0.2 di mirror/distribuzione/trim e la verifica a 8 core.
+- **49** (HPF min 10 Hz): la condizione "se la simulazione conferma il converter" è
+  soddisfatta → CHIUSA come assorbita dalla decisione 74 (full-range 10 Hz–35 kHz).
+- **11** (SVF/risonanza): topologia SVF scelta [PROVVISORIO]; loop di risonanza e
+  limiting = v0.2, con referenze sonore di Filippo (questione 61).
+- **12** (overdrive): requisiti recepiti; topologia dopo le referenze (questione 61).
+- NUOVA da §2: **conferma interpretazione mux CV** — un solo percorso attivo per canale
+  (HPF oppure LPF) vs sezioni sempre in serie. La dec. 67 dice "tutti i canali nella
+  stessa modalità seguono gli stessi knob" e lo switch è a 3 vie: l'interpretazione
+  single-path è la lettura naturale, ma va confermata [APERTO-F].
+- NUOVA da §3: **allineamento 4 poli** (Butterworth vs Bessel vs LR) = carattere del
+  filtro: da proporre a Filippo con curve e ascolti [APERTO-F].
+
+## 9. Prossimi passi
+
+1. v0.2: circuito RES (questione 11) + simulazione auto-oscillazione/limiting.
+2. v0.2: law shaper (dec. 70) + pre-distorsione degli errori residui del converter.
+3. v0.2: mirror + trim, simulazione tracking 8 core ≤2% (voce 51).
+4. v0.2: overdrive JFET dopo referenze Filippo (questioni 12/61).
+5. Modello LM13700 reale (o prototipo): offset/rumore a Iabc = 100 nA, swing, THD.
+6. Prototipo su millefori di UN core + converter prima di qualunque PCB (metodo).

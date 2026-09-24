@@ -1,0 +1,24 @@
+* Debug 2 — converter esponenziale standalone (senza SVF)
+* Verifica: Ic(Q2) = I_ref * exp(-DeltaV/VT), DeltaV = 210,95 mV * (1 - vc/5)
+* Attesi: vc=0 -> 114,6 nA; vc=2,5 -> ~6,8 uA; vc=4,2466 -> ~117 uA; vc=5 -> ~397 uA
+.param vcx=0
+.model Q2N3904 NPN(Is=6.734f Rs=1.077 Vbf=74.08 Ise=1.068p Nr=2.009
++ Ikf=66.78m Xti=3 Eg=1.11 Cje=4.966p Vje=.75 Mje=.3556 Cjc=3.465p
++ Vjc=.75 Mjc=.3085 Xtb=1.5 Fc=.5 Tf=301.2p Tr=239.5n Br=.7306 Rb=1 Vaf=111.3)
+Vcc vcc 0 DC 15
+Vctl vctl 0 DC 0
+Iref vcc va DC 400u
+Q1 va va 0 Q2N3904
+Bd va vb2 V={(0.21095-0.04219*V(vctl))}
+Vabc iabc va DC 0
+Q2 iabc vb2 0 Q2N3904
+.dc Vctl 0 5 0.001
+.meas dc ic2_0 FIND Ic(Q2) AT 0.001
+.meas dc ic2_25 FIND Ic(Q2) AT 2.5
+.meas dc ic2_425 FIND Ic(Q2) AT 4.247
+.meas dc ic2_5 FIND Ic(Q2) AT 4.999
+.meas dc va_0 FIND V(va) AT 0.001
+.meas dc vb2_0 FIND V(vb2) AT 0.001
+.meas dc va_5 FIND V(va) AT 4.999
+.meas dc iabc_5 FIND I(Vabc) AT 4.999
+.end
