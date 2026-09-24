@@ -1,6 +1,6 @@
 # SPECIFICA — MAELCUM MIXER (mixer dub modulare analogico, esemplare unico)
 
-> **v0.1 (2026-09-18, rev. 2026-09-24: decisione 76 + esiti simulazioni)** — Compilata da: decisioni 1-76 (`docs/01-decisioni-bloccate.md`),
+> **v0.1 (2026-09-18, rev. 2026-09-24: decisioni 76-78 + esiti simulazioni)** — Compilata da: decisioni 1-78 (`docs/01-decisioni-bloccate.md`),
 > status doc ChatGPT rev2 (`docs/export-chatgpt/`, corpus chiuso — decisione 58),
 > gain-staging sheet (`docs/fase1/gain-staging-sheet.md`), revisione critica (`docs/03`).
 > Livello: REQUISITI. Il dettaglio circuitale vive nei design doc di `docs/fase1/` e `docs/fase2/`.
@@ -76,8 +76,8 @@ Moduli [BLOCCATO dai doc §33, consolidamento [PROVVISORIO]]: DJ CH1-4 · FILTRO
 Catena [BLOCCATO]: RCA stereo → protezione → front-end (LINE; PHONO futuro con front-end dedicato + selettore) → GAIN → EQ 4 bande → nodo split post-EQ: (1) CUE, (2) FX SEND, (3) dry → FILTER SEND/RETURN → METER → FADER → out driver ≤50 Ω → DJ BUS.
 
 - GAIN [BLOCCATO]: −∞ → 0 (detent) → +10 dB; stereo linked; tracking ≤0,5 dB.
-- EQ 4 bande [BLOCCATO nel comportamento]: LOW / LOW-MID / MID-HIGH / HIGH; ogni knob −∞ → 0 (flat, detent) → +6 dB; tracking stereo ≤0,25 dB; law: lenta al centro, rapida agli estremi.
-- EQ frequenze [PROVVISORIO — review con Filippo aperta]: 70 Hz (Q~0,7) / 250 Hz (Q~0,8) / 1 kHz (Q~0,9) / 5 kHz (Q~0,7). Topologia: [SUPERATO 2026-09-24] celle a contribuzione (reference + contributo di banda), kill = contribuzione zero — bocciata dalla simulazione LTspice per le bande LOW/HIGH (fase dei filtri: `sim/cdj-eq/RISULTATI-eq.md`, questione 62). Topologia scelta: **EQ in serie per banda, famiglia Baxandall** (decisione 76) — design in CDJ v0.3; il comportamento locked qui sopra è immutato. Stesso finding si applica alle EQ2 di FX send/return (questione 65).
+- EQ 4 bande [BLOCCATO nel comportamento]: LOW / LOW-MID / MID-HIGH / HIGH; ogni knob −∞ → 0 (flat, detent) → +6 dB; tracking stereo ≤0,25 dB; law: lenta al centro, rapida agli estremi. **[rev. decisione 77, 2026-09-24]** l'estremo "−∞" si intende come kill di banda a **−30 dB** (profondità misurata della cella serie): il silenzio assoluto del canale resta compito del fader — il kill è un gesto musicale, non un mute.
+- EQ frequenze [PROVVISORIO — review con Filippo aperta]: 70 Hz (Q~0,7) / 250 Hz (Q~0,8) / 1 kHz (Q~0,9) / 5 kHz (Q~0,7). Topologia: [SUPERATO 2026-09-24] celle a contribuzione (reference + contributo di banda), kill = contribuzione zero — bocciata dalla simulazione LTspice per le bande LOW/HIGH (fase dei filtri: `sim/cdj-eq/RISULTATI-eq.md`, questione 62). Topologia scelta: **EQ in serie per banda, famiglia Baxandall** (decisione 76) — design in CDJ v0.3 (`docs/fase1/eq-serie-v0.3.md`); comportamento locked immutato salvo l'estremo di cut: −30 dB per banda (decisione 77). Stesso finding si applica alle EQ2 di FX send/return (questione 65).
 - CUE [BLOCCATO]: post-EQ, pre-filter, pre-fader; switch per canale → CUE bus.
 - FX SEND [BLOCCATO]: pre-fader, pre-filter; EQ 2 bande (LOW ~120 Hz, HIGH ~4,5 kHz, −∞→0→+6) con law dedicate (bassi: rapidi solo al taglio estremo; alti: taglio rapido in partenza poi graduale); level −∞→0 (niente gain positivo); assign a S1-S4 MULTIPLO e simultaneo con precision analogue switch (JFET scartati); soppressione transiente di commutazione [APERTO: break-before-make + ramp 1-5 ms come il filtro?].
 - Filtro [BLOCCATO]: solo switch 3 posizioni HPF/OFF/LPF sul canale; l'audio va al modulo filtro (send/return); break-before-make + ramp ~1-5 ms nel modulo filtro.
@@ -164,7 +164,7 @@ Design circuitale: `docs/fase1/master-out.md` v0.2 + addendum (valido).
 2. Fase 1b: secondo bus FX con feedback controllato; integrazione phono Rev A/B sui canali (dopo risposte §5 phono del PDF: le 4 domande restano aperte).
 3. Fase 2: modulo filtro (SVF full-range + risonanza + overdrive) e 5-way (filter bank + EQ creativo + drive) — i due blocchi difficili, con simulazione e prototipo prima di qualunque PCB.
 4. Poi: mic, generic, CUE/cuffie, metering completo, telaio definitivo, integrazione, taratura sul soundsystem.
-5. Regola trasversale: nessun PCB senza topologia → simulazione → prototipo → misura.
+5. Regola trasversale: nessun PCB senza topologia → simulazione → prototipo → misura. **[agg. decisione 78, 2026-09-24]** Prima del prototipo circuitale (millefori) il gesto, le curve, le leggi dei controlli e il carattere musicale si validano A ORECCHIO sul prototipo Max for Live (`docs/proto-max/piano.md`): le scelte musicali approvate sul prototipo diventano requisiti del design circuitale corrispondente. Il prototipo digitale NON valida l'elettricità (rumore, saturazione reale, tracking meccanico).
 
 ## Appendice A — Storia delle correzioni
 

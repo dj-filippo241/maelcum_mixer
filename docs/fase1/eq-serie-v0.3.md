@@ -141,6 +141,7 @@ decisione dentro la voce 53, costo +4 VCA/canale.
 2. Cascata 4 bande: curve complete per banda e combinazioni, residuo
    all-kill esatto (chiude/riformula 59), interazione bande.
 3. Simulazione rumore e livelli formale; mismatch a cascata (tracking).
-4. Scelte di Filippo: questione 66 (profondità), 53 (tracking), taper (40).
+4. Scelte di Filippo: 53 (tracking: pot precision vs VCA) e taper (voce 40).
+   Profondità kill DECISA: −30 dB (decisione 77, questione 66 chiusa).
 5. Integrazione in `cdj-line-channel.md` v0.3 (sostituisce §3.3, aggiorna
    §6 BOM e §4 level plan); allineamento EQ2 FX (questione 65).
