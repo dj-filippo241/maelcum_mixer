@@ -1,9 +1,9 @@
 # SPECIFICA — MAELCUM MIXER (mixer dub modulare analogico, esemplare unico)
 
-> **v0.1 (2026-09-18)** — Compilata da: decisioni 1-75 (`docs/01-decisioni-bloccate.md`),
+> **v0.1 (2026-09-18, rev. 2026-09-24: decisione 76 + esiti simulazioni)** — Compilata da: decisioni 1-76 (`docs/01-decisioni-bloccate.md`),
 > status doc ChatGPT rev2 (`docs/export-chatgpt/`, corpus chiuso — decisione 58),
 > gain-staging sheet (`docs/fase1/gain-staging-sheet.md`), revisione critica (`docs/03`).
-> Livello: REQUISITI. Il dettaglio circuitale vive nei design doc di `docs/fase1/`.
+> Livello: REQUISITI. Il dettaglio circuitale vive nei design doc di `docs/fase1/` e `docs/fase2/`.
 > Stati: [BLOCCATO] deciso · [PROVVISORIO] target di lavoro · [APERTO] da decidere ·
 > [SUPERATO] versione vecchia, solo per storia.
 > Metodo per la fase circuitale: requisito → funzione di trasferimento → topologia →
@@ -77,7 +77,7 @@ Catena [BLOCCATO]: RCA stereo → protezione → front-end (LINE; PHONO futuro c
 
 - GAIN [BLOCCATO]: −∞ → 0 (detent) → +10 dB; stereo linked; tracking ≤0,5 dB.
 - EQ 4 bande [BLOCCATO nel comportamento]: LOW / LOW-MID / MID-HIGH / HIGH; ogni knob −∞ → 0 (flat, detent) → +6 dB; tracking stereo ≤0,25 dB; law: lenta al centro, rapida agli estremi.
-- EQ frequenze [PROVVISORIO — review con Filippo aperta]: 70 Hz (Q~0,7) / 250 Hz (Q~0,8) / 1 kHz (Q~0,9) / 5 kHz (Q~0,7). Topologia: celle a contribuzione (reference + contributo di banda), kill = contribuzione zero.
+- EQ frequenze [PROVVISORIO — review con Filippo aperta]: 70 Hz (Q~0,7) / 250 Hz (Q~0,8) / 1 kHz (Q~0,9) / 5 kHz (Q~0,7). Topologia: [SUPERATO 2026-09-24] celle a contribuzione (reference + contributo di banda), kill = contribuzione zero — bocciata dalla simulazione LTspice per le bande LOW/HIGH (fase dei filtri: `sim/cdj-eq/RISULTATI-eq.md`, questione 62). Topologia scelta: **EQ in serie per banda, famiglia Baxandall** (decisione 76) — design in CDJ v0.3; il comportamento locked qui sopra è immutato. Stesso finding si applica alle EQ2 di FX send/return (questione 65).
 - CUE [BLOCCATO]: post-EQ, pre-filter, pre-fader; switch per canale → CUE bus.
 - FX SEND [BLOCCATO]: pre-fader, pre-filter; EQ 2 bande (LOW ~120 Hz, HIGH ~4,5 kHz, −∞→0→+6) con law dedicate (bassi: rapidi solo al taglio estremo; alti: taglio rapido in partenza poi graduale); level −∞→0 (niente gain positivo); assign a S1-S4 MULTIPLO e simultaneo con precision analogue switch (JFET scartati); soppressione transiente di commutazione [APERTO: break-before-make + ramp 1-5 ms come il filtro?].
 - Filtro [BLOCCATO]: solo switch 3 posizioni HPF/OFF/LPF sul canale; l'audio va al modulo filtro (send/return); break-before-make + ramp ~1-5 ms nel modulo filtro.
@@ -94,7 +94,7 @@ Catena [BLOCCATO]: RCA stereo → protezione → front-end (LINE; PHONO futuro c
 - [BLOCCATO] Risonanza: 0-70% normale, 70-90% aggressiva, 90-100% auto-oscillazione che segue il cutoff; livello oscillazione ~+6…+10 dBu con soft limiting (non clamp a diodi crudi); carattere musicale, riferimento Sherman Filterbank.
 - [BLOCCATO] Overdrive: dopo filtro/risonanza, prima del meter di canale; 0 = pulito ~unity; progressione clean → subtle → warm → gritty → aggressive → hard dub overload; prototipi JFET (prima) e BJT asimmetrico (poi); recovery low-Z 20-50 Ω, clean +23 dBu (raffinamento del "+24 where practical": il ±18 V del modulo non dà +24 — decision sheet §2); nessun makeup compression.
 - [PROVVISORIO/INGEGNERIA] Converter di frequenza: esponenziale + tempco, range gm ~3500:1; tolleranza accettabile ±5-10% (più lasca di un VCO); core in tracking tra canali ≤2% a pari CV con trim per core; CV bufferizzati, distribuzione a stella, smoothing.
-- [APERTO] Topologia SVF concreta attorno all'OTA reale, architettura del loop di risonanza/limiting, curva esatta del drive (questioni 11/12/51).
+- [APERTO in parte — aggiornato 2026-09-24] Topologia SVF concreta: scelta [PROVVISORIO] OTA (LM13700) + buffer di stato; fattibilità del converter esponenziale 10 Hz–35 kHz DIMOSTRATA in simulazione (`docs/fase2/filter-module.md` §6 — questione 51 aggiornata, 49 chiusa). Restano aperti: loop di risonanza/limiting (questione 11), curva esatta del drive (questioni 12/61), interpretazione mux CV e allineamento 4 poli (questioni 63/64).
 
 ## 6. Modulo 5-way (dub preamp) — requisiti
 

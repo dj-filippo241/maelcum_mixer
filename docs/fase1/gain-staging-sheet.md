@@ -108,4 +108,4 @@ vero esiste solo all'uscita XLR, dove lo stadio discreto lavora su ±24 V.
 
 - `master-out.md`: summing e VCA passano da ±15/±18 misti a **±18 V unici per la sezione audio** (il ±15 LN resta per CV/meter); REC confermato 0 dBu (addendum già presente).
 - `cdj-line-channel.md` v0.2: dominio audio ±18 V (non ±15); level plan da aggiornare con i valori di questo sheet.
-- Futuro `filter-module.md`: recovery +23 dBu, CV shaper per la legge dei knob (decisione 70).
+- `docs/fase2/filter-module.md` (v0.1, 2026-09-24): recovery +23 dBu recepito; CV shaper per la legge dei knob (decisione 70) = design v0.2.

@@ -1,8 +1,11 @@
 # FASE 1 — Modulo CANALE CDJ/LINE: design circuitale v0.2
 
-> **v0.2 (2026-09-18)**: SUPERSEDE la v0.1 (in storia git). Allineato a: decisioni 58-75,
-> gain-staging sheet v1.0, status doc rev2, e **validazione matematica dell'EQ**
-> (`sim/eq_analysis.py` + `sim/eq_results.txt`). Scope: SOLO line/CDJ — phono Rev A resta
+> **v0.2 (2026-09-18)**: SUPERSEDE la v0.1 (in storia git). Allineato a: decisioni 58-76,
+> gain-staging sheet v1.0, status doc rev2, e validazione matematica dell'EQ
+> (`sim/eq_analysis.py` + `sim/eq_results.txt`) — **quest'ultima smentita in parte dalla
+> simulazione LTspice (2026-09-24, `sim/cdj-eq/RISULTATI-eq.md`): la math era zero-fase
+> per LOW/HIGH → decisione 76, EQ in serie per banda (Baxandall); ridisegno in v0.3.**
+> Scope: SOLO line/CDJ — phono Rev A resta
 > su carta (decisioni 56/61), il front-end dedicato + selettore PHONO/LINE arriverà in Rev B
 > del modulo senza cambiare il resto della catena (status doc PDF §6: "dedicated PHONO and
 > LINE front ends → selector → common DJ GAIN").
@@ -74,7 +77,8 @@ colora: pot doppio selezionato + trim (più lavoro di calibrazione, tracking a r
 > @150 Hz; il leak all-kill di picco è −0,67 dB (non −2,6). Il requisito §1 "−∞ → 0 → +6"
 > è rispettato solo dai medi al centro e dal detent (a meno del carico di sorgente).
 > Il matching 0,1% non compra profondità di kill: il pavimento è fisico, non resistivo.
-> Topologia in revisione → questione 62 in `docs/02-questioni-aperte.md`.
+> Topologia DECISA (2026-09-24): EQ in serie per banda, famiglia Baxandall —
+> decisione 76, questione 62 chiusa; ridisegno in EQ v0.3.
 > Dettagli e opzioni: `sim/cdj-eq/RISULTATI-eq.md`. Le proprietà 1-5 qui sotto restano
 > valide solo per detent (1), bande MID al centro (2, 3 in banda stretta) e sono
 > da ricalcolare per leak (5) e worst boost (4: misurato +5,9 dB, non +6,64).
@@ -119,8 +123,10 @@ Punto locked: post-EQ, pre-filter, pre-fader. Buffer dedicato → switch CUE di 
 CUE bus. Nessuna elaborazione.
 
 ### 3.5 [E] FX send
-EQ 2 bande (topologia celle a contribuzione semplificata: 2 bande invece di 4, stesse
-math della §3.3) con law dedicate [BLOCCATO dai doc]: LOW "tiene i bassi per quasi tutta
+EQ 2 bande (**nota 2026-09-24**: il v0.2 diceva "celle a contribuzione semplificate,
+stesse math della §3.3" — quelle math sono smentite dalla simulazione (fase dei filtri
+shelf, §3.3) e la decisione 76 passa alla topologia in serie: EQ2 da allineare in EQ
+v0.3, questione 65) con law dedicate [BLOCCATO dai doc]: LOW "tiene i bassi per quasi tutta
 la corsa, li toglie rapido solo al taglio estremo"; HIGH "taglia subito in partenza, poi
 graduale". Level −∞..0. Assign multipli simultanei S1-S4: precision analogue switch
 (candidati [PROVVISORIO]: famiglia ADG14xx/DG4xx low-RON low-charge-injection), uno per
@@ -175,18 +181,32 @@ salvo smentita della simulazione).
 | Regolatori locali (LM317/337 + LT3045/3094) + passivi | — | ~12-15 € |
 | **Totale stimato per canale stereo** | | **~70-95 €** (era 35-55 nella v0.1: la differenza è l'EQ validato a celle bipolari + meter completo + VCA — il prezzo dei requisiti locked di tracking e persistenza) |
 
-## 7. Simulazioni in coda (LTspice — installazione da autorizzare)
+## 7. Simulazioni — stato (aggiornamento 2026-09-24)
 
-1. Cella EQ completa con componenti reali: THD, rumore, interazione con impedenza di sorgente
+FATTE:
+1. Cella EQ completa: rumore (−124,8 dBu, PASS), impedenza di sorgente (finding 2),
+   livelli, risposta AC → `sim/cdj-eq/RISULTATI-eq.md` (esito: finding critico di
+   fase → decisione 76, EQ in serie). THD: non misurabile coi macromodelli lineari,
+   si verifica al prototipo col modello TI reale.
+5. Tracking/kill depth vs mismatch 0,1%/1%: irrilevante nella cella (≤0,2 dB);
+   da rifare sulla topologia serie (questione 53).
+
+RESTANTI:
 2. VCA THAT 2181: law dB/V, distorsione vs livello a +18 dBu, margine
 3. Peak detector: ballistica a 10 Hz (requisito infrasub) e a 35 kHz
 4. Summing DJ BUS a 4 canali: crosstalk e worst-case
-5. Tracking: sensibilità del kill depth al mismatch 0,1% vs 1%
 
-## 8. Questioni generate/aggiornate da questa v0.2
+## 8. Questioni generate/aggiornate da questa v0.2 (stato 2026-09-24)
 
-- 53 (tracking EQ stereo): opzioni (a)/(b) descritte in §3.3 — decide la simulazione + costo
-- 59 NUOVA: all-kill leak −2,6 dB: ratificare mitigazione (a) documentata e/o (b) auto-mute
-- 55 (transiente assign FX): proposta uniformata al metodo filtro (break-before-make + ramp)
+- 53 (tracking EQ stereo): aggiornata — nella cella il mismatch resistivo conta poco;
+  nella topologia serie (dec. 76) si gioca su pot doppi meccanici vs VCA per banda:
+  decide EQ v0.3
+- 59 (all-kill leak): riformulata post-decisione 76 — il leak da cancellazione sparisce;
+  da quantificare il residuo all-kill della serie in EQ v0.3
+- 55 (transiente assign FX): immutata, proposta uniformata al metodo filtro
 - 40 (hardware pot/fader): immutata, sessione dedicata
-- Review frequenze EQ con Filippo: immutata (baseline validata come TOPOLOGIA, non come centri)
+- Review frequenze EQ con Filippo: i centri restano [PROVVISORI]; la baseline NON è più
+  "validata come topologia" — la topologia a celle è bocciata (dec. 76), le frequenze
+  vanno riverificate sulla serie in EQ v0.3
+- 62 CHIUSA → decisione 76 (EQ in serie); 65 NUOVA (EQ2 di FX send/return ereditano
+  il finding di fase)
