@@ -7,7 +7,7 @@
 > di Filippo, questione 61). NON congela valori (regola 3). Fase 2: dettaglio
 > circuitale completo dopo che la fase 1 ha insegnato (regola 5) — questo
 > documento è architettura + funzioni di trasferimento + fattibilità.
-> Fonti: SPECIFICA §6, decisioni 24/61/65/66/73, status doc §14-18
+> Fonti: SPECIFICA §6, decisioni 24/65/66/73, questioni 61 (referenze drive) e 67 (frequenze), status doc §14-18
 > (`docs/export-chatgpt/documento-senza-titolo.txt`), gain-staging sheet.
 
 ## 1. Requisiti (BLOCCATO salvo dove indicato)

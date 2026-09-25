@@ -118,7 +118,7 @@ Stessa famiglia delle celle serie EQ v0.3 (decisione 76/77):
   complementare (R/Rp 1:31 → kill −30 dB, boost +6) — identica alla LOW
   del canale, valori RC scalati sulla frequenza.
 - **HIGH** ~4,5 kHz (send) / 4-6 kHz (return): cella sottrattiva
-  −(1−b·HP2) — il kill HIGH resta −4…−8 dB in banda: **la questione 68
+  −(1−b·HP2) — il kill HIGH dà bump +2,1 dB al corner e −9…−14 dB a 20-35 kHz (Q HP2 corretto 2026-09-25): **la questione 68
   si applica anche qui** (stessa scelta: accettare o crossfade-LP2;
   un'unica decisione copre canale, send FX e ritorni).
 - Law dedicate [BLOCCATO dai doc]: bassi "tiene per quasi tutta la corsa,
@@ -224,7 +224,7 @@ dinamica del loop e il worst-case del summing, non il carattere sonoro.
 - **37** (THAT 2181): il modulo FX ne usa 16 — la verifica di reperibilità
   diventa critica per questo modulo (in subordine: VCA discreti o SSM2164
   legacy).
-- NUOVA [APERTO-F, §5]: selettore sensitivity dei ritorni (−20/0/+10 dB)
+- NUOVA [APERTO-F → questione 69, §5]: selettore sensitivity dei ritorni (−20/0/+10 dB)
   per rispettare K4 senza limitare il gain: cambia il pannello, decide Filippo.
 
 ## 11. Prossimi passi (v0.2)

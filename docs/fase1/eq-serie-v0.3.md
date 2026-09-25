@@ -201,7 +201,7 @@ Boost +6 shelf monotono ✓; detent esatto ✓; **kill**: −9,1 dB a 20 kHz e
 (5 kHz): la fase residua di HP2 impedisce l'azzeramento vicino al corner.
 → questione 68.
 
-### 9.3 Cascata 4 bande (cascade.cir, 10 modi) — VALIDATA con due finding
+### 9.3 Cascata 4 bande (cascade-b2.cir, 10 modi — griglia aggiornata al fix Q HP2; cascade.cir = versione beta-1, valori corretti, run di riferimento = b2) — VALIDATA con due finding
 
 | modo | 20 | 70 | 150 | 250 | 500 | 1k | 2,5k | 5k | 10k | 20k | 35k |
 |---|---|---|---|---|---|---|---|---|---|---|---|
