@@ -1,0 +1,21 @@
+* MODULO FX v0.1 — Loop di feedback: stabilita' e "bounded by design" (questione 14)
+* SPECIFICA §7: niente limiter nel reroute; "loop unity = oscillazione
+* autosostenuta bounded by design". Catena comportamentale (il circuito reale
+* ha VCA/bus/JFET/buffer — qui conta la dinamica del loop):
+*   ritorno -> VCA reroute (gloop) -> banda bus/cavo (~40 kHz) -> pedale
+*   (saturazione morbida tanh, ±12 V su dominio ±18) -> ritorno.
+* Casi: gloop 0,8 (sotto unity: decade), 1,0 (unity: sostiene), 1,2 / 2,0
+* (sopra unity: cresce finche' la saturazione del pedale la bounds).
+.param gloop=1.2
+.step param gloop LIST 0.8 1.0 1.2 2.0
+B1 n1 0 V={gloop*V(ret)}
+R1 n1 n2 10k
+C1 n2 0 400p
+B2 ped 0 V={12*tanh(V(n2)/12)}
+R2 ped ret 10k
+C2 ret 0 400p
+.ic V(ret)=0.01
+.tran 0 50m 0 10u
+.meas tran ret_pk MAX V(ret) FROM 30m TO 50m
+.meas tran ret_min MIN V(ret) FROM 30m TO 50m
+.end

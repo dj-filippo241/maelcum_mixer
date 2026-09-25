@@ -1,0 +1,44 @@
+* MODULO FX v0.1 — Summing bus FX: 12 contributori worst-case correlato
+* Sheet §2/K3: 12 × 0 dBu in fase = +21,6 dBu (9,3 Vp); capability +23 dBu.
+* Virtual-earth: Rf 10k, 12 ingressi 10k [PROVVISORIO]; op-amp macro classe
+* OPA1612 (clamp ±16,5 V su rail ±18). Verifica: nessun clipping sul worst.
+* Crosstalk: virtual-earth ideale = 0; reale ≈ (1+ΣRf/Ri)/A = 13/1000 → −38 dB
+* (analitico, non simulato qui — domina il layout/PSU nella pratica).
+.subckt OPAMP inp inn out vp vm
+E1 xx 0 value={1000*(V(inp)-V(inn))}
+R1 xx p1 1k
+C1 p1 0 159p
+E2 out 0 value={limit(V(p1),V(vm)+1.5,V(vp)-1.5)}
+.ends OPAMP
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 s1 0 SINE(0 0.775 1k)
+V2 s2 0 SINE(0 0.775 1k)
+V3 s3 0 SINE(0 0.775 1k)
+V4 s4 0 SINE(0 0.775 1k)
+V5 s5 0 SINE(0 0.775 1k)
+V6 s6 0 SINE(0 0.775 1k)
+V7 s7 0 SINE(0 0.775 1k)
+V8 s8 0 SINE(0 0.775 1k)
+V9 s9 0 SINE(0 0.775 1k)
+V10 s10 0 SINE(0 0.775 1k)
+V11 s11 0 SINE(0 0.775 1k)
+V12 s12 0 SINE(0 0.775 1k)
+R1 s1 ns 10k
+R2 s2 ns 10k
+R3 s3 ns 10k
+R4 s4 ns 10k
+R5 s5 ns 10k
+R6 s6 ns 10k
+R7 s7 ns 10k
+R8 s8 ns 10k
+R9 s9 ns 10k
+R10 s10 ns 10k
+R11 s11 ns 10k
+R12 s12 ns 10k
+Rf ns out 10k
+Xsum 0 ns out vcc vee OPAMP
+.tran 0 20m 0 10u
+.meas tran out_pk MAX V(out) FROM 5m TO 20m
+.meas tran out_min MIN V(out) FROM 5m TO 20m
+.end

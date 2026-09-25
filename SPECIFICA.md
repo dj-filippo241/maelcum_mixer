@@ -113,7 +113,7 @@ Catena [BLOCCATO]: RCA stereo → protezione → front-end (LINE; PHONO futuro c
 - [BLOCCATO] Ritorni: stereo-capable (mono centrato); gain −∞→0→+20 dB; EQ 2 bande (LOW ~100-150 Hz, HIGH ~4-6 kHz, −∞→0→+6, broad, no risonanza/saturazione); meter dopo gain+EQ, prima del fader (detector rapido, clip latch ~300-500 ms); fader stereo linked; REGOLA: livello_in × gain ≤ +23 dBu (sheet §2).
 - [BLOCCATO] Rerouting/feedback: ogni ritorno ha 3 destinazioni (gli altri bus), no self; level −∞→0 dB con law a tratti (0-20%: −∞…−40; 20-45%: −40…−20; 45-70%: −20…−10; 70-85%: −10…−4; 85-95%: −4…−1; 95-100%: −1…0 dB) = controllo finissimo vicino all'apertura; tecnologia VCA/attenuatore (solo attenuazione); catena controllo: pot → CV buffer → mappa non lineare → smoothing 1-5 ms → VCA; niente limiter.
 - [BLOCCATO] Comportamento live: fader del ritorno = udibilità verso MASTER, NON tocca il loop interno (reroute pre-fader): fader giù, il feedback continua; controlli usabili mentre si mixa; loop unity = oscillazione autosostenuta bounded by design.
-- [APERTO] VCA esatto, switch esatti, valori resistori bus, protezione (questioni 13/14/37/52).
+- [APERTO → PROPOSTA v0.1 2026-09-25] VCA esatto, switch esatti, valori resistori bus, protezione (questioni 13/14/37/52): design v0.1 in `docs/fase1/fx-module.md` — THAT 2181 ×16 (voce 37 critica per questo modulo), bus 10k [PROVVISORIO], protezione R+TVS low-cap, DC servo sui ritorni; stabilità del loop di feedback SIMULATA ("bounded by design" = saturazione del pedale, mai ai rail; margine g_loop ≤ +3 dB). Aperto: sensitivity ritorni (questione 69).
 
 ## 8. Mic e generic mono — requisiti
 
