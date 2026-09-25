@@ -1,0 +1,90 @@
+* EQ SERIE v0.3-beta-2 — rumore cascata al detent (summer 49,9k, rif. interno -6 dB)
+.param err=0
+.param xl=0.5
+.param tlm=0.5
+.param tmh=0.5
+.param thh=0.5
+*
+.subckt OPAMP inp inn out vp vm
+E1 xx 0 value={1000*(V(inp)-V(inn))}
+R1 xx p1 1k
+C1 p1 0 159p
+E2 out 0 value={limit(V(p1),V(vm)+1.5,V(vp)-1.5)}
+.ends OPAMP
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 vin 0 DC 0 AC 1
+*
+* ============ BUFFER IN (gain -0,5) ============
+Rib vin nib 20k
+Ribf nib v_pre 10k
+Xib 0 nib v_pre vcc vee OPAMP
+*
+* ============ CELLA LOW (shelf 70 Hz) ============
+RinL v_pre naL 1k
+RzaL naL nbL {31k*xl*(1+err/2)+1m}
+CzaL naL nbL 100n
+XopL 0 nbL v_lo vcc vee OPAMP
+RfL nbL ncL 1k
+RzbL ncL v_lo {31k*(1-xl)*(1-err/2)+1m}
+CzbL ncL v_lo 100n
+*
+* ============ CELLA MID-LM (250 Hz Q0,8) ============
+R1a v_lo nma 5.11k
+R2a nma 0 18.2k
+C1a nma nmb 100n
+C2a nma vbp1 100n
+R3a vbp1 nmb 10.2k
+X1a 0 nmb vbp1 vcc vee OPAMP
+Ri1a vbp1 nvia 10k
+Ri2a nvia vbn1 {10k*(1+err/2)}
+X2a 0 nvia vbn1 vcc vee OPAMP
+Rp1a vbp1 wpa {10k*tlm+1m}
+Rp2a vbn1 wpa {10k*(1-tlm)+1m}
+Raa v_lo nsa 49.9k
+Rba wpa nsa 49.9k
+Rfa nsa v_lm 49.9k
+X3a 0 nsa v_lm vcc vee OPAMP
+*
+* ============ CELLA MID-MH (1 kHz Q0,9) ============
+R1b v_lm nmc 4.32k
+R2b nmc 0 6.98k
+C1b nmc nmd 33n
+C2b nmc vbp2 33n
+R3b vbp2 nmd 8.66k
+X1b 0 nmd vbp2 vcc vee OPAMP
+Ri1b vbp2 nvib 10k
+Ri2b nvib vbn2 {10k*(1+err/2)}
+X2b 0 nvib vbn2 vcc vee OPAMP
+Rp1b vbp2 wpb {10k*tmh+1m}
+Rp2b vbn2 wpb {10k*(1-tmh)+1m}
+Rab v_lm nsb 49.9k
+Rbb wpb nsb 49.9k
+Rfb nsb v_mh 49.9k
+X3b 0 nsb v_mh vcc vee OPAMP
+*
+* ============ CELLA HIGH (sottrattiva HP2 ~5 kHz) ============
+Ch1 v_mh nha 10n
+Ch2 nha nhb 10n
+Rh1 nha vhp 4.7k
+Rh2 nhb 0 2.25k
+X1h nhb vhp vhp vcc vee OPAMP
+Rh3 vhp nvh 10k
+Rh4 nvh vhn {10k*(1+err/2)}
+X2h 0 nvh vhn vcc vee OPAMP
+Rp1h vhn wph {10k*thh+1m}
+Rp2h vhp wph {10k*(1-thh)+1m}
+Rah v_mh nsh 49.9k
+Rbh wph nsh 49.9k
+Rfh nsh v_hi0 49.9k
+X3h 0 nsh v_hi0 vcc vee OPAMP
+*
+* ============ MAKE-UP OUT (gain -2, trim detent) ============
+Rom v_hi0 nom 49.9k
+Rfm nom v_hi 100k
+Xom 0 nom v_hi vcc vee OPAMP
+*
+.noise V(v_hi) V1 dec 200 20 20k
+.meas noise vn2 INTEG V(onoise)*V(onoise)
+.meas noise ndens FIND V(onoise) AT 1k
+.end

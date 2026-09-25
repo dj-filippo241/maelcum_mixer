@@ -1,4 +1,8 @@
-# FASE 1 — Modulo CANALE CDJ/LINE: design circuitale v0.2
+# FASE 1 — Modulo CANALE CDJ/LINE: design circuitale v0.3
+
+> **v0.3 (2026-09-25)**: SUPERSEDE la v0.2 per §3.3 (EQ in serie, decisioni 76/77 —
+> celle a contribuzione bocciate dalla simulazione) e allinea §4-§8 alle misure beta-2
+> (`docs/fase1/eq-serie-v0.3.md`). Il resto del documento è invariato dalla v0.2.
 
 > **v0.2 (2026-09-18)**: SUPERSEDE la v0.1 (in storia git). Allineato a: decisioni 58-76,
 > gain-staging sheet v1.0, status doc rev2, e validazione matematica dell'EQ
@@ -68,55 +72,44 @@ CV 0-5 V (generatore su ±15 V LN). Law: −∞ a full CCW, 0 dB al detent (~50%
 +10 dB a fine CW. Alternativa economica da scartare solo se la sim dice che il VCA
 colora: pot doppio selezionato + trim (più lavoro di calibrazione, tracking a rischio).
 
-### 3.3 [C] EQ 4 bande — celle a contribuzione bipolare (MATH VALIDA SOLO PER I MEDI — vedi correzione)
+### 3.3 [C] EQ 4 bande — SERIE per banda, famiglia Baxandall (v0.3, decisioni 76/77)
 
-> **CORREZIONE 2026-09-24 [SUPERATO in parte] — simulazione LTspice `sim/cdj-eq/`**:
-> la validazione matematica trattava i filtri LOW/HIGH come zero-fase (solo magnitudine);
-> i filtri reali ruotano la fase e la sottrazione non si azzera. Misure reali: kill LOW
-> = −8 dB @20 Hz invece di −49,6, con bump +1,5 dB @70 Hz; il boost LOW scende a −1,7 dB
-> @150 Hz; il leak all-kill di picco è −0,67 dB (non −2,6). Il requisito §1 "−∞ → 0 → +6"
-> è rispettato solo dai medi al centro e dal detent (a meno del carico di sorgente).
-> Il matching 0,1% non compra profondità di kill: il pavimento è fisico, non resistivo.
-> Topologia DECISA (2026-09-24): EQ in serie per banda, famiglia Baxandall —
-> decisione 76, questione 62 chiusa; ridisegno in EQ v0.3.
-> Dettagli e opzioni: `sim/cdj-eq/RISULTATI-eq.md`. Le proprietà 1-5 qui sotto restano
-> valide solo per detent (1), bande MID al centro (2, 3 in banda stretta) e sono
-> da ricalcolare per leak (5) e worst boost (4: misurato +5,9 dB, non +6,64).
+> **v0.3 (2026-09-25)**: sostituisce integralmente le celle a contribuzione della
+> v0.2, bocciate dalla simulazione (fase dei filtri LOW/HIGH —
+> `sim/cdj-eq/RISULTATI-eq.md`, questione 62 → decisione 76). Design completo,
+> griglie misurate e law del pot: **`docs/fase1/eq-serie-v0.3.md`** (stato beta-2)
+> + netlist in `sim/eq-serie/`.
 
-**Topologia** (per banda, per lato): il segnale di banda H_i·V viene presentato al pot in
-DUE polarità (+H_i e −H_i); il wiper del pot (lineare, 10 kΩ) sta al centro esatto
-(k=0) e va al nodo di summing. Il riferimento (V_in via −1) completa la somma:
+Architettura per lato: 4 celle in cascata + buffer, **12 sezioni op-amp** (3 quad):
+buffer in −6 dB (riferimento interno, principio dec. 73) → LOW shelf complementare
+(R 1k / Rp 31k: kill −29,3 dB a gonna larga, boost +6 shelf liscio) → LM campana
+250 Hz sottrattiva `−(1−b·BP)` (notch esatto −45 dB al centro) → MH campana 1 kHz
+(stessa famiglia) → HIGH sottrattiva `−(1−b·HP2)` (boost +6 shelf; kill −4…−8 dB
+in banda → questione 68) → make-up +6 dB con trim (azzera l'offset di detent).
 
-    V_out(f) = V_in(f) · [ 1 + Σ k_i · H_i(f) ]     k_i ∈ [−1, +1], 0 al detent
+Proprietà misurate (LTspice, macromodelli — dettagli e griglie in eq-serie-v0.3.md §9):
+1. Detent piatto: ±0,02 dB relativo su 20 Hz–35 kHz (offset costante −0,12 dB → trim).
+2. Boost +6,0 dB per banda [requisito locked rispettato]; worst all-boost +7,5 dB @250.
+3. Kill: shelf −30 dB (LOW: −29,3 con gonna fino a 1 kHz; HIGH: −4…−8 → questione 68),
+   campane: notch −45/−66 dB al centro, larghezza da Q.
+4. **All-kill ≠ silenzio**: residuo −0,06 dB @5 kHz (tra le gonne dei notch e il kill
+   HIGH debole) → il fader resta il muto vero; auto-mute = questione 59 (numeri
+   definitivi registrati).
+5. Curva dub (LOW+HIGH su, medi giù): +5,6 / −45 / −46 / +5,5 dB — estetica target.
+6. Rumore: −110,7 dBu integrato (target ≤−92: margine 18,7 dB; migliora con op-amp reali).
+7. Livelli: picco interno 7,6 V a +16 dBu all-boost (riferimento −6 dB); estremo
+   +18 dBu = saturazione d'uscita intenzionale, niente clipping a metà catena.
+8. Tracking stereo: pot doppi ≤1% → L−R ≤0,16 dB (PASS ≤0,25); 2% → 0,32 (limite,
+   trim) — questione 53; alternativa VCA documentata.
 
-**Proprietà dimostrate dall'analisi** (`sim/eq_results.txt`, op-amp ideali):
-1. Detent = piatto ESATTO (0,00 dB a ogni frequenza, per costruzione: k=0 annulla ogni
-   dipendenza dai componenti delle celle) — la traccia passa come registrata
-2. Boost massimo = +6,02 dB al centro banda (1+1=2) ✓ requisito locked
-3. Kill mono-banda: −49,6 dB @20 Hz (LOW), profondità limitata in pratica dal matching
-   delle due polarità: resistori 0,1% → pavimento ~−60 dB; 1% → ~−40 dB. Raccomandato
-   0,1% sui percorsi ±H
-4. Worst boost con 4 bande a +6: picco +6,64 dB (le bande si sommano poco: sono ben
-   separate) → headroom eccellente, molto meglio della stima pessimistica del sheet
-5. **FINDING — all-kill leak**: con tutte e 4 le bande a −∞ il canale NON tace: restano
-   ~−2,6 dB @2,5 kHz e ~−2,6 dB @150 Hz. Causa: le sottrazioni complesse (fase ruotata
-   dalle celle) si cancellano tra loro invece di cancellare il riferimento. Mitigazioni:
-   (a) il fader esiste apposta per il silenzio totale (comportamento documentato);
-   (b) opzione [C-PROVVISORIO]: auto-mute — 4 switch di fine corsa rilevano "tutti i pot
-   a CCW" → FET shunt a massa sull'uscita EQ; costo ~2 €; da ratificare;
-   (c) scartata la partizione complementare in fase (è il mestiere del 5-way, decisione 22)
+Law del pot (specifica eq-serie-v0.3.md §10): asimmetrica — boost +6 in mezza corsa
+(lineare), cut −30 dB con accelerazione negli ultimi 5% (filosofia dec. 70); detent
+meccanico con click a metà. Taper custom su pot doppi conduttivo-plastica → sessione
+hardware voce 40. Validazione a orecchio della law sul prototipo M4L (dec. 78,
+IN PAUSA fino a design completo — direzione Filippo 2026-09-25).
 
-**Implementazione** [PROVVISORIO]: per lato ~10 sezioni op-amp (4 filtri di banda +
-4 inverter di polarità + 1 inverter riferimento + 1 summing). Candidati: OPA1654 (quad)
-per celle/inverter + OPA1612 (dual, bipolare low-noise) per il summing. Law del pot:
-shaper a tratti (stessa famiglia di curve del filtro: lenta al centro, rapida agli
-estremi) realizzato sulla CV se si usa il pot come controllo di un VCA di banda, oppure
-taper custom sul partitore — decide la simulazione (voce 53: tracking stereo).
-
-**Tracking stereo ≤0,25 dB**: il pot bipolare è meccanico → due sezioni devono inseguirsi.
-Metodo [APERTO — voce 53]: (a) pot doppi selezionati + misura/trim, oppure (b) celle di
-contribuzione a VCA (k generato da CV unica per banda, come il gain). (b) garantisce il
-tracking elettrico ma raddoppia i VCA per canale (4 bande × 1 VCA stereo): costo +~25 €.
+EQ2 di FX send/return (questione 65): stessa famiglia di celle (2 bande: shelf LOW
+~120 Hz + campana/shelf HIGH ~4,5 kHz, law dedicate) — design nel modulo FX.
 
 ### 3.4 [D] CUE send
 Punto locked: post-EQ, pre-filter, pre-fader. Buffer dedicato → switch CUE di canale →
@@ -157,56 +150,66 @@ tracking ≤0,5 dB con selezione/trim; buffer OPA1612 ≤50 Ω → DJ BUS (injec
 |---|---|---|---|---|
 | Ingresso RCA | 0 dBu | +8 dBu | — | ±18 V |
 | Post-GAIN | 0 dBu | +10 dBu | +18 dBu (user error: sorgente calda + gain max) | ±18 V |
-| Post-EQ | 0 dBu | +16 dBu | **+18,6 dBu** (worst boost calcolato +6,64 dB; reale +5,9 dB da LTspice 2026-09-24, e il rail ±16,5 V = +23,5 dBu fa comunque da tetto — `sim/cdj-eq/RISULTATI-eq.md`) | ±18 V (+23) |
+| Post-EQ | 0 dBu | +16 dBu | saturazione d'uscita intenzionale (worst all-boost misurato +7,5 dB; il rail ±16,5 V = +23,5 dBu fa da tetto). EQ con riferimento interno −6 dB: picchi interni ≤7,6 V a +16 dBu (`sim/eq-serie/cascade-b2-level.cir`) | ±18 V (+23) |
 | Filter return | 0 dBu | +16…+20 (drive inserito) | saturazione voluta | ±18 V |
 | Post-FADER / out | 0 dBu | +16 dBu | — | ±18 V |
 
 ## 5. Rumore (target sheet §3: ≤−92 dBu A-wtd all'out driver)
 
-Contribuenti principali stimati: termica dei pot a wiper centrale (~2,5 kΩ equivalenti),
-catena di ~20 sezioni op-amp, VCA di gain. Il budget numerico si fa in LTspice quando
-installato (voce strumentazione 30). Regola anti-errore: pot a 10 kΩ (non 47 k) sulle
-celle EQ — il rumore del wiper scala con la resistenza (voce 48 chiusa da questa scelta
-salvo smentita della simulazione).
+**Misurato v0.3 beta-2** (`sim/eq-serie/cascade-b2-noise.cir`, cascata EQ al detent,
+20 Hz–20 kHz): **−110,7 dBu** integrato → margine 18,7 dB sul target. Macromodello
+uniforme ~6 nV/√Hz su tutti gli op-amp: con la selezione reale (OPA1654 per le celle,
+OPA1612 per buffer in/make-up, 1,1 nV/√Hz) il numero può solo migliorare — verifica
+in beta-3 coi modelli ufficiali. Regole confermate: pot 10 kΩ sulle celle (voce 48),
+summer a 49,9 kΩ (non 100 k), bracci shelf ≤31 kΩ. Restano da aggiungere: VCA di
+gain (a monte, già nel budget del GAIN) e out driver.
 
-## 6. BOM di massima v0.2 (esclusi pot/fader/connettori/pannello)
+## 6. BOM di massima v0.3 (esclusi pot/fader/connettori/pannello)
 
 | Voce | Qtà approx | Costo |
 |---|---|---|
-| OPA1654 quad (celle EQ, inverter) | 5-6 | ~25-30 € |
-| OPA1612 dual (summing, buffer, driver) | 3-4 | ~15-20 € |
-| THAT 2181 (VCA gain; + eventuali VCA di banda se tracking (b)) | 1-3 | ~6-18 € |
+| OPA1654 quad (celle EQ serie: 3 per canale) | 6 | ~30-36 € |
+| OPA1612 dual (buffer in/make-up EQ, out driver) | 2-3 | ~10-15 € |
+| THAT 2181 (VCA gain; + eventuali VCA di banda se tracking 53 sceglie VCA) | 1-3 | ~6-18 € |
+| Reti RC celle (0,1% bracci shelf, C0G/PP campane e HP2) | — | ~10-15 € |
 | LM3915 ×2 + clip detector | 3 | ~3 € |
 | Switch analogici assign FX | 4 | ~6-10 € |
 | Regolatori locali (LM317/337 + LT3045/3094) + passivi | — | ~12-15 € |
-| **Totale stimato per canale stereo** | | **~70-95 €** (era 35-55 nella v0.1: la differenza è l'EQ validato a celle bipolari + meter completo + VCA — il prezzo dei requisiti locked di tracking e persistenza) |
+| **Totale stimato per canale stereo** | | **~80-110 €** (v0.2: 70-95; delta = buffer/make-up + reti. Fuori tabella: 4 pot doppi taper custom dell'EQ → voce 40) |
 
-## 7. Simulazioni — stato (aggiornamento 2026-09-24)
+## 7. Simulazioni — stato (aggiornamento 2026-09-25)
 
 FATTE:
-1. Cella EQ completa: rumore (−124,8 dBu, PASS), impedenza di sorgente (finding 2),
-   livelli, risposta AC → `sim/cdj-eq/RISULTATI-eq.md` (esito: finding critico di
-   fase → decisione 76, EQ in serie). THD: non misurabile coi macromodelli lineari,
-   si verifica al prototipo col modello TI reale.
-5. Tracking/kill depth vs mismatch 0,1%/1%: irrilevante nella cella (≤0,2 dB);
-   da rifare sulla topologia serie (questione 53).
+1. Celle a contribuzione (v0.2): `sim/cdj-eq/RISULTATI-eq.md` — finding critico
+   di fase → decisione 76, topologia serie. THD: non misurabile coi macromodelli
+   lineari, si verifica al prototipo col modello TI reale.
+5. Tracking/mismatch: fatto per entrambe le topologie. Serie: pot doppi ≤1% →
+   L−R ≤0,16 dB PASS; 2% → 0,32 limite (`low-cell-track.cir`, `cascade-track.cir`).
+6. **EQ serie v0.3 completa (beta-2)**: celle LOW/MID/HIGH + cascata 4 bande +
+   riferimento interno −6 dB + summer 49,9k: `sim/eq-serie/` (9 netlist),
+   griglie e finding in `docs/fase1/eq-serie-v0.3.md` §9.
 
 RESTANTI:
 2. VCA THAT 2181: law dB/V, distorsione vs livello a +18 dBu, margine
 3. Peak detector: ballistica a 10 Hz (requisito infrasub) e a 35 kHz
 4. Summing DJ BUS a 4 canali: crosstalk e worst-case
+7. EQ beta-3: modelli op-amp reali (rumore/THD), trim detent, eventuale cella
+   HIGH crossfade-LP2 (dopo questione 68)
 
-## 8. Questioni generate/aggiornate da questa v0.2 (stato 2026-09-24)
+## 8. Questioni generate/aggiornate da questa v0.3 (stato 2026-09-25)
 
-- 53 (tracking EQ stereo): aggiornata — nella cella il mismatch resistivo conta poco;
-  nella topologia serie (dec. 76) si gioca su pot doppi meccanici vs VCA per banda:
-  decide EQ v0.3
-- 59 (all-kill leak): riformulata post-decisione 76 — il leak da cancellazione sparisce;
-  da quantificare il residuo all-kill della serie in EQ v0.3
+- 53 (tracking EQ stereo): numeri misurati — pot doppi ≤1% → L−R ≤0,16 dB PASS;
+  2% → 0,32 limite/trim; alternativa VCA documentata. Scelta: sessione hardware (40)
+- 59 (all-kill): numeri DEFINITIVI dalla cascata — residuo −0,06 dB @5 kHz:
+  l'all-kill non è silenzio; fader o auto-mute (b). Ratifica dopo la 68
+- 68 NUOVA (APERTO-F): profondità kill HIGH — cella sottrattiva (−4…−8 dB, zero
+  silicon extra) vs crossfade-LP2 (−24…−30 dB, +2-3 sezioni/canale). Ascolto
+  sul prototipo M4L quando riparte
+- 65 (EQ2 FX send/return): allineata — stessa famiglia di celle serie (2 bande),
+  design nel modulo FX
 - 55 (transiente assign FX): immutata, proposta uniformata al metodo filtro
-- 40 (hardware pot/fader): immutata, sessione dedicata
-- Review frequenze EQ con Filippo: i centri restano [PROVVISORI]; la baseline NON è più
-  "validata come topologia" — la topologia a celle è bocciata (dec. 76), le frequenze
-  vanno riverificate sulla serie in EQ v0.3
-- 62 CHIUSA → decisione 76 (EQ in serie); 65 NUOVA (EQ2 di FX send/return ereditano
-  il finding di fase)
+- 40 (hardware pot/fader): ora include i 4 pot doppi taper custom dell'EQ
+  (specifica law: `docs/fase1/eq-serie-v0.3.md` §10)
+- Review frequenze EQ con Filippo: centri 70/250/1k/5k [PROVVISORI] — le curve
+  misurate della serie sono la base; ascolto sul prototipo M4L
+- 62 CHIUSA → decisione 76 (EQ in serie); 66 CHIUSA → decisione 77 (kill −30 dB)

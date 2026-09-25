@@ -1,11 +1,13 @@
 # EQ SERIE v0.3 — celle Baxandall a law asimmetrica (2026-09-24/25)
 
-> **Stato: BETA-1 (2026-09-25).** ALPHA (cella LOW) + celle MID/HIGH + cascata
-> 4 bande completa con rumore, tracking e livelli (§9). Restano per beta-2:
-> headroom interno, ottimizzazione rumore, law/taper, integrazione in
-> cdj-line-channel v0.3. Origine: decisione 76 (EQ in serie, famiglia
-> Baxandall) dopo il finding critico delle celle a contribuzione
-> (`sim/cdj-eq/RISULTATI-eq.md`). Sostituisce CDJ v0.2 §3.3.
+> **Stato: BETA-2 (2026-09-25).** ALPHA (cella LOW) + celle MID/HIGH + cascata
+> 4 bande con rumore/tracking/livelli (§9) + riferimento interno −6 dB e
+> summer 49,9k (§9.6) + specifica law/taper (§10). Resta per beta-3: scelta
+> op-amp reali (rumore), trim, ascolto M4L delle questioni 66-68 (prototipo
+> IN PAUSA per direzione di Filippo 2026-09-25: prima il design completo).
+> Origine: decisione 76 (EQ in serie, famiglia Baxandall) dopo il finding
+> critico delle celle a contribuzione (`sim/cdj-eq/RISULTATI-eq.md`).
+> Sostituisce CDJ v0.2 §3.3.
 
 ## 1. Il vincolo che decide tutto: boost e cut simmetrici non bastano
 
@@ -239,8 +241,59 @@ transizione). Curva liscia, bump al corner ≤ +0,7 dB. → questione 68.
 
 ### 9.5 Silicon e BOM (aggiornamento §7)
 
-Per canale: 1 (LOW) + 3 (LM) + 3 (MH) + 3 (HIGH) = **10 sezioni op-amp**
-(~2,5 quad per canale, 5-6 quad per coppia — l'alpha stimava 1 quad/canale
-contando solo le shelf: corretto qui). Pot: 4 doppi per coppia (1 per banda).
-La cella HIGH in variante crossfade-LP2 (questione 68, se scelta) aggiunge
-2-3 sezioni per canale.
+Per canale: 1 (LOW) + 3 (LM) + 3 (MH) + 3 (HIGH) + 2 (buffer in/make-up,
+§9.6) = **12 sezioni op-amp** (3 quad per canale, 6 per coppia). Pot: 4 doppi
+per coppia (1 per banda, taper custom §10). La cella HIGH in variante
+crossfade-LP2 (questione 68, se scelta) aggiunge 2-3 sezioni per canale.
+
+### 9.6 Beta-2: riferimento interno −6 dB + summer 49,9k (cascade-b2*.cir)
+
+Cambiamenti: buffer d'ingresso gain −0,5 e make-up d'uscita gain −2 (due
+inversioni: polarità assoluta ancora preservata, 6 inversioni totali); summer
+delle celle sottrattive 100k → 49,9k (Thevenin del pot ≤2,5k → errore di law
+≤5%, da trimmare nel taper). Principio: stesso riferimento interno −6 dB del
+5-way (decisione 73).
+
+Risultati:
+- **Livelli RISOLTI**: picco interno massimo 7,60 V (era 15,23) a +16 dBu
+  all-boost; estremo +18 dBu: interni 9,54 V (nessun clipping a metà catena),
+  l'uscita clippa a ±16,5 V (saturazione intenzionale, coerente col sheet §2).
+- **Curve invariate**: griglia identica alla beta-1 entro 0,03 dB.
+- **Detent**: offset costante −0,12 dB (guadagni d'anello finiti + make-up
+  2,004): si azzera col trim del make-up (Rf 100k → multi-giro o coppia
+  matched) — piattezza relativa ±0,02 dB confermata.
+- **Rumore**: −110,7 dBu integrato (era −114,6): le DUE sezioni op-amp in più
+  (buffer/make-up) pesano nel macromodello uniforme a ~6 nV/√Hz. Nel design
+  reale buffer e make-up sono OPA1612 (1,1 nV/√Hz): il contributo extra crolla.
+  Margine sul target −92 dBu: 18,7 dB → PASS anche così. Densità @1 kHz:
+  189 nV/√Hz (beta-3: ricalcolare con modelli reali).
+- All-kill, kill per banda, boost: immutati (finding 59/68 validi).
+
+## 10. Law del pot e taper (specifica per voce 40 e per il prototipo M4L)
+
+Rotazione θ (0→1, detent meccanico a θ=0,5 con click) → posizione elettrica:
+
+**Celle shelf (LOW, HIGH)** — asimmetrica (la rete è ±30 dB simmetrica,
+la law no; filosofia decisione 70: musicale al centro, rapida agli estremi):
+- θ ∈ [0,50 → 1,00] (boost): x lineare 0,500 → 0,323 = 0 → +6,0 dB.
+  Corsa ampia, ~12 dB per metà giro: regolazione fine.
+- θ ∈ [0,05 → 0,50] (cut): x 0,970 → 0,500 = −27 → 0 dB: il 90% della
+  mezza corsa copre quasi tutto il cut (~0,6 dB per % di rotazione).
+- θ ∈ [0 → 0,05] (fine corsa): x 0,999 → 0,970 = −30 → −27 dB: il kill
+  completo negli ultimi 5% — lo "scatto" finale del gesto dub.
+- Fine corsa meccanico CCW = −30 dB (non −∞: il silenzio è il fader).
+
+**Celle campana (LM, MH)** — simmetrica:
+- b = 1−2θ lineare (θ=0 kill/notch, θ=0,5 detent, θ=1 boost +6).
+- La profondità del notch satura in fretta (θ<0,1 → già −15 dB al centro):
+  se all'ascolto (M4L, quando riparte) risulta brusca, introdurre legge a
+  tratti come per le shelf. [PROVVISORIO in attesa di ascolto]
+
+**Realizzazione**: taper custom su pot conduttivo-plastica doppio (sessione
+hardware voce 40: marca/modello/albero/click centrale). Tabella θ→x qui sopra
+= specifica di produzione della pista. Nel prototipo M4L la law si applica
+in software (mapping del knob) e si valida a orecchio PRIMA di ordinare i pot.
+
+**Tracking stereo**: sezioni dello stesso pot doppio; requisito ≤1% (misura
+§9.4: 1% → L−R ≤0,16 dB PASS, 2% → 0,32 dB limite). Selezione/trim se la
+produzione delude; alternativa VCA (questione 53) resta documentata.
