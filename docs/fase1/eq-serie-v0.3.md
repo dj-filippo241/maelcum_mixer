@@ -1,9 +1,11 @@
-# EQ SERIE v0.3-alpha — celle Baxandall a law asimmetrica (2026-09-24)
+# EQ SERIE v0.3 — celle Baxandall a law asimmetrica (2026-09-24/25)
 
-> **Stato: ALPHA.** Cella LOW derivata e dimostrata in LTspice (`sim/eq-serie/`).
-> Celle MID/HIGH, cascata completa, rumore e livelli = v0.3-beta. Origine:
-> decisione 76 (EQ in serie, famiglia Baxandall) dopo il finding critico delle
-> celle a contribuzione (`sim/cdj-eq/RISULTATI-eq.md`). Sostituisce CDJ v0.2 §3.3.
+> **Stato: BETA-1 (2026-09-25).** ALPHA (cella LOW) + celle MID/HIGH + cascata
+> 4 bande completa con rumore, tracking e livelli (§9). Restano per beta-2:
+> headroom interno, ottimizzazione rumore, law/taper, integrazione in
+> cdj-line-channel v0.3. Origine: decisione 76 (EQ in serie, famiglia
+> Baxandall) dopo il finding critico delle celle a contribuzione
+> (`sim/cdj-eq/RISULTATI-eq.md`). Sostituisce CDJ v0.2 §3.3.
 
 ## 1. Il vincolo che decide tutto: boost e cut simmetrici non bastano
 
@@ -135,13 +137,110 @@ decisione dentro la voce 53, costo +4 VCA/canale.
 | R/C reti (0,1% dove il detent dipende) | ~48 | Za/Zb matched per banda |
 | Stima costo | ~30-45 € | vs 70-95 € della v0.2 |
 
-## 8. Prossimi passi (v0.3-beta)
+## 8. Prossimi passi (v0.3-beta2)
 
-1. Derivazione + simulazione celle MID (campana) e HIGH (duale).
-2. Cascata 4 bande: curve complete per banda e combinazioni, residuo
-   all-kill esatto (chiude/riformula 59), interazione bande.
-3. Simulazione rumore e livelli formale; mismatch a cascata (tracking).
-4. Scelte di Filippo: 53 (tracking: pot precision vs VCA) e taper (voce 40).
-   Profondità kill DECISA: −30 dB (decisione 77, questione 66 chiusa).
+1. FATTO in beta-1 (§9): celle MID/HIGH, cascata 4 bande, residuo all-kill,
+   rumore, tracking, livelli.
+2. Headroom interno: picco 15,2 V a +16 dBu in all-boost (1,3 V dal clamp);
+   a +18 dBu lo stadio MH clippa a metà catena. Soluzione candidata:
+   riferimento interno −6 dB con make-up in uscita (stesso principio della
+   decisione 73 per il 5-way).
+3. Rumore: −114,6 dBu (PASS, 22 dB di margine) ma i summer a 100 kΩ dominano
+   (122 nV/√Hz a 1 kHz): scendere a 25-49,9 kΩ in beta-2 (verificando il
+   carico sul wiper del pot).
+4. Scelte di Filippo: 68 (profondità kill HIGH, §9.3), 53 (tracking: pot
+   precision vs VCA), taper (voce 40). Profondità kill shelf DECISA: −30 dB
+   (decisione 77).
 5. Integrazione in `cdj-line-channel.md` v0.3 (sostituisce §3.3, aggiorna
-   §6 BOM e §4 level plan); allineamento EQ2 FX (questione 65).
+   §6 BOM e §4 level plan); allineamento EQ2 FX (questione 65: le celle
+   shelf/campana di questa famiglia si applicano tali e quali a 2 bande).
+6. Law del pot e taper custom (mappatura θ→x elettrica: boost +6 in metà
+   corsa, cut −30 accelerato agli estremi — filosofia dec. 70).
+
+## 9. Risultati v0.3-BETA-1 (2026-09-25, `sim/eq-serie/`)
+
+### 9.1 Cella MID a campana (mid-cell.cir, 250 Hz Q 0,8) — VALIDATA
+
+Struttura sottrattiva `G = −(1 − b·BP)`, b = 1−2θ: MFB bandpass + invertitore
+di polarità + pot crossfade tra ±BP + summer 100 kΩ. Al centro BP è reale
+(fase 0 dopo l'inversione): il notch è ESATTO, non una cancellazione di fase.
+
+| θ | gesto | 125 Hz | 250 Hz | 500 Hz | 1 kHz |
+|---|---|---|---|---|---|
+| 0 | kill | −2,34 | **−45,5** | −2,31 | −0,48 |
+| 0,5 | DETENT | −0,03 | −0,03 | −0,03 | −0,03 |
+| 1 | boost | +3,45 | **+5,97** | +3,43 | +1,10 |
+
+Kill = notch profondo e stretto (−2,3 dB a ±1 ottava): larghezza governata
+dalla Q — è il comportamento documentato e accettato dei medi (stesso della
+math v0.2, che per i medi era corretta). Boost +6 esatto al centro.
+
+### 9.2 Cella HIGH — il duale serie-RC è BOCCIATO, valida la sottrattiva
+
+Tentativo 1 (duale serie RC della cella LOW): in kill la Xc del condensatore
+serie domina sull'armatura minima (4 kΩ contro 31 Ω a 20 kHz): si ferma a
+−18 dB e lo scaling delle impedenze è invariante. BOCCIATO (registrato).
+
+Tentativo 2 (VALIDATO): stessa famiglia della MID con W = HP2 (Sallen-Key
+~5 kHz): `G = −(1 − b·HP2)`. Misura (high-cell.cir):
+
+| θ | gesto | 1 kHz | 5 kHz | 10 kHz | 20 kHz | 35 kHz | max banda |
+|---|---|---|---|---|---|---|---|
+| 0 | kill | +0,24 | +0,44 | −1,01 | −4,42 | −8,40 | +0,66 |
+| 0,5 | DETENT | −0,03 | −0,03 | −0,02 | −0,02 | −0,02 | −0,02 |
+| 1 | boost | −0,30 | +0,52 | +2,93 | +4,86 | +5,57 | +5,84 |
+
+Boost +6 shelf monotono ✓; detent esatto ✓; **kill limitato**: −4,4 dB a
+20 kHz, −8,4 a 35 kHz (la fase residua di HP2 impedisce l'azzeramento in
+banda: stesso principio del finding v0.2, qui confinato alla zona di
+transizione). Curva liscia, bump al corner ≤ +0,7 dB. → questione 68.
+
+### 9.3 Cascata 4 bande (cascade.cir, 10 modi) — VALIDATA con due finding
+
+| modo | 20 | 70 | 150 | 250 | 500 | 1k | 2,5k | 5k | 10k | 20k | 35k |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| detent | −0,09 | −0,10 | −0,10 | −0,10 | −0,10 | −0,10 | −0,10 | −0,10 | −0,09 | −0,09 | −0,09 |
+| LOW kill | **−29,3** | −25,4 | −20,2 | −16,1 | −10,5 | −5,5 | −1,4 | −0,3 | 0,0 | +0,1 | +0,1 |
+| LM kill | −0,1 | −0,7 | −3,9 | **−45,5** | −2,4 | −0,6 | −0,2 | −0,1 | −0,1 | −0,1 | −0,1 |
+| MH kill | −0,1 | −0,1 | −0,2 | −0,5 | −2,0 | **−44,7** | −1,2 | −0,3 | −0,2 | −0,1 | −0,1 |
+| HIGH kill | −0,1 | −0,1 | −0,1 | −0,1 | 0,0 | +0,2 | +0,6 | +0,4 | −1,1 | −4,5 | −8,5 |
+| **ALL-KILL** | **−29,4** | −26,0 | −24,1 | **−61,8** | −14,6 | **−50,3** | **−1,9** | **−0,06** | −1,0 | −4,3 | −8,3 |
+| all-boost | +5,8 | +5,5 | +6,5 | +7,5 | +6,3 | +6,5 | +1,6 | +1,1 | +3,0 | +4,8 | +5,5 |
+| dub | +5,6 | +3,4 | −2,2 | −45,2 | −4,4 | −45,7 | −1,9 | +0,2 | +2,8 | +4,8 | +5,5 |
+
+- **Detent**: piatto ±0,02 dB relativo su tutta la banda; offset costante
+  −0,10 dB (guadagno d'anello finito dei summer) → trim di make-up, o
+  riferimento interno −6 dB (punto 2 di §8).
+- **LOW kill**: −29 dB a 20 Hz con gonna larga (−16 a 250, −5,5 a 1 kHz):
+  il gesto dub principale è pieno e musicale.
+- **Curva dub** (LOW+HIGH su, medi giù): +5,6 sotto, −45 ai due centri medi,
+  +5,5 in cima: esattamente l'estetica richiesta.
+- **FINDING all-kill (→ questione 59, numeri definitivi)**: profondo ai
+  centri banda (−29/−62/−50) ma **resta aperto intorno a 5 kHz (−0,06 dB)**:
+  la zona 2,5-10 kHz è tra le gonne dei notch medi e il kill HIGH debole.
+  All-kill NON è silenzio: il fader (o l'auto-mute, opzione 59b) è necessario
+  per il silenzio vero. Coerente con la filosofia "kill = gesto, fader = muto".
+- **FINDING HIGH kill (→ questione 68)**: −4…−8 dB in banda = "scurisce"
+  piuttosto che "toglie". Opzioni in §5/questione 68.
+
+### 9.4 Rumore, tracking, livelli
+
+- **Rumore** (cascade-noise.cir, detent, 20-20k): 1,45 µV = **−114,6 dBu**
+  (target ≤ −92 A-wtd: PASS, 22 dB margine). Densità 1 kHz: 122 nV/√Hz
+  (dominano i 100 kΩ dei summer: −8 dB possibili scendendo a 25-49,9 kΩ).
+- **Tracking** (cascade-track.cir, mismatch sezioni ±err/2): detent con
+  err=1% → deviazione ≤0,08 dB (L−R ≤0,16: PASS ≤0,25); err=2% → 0,16 dB
+  (L−R ~0,32: limite, serve trim). All-kill: insensibile (≤0,01 dB).
+  Conferma in cascata dei numeri alpha → questione 53.
+- **Livelli** (cascade-level.cir, 1 kHz +16 dBu, all-boost): uscita ±14,7 V
+  pulita; picco interno 15,2 V (stadio MH, +6,3 dB su segnale già caldo):
+  1,3 V dal clamp. Estremo +18 dBu: il MH clippa a metà catena (19 V teorici)
+  → riferimento interno −6 dB raccomandato in beta-2 (principio dec. 73).
+
+### 9.5 Silicon e BOM (aggiornamento §7)
+
+Per canale: 1 (LOW) + 3 (LM) + 3 (MH) + 3 (HIGH) = **10 sezioni op-amp**
+(~2,5 quad per canale, 5-6 quad per coppia — l'alpha stimava 1 quad/canale
+contando solo le shelf: corretto qui). Pot: 4 doppi per coppia (1 per banda).
+La cella HIGH in variante crossfade-LP2 (questione 68, se scelta) aggiunge
+2-3 sezioni per canale.

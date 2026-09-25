@@ -1,0 +1,104 @@
+* EQ SERIE v0.3-beta — CASCATA 4 bande (LOW 70 / LM 250 / MH 1k / HIGH ~5k)
+* Architettura (docs/fase1/eq-serie-v0.3.md):
+*   LOW  = cella shelf complementare (R=1k, Rp=31k -> kill -30 dB, dec. 77)
+*   MID  = campane sottrattive G = -(1-b*BP), notch esatto al centro
+*   HIGH = sottrattiva G = -(1-b*HP2), kill passa-basso profondo
+*   4 stadi invertenti -> polarita' assoluta preservata
+* Modi (m): 1=detent 2=LOWkill 3=LMkill 4=MHkill 5=HIGHkill 6=ALL-KILL
+*   7=all-boost 8=dub (LOW+HIGH su, medi giu') 9=LOWboost 10=HIGHboost
+* xl/xh: posizione shelf (0,323=+6; 0,5=flat; 0,999=-30)
+* tlm/tmh: posizione campana (0=kill; 0,5=flat; 1=boost+6)
+* err = mismatch pot (0 qui; sweep tracking a parte). [PROVVISORIO — regola 3]
+.step param err2 LIST 0 0.01 0.02
+.step param m LIST 1 6
+.param err=err2
+.param xl = if(m==2,0.999, if(m==6,0.999, if(m==7,0.323, if(m==8,0.323, if(m==9,0.323, 0.5)))))
+.param tlm = if(m==3,0, if(m==6,0, if(m==7,1, if(m==8,0, 0.5))))
+.param tmh = if(m==4,0, if(m==6,0, if(m==7,1, if(m==8,0, 0.5))))
+.param thh = if(m==5,0, if(m==6,0, if(m==7,1, if(m==8,1, if(m==10,1, 0.5)))))
+*
+.subckt OPAMP inp inn out vp vm
+E1 xx 0 value={1000*(V(inp)-V(inn))}
+R1 xx p1 1k
+C1 p1 0 159p
+E2 out 0 value={limit(V(p1),V(vm)+1.5,V(vp)-1.5)}
+.ends OPAMP
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 vin 0 DC 0 AC 1
+*
+* ============ CELLA LOW (shelf 70 Hz, bracci RC parallelo) ============
+RinL vin naL 1k
+RzaL naL nbL {31k*xl*(1+err/2)+1m}
+CzaL naL nbL 100n
+XopL 0 nbL v_lo vcc vee OPAMP
+RfL nbL ncL 1k
+RzbL ncL v_lo {31k*(1-xl)*(1-err/2)+1m}
+CzbL ncL v_lo 100n
+*
+* ============ CELLA MID-LM (250 Hz Q0,8) ============
+R1a v_lo nma 5.11k
+R2a nma 0 18.2k
+C1a nma nmb 100n
+C2a nma vbp1 100n
+R3a vbp1 nmb 10.2k
+X1a 0 nmb vbp1 vcc vee OPAMP
+Ri1a vbp1 nvia 10k
+Ri2a nvia vbn1 {10k*(1+err/2)}
+X2a 0 nvia vbn1 vcc vee OPAMP
+Rp1a vbp1 wpa {10k*tlm+1m}
+Rp2a vbn1 wpa {10k*(1-tlm)+1m}
+Raa v_lo nsa 100k
+Rba wpa nsa 100k
+Rfa nsa v_lm 100k
+X3a 0 nsa v_lm vcc vee OPAMP
+*
+* ============ CELLA MID-MH (1 kHz Q0,9) ============
+R1b v_lm nmc 4.32k
+R2b nmc 0 6.98k
+C1b nmc nmd 33n
+C2b nmc vbp2 33n
+R3b vbp2 nmd 8.66k
+X1b 0 nmd vbp2 vcc vee OPAMP
+Ri1b vbp2 nvib 10k
+Ri2b nvib vbn2 {10k*(1+err/2)}
+X2b 0 nvib vbn2 vcc vee OPAMP
+Rp1b vbp2 wpb {10k*tmh+1m}
+Rp2b vbn2 wpb {10k*(1-tmh)+1m}
+Rab v_lm nsb 100k
+Rbb wpb nsb 100k
+Rfb nsb v_mh 100k
+X3b 0 nsb v_mh vcc vee OPAMP
+*
+* ============ CELLA HIGH (sottrattiva, HP2 ~5 kHz) ============
+Ch1 v_mh nha 10n
+Ch2 nha nhb 10n
+Rh1 nha vhp 4.7k
+Rh2 nhb 0 2.25k
+X1h nhb vhp vhp vcc vee OPAMP
+Rh3 vhp nvh 10k
+Rh4 nvh vhn {10k*(1+err/2)}
+X2h 0 nvh vhn vcc vee OPAMP
+Rp1h vhn wph {10k*thh+1m}
+Rp2h vhp wph {10k*(1-thh)+1m}
+Rah v_mh nsh 100k
+Rbh wph nsh 100k
+Rfh nsh v_hi 100k
+X3h 0 nsh v_hi vcc vee OPAMP
+*
+.ac dec 300 10 60k
+.meas ac g20 FIND mag(V(v_hi)) AT 20
+.meas ac g70 FIND mag(V(v_hi)) AT 70
+.meas ac g125 FIND mag(V(v_hi)) AT 125
+.meas ac g150 FIND mag(V(v_hi)) AT 150
+.meas ac g250 FIND mag(V(v_hi)) AT 250
+.meas ac g500 FIND mag(V(v_hi)) AT 500
+.meas ac g1k FIND mag(V(v_hi)) AT 1k
+.meas ac g2k5 FIND mag(V(v_hi)) AT 2.5k
+.meas ac g5k FIND mag(V(v_hi)) AT 5k
+.meas ac g10k FIND mag(V(v_hi)) AT 10k
+.meas ac g20k FIND mag(V(v_hi)) AT 20k
+.meas ac g35k FIND mag(V(v_hi)) AT 35k
+.meas ac gmax MAX mag(V(v_hi))
+.meas ac gmin MIN mag(V(v_hi))
+.end

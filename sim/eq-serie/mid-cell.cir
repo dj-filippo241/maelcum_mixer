@@ -1,0 +1,53 @@
+* EQ SERIE v0.3-beta — Cella MID a campana (sottrattiva, 250 Hz Q 0,8)
+* G = -(1 - b*BP), b = 1-2*theta:
+*   theta=0   -> b=+1: G = -(1-BP)  -> NOTCH ESATTO a f0 (BP reale al centro:
+*                zero vero, non cancellazione di fase tra shelf)
+*   theta=0,5 -> b=0:  G = -1 flat esatto (wiper a meta' tra +BP e -BP = 0)
+*   theta=1   -> b=-1: G = -(1+BP)  -> peak +6,0 dB a f0
+* Core BP: MFB 250 Hz Q 0,8 (valori da v0.2 verificati: |BP|=1 al centro,
+*   uscita invertita) + invertitore di polarita' -> due polarita' ±BP.
+* Pot 10k+10k tra le polarita', wiper -> summer 100k (Thevenin del pot <=5k
+*   contro 100k: errore di law <=5%, assorbito dal taper).
+* [PROVVISORIO — regola 3]. Centro 250 Hz = baseline PROVVISORIA (SPECIFICA §4).
+.param th=0.5
+.step param th LIST 0 0.25 0.5 0.75 1
+*
+.subckt OPAMP inp inn out vp vm
+E1 xx 0 value={1000*(V(inp)-V(inn))}
+R1 xx p1 1k
+C1 p1 0 159p
+E2 out 0 value={limit(V(p1),V(vm)+1.5,V(vp)-1.5)}
+.ends OPAMP
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+*
+V1 vin 0 DC 0 AC 1
+* --- MFB bandpass 250 Hz Q 0,8 (guadagno centro = -1: vbp = -BP*vin) ---
+R1m vin nma 5.11k
+R2m nma 0 18.2k
+C1m nma nmb 100n
+C2m nma vbp 100n
+R3m vbp nmb 10.2k
+X1m 0 nmb vbp vcc vee OPAMP
+* --- invertitore di polarita': vbn = +BP*vin ---
+Ri1 vbp nvi 10k
+Ri2 nvi vbn 10k
+X2i 0 nvi vbn vcc vee OPAMP
+* --- pot crossfade tra le due polarita' ---
+Rp1 vbp wp {10k*th+1m}
+Rp2 vbn wp {10k*(1-th)+1m}
+* --- summer: out = -(vin + Vw), R 100k ---
+Ra vin ns 100k
+Rb wp ns 100k
+Rf2 ns outm 100k
+X3s 0 ns outm vcc vee OPAMP
+*
+.ac dec 500 10 40k
+.meas ac g20 FIND mag(V(outm)) AT 20
+.meas ac g125 FIND mag(V(outm)) AT 125
+.meas ac g250 FIND mag(V(outm)) AT 250
+.meas ac g500 FIND mag(V(outm)) AT 500
+.meas ac g1k FIND mag(V(outm)) AT 1k
+.meas ac gmax MAX mag(V(outm))
+.meas ac gmin MIN mag(V(outm))
+.end

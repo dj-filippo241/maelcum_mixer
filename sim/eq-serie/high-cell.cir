@@ -1,0 +1,53 @@
+* EQ SERIE v0.3-beta — Cella HIGH (sottrattiva, stessa famiglia della MID)
+* G = -(1 - b*HP2), b = 1-2*theta, HP2 = highpass 2° ordine ~5 kHz:
+*   theta=0   -> b=+1: kill = 1-HP2 = passa-basso: -6 dB in alto per ottava,
+*                profondo (target -20..-25 dB @20 kHz); bump al corner <= ~1 dB
+*   theta=0,5 -> b=0:  flat esatto (wiper tra +HP2 e -HP2 = 0)
+*   theta=1   -> b=-1: boost = 1+HP2: +6 dB shelf sopra il corner, monotono
+* NOTA STORICA: il duale serie-RC della cella LOW NON funziona (il C serie
+*   domina sull'armatura minima in kill: si ferma a -18 dB @20 kHz; scaling
+*   invariante). La via sottrattiva con HP e' pulita perche' HP2 -> 1 reale
+*   in banda: la' il kill e' vero; vicino al corner resta un bump piccolo.
+* HP2: Sallen-Key unity (valori da v0.2: 2x10n, 4.7k/2.25k, fc ~4.9 kHz,
+*   Q ~0.5-0.7 da verificare in misura). [PROVVISORIO — regola 3]
+.param th=0.5
+.step param th LIST 0 0.25 0.5 0.75 1
+*
+.subckt OPAMP inp inn out vp vm
+E1 xx 0 value={1000*(V(inp)-V(inn))}
+R1 xx p1 1k
+C1 p1 0 159p
+E2 out 0 value={limit(V(p1),V(vm)+1.5,V(vp)-1.5)}
+.ends OPAMP
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+*
+V1 vin 0 DC 0 AC 1
+* --- SK HPF unity ~5 kHz: vhp = +HP2*vin ---
+Ch1 vin nha 10n
+Ch2 nha nhb 10n
+Rh1 nha vhp 4.7k
+Rh2 nhb 0 2.25k
+X1h nhb vhp vhp vcc vee OPAMP
+* --- invertitore: vhn = -HP2*vin ---
+Rh3 vhp nvh 10k
+Rh4 nvh vhn 10k
+X2h 0 nvh vhn vcc vee OPAMP
+* --- pot crossfade (theta=0 lato invertito = kill; theta=1 lato dritto = boost)
+Rp1h vhn wph {10k*th+1m}
+Rp2h vhp wph {10k*(1-th)+1m}
+* --- summer: out = -(vin + Vw), 100k ---
+Rah vin nsh 100k
+Rbh wph nsh 100k
+Rfh nsh outh 100k
+X3h 0 nsh outh vcc vee OPAMP
+*
+.ac dec 500 10 60k
+.meas ac g1k FIND mag(V(outh)) AT 1k
+.meas ac g5k FIND mag(V(outh)) AT 5k
+.meas ac g10k FIND mag(V(outh)) AT 10k
+.meas ac g20k FIND mag(V(outh)) AT 20k
+.meas ac g35k FIND mag(V(outh)) AT 35k
+.meas ac gmax MAX mag(V(outh))
+.meas ac gmin MIN mag(V(outh))
+.end
