@@ -1,0 +1,75 @@
+* MODULO FILTRO v0.2 — Risonanza -> auto-oscillazione + soft limiting (questione 11)
+* Core SVF di feas-svf (converter expo vc=2,8 -> fc ~1 kHz), risonanza via
+* iniezione di corrente OTA nel summer (1 sezione LM13700 di riserva per core
+* — stessa famiglia e tecnica gm/Iabc del controllo di frequenza):
+*   1/Q = Rf * gm_res ;  gm_res = gres * 141,4 uS
+*   gres=1 -> Q=0,707 (RES al minimo); gres->0 -> Q->inf = auto-oscillazione
+*   che segue il cutoff (SPECIFICA §5: 90-100% = oscillazione +6…+10 dBu).
+* Soft limiting: Rlim + due stringhe antiparallele 2×1N4148 sul nodo BP:
+*   l'ampiezza si stabilizza dove le stringhe conducono — morbido, niente
+*   clamp crudi. Target: 1,55-2,45 Vrms = 2,2-3,5 Vp di picco.
+* L'innesco in simulazione e' dato da .ic (nel circuito reale parte dal
+*   rumore proprio in < 1 ms). Vin 10 mV mostra il picco di risonanza
+*   sotto soglia (gres 0,7-1) e non disturba l'oscillazione.
+.param gres=1
+.step param gres LIST -0.35 -0.5 -0.75 -1.0
+.param vc=2.8
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+*
+* ---------- Converter esponenziale (da feas-svf, validato 2026-09-24) ----------
+.model Q2N3904 NPN(Is=6.734f Ikf=66.78m Xti=3 Eg=1.11 Cje=4.966p Vje=.75
++ Mje=.3556 Cjc=3.465p Vjc=.75 Mjc=.3085 Xtb=1.5 Fc=.5 Tf=301.2p Tr=239.5n
++ Br=.7306 Ise=1.068p Ne=2.009 Nr=2.009 Vaf=111.3)
+Iref vcc va DC 400u
+Q1 va va 0 Q2N3904
+Bd va vb2 V={(0.21095-0.04219*vc)*(temp+273.15)/300.15}
+Vfix vfix 0 DC 0.5
+Vabc iabc vfix DC 0
+Q2 iabc vb2 0 Q2N3904
+*
+* ---------- SVF 2 poli con buffer di stato ----------
+.subckt OPAMP inp inn out vp vm
+E1 xx 0 value={1000*(V(inp)-V(inn))}
+R1 xx p1 1k
+C1 p1 0 159p
+E2 out 0 value={limit(V(p1),V(vm)+1.5,V(vp)-1.5)}
+.ends OPAMP
+V1 vin 0 SINE(0 10m 1016)
+Rvin vin ns 10k
+Rlp lp_b ns 10k
+Rf ns hp 10k
+Xsum 0 ns hp vcc vee OPAMP
+Xb1 bp bp_b bp_b vcc vee OPAMP
+Xb2 lp lp_b lp_b vcc vee OPAMP
+* Segno: I(Vabc) = -Ic -> gm = -19,2*I(Vabc)
+G1 0 bp value={-19.2*I(Vabc)*V(hp)}
+C1i bp 0 33n
+G2 0 lp value={-19.2*I(Vabc)*V(bp_b)}
+C2i lp 0 33n
+*
+* ---------- Risonanza: OTA G3 (gm_res) nel summer ----------
+G3 0 ns value={141.4u*gres*V(bp_b)}
+*
+* ---------- Soft limiter sul nodo BP ----------
+.model D1N4148 D(Is=2.53n Rs=0.568 N=1.752 Cjo=4p M=0.4 Tt=20n Iave=200m Vpk=100)
+Rlim bp dlim 1k
+D1 dlim nd1 D1N4148
+D2 nd1 nd1b D1N4148
+D3 nd1b 0 D1N4148
+D4 0 nd2b D1N4148
+D5 nd2b nd2 D1N4148
+D6 nd2 dlim D1N4148
+* Perdite d'anello realistiche (r_out OTA/rete ~ Q_loss 400): senza, a gres=0
+* l'ampiezza resterebbe quella delle condizioni iniziali; con le perdite
+* l'oscillazione CRESCE fino all'equilibrio col limiter (come nel reale).
+Rloss1 bp 0 2Meg
+Rloss2 lp 0 2Meg
+*
+.ic V(lp)=0.1
+.tran 0 3s 0 200u
+.option noopiter
+* Ampiezza BP a regime (finestra finale) per ogni gres
+.meas tran bppk MAX V(bp) FROM 2.5s TO 3s
+.meas tran bppk_neg MIN V(bp) FROM 2.5s TO 3s
+.end

@@ -1,10 +1,16 @@
-# FASE 2 — Modulo FILTRO: design v0.1 (architettura + fattibilità)
+# FASE 2 — Modulo FILTRO: design v0.2 (2026-09-25)
 
-> **v0.1 (2026-09-24)**: primo design del modulo filtro esterno. Copre architettura,
-> funzioni di trasferimento, topologia del core e VERIFICA DI FATTIBILITÀ del
-> converter esponenziale (questione 51, condizione della decisione 74). NON congela
-> valori (regola 3): tutto [PROVVISORIO] salvo i requisiti [BLOCCATO] citati.
-> Risonanza, overdrive, law shaper e distribuzione CV = design v0.2 (questioni 11/12 aperte).
+> **v0.2 (2026-09-25)**: aggiunge alla v0.1 il design SIMULATO della risonanza
+> con auto-oscillazione e soft limiting (questione 11: +7,3…+8,6 dBu misurati,
+> target SPEC +6…+10 centrato), l'architettura di distribuzione Iabc agli 8 core
+> con verifica del tracking (questione 51: mirror bufferizzato ≤1,6%), e la
+> specifica del law shaper (dec. 70) con pre-distorsione dell'errore residuo del
+> converter. Overdrive ancora in attesa delle referenze di Filippo (questioni
+> 12/61). NON congela valori (regola 3): tutto [PROVVISORIO] salvo i requisiti
+> [BLOCCATO] citati.
+> **v0.1 (2026-09-24)**: architettura, funzioni di trasferimento, topologia del
+> core e verifica di fattibilità del converter esponenziale (questione 51,
+> condizione della decisione 74).
 > Fonti: SPECIFICA §5, decisioni 67/68/70/74, gain-staging sheet §2, `docs/04-...` §9.
 
 ## 1. Requisiti (stato: BLOCCATO salvo dove indicato)
@@ -111,26 +117,74 @@ le 11,8 ottave derivano del ~70% su 0-50 °C (misurato, §6).
   2. alimentare il collettore di Q2 dal nodo di riferimento (va) fa sì che Iref debba
      fornire ANCHE Ic2 → stessa compressione rientra dalla finestra (misurato: −27…−53%
      a vc alto). Il collettore va alimentato da un rail proprio a Vce fisso.
-- ΔV viene dal CV bus (0-5 V) attraverso: law shaper a tratti (dec. 70: punti di piega
-  regolabili a banco) → divisore di precisione (~1/24) → stadio PTAT. Lo shaper può
-  anche pre-distorcere gli errori residui del converter: la law finale si rifinisce
-  al prototipo (metodo della fase circuitale: misura → revisione).
-- **Distribuzione** (questione 51): 1 converter master per sezione (HPF, LPF) →
-  Iabc di riferimento → mirror di corrente verso gli 8 core (mirror sullo stesso die/PCB,
-  accoppiati termicamente) + trim per core (target ≤2%). Design v0.2.
+- ΔV viene dal CV bus (0-5 V) attraverso: law shaper a tratti (dec. 70) → divisore di
+  precisione (~1/24) → stadio PTAT.
+- **Law shaper — SPECIFICA v0.2** [PROVVISORIO, rifinitura a banco come da dec. 70]:
+  - Legge target (θ = rotazione knob 0→1): musicale = esponenziale nei ~90% centrali
+    con f(0,05) = 14 Hz e f(0,95) = 25 kHz (10,8 ottave); ultimi 5% per lato con
+    accelerazione ~4× agli estremi veri (10 Hz / 35 kHz = silenzio per superamento
+    della banda). Tabella θ→f = riferimento per taper e per il prototipo M4L.
+  - **Pre-distorsione**: l'errore residuo misurato del converter (§6: −3,6% → −9,4%,
+    curva liscia monotona) si compensa nello shaper: vc* = vc_ideale − e(vc)/2,355
+    (correzione ≤ 40 mV agli estremi) — la law risultante è esponenziale pura entro
+    ~±1%.
+  - Circuito: generatore piecewise-lineare ATTIVO a tratti (2 sezioni op-amp per
+    sezione CV: stadio a guadagno commutato da rami diodi-resistori in feedback +
+    invertitore), riferimenti di piega da partitori sui rail ±15 V LN con trimmer
+    (2 endpoint + 2 breakpoint + gain PTAT = 5 trim per sezione, "rifinitura a banco"
+    della dec. 70). Simulazione/verifica della rete = al prototipo (tecnica standard
+    da sintetizzatore; la curva matematica qui sopra è il requisito).
+- **Distribuzione Iabc — DESIGN v0.2 SIMULATO** (`sim/filtro/mirror.cir`, questione 51):
+  1 converter master per sezione (HPF, LPF) → **mirror bufferizzati** (servo op-amp
+  che forza Vbe del ramo di uscita = Vbe del ramo di riferimento: le correnti di base
+  non passano dal segnale) → 8 rami + trim per core. Misure (β da 50 a 300, estremi
+  108 nA / 380 µA):
+  - mirror SEMPLICE: errore variabile 2,8-3,2 punti % al variare di β → tracking
+    fuori target (≤2%) — SCARTATO;
+  - mirror BUFFERIZZATO: variazione tra rami ≤1,6 punti % → **tracking PASS ≤2%**;
+    errore assoluto −3…−7% (α del ramo di ingresso a corrente bassa) = comune a
+    tutti i core → si assorbe col trim di endpoint del converter, non intacca il
+    tracking.
+  Regole costruttive: transistor dei mirror in quad matched sullo stesso die, PCB
+  simmetrico termicamente (converter e mirror lontani da stadi caldi), trim per core
+  (10 giri) in produzione/calibrazione. Alternativa scartata: converter per core
+  (8 coppie matched + ΔV distribuito: budget di offset 0,5 mV → 2%, troppo stretto
+  senza trim dedicati).
 - Coppia matched: candidati [reperibilità DA VERIFICARE, come voce 37 per THAT 2181]:
   MAT12 (ADI), SSM2212 (legacy), DMMT3904W (Diodes Inc.), BC847BPDW; in subordine
   coppia discreta selezionata + accoppiamento termico (stessa piazzola, colla termica).
 
 ## 5. Risonanza, overdrive, commutazione (design v0.2 — requisiti qui sotto)
 
-- **RES** (questione 11): Q variabile 0,7 → auto-oscillazione. Il BP torna nel summer
-  con coefficiente 1/Q: candidati per il controllo — OTA in configurazione resistore
-  controllato (gm·V sul nodo BP), oppure VCA (THAT 2181, famiglia unica col resto del
-  mixer) sul percorso BP. Auto-oscillazione a +6…+10 dBu con soft limiting PREVEDIBILE
-  (no clamp a diodi crudi — SPECIFICA §5): rete di limiting dentro l'anello (diodi in
-  feedback su stadio dedicato, carattere da definire con Filippo — riferimento Sherman,
-  questione 61: referenze sonore in raccolta).
+- **RES — DESIGN v0.2 SIMULATO** (`sim/filtro/res-osc.cir`, questione 11): Q variabile
+  via **iniezione OTA nel summer** — 1 sezione LM13700 di riserva per core (stessa
+  famiglia e tecnica gm/Iabc del controllo frequenza; niente VCA aggiuntivi):
+  `1/Q = Rf · gm_res`, gm_res = 19,2·Iabc_res. Law del knob RES [PROVVISORIA]:
+  θ 0→0,9: gm_res da +141 µS (Q 0,707) verso 0 (Q→∞, "aggressiva" 70-90% della
+  SPECIFICA); θ 0,9→1,0: gm_res passa a NEGATIVO (−106…−141 µS) = l'anello guadagna
+  invece di smorzare → **auto-oscillazione** che segue il cutoff (proprietà naturale
+  dell'SVF). Il gm differenziale dell'OTA accetta lo steering oltre il balance:
+  nessun trucco di polarità nel circuito.
+- **Soft limiting**: sul nodo BP, Rlim 1 kΩ + due stringhe antiparallele 3×1N4148
+  (soglie ~1,7 V, conduzione graduale — niente clamp crudi, SPECIFICA §5).
+  L'ampiezza di oscillazione è l'equilibrio tra margine d'anello e assorbimento
+  del limiter — NON dalle condizioni iniziali (lezione simulata: servono perdite
+  d'anello realistiche nel modello, Q_loss ≈ 400).
+- **Misure** (fc ≈ 1 kHz, tran 3 s, regime):
+
+  | margine (gres) | ampiezza BP | livello |
+  |---|---|---|
+  | 0 (Q→∞, solo perdite) | 0,90 Vp | −1,7 dBu |
+  | −0,35 | 1,93 Vp | +4,9 dBu |
+  | −0,50 | 2,15 Vp | +5,8 dBu |
+  | **−0,75 (nominale)** | **2,53 Vp** | **+7,3 dBu** |
+  | −1,0 | 2,96 Vp | +8,6 dBu |
+
+  Target SPECIFICA (+6…+10 dBu) centrato con range di trim a banco. Sotto soglia
+  il picco di risonanza segue Q esattamente (verificato: Q 8,8 → +18,9 dB sul
+  segnale di prova). Carattere della sinusoide limitata: da ascoltare al
+  prototipo (riferimento Sherman — questione 61 per le referenze).
+  Innesco reale: dal rumore proprio, <1 ms (in simulazione via .ic).
 - **DRIVE/overdrive** (questioni 12/61): JFET prima / BJT asimmetrico poi (SPECIFICA §5);
   dominio ±18 V, recovery low-Z 20-50 Ω con +23 dBu clean (sheet §2/K5). La curva
   clean→gritty→hard dub è sound design: aspetta le referenze di Filippo (questione 61).
@@ -154,7 +208,11 @@ le 11,8 ottave derivano del ~70% su 0-50 °C (misurato, §6).
   op-amp reale (rumore, offset, GBW minimo) è v0.2.
 - PTAT: sorgente comportamentale ∝ T assoluta → assume moltiplicatore ΔVbe reale
   (tecnica standard, da disegnare in v0.2). Q fisso 0,707 (il controllo RES è v0.2).
-- File: `feas-svf.cir` (griglia completa), `debug1.cir` / `debug2-conv.cir` (diagnostica).
+- File: `feas-svf.cir` (griglia completa), `debug1.cir` / `debug2-conv.cir` (diagnostica
+  converter), `res-osc.cir` (risonanza → auto-oscillazione + limiter, v0.2),
+  `mirror.cir` (distribuzione Iabc, v0.2). Modelli v0.2: 1N4148 con .model esplicito
+  (batch non carica le librerie), perdite d'anello Q_loss≈400 incluse (senza,
+  l'ampiezza oscillante resta quella iniziale invece dell'equilibrio col limiter).
 
 ### Metodo
 
@@ -202,8 +260,10 @@ controllo RES, law shaper concreto, modello OTA reale, prototipo su millefori.
 
 | Voce | Qtà | Note |
 |---|---|---|
-| LM13700 (dual OTA) | 16 | 8 core × 2 sezioni [PROVVISORIO] |
-| Quad op-amp low-noise (classe OPA1654) | ~12 | summer + buffer di stato |
+| LM13700 (dual OTA) | 20 | 8 core × (4 integratori + 1 risonanza) = 5 OTA/core [PROVVISORIO] |
+| Quad op-amp low-noise (classe OPA1654) | ~14 | summer + buffer di stato (48 sez.) + servo mirror + shaper |
+| 1N4148 (limiter risonanza) | 48 | 6 per core, stringhe 3S antiparallele |
+| Trimmer (freq per core, endpoint shaper, RES) | ~30 | calibrazione a banco |
 | Coppia BJT matched | 2 (+ selezione) | MAT12/DMMT3904W [reperibilità da verificare] |
 | Switch analogici (mux modo, mux drive CV) | ~6 | ADG14xx [PROVVISORIO] |
 | C integratori C0G/PP 33 nF 2% matched | 32 | tracking L/R e tra sezioni |
@@ -214,12 +274,18 @@ controllo RES, law shaper concreto, modello OTA reale, prototipo su millefori.
 
 ## 8. Questioni toccate da questa v0.1
 
-- **51** (tracking/converter): fattibilità converter DIMOSTRATA in simulazione (range,
-  law, PTAT); resta il design v0.2 di mirror/distribuzione/trim e la verifica a 8 core.
+- **51** (tracking/converter): CHIUSA la parte elettrica — converter dimostrato (v0.1)
+  + distribuzione a mirror bufferizzati simulata (v0.2: tracking tra rami ≤1,6%,
+  PASS ≤2%; mirror semplice scartato). Restano: simmetria termica del PCB, procedura
+  di calibrazione per core al banco, conferma a 8 core fisici al prototipo.
 - **49** (HPF min 10 Hz): la condizione "se la simulazione conferma il converter" è
   soddisfatta → CHIUSA come assorbita dalla decisione 74 (full-range 10 Hz–35 kHz).
-- **11** (SVF/risonanza): topologia SVF scelta [PROVVISORIO]; loop di risonanza e
-  limiting = v0.2, con referenze sonore di Filippo (questione 61).
+- **11** (SVF/risonanza): RISPOSTA in v0.2 — risonanza via iniezione OTA + limiter
+  3S morbido; oscillazione +7,3…+8,6 dBu misurata (target +6…+10 ✓), segue il cutoff.
+  Resta la ratifica a ORECCHIO del carattere (riferimento Sherman) al prototipo,
+  con le referenze di Filippo (questione 61). Law RES θ→gm_res [PROVVISORIA]:
+  0-90% corsa = Q 0,707→∞, 90-100% = oscillazione (margine −0,75…−1,0 nominale,
+  trim a banco).
 - **12** (overdrive): requisiti recepiti; topologia dopo le referenze (questione 61).
 - NUOVA da §2: **conferma interpretazione mux CV** — un solo percorso attivo per canale
   (HPF oppure LPF) vs sezioni sempre in serie. La dec. 67 dice "tutti i canali nella
@@ -228,11 +294,17 @@ controllo RES, law shaper concreto, modello OTA reale, prototipo su millefori.
 - NUOVA da §3: **allineamento 4 poli** (Butterworth vs Bessel vs LR) = carattere del
   filtro: da proporre a Filippo con curve e ascolti [APERTO-F].
 
-## 9. Prossimi passi
+## 9. Prossimi passi (v0.3)
 
-1. v0.2: circuito RES (questione 11) + simulazione auto-oscillazione/limiting.
-2. v0.2: law shaper (dec. 70) + pre-distorsione degli errori residui del converter.
-3. v0.2: mirror + trim, simulazione tracking 8 core ≤2% (voce 51).
-4. v0.2: overdrive JFET dopo referenze Filippo (questioni 12/61).
-5. Modello LM13700 reale (o prototipo): offset/rumore a Iabc = 100 nA, swing, THD.
-6. Prototipo su millefori di UN core + converter prima di qualunque PCB (metodo).
+FATTI in v0.2: RES/oscillazione/limiter (11), shaper law + pre-distorsione (dec. 70),
+distribuzione mirror + tracking (51).
+
+1. Overdrive JFET/BJT dopo le referenze di Filippo (questioni 12/61).
+2. Mux di modo per canale (HPF/OFF/LPF) + generatore di ramp break-before-make
+   1-5 ms (SPECIFICA §4) — design del circuito.
+3. Modello LM13700 reale (o prototipo): offset/rumore a Iabc = 100 nA, swing, THD;
+   THD dell'oscillatore limitata dal limiter (carattere — ascolto).
+4. Prototipo su millefori di UN core + converter + RES: taratura law, verifica
+   tracking 8 core reali, ascolto risonanza/oscillazione (61/63/64 a orecchio).
+5. Layout termico PCB (simmetria converter/mirror/core) e procedura di calibrazione.
+6. Rumore del modulo completo (target: non peggiorare il send 0 dBu — sheet §3).

@@ -1,0 +1,41 @@
+* MODULO FILTRO v0.2 — Distribuzione Iabc agli 8 core (questione 51)
+* Confronto: mirror BJT semplice vs mirror bufferizzato (servo op-amp su Vbe)
+* ai due estremi del range: 108 nA (fc 10 Hz) e 380 uA (fc 37 kHz).
+* Rischio: beta crolla a corrente bassa (Ise/Ne) -> il mirror semplice perde
+* accuracy proprio dove il tracking conta (target <=2%, voce 51/dec. 74).
+* Ingresso: sorgenti di corrente comportamentali (isw) — nel circuito reale
+* il master converter fornisce la corrente (stessa impedenza).
+.param bf=150
+.param isw=108n
+.step param bf LIST 50 150 300
+.step param isw LIST 108n 380u
+*
+.model QM NPN(Is=6.734f Bf={bf} Ise=1.068p Ne=2.009 Vaf=111.3 Xtb=1.5)
+.subckt OPAMP inp inn out vp vm
+E1 xx 0 value={1000*(V(inp)-V(inn))}
+R1 xx p1 1k
+C1 p1 0 159p
+E2 out 0 value={limit(V(p1),V(vm)+1.5,V(vp)-1.5)}
+.ends OPAMP
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+*
+* --- ramo 1: mirror semplice ---
+B1 0 cref I={isw}
+Q1 cref cref 0 QM
+Vamm1 iout1 0 DC 0.65
+Q2 iout1 cref 0 QM
+*
+* --- ramo 2: mirror bufferizzato (op-amp forza Vbe4 = Vbe3) ---
+B2 0 cref2 I={isw}
+Q3 cref2 cref2 0 QM
+Xservo cref2 b4 b4 vcc vee OPAMP
+Q4 iout2 b4 0 QM
+Vamm2 iout2 0 DC 0.65
+*
+Vdum vdum 0 DC 0
+.dc Vdum 0 1 1
+.meas dc is_out FIND I(Vamm1) AT 0
+.meas dc ib_out FIND I(Vamm2) AT 0
+.meas dc cref_v FIND V(cref) AT 0
+.end
