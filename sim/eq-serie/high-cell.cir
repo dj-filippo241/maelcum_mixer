@@ -8,7 +8,7 @@
 *   domina sull'armatura minima in kill: si ferma a -18 dB @20 kHz; scaling
 *   invariante). La via sottrattiva con HP e' pulita perche' HP2 -> 1 reale
 *   in banda: la' il kill e' vero; vicino al corner resta un bump piccolo.
-* HP2: Sallen-Key unity (valori da v0.2: 2x10n, 4.7k/2.25k, fc ~4.9 kHz,
+* HP2: Sallen-Key unity (2x10n, fb 2.3k / gnd 4.6k -> Q 0,707 VERO, fc ~4.9 kHz,
 *   Q ~0.5-0.7 da verificare in misura). [PROVVISORIO — regola 3]
 .param th=0.5
 .step param th LIST 0 0.25 0.5 0.75 1
@@ -26,8 +26,8 @@ V1 vin 0 DC 0 AC 1
 * --- SK HPF unity ~5 kHz: vhp = +HP2*vin ---
 Ch1 vin nha 10n
 Ch2 nha nhb 10n
-Rh1 nha vhp 4.7k
-Rh2 nhb 0 2.25k
+Rh1 nha vhp 2.3k
+Rh2 nhb 0 4.6k
 X1h nhb vhp vhp vcc vee OPAMP
 * --- invertitore: vhn = -HP2*vin ---
 Rh3 vhp nvh 10k

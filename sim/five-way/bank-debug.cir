@@ -1,0 +1,108 @@
+* MODULO 5-WAY v0.1 — KILL bank: filter bank complementare LR4 a 5 vie
+* (questione 8: "matematica complementare delle 5 bande")
+* Requisiti SPECIFICA §6: 24 dB/ott, overlap deliberato senza buchi,
+* somma piatta senza kill, kill per via PRIMA dell'EQ creativo.
+* Scelta: Linkwitz-Riley 4° ordine = due Butterworth 2° (Q 0,707) in cascata
+* per ogni edge; le bande LR4 sommano in tensione PIATTE (proprieta' LR).
+* Vie: SUB=LP4(90) | KICK=HP4(90)LP4(350) | MID=HP4(350)LP4(1,2k) |
+*      HIGH=HP4(1,2k)LP4(3,5k) | SUPER=HP4(3,5k)   [freq PROVVISORIE dec. 66]
+* Kill = gate VCA per via (qui ideale: g=0/1); kcase: 0=nessuno 1=SUB
+* 2=KICK 3=MID 4=HIGH 5=SUPER 6=ALL. Somma = summer invertente (la LR4
+* somma gia' invertita: polarita' assoluta ripristinata dal make-up, dec. 73).
+* Valori [PROVVISORIO — regola 3]: SK biquad unity, R da formula con C fisso.
+.param kcase=0
+*
+.subckt OPAMP inp inn out vp vm
+E1 xx 0 value={1000*(V(inp)-V(inn))}
+R1 xx p1 1k
+C1 p1 0 159p
+E2 out 0 value={limit(V(p1),V(vm)+1.5,V(vp)-1.5)}
+.ends OPAMP
+.subckt SKLP in out PARAMS: fc=90 Cc=100n
+R1 in n1 {1/(2*pi*fc*sqrt(2)*Cc)}
+R2 n1 n2 {1/(2*pi*fc*sqrt(2)*Cc)}
+C1 n1 out {2*Cc}
+C2 n2 0 {Cc}
+Xop n2 out out vcc vee OPAMP
+.ends SKLP
+.subckt SKHP in out PARAMS: fc=90 Cc=10n
+C1 in n1 {Cc}
+C2 n1 n2 {Cc}
+R1 n1 out {2/(2*pi*fc*sqrt(2)*Cc)}
+R2 n2 0 {1/(2*pi*fc*sqrt(2)*Cc)}
+Xop n2 out out vcc vee OPAMP
+.ends SKHP
+*
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 vin 0 DC 0 AC 1
+*
+* --- SUB: LP4(90) ---
+XA1 vin s1a SKLP fc=90 Cc=100n
+XA2 s1a sub_o SKLP fc=90 Cc=100n
+* --- KICK: HP4(90) + LP4(350) ---
+XB1 vin s2a SKHP fc=90 Cc=100n
+XB2 s2a s2b SKHP fc=90 Cc=100n
+XB3 s2b s2c SKLP fc=350 Cc=100n
+XB4 s2c kick_o SKLP fc=350 Cc=100n
+* --- MID: HP4(350) + LP4(1.2k) ---
+XC1 vin s3a SKHP fc=350 Cc=100n
+XC2 s3a s3b SKHP fc=350 Cc=100n
+XC3 s3b s3c SKLP fc=1200 Cc=10n
+XC4 s3c mid_o SKLP fc=1200 Cc=10n
+* --- HIGH: HP4(1.2k) + LP4(3.5k) ---
+XD1 vin s4a SKHP fc=1200 Cc=10n
+XD2 s4a s4b SKHP fc=1200 Cc=10n
+XD3 s4b s4c SKLP fc=3500 Cc=10n
+XD4 s4c high_o SKLP fc=3500 Cc=10n
+* --- SUPER: HP4(3.5k) ---
+XE1 vin s5a SKHP fc=3500 Cc=10n
+XE2 s5a sup_o SKHP fc=3500 Cc=10n
+*
+* --- Gate di kill (VCA ideali; nel reale THAT 2181 + ramp 1 ms) ---
+Bg1 sub_g 0 V={V(sub_o)*if(kcase==1,0,if(kcase==6,0,1))}
+Bg2 kick_g 0 V={V(kick_o)*if(kcase==2,0,if(kcase==6,0,1))}
+Bg3 mid_g 0 V={V(mid_o)*if(kcase==3,0,if(kcase==6,0,1))}
+Bg4 high_g 0 V={V(high_o)*if(kcase==4,0,if(kcase==6,0,1))}
+Bg5 sup_g 0 V={V(sup_o)*if(kcase==5,0,if(kcase==6,0,1))}
+*
+* --- Somma invertente (5 ingressi 10k, Rf 10k) ---
+Rs1 sub_g ns 10k
+Rs2 kick_g ns 10k
+Rs3 mid_g ns 10k
+Rs4 high_g ns 10k
+Rs5 sup_g ns 10k
+Rsf ns vsum 10k
+Xsum 0 ns vsum vcc vee OPAMP
+*
+.ac dec 400 5 60k
+.meas ac g10 FIND mag(V(vsum)) AT 10
+.meas ac g30 FIND mag(V(vsum)) AT 30
+.meas ac g90 FIND mag(V(vsum)) AT 90
+.meas ac g200 FIND mag(V(vsum)) AT 200
+.meas ac g350 FIND mag(V(vsum)) AT 350
+.meas ac g700 FIND mag(V(vsum)) AT 700
+.meas ac g1k2 FIND mag(V(vsum)) AT 1200
+.meas ac g2k5 FIND mag(V(vsum)) AT 2500
+.meas ac g3k5 FIND mag(V(vsum)) AT 3500
+.meas ac g7k FIND mag(V(vsum)) AT 7000
+.meas ac g15k FIND mag(V(vsum)) AT 15000
+.meas ac g25k FIND mag(V(vsum)) AT 25000
+.meas ac gmax MAX mag(V(vsum))
+.meas ac gmin MIN mag(V(vsum))
+.meas ac sub90 FIND mag(V(sub_o)) AT 90
+.meas ac s1a90 FIND mag(V(s1a)) AT 90
+.meas ac kick200 FIND mag(V(kick_o)) AT 200
+.meas ac mid700 FIND mag(V(mid_o)) AT 700
+.meas ac kick350 FIND mag(V(kick_o)) AT 350
+.meas ac mid350 FIND mag(V(mid_o)) AT 350
+.meas ac high700 FIND mag(V(high_o)) AT 700
+.meas ac sub30 FIND mag(V(sub_o)) AT 30
+.meas ac s2c350 FIND mag(V(s2c)) AT 350
+.meas ac s2b350 FIND mag(V(s2b)) AT 350
+.meas ac s3a350 FIND mag(V(s3a)) AT 350
+.meas ac s2a200 FIND mag(V(s2a)) AT 200
+.meas ac s2b200 FIND mag(V(s2b)) AT 200
+.meas ac s2c200 FIND mag(V(s2c)) AT 200
+.meas ac s1a30 FIND mag(V(s1a)) AT 30
+.end

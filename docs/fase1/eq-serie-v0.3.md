@@ -188,14 +188,18 @@ Tentativo 2 (VALIDATO): stessa famiglia della MID con W = HP2 (Sallen-Key
 
 | θ | gesto | 1 kHz | 5 kHz | 10 kHz | 20 kHz | 35 kHz | max banda |
 |---|---|---|---|---|---|---|---|
-| 0 | kill | +0,24 | +0,44 | −1,01 | −4,42 | −8,40 | +0,66 |
+| 0 | kill | +0,31 | +1,66 | −2,98 | −9,14 | −14,07 | +2,05 |
 | 0,5 | DETENT | −0,03 | −0,03 | −0,02 | −0,02 | −0,02 | −0,02 |
-| 1 | boost | −0,30 | +0,52 | +2,93 | +4,86 | +5,57 | +5,84 |
+| 1 | boost | −0,38 | +1,92 | +5,26 | +5,85 | +5,95 | +5,98 |
 
-Boost +6 shelf monotono ✓; detent esatto ✓; **kill limitato**: −4,4 dB a
-20 kHz, −8,4 a 35 kHz (la fase residua di HP2 impedisce l'azzeramento in
-banda: stesso principio del finding v0.2, qui confinato alla zona di
-transizione). Curva liscia, bump al corner ≤ +0,7 dB. → questione 68.
+(Correzione 2026-09-25: HP2 con Q 0,707 VERO — R_fb deve essere META di R_gnd
+in SK HP; la prima versione usava il rapporto inverso, Q 0,354. Bug ereditato
+da v0.2, trovato col bank 5-way.)
+
+Boost +6 shelf monotono ✓; detent esatto ✓; **kill**: −9,1 dB a 20 kHz e
+−14,1 a 35 kHz (profondo in cima alla banda), ma bump +2,1 dB al corner
+(5 kHz): la fase residua di HP2 impedisce l'azzeramento vicino al corner.
+→ questione 68.
 
 ### 9.3 Cascata 4 bande (cascade.cir, 10 modi) — VALIDATA con due finding
 
@@ -205,10 +209,10 @@ transizione). Curva liscia, bump al corner ≤ +0,7 dB. → questione 68.
 | LOW kill | **−29,3** | −25,4 | −20,2 | −16,1 | −10,5 | −5,5 | −1,4 | −0,3 | 0,0 | +0,1 | +0,1 |
 | LM kill | −0,1 | −0,7 | −3,9 | **−45,5** | −2,4 | −0,6 | −0,2 | −0,1 | −0,1 | −0,1 | −0,1 |
 | MH kill | −0,1 | −0,1 | −0,2 | −0,5 | −2,0 | **−44,7** | −1,2 | −0,3 | −0,2 | −0,1 | −0,1 |
-| HIGH kill | −0,1 | −0,1 | −0,1 | −0,1 | 0,0 | +0,2 | +0,6 | +0,4 | −1,1 | −4,5 | −8,5 |
-| **ALL-KILL** | **−29,4** | −26,0 | −24,1 | **−61,8** | −14,6 | **−50,3** | **−1,9** | **−0,06** | −1,0 | −4,3 | −8,3 |
-| all-boost | +5,8 | +5,5 | +6,5 | +7,5 | +6,3 | +6,5 | +1,6 | +1,1 | +3,0 | +4,8 | +5,5 |
-| dub | +5,6 | +3,4 | −2,2 | −45,2 | −4,4 | −45,7 | −1,9 | +0,2 | +2,8 | +4,8 | +5,5 |
+| HIGH kill | −0,1 | −0,1 | −0,1 | −0,1 | −0,1 | +0,2 | +1,4 | +1,6 | −3,1 | −9,2 | −14,2 |
+| **ALL-KILL** | **−29,4** | −26,0 | −24,1 | **−61,8** | −14,6 | **−50,3** | −1,0 | **+1,1** | −3,0 | −9,0 | −14,0 |
+| all-boost | +5,8 | +5,5 | +6,5 | +7,5 | +6,3 | +6,4 | +0,6 | +2,5 | +5,3 | +5,8 | +5,9 |
+| dub | +5,6 | +3,4 | −2,2 | −45,2 | −4,5 | −45,8 | −2,9 | +1,5 | +5,1 | +5,7 | +5,9 |
 
 - **Detent**: piatto ±0,02 dB relativo su tutta la banda; offset costante
   −0,10 dB (guadagno d'anello finito dei summer) → trim di make-up, o
@@ -218,12 +222,12 @@ transizione). Curva liscia, bump al corner ≤ +0,7 dB. → questione 68.
 - **Curva dub** (LOW+HIGH su, medi giù): +5,6 sotto, −45 ai due centri medi,
   +5,5 in cima: esattamente l'estetica richiesta.
 - **FINDING all-kill (→ questione 59, numeri definitivi)**: profondo ai
-  centri banda (−29/−62/−50) ma **resta aperto intorno a 5 kHz (−0,06 dB)**:
+  centri banda (−29/−62/−50) ma **resta aperto intorno a 5 kHz (+1,1 dB, gmax +1,2)**:
   la zona 2,5-10 kHz è tra le gonne dei notch medi e il kill HIGH debole.
   All-kill NON è silenzio: il fader (o l'auto-mute, opzione 59b) è necessario
   per il silenzio vero. Coerente con la filosofia "kill = gesto, fader = muto".
-- **FINDING HIGH kill (→ questione 68)**: −4…−8 dB in banda = "scurisce"
-  piuttosto che "toglie". Opzioni in §5/questione 68.
+- **FINDING HIGH kill (→ questione 68)**: bump +2,1 dB al corner (5 kHz), −9…−14 dB
+a 20-35 kHz: nella zona 5-10 kHz "scurisce" invece di "togliere".
 
 ### 9.4 Rumore, tracking, livelli
 

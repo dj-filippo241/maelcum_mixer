@@ -84,15 +84,15 @@ Architettura per lato: 4 celle in cascata + buffer, **12 sezioni op-amp** (3 qua
 buffer in −6 dB (riferimento interno, principio dec. 73) → LOW shelf complementare
 (R 1k / Rp 31k: kill −29,3 dB a gonna larga, boost +6 shelf liscio) → LM campana
 250 Hz sottrattiva `−(1−b·BP)` (notch esatto −45 dB al centro) → MH campana 1 kHz
-(stessa famiglia) → HIGH sottrattiva `−(1−b·HP2)` (boost +6 shelf; kill −4…−8 dB
-in banda → questione 68) → make-up +6 dB con trim (azzera l'offset di detent).
+(stessa famiglia) → HIGH sottrattiva `−(1−b·HP2)` (boost +6 shelf; kill: bump +2 dB al corner,
+−9…−14 dB a 20-35 kHz → questione 68) → make-up +6 dB con trim (azzera l'offset di detent).
 
 Proprietà misurate (LTspice, macromodelli — dettagli e griglie in eq-serie-v0.3.md §9):
 1. Detent piatto: ±0,02 dB relativo su 20 Hz–35 kHz (offset costante −0,12 dB → trim).
 2. Boost +6,0 dB per banda [requisito locked rispettato]; worst all-boost +7,5 dB @250.
-3. Kill: shelf −30 dB (LOW: −29,3 con gonna fino a 1 kHz; HIGH: −4…−8 → questione 68),
-   campane: notch −45/−66 dB al centro, larghezza da Q.
-4. **All-kill ≠ silenzio**: residuo −0,06 dB @5 kHz (tra le gonne dei notch e il kill
+3. Kill: shelf −30 dB (LOW: −29,3 con gonna fino a 1 kHz; HIGH: bump +2/−9…−14 → questione 68),
+   campane: notch −45/−66 dB al centro, larghezza da Q. (Numeri aggiornati alla correzione Q HP2=0,707 del 2026-09-25.)
+4. **All-kill ≠ silenzio**: residuo +1,1 dB @5 kHz (tra le gonne dei notch e il kill
    HIGH debole) → il fader resta il muto vero; auto-mute = questione 59 (numeri
    definitivi registrati).
 5. Curva dub (LOW+HIGH su, medi giù): +5,6 / −45 / −46 / +5,5 dB — estetica target.
@@ -200,10 +200,10 @@ RESTANTI:
 
 - 53 (tracking EQ stereo): numeri misurati — pot doppi ≤1% → L−R ≤0,16 dB PASS;
   2% → 0,32 limite/trim; alternativa VCA documentata. Scelta: sessione hardware (40)
-- 59 (all-kill): numeri DEFINITIVI dalla cascata — residuo −0,06 dB @5 kHz:
+- 59 (all-kill): numeri DEFINITIVI dalla cascata — residuo +1,1 dB @5 kHz:
   l'all-kill non è silenzio; fader o auto-mute (b). Ratifica dopo la 68
-- 68 NUOVA (APERTO-F): profondità kill HIGH — cella sottrattiva (−4…−8 dB, zero
-  silicon extra) vs crossfade-LP2 (−24…−30 dB, +2-3 sezioni/canale). Ascolto
+- 68 NUOVA (APERTO-F): profondità kill HIGH — cella sottrattiva (bump +2/−9…−14 dB,
+  zero silicon extra) vs crossfade-LP2 (−24…−30 dB, +2-3 sezioni/canale). Ascolto
   sul prototipo M4L quando riparte
 - 65 (EQ2 FX send/return): allineata — stessa famiglia di celle serie (2 bande),
   design nel modulo FX
