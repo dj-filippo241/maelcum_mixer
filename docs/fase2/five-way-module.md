@@ -8,9 +8,12 @@
 > dB sui target +9/+12/+15, notch −58…−81 dB, Q = comandata, position via gm
 > esatta su 2,6 ottave (§4.1, §8.3); converter di position specificato per
 > banda (§4.1). (3) RUMORE del percorso completo SIMULATO: −108,4 dBu contro
-> target −90 (sheet §3), margine 18,4 dB (§8.4). Restano per la v0.2
-> completa: gate ramp (modello THAT 2181 condiviso con FX v0.2 e CDJ §7),
-> drive (dopo questione 61), modelli reali (beta-3).
+> target −90 (sheet §3), margine 18,4 dB (§8.4). (4) GATE VCA + RAMP 1 ms
+> VALIDATO col macromodello THAT 218x condiviso (`sim/lib/that2181.inc`):
+> click −8,4 dB vs brusco, floor −100 dB (§8.5). CORREZIONE trasversale da
+> datasheet: 2180/2181 sono SINGLE channel (10 chip per i gate, non 5) —
+> voce 37 aggiornata. Resta per la v0.2 completa: drive (dopo questione 61)
+> e modelli reali (beta-3).
 >
 > **v0.1 (2026-09-25)**: primo design del 5-way performance EQ/dub preamp.
 > Copre architettura, matematica del filter bank (questione 8: proposta LR4
@@ -142,13 +145,17 @@ dentro la finestra di fusione (~20 ms) — comportamento normale di un
 crossover ripido; il DSP acustico a valle fa il suo allineamento. Comunque
 dato da confermare a orecchio (questione 67, ascolto M4L).
 
-**Gate di kill**: 1 VCA per via per lato (THAT 2181, famiglia unica — voce 37):
-5×2 = 10 sezioni = 5 dual. Kill switch fisico (5, uno per via di altoparlanti)
-+ slider/mute: il gate chiude con ramp ~1 ms (famiglia voce 55, no click).
-Kill = g→0: **silenzio VERO della via** (gate, non sottrazione: qui nessuna
-cancellazione di fase — il kill del 5-way è assoluto by design, a differenza
-dell'EQ di canale che è scultoreo; le due cose si completano: via killata =
-l'altoparlante tace; EQ creativo = gesto sul materiale vivo).
+**Gate di kill**: 1 VCA per via per lato (THAT 2180/2181 — SINGLE channel:
+il "dual" del nome sono i porti di controllo EC+/EC−, verifica datasheet
+2026-09-27; famiglia unica — voce 37): 5×2 = **10 chip singoli**. Kill
+switch fisico (5, uno per via di altoparlanti) + slider/mute: il gate chiude
+con ramp ~1 ms (famiglia voce 55) — VALIDATA in simulazione (§8.5): fade
+esponenziale senza kink, transiente HF −8,4 dB vs interruzione brusca.
+Kill = g→0: **silenzio della via** (gate, non sottrazione: nessuna
+cancellazione di fase — a differenza dell'EQ di canale che è scultoreo; via
+killata = l'altoparlante tace; EQ creativo = gesto sul materiale vivo).
+Nel reale il floor non è −inf ma il feedthrough del VCA (~−90…−100 dB dopo
+trim, datasheet): comunque silenzio pratico, sotto il rumore del modulo.
 
 **Verifica simulata** (`sim/five-way/bank-lr4.cir`, gate ideali): [RISULTATI §8]
 
@@ -223,8 +230,8 @@ tra due nodi low-Z aggiunge termica + rumore di wiper — da quantificare
 nell'item rumore (§10.5).
 
 Silicon totale modulo (v0.2): banca 14 quad (§3.1) + EQ 12,5 quad +
-gate/buffer/make-up ≈ **~28-30 quad + 10 LM13700 + 5 THAT 2181**
-[PROVVISORIO, BOM §7].
+gate/buffer/make-up ≈ **~28-30 quad + 10 LM13700 + 12 THAT 218x singoli**
+(10 gate + 2 drive) [PROVVISORIO, BOM §7].
 
 ## 5. Drive e meter (questione 10 — v0.1 = interfaccia, design dopo referenze 61)
 
@@ -262,8 +269,8 @@ gate/buffer/make-up ≈ **~28-30 quad + 10 LM13700 + 5 THAT 2181**
 |---|---|---|
 | Quad op-amp low-noise (classe OPA1654/1612) | ~28-30 | banca 14 (v0.2 allineata in fase: 16 SK + 12 allpass), EQ 12,5 (5 sezioni/cella × 10, §4.1), gate/buffer/make-up |
 | LM13700 (dual OTA) | 10 | celle parametriche (position gm) |
-| THAT 2181 (dual VCA) | 5 | gate di kill (10 sezioni) |
-| THAT 2181 o JFETmatched | 1-2 | gain drive (stadio 1) |
+| THAT 2180/2181 (SINGLE VCA — datasheet 2026-09-27) | 10 | gate di kill (1 per via per lato); 2162 dual scartato: ±16 V max e THD 0,05% |
+| THAT 2180/2181 o JFET matched | 2 | gain drive (stadio 1, 1 per lato) |
 | JFET saturazione (coppia matched) | 2-4 | stadio 2 drive (post-61) |
 | Converter expo position + mirror | 5 sezioni | opzione (B) §4 |
 | R 0,1% / C0G-PP / trimmer allineamento | — | banca: 8 edge + 6 sezioni allpass per lato |
@@ -399,13 +406,38 @@ LM13700 (10 OTA nel percorso + Rout dei nodi integratori), THAT 2181 (gate
 e drive), rumore di wiper dei pot. Con modelli reali la cifra può solo
 muoversi di qualche dB: il margine 18,4 dB assorbe la stima.
 
-### 8.5 Nota di metodo
+### 8.5 v0.2 — Gate VCA THAT 218x + ramp anti-click (`gate-ramp.cir`)
+
+Macromodello condiviso `sim/lib/that2181.inc` (law Blackmer ±6,1 mV/dB da
+datasheet, gain range −100…+40 dB, polo 20 MHz, clamp rail): un modello,
+tre usi (gate 5-way, matrice FX v0.2, VCA CDJ §7). Test: programma worst
++10 dBu (3,46 Vp) a 1 kHz, kill al PICCO (worst case per il click), CV su
+EC− con ramp lineare-in-V = lineare-in-dB (fade esponenziale = gesto
+musicale, nessun kink d'inviluppo):
+
+| Ramp τ | Picco HF (sonda click) | vs brusco | Residuo post-fade |
+|---|---|---|---|
+| 1 µs (brusco) | 3,64 V | — | 49 mV |
+| 0,3 ms | 2,15 V | −4,6 dB | 19 mV |
+| **1 ms (voce 55)** | **1,39 V** | **−8,4 dB** | **1,8 mV** |
+| 3 ms | 0,90 V | −12,1 dB | 7 µV |
+
+Floor del gain raggiunto ESATTAMENTE a ogni τ: 34,6 µV = −100 dB (law del
+modello verificata). Sonda click = HP 2 poli ~1,6 kHz (baseline del
+programma puro: 0,69 V). Lettura: 1 ms è il compromesso del gesto dub —
+lo snap resta immediato, il click da gradino sparisce; 3 ms inizia a
+sembrare pigro (dati a supporto della ratifica voce 55). Nel reale restano
+da verificare a banco: feedthrough EC→audio durante la ramp (~−85…−100 dB
+dopo trim) e click da accoppiamento CV (non nel modello) — il layout CV
+lontano dall'audio è la mitigazione (design di sistema, questione 21).
+
+### 8.6 Nota di metodo
 
 Tutti i valori [PROVVISORIO]; le misure usano il macromodello op-amp classe
 OPA1654 (A0 120 dB, GBW 20 MHz, lineare): la piattezza fine della banca si
 verifica coi modelli reali (rumore/THD in beta-3) e soprattutto a banco con
-trimmer di allineamento (§3). I gate sono ideali (g = 0/1): THAT 2181 reale
-+ ramp 1 ms = §10 punto 4.
+trimmer di allineamento (§3). Gate: nelle sim di banca sono ideali (g = 0/1);
+il THAT 218x reale con ramp 1 ms è validato a parte (§8.5).
 
 ## 9. Questioni toccate
 
@@ -443,8 +475,10 @@ trimmer di allineamento (§3). I gate sono ideali (g = 0/1): THAT 2181 reale
 3. [SPECIFICATO 2026-09-27] Converter position (opzione B): C per banda e
    finestra Iabc 2-31 µA, mirror ratio 0,05-0,6 (§4.1); realizzazione =
    riuso filtro v0.2 (converter master + mirror bufferizzati ≤1,6%).
-4. Gate VCA con ramp 1 ms + verifica click (voce 55) — in coda col modello
-   THAT 2181 CONDIVISO (FX v0.2 + CDJ §7: un modello, tre usi).
+4. [FATTO 2026-09-27] Gate VCA THAT 218x con ramp 1 ms VALIDATO (§8.5,
+   `gate-ramp.cir`): click −8,4 dB vs brusco, floor −100 dB esatto. Modello
+   condiviso `sim/lib/that2181.inc` (pronto per FX v0.2 + CDJ §7). A banco:
+   feedthrough EC→audio e click da accoppiamento CV.
 5. [FATTO 2026-09-27] Rumore del modulo completo: −108,4 dBu contro target
    −90 (sheet §3), margine 18,4 dB (§8.4). Beta-3: modelli reali
    (LM13700/2181/OPA16xx) e A-pesatura.

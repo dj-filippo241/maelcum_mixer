@@ -66,8 +66,10 @@ TVS low-cap + bead; polo RC >100 kHz; buffer OPA1612 unity, Z_in ≥47 kΩ, domi
 
 ### 3.2 [B] GAIN — raccomandazione: VCA stereo a singola CV
 Il tracking ≤0,5 dB esclude il pot doppio meccanico diretto (±1-2 dB tipici). Raccomandato
-[PROVVISORIO]: THAT 2181 (doppio VCA, stessa famiglia del master level — un solo tipo di
-VCA in tutto il mixer, ricambio unico) pilotato da UN pot con detent → shaper di law →
+[PROVVISORIO — corretto da datasheet 2026-09-27: 218x = SINGLE channel, "dual" sono i
+porti di controllo]: 2× THAT 2180/2181 (stessa famiglia del master level — un solo tipo di
+VCA in tutto il mixer, ricambio unico; tracking L/R via trim di law o selezione coppie,
+voce 37) pilotati da UN pot con detent → shaper di law →
 CV 0-5 V (generatore su ±15 V LN). Law: −∞ a full CCW, 0 dB al detent (~50% corsa),
 +10 dB a fine CW. Alternativa economica da scartare solo se la sim dice che il VCA
 colora: pot doppio selezionato + trim (più lavoro di calibrazione, tracking a rischio).

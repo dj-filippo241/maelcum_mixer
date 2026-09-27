@@ -89,9 +89,9 @@ Alternativa da valutare se l'export dice che la somma è già fatta nel modulo 5
 
 Motivazione sul requisito bloccato tracking ≤ 0,25 dB:
 - pot doppio gang meccanico: il tracking dipende dall'accoppiamento delle piste — ALPS RK27 dichiara tipicamente ±1-2 dB tra sezioni; NON rispetta il requisito
-- VCA doppio con singola tensione di controllo (CV): i due canali seguono la stessa legge elettrica — tracking determinato dal matching dei die, tipicamente ≤ 0,1 dB nella famiglia THAT 218x. È l'unica via realistica per ≤ 0,25 dB con controllo manuale
+- 2× VCA singolo con singola tensione di controllo (CV): i due canali seguono la stessa legge elettrica. **Correzione datasheet 2026-09-27**: THAT 2180/2181 sono SINGLE channel (il "dual" del nome = i due porti di controllo EC+/EC−): lo stereo-link è tra DUE chip. Tracking: la costante di law è 6,0-6,2 mV/dB (±1,6%) → disaccordo fino a ±0,5 dB a −30 dB di controllo; col 2181 (trimmable) il trim di law per chip porta il tracking stretto, col 2180 serve selezione di coppia. Il vero dual THAT 2162 è scartato: max ±16 V (dominio qui ±18 V) e THD 0,05% (voce 37)
 
-**Candidato**: THAT 2181 (doppio VCA low-distortion, max ±18 V) oppure 2× THAT 2180 (singoli) sulla stessa CV se il 2181 risultasse irreperibile. [PROVVISORIO — verificare disponibilità, prezzo e legge dB/V esatta sui datasheet prima dell'ordine]
+**Candidato**: 2× THAT 2180/2181 (singoli, stessa CV; legge ±6,1 mV/dB verificata su datasheet 2026-09-27). [PROVVISORIO — grado A/B/C e 2180-vs-2181+trim = voce 37 (reperibilità/prezzo); clone CoolAudio V2181 come alternativa]
 
 **Catena del controllo** (mono, un pot per entrambi i canali):
 ```
@@ -141,7 +141,7 @@ stadio diamond discreto in class AB (±24 V, dentro il feedback globale dell'OPA
 ### 3.4 [B] BOOTH
 
 - Buffer d'ingresso dedicato ([B], OPA1612 unity, ±18 V — picchi +16 dBu ok)
-- BOOTH LEVEL: stesso approccio del master — VCA con singola CV, range −∞ → 0 dB (solo trim negativo, il requisito non chiede +6). Opzione economica: 1× THAT 2180 singolo stereo-linked... serve doppia sezione → un 2181 dedicato o metà di un secondo 2181 [PROVVISORIO — dipende da cosa si trova]
+- BOOTH LEVEL: stesso approccio del master — VCA con singola CV, range −∞ → 0 dB (solo trim negativo, il requisito non chiede +6). Servono 2 sezioni singole (L/R) → 2× THAT 2180/2181 dedicati sulla stessa CV del pot booth [PROVVISORIO — voce 37]
 - Driver d'uscita: qui il +24 dBu NON è richiesto (max ~0 dBu, picchi +16-18 dBu): basta OPA1612 + diamond piccolo su ±18 V, o anche OPA1612 diretto su carico ≥ 2 kΩ con corrente di picco < 5 mA
 - Connettore: **XLR bilanciato [BLOCCATO-F 2026-09-18]** — coerente col master, robusto, driver bilanciato dedicato
 
@@ -221,7 +221,7 @@ Conseguenza onesta da registrare: a MASTER LEVEL a +6 dB con programma già a +1
 | Ruolo | Candidato | Note | Prezzo unitario stimato |
 |---|---|---|---|
 | Op-amp audio summing/buffer/meter | OPA1612AID (dual) | ±18 V max, 1,1 nV/√Hz, THD ~0,00008% — verificare Iq a datasheet | ~4-6 € |
-| VCA master + booth level | THAT 2181 (dual) o 2× 2180 | verificare esistenza/disponibilità 2181; in subordine SSM2164/SSM2122 (Analog Devices, legacy) | ~5-8 € |
+| VCA master + booth level | 4× THAT 2180/2181 SINGOLI (2 master + 2 booth) | 218x = single channel (datasheet 2026-09-27); tracking via trim di law (2181) o selezione coppie (2180); clone CoolAudio V2181 alternativo — voce 37 | ~12-24 € |
 | Transistor diamond output | MJE340/MJE350 o BD139/BD140 | TO-126, 500 mA — abbondanti per linea | ~0,5-1 € la coppia |
 | Coppia d'ingresso diamond (se serve matching) | KSC1845/KSA992 | sostituti moderni dei classici Toshiba 2SC2240/2SA970 | ~1 € la coppia |
 | Comparator clip purple | LM339 ×1 | quad, open-collector | ~0,5 € |

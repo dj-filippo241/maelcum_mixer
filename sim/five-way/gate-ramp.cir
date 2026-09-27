@@ -1,0 +1,35 @@
+* MODULO 5-WAY v0.2 — GATE VCA THAT 218x + RAMP ANTI-CLICK (§10.4, voce 55)
+* Segnale: worst programma interno +10 dBu = 3,46 Vp, 1 kHz. Kill al PICCO
+* (tk = 2,25 ms = quarto di ciclo) = worst case per il click.
+* Controllo su EC− (pendenza negativa): 0 V = 0 dB; +1,22 V = −100 dB (floor
+* del modello = gain range <−100 dB datasheet). CV lineare in V = lineare in
+* dB (law Blackmer 6,1 mV/dB) → inviluppo esponenziale = fade musicale.
+* Confronto ramp: 1 µs (brusco) / 0,3 / 1 / 3 ms via .step.
+* Sonde: (a) uscita VCA diretta; (b) HP 2 poli ~1,6 kHz = "rivelatore di
+* click" (il click è energia HF oltre il programma; baseline = il programma
+* stesso che attraversa l'HP: se il picco post-kill resta ≈ baseline, il
+* fade non aggiunge transienti udibili).
+* Modello: sim/lib/that2181.inc (CONDIVISO con FX v0.2 e CDJ §7).
+.include ../lib/that2181.inc
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+Vsig in 0 SINE(0 3.46 1000)
+.param tk=2.25m
+.param tau=1m
+.param vkill=1.22
+Vctl ecm 0 PWL(0 0 {tk} 0 {tk+tau} {vkill} 10m {vkill})
+Xg in vca_out 0 ecm vcc vee THAT2181
+* --- sonda HP 2 poli (C 10n / R 10k, fc ~1,6 kHz per polo) ---
+Ch1 vca_out h1 10n
+Rh1 h1 0 10k
+Ch2 h1 h2 10n
+Rh2 h2 0 10k
+*
+.step param tau LIST 1u 0.3m 1m 3m
+.tran 0 8m 0 0.1u
+.meas tran vpre MAX ABS(V(vca_out)) FROM 1m TO {tk}
+.meas tran hpbase MAX ABS(V(h2)) FROM 1m TO {tk}
+.meas tran hpkill MAX ABS(V(h2)) FROM {tk} TO {tk+3m}
+.meas tran vfloor MAX ABS(V(vca_out)) FROM {tk+tau+0.3m} TO 8m
+.meas tran hpres MAX ABS(V(h2)) FROM {tk+tau+0.3m} TO 8m
+.end

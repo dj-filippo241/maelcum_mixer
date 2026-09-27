@@ -202,7 +202,7 @@ dinamica del loop e il worst-case del summing, non il carattere sonoro.
 
 | Voce | Qtà | Note |
 |---|---|---|
-| THAT 2181 (dual VCA) | 12 reroute + 4 gain ritorno = 16 | voce 37 (reperibilità!) |
+| THAT 2180/2181 (SINGLE VCA — datasheet 2026-09-27: "dual" = porti di controllo, non canali) | 12 reroute + 4 gain ritorno = 16 chip | voce 37 (reperibilità/prezzo: ~34-36 chip in tutto il mixer) |
 | Quad op-amp (bus driver, buffer, summing, EQ2 ritorni, servo DC) | ~10-12 | classe OPA1654/1612 mista |
 | JFET buffer ritorno (o op-amp JFET-input) | 8 | hi-Z ≥1 MΩ |
 | Shaper law reroute (diodi/R/trimmer) | 8 canali CV | famiglia shaper filtro |
