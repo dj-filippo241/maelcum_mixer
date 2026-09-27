@@ -79,7 +79,7 @@ colora: pot doppio selezionato + trim (più lavoro di calibrazione, tracking a r
 > **v0.3 (2026-09-25)**: sostituisce integralmente le celle a contribuzione della
 > v0.2, bocciate dalla simulazione (fase dei filtri LOW/HIGH —
 > `sim/cdj-eq/RISULTATI-eq.md`, questione 62 → decisione 76). Design completo,
-> griglie misurate e law del pot: **`docs/fase1/eq-serie-v0.3.md`** (stato beta-2)
+> griglie misurate e law del pot: **`docs/fase1/eq-serie-v0.3.md`** (stato beta-3)
 > + netlist in `sim/eq-serie/`.
 
 Architettura per lato: 4 celle in cascata + buffer, **12 sezioni op-amp** (3 quad):
@@ -158,13 +158,14 @@ tracking ≤0,5 dB con selezione/trim; buffer OPA1612 ≤50 Ω → DJ BUS (injec
 
 ## 5. Rumore (target sheet §3: ≤−92 dBu A-wtd all'out driver)
 
-**Misurato v0.3 beta-2** (`sim/eq-serie/cascade-b2-noise.cir`, cascata EQ al detent,
-20 Hz–20 kHz): **−110,7 dBu** integrato → margine 18,7 dB sul target. Macromodello
-uniforme ~6 nV/√Hz su tutti gli op-amp: con la selezione reale (OPA1654 per le celle,
-OPA1612 per buffer in/make-up, 1,1 nV/√Hz) il numero può solo migliorare — verifica
-in beta-3 coi modelli ufficiali. Regole confermate: pot 10 kΩ sulle celle (voce 48),
-summer a 49,9 kΩ (non 100 k), bracci shelf ≤31 kΩ. Restano da aggiungere: VCA di
-gain (a monte, già nel budget del GAIN) e out driver.
+**Misurato v0.3 beta-3** (`sim/eq-serie/cascade-b3-noise.cir`, cascata EQ al detent,
+20 Hz–20 kHz, macro reali OPA1654/OPA1612 da `sim/lib/opamp-audio.inc`):
+**−110,7 dBu** integrato → margine 18,7 dB sul target (la macro "uniforme" di beta-2
+era già calibrata vicina alla OPA1654 reale: numero CONFERMATO, non solo stimato).
+Regole confermate: pot 10 kΩ sulle celle (voce 48), summer a 49,9 kΩ (non 100 k),
+bracci shelf ≤31 kΩ; OPA1612 solo su nodi a bassa Z (regola in libreria: bipolare,
+sorgenti <100 Ω). Restano da aggiungere: VCA di gain (a monte, già nel budget del
+GAIN — macro THAT 218x pronto in `sim/lib/that2181.inc`) e out driver.
 
 ## 6. BOM di massima v0.3 (esclusi pot/fader/connettori/pannello)
 
@@ -187,7 +188,7 @@ FATTE:
    lineari, si verifica al prototipo col modello TI reale.
 5. Tracking/mismatch: fatto per entrambe le topologie. Serie: pot doppi ≤1% →
    L−R ≤0,16 dB PASS; 2% → 0,32 limite (`low-cell-track.cir`, `cascade-track.cir`).
-6. **EQ serie v0.3 completa (beta-2)**: celle LOW/MID/HIGH + cascata 4 bande +
+6. **EQ serie v0.3 completa (beta-3)**: celle LOW/MID/HIGH + cascata 4 bande +
    riferimento interno −6 dB + summer 49,9k: `sim/eq-serie/` (9 netlist),
    griglie e finding in `docs/fase1/eq-serie-v0.3.md` §9.
 

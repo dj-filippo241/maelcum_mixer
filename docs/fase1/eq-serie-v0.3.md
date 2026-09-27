@@ -1,10 +1,12 @@
 # EQ SERIE v0.3 — celle Baxandall a law asimmetrica (2026-09-24/25)
 
-> **Stato: BETA-2 (2026-09-25).** ALPHA (cella LOW) + celle MID/HIGH + cascata
+> **Stato: BETA-3 (2026-09-27).** ALPHA (cella LOW) + celle MID/HIGH + cascata
 > 4 bande con rumore/tracking/livelli (§9) + riferimento interno −6 dB e
-> summer 49,9k (§9.6) + specifica law/taper (§10). Resta per beta-3: scelta
-> op-amp reali (rumore), trim, ascolto M4L delle questioni 66-68 (prototipo
-> IN PAUSA per direzione di Filippo 2026-09-25: prima il design completo).
+> summer 49,9k (§9.6) + specifica law/taper (§10) + OP-AMP REALI E TRIM
+> (§9.7): rumore confermato −110,7 dBu, offset detent risolto (−0,0001 dB con
+> coppia 0,1% 49,9k/99,8k — il −0,12 dB era artefatto della macro). Resta:
+> THD a banco, ascolto M4L delle questioni 66-68 (prototipo IN PAUSA per
+> direzione di Filippo 2026-09-25: prima il design completo).
 > Origine: decisione 76 (EQ in serie, famiglia Baxandall) dopo il finding
 > critico delle celle a contribuzione (`sim/cdj-eq/RISULTATI-eq.md`).
 > Sostituisce CDJ v0.2 §3.3.
@@ -134,10 +136,11 @@ decisione dentro la voce 53, costo +4 VCA/canale.
 
 | Voce | Qtà | Note |
 |---|---|---|
-| Op-amp quad low-noise (classe OPA1654) | 2 | 1 per canale (4 celle) |
+| Op-amp quad low-noise (classe OPA1654) | 6 | 3 per canale: 10 sezioni celle (§9.5) |
+| Op-amp dual (classe OPA1612) | 2 | 1 per lato: buffer in + make-up (§9.6/9.7) |
 | Pot doppi conduttivo-plastica, taper custom | 4 | 1 per banda (sessione voce 40) |
 | R/C reti (0,1% dove il detent dipende) | ~48 | Za/Zb matched per banda |
-| Stima costo | ~30-45 € | vs 70-95 € della v0.2 |
+| Stima costo | ~45-60 € | vs 70-95 € della v0.2 (silicon: 6 quad + 2 dual) |
 
 ## 8. Prossimi passi (v0.3-beta2)
 
@@ -272,6 +275,45 @@ Risultati:
   Margine sul target −92 dBu: 18,7 dB → PASS anche così. Densità @1 kHz:
   189 nV/√Hz (beta-3: ricalcolare con modelli reali).
 - All-kill, kill per banda, boost: immutati (finding 59/68 validi).
+
+### 9.7 Beta-3: op-amp reali + trim make-up (`cascade-b3*.cir`, `sim/lib/opamp-audio.inc`)
+
+Macromodelli calibrati su datasheet TI (libreria condivisa — la riusano anche
+5-way e FX per le loro beta con modelli reali):
+- celle (10 sezioni per canale) = classe **OPA1654**: en 4,5 nV/√Hz (Rn 1223 Ω
+  nel modello), A0 120 dB, GBW 20 MHz (datasheet 18), FET-input (corrente di
+  rumore ~fA: assente giustificata);
+- buffer + make-up (2 sezioni per canale) = classe **OPA1612**: en 1,1 nV/√Hz
+  (Rn 73 Ω), A0 130 dB, GBW 80 MHz; bipolare → REGOLA D'USO: solo su nodi a
+  sorgente <100 Ω (virtual ground); sopra ~500 Ω usare il FET (2 pA × 2,5 kΩ
+  = 5 nV, 4,5× la sua en);
+- polo dominante realizzato con R piccola / C grande: la termica del macro
+  resta ≥40 dB sotto la en del chip (artefatto documentato in libreria: con
+  R = 50 MΩ il polo da solo metteva 18-150 nV/√Hz in uscita).
+
+Risultati:
+- **Rumore CONFERMATO**: −110,7 dBu integrato 20 Hz–20 kHz (identico a
+  beta-2: la macro "uniforme ~6 nV" era già tarata vicino alla OPA1654
+  reale; i 1612 sono 2 sezioni su 12 e il miglioramento cade dentro
+  l'arrotondamento). Densità @1 kHz: 191 nV/√Hz. Margine 18,7 dB → PASS.
+  Ancora assenti: 1/f sotto ~10 Hz, THD, rumore di wiper dei pot.
+- **Offset detent RISOLTO**: il −0,12 dB di beta-2 era INTERAMENTE guadagno
+  d'anello della vecchia macro (A0 60 dB). Con A0 reali e Rfm = 99,8 kΩ su
+  49,9 kΩ (coppia 0,1%, rapporto 2,0000): detent −0,0001 dB, piattezza
+  ±0,005 dB su 10 Hz–35 kHz. **Il trim multi-giro non serve**: basta la
+  coppia 0,1%; il trim resta opzionale per la calibrazione assoluta del
+  riferimento interno.
+- **Griglia invariata**: 10 modi entro 0,2 dB da beta-2 (kill LOW −29,2 @20
+  Hz, notch MID −44,2 @1 kHz, curva dub +5,9/−45,2/+5,7); banda a 35 kHz
+  senza roll-off visibile coi GBW reali.
+- **THD**: non misurabile in macro lineare. Stima da datasheet: 0,00005 %
+  (1654) / 0,00008 % (1612) a G = 1, 1 kHz; l'alto guadagno d'anello in banda
+  mantiene la classe <0,001 % anche ai gain delle celle. Verifica a banco
+  sul prototipo.
+
+Resta per chiudere la v0.3: ascolti M4L delle questioni 66-68 (prototipo IN
+PAUSA) e, se la 68 sceglie crossfade-LP2, la variante della cella HIGH
+(+2-3 sezioni per canale, §9.5).
 
 ## 10. Law del pot e taper (specifica per voce 40 e per il prototipo M4L)
 

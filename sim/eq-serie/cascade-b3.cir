@@ -1,0 +1,114 @@
+* EQ SERIE v0.3-BETA-2 — cascata 4 bande con riferimento interno -6 dB
+.include ../lib/opamp-audio.inc
+.param Rfmv=100k
+.step param Rfmv LIST 100k 99.8k
+* Cambiamenti vs beta-1 (cascade.cir):
+*   1. Buffer d'ingresso gain -0,5 e make-up d'uscita gain -2 (2 sezioni
+*      op-amp in piu' per canale): picchi interni dimezzati (principio
+*      decisione 73, stesso del 5-way). Due inversioni extra: polarita'
+*      assoluta ancora preservata (4 celle + 2 buffer = 6 inversioni).
+*   2. Summer delle celle sottrattive: 100k -> 49,9k (rumore -3 dB;
+*      Thevenin del pot 10k <= 2,5k contro 49,9k = errore di law <= 5%,
+*      assorbito dal trim del taper).
+*   3. Make-up anche trim dell'offset di detent (-0,1 dB della beta-1):
+*      Rf 100k contro Ra 49,9k = -2,004 (+0,035 dB, si lima in beta-3
+*      con coppia matched o trim).
+* Celle e valori restanti = beta-1 [PROVVISORIO — regola 3].
+* Modi (m): 1=detent 2=LOWkill 3=LMkill 4=MHkill 5=HIGHkill 6=ALL-KILL
+*   7=all-boost 8=dub 9=LOWboost 10=HIGHboost
+.step param m LIST 1 2 3 4 5 6 7 8 9 10
+.param err=0
+.param xl = if(m==2,0.999, if(m==6,0.999, if(m==7,0.323, if(m==8,0.323, if(m==9,0.323, 0.5)))))
+.param tlm = if(m==3,0, if(m==6,0, if(m==7,1, if(m==8,0, 0.5))))
+.param tmh = if(m==4,0, if(m==6,0, if(m==7,1, if(m==8,0, 0.5))))
+.param thh = if(m==5,0, if(m==6,0, if(m==7,1, if(m==8,1, if(m==10,1, 0.5)))))
+*
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 vin 0 DC 0 AC 1
+*
+* ============ BUFFER IN (gain -0,5) ============
+Rib vin nib 20k
+Ribf nib v_pre 10k
+Xib 0 nib v_pre vcc vee OP1612
+*
+* ============ CELLA LOW (shelf 70 Hz) ============
+RinL v_pre naL 1k
+RzaL naL nbL {31k*xl*(1+err/2)+1m}
+CzaL naL nbL 100n
+XopL 0 nbL v_lo vcc vee OP1654
+RfL nbL ncL 1k
+RzbL ncL v_lo {31k*(1-xl)*(1-err/2)+1m}
+CzbL ncL v_lo 100n
+*
+* ============ CELLA MID-LM (250 Hz Q0,8) ============
+R1a v_lo nma 5.11k
+R2a nma 0 18.2k
+C1a nma nmb 100n
+C2a nma vbp1 100n
+R3a vbp1 nmb 10.2k
+X1a 0 nmb vbp1 vcc vee OP1654
+Ri1a vbp1 nvia 10k
+Ri2a nvia vbn1 {10k*(1+err/2)}
+X2a 0 nvia vbn1 vcc vee OP1654
+Rp1a vbp1 wpa {10k*tlm+1m}
+Rp2a vbn1 wpa {10k*(1-tlm)+1m}
+Raa v_lo nsa 49.9k
+Rba wpa nsa 49.9k
+Rfa nsa v_lm 49.9k
+X3a 0 nsa v_lm vcc vee OP1654
+*
+* ============ CELLA MID-MH (1 kHz Q0,9) ============
+R1b v_lm nmc 4.32k
+R2b nmc 0 6.98k
+C1b nmc nmd 33n
+C2b nmc vbp2 33n
+R3b vbp2 nmd 8.66k
+X1b 0 nmd vbp2 vcc vee OP1654
+Ri1b vbp2 nvib 10k
+Ri2b nvib vbn2 {10k*(1+err/2)}
+X2b 0 nvib vbn2 vcc vee OP1654
+Rp1b vbp2 wpb {10k*tmh+1m}
+Rp2b vbn2 wpb {10k*(1-tmh)+1m}
+Rab v_lm nsb 49.9k
+Rbb wpb nsb 49.9k
+Rfb nsb v_mh 49.9k
+X3b 0 nsb v_mh vcc vee OP1654
+*
+* ============ CELLA HIGH (sottrattiva HP2 ~5 kHz) ============
+Ch1 v_mh nha 10n
+Ch2 nha nhb 10n
+Rh1 nha vhp 2.3k
+Rh2 nhb 0 4.6k
+X1h nhb vhp vhp vcc vee OP1654
+Rh3 vhp nvh 10k
+Rh4 nvh vhn {10k*(1+err/2)}
+X2h 0 nvh vhn vcc vee OP1654
+Rp1h vhn wph {10k*thh+1m}
+Rp2h vhp wph {10k*(1-thh)+1m}
+Rah v_mh nsh 49.9k
+Rbh wph nsh 49.9k
+Rfh nsh v_hi0 49.9k
+X3h 0 nsh v_hi0 vcc vee OP1654
+*
+* ============ MAKE-UP OUT (gain -2, trim detent) ============
+Rom v_hi0 nom 49.9k
+Rfm nom v_hi {Rfmv}
+Xom 0 nom v_hi vcc vee OP1612
+*
+.ac dec 300 10 60k
+.meas ac g20 FIND mag(V(v_hi)) AT 20
+.meas ac g70 FIND mag(V(v_hi)) AT 70
+.meas ac g125 FIND mag(V(v_hi)) AT 125
+.meas ac g150 FIND mag(V(v_hi)) AT 150
+.meas ac g250 FIND mag(V(v_hi)) AT 250
+.meas ac g500 FIND mag(V(v_hi)) AT 500
+.meas ac g1k FIND mag(V(v_hi)) AT 1k
+.meas ac g2k5 FIND mag(V(v_hi)) AT 2.5k
+.meas ac g5k FIND mag(V(v_hi)) AT 5k
+.meas ac g10k FIND mag(V(v_hi)) AT 10k
+.meas ac g20k FIND mag(V(v_hi)) AT 20k
+.meas ac g35k FIND mag(V(v_hi)) AT 35k
+.meas ac gmax MAX mag(V(v_hi))
+.meas ac gmin MIN mag(V(v_hi))
+.end
