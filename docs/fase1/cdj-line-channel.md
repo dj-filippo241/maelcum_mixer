@@ -71,7 +71,10 @@ porti di controllo]: 2× THAT 2180/2181 (stessa famiglia del master level — un
 VCA in tutto il mixer, ricambio unico; tracking L/R via trim di law o selezione coppie,
 voce 37) pilotati da UN pot con detent → shaper di law →
 CV 0-5 V (generatore su ±15 V LN). Law: −∞ a full CCW, 0 dB al detent (~50% corsa),
-+10 dB a fine CW. Alternativa economica da scartare solo se la sim dice che il VCA
++10 dB a fine CW. **Law e headroom VERIFICATI in simulazione (2026-09-27, §7
+item 7)**: detent 0 dB esatto, floor −100 dB, +18 dBu pulito con 5,5 dB di
+margine; il tracking L/R richiede trim di law (2181) o selezione di coppia
+(2180) — voce 37. Alternativa economica da scartare solo se la sim dice che il VCA
 colora: pot doppio selezionato + trim (più lavoro di calibrazione, tracking a rischio).
 
 ### 3.3 [C] EQ 4 bande — SERIE per banda, famiglia Baxandall (v0.3, decisioni 76/77)
@@ -180,7 +183,7 @@ GAIN — macro THAT 218x pronto in `sim/lib/that2181.inc`) e out driver.
 | Regolatori locali (LM317/337 + LT3045/3094) + passivi | — | ~12-15 € |
 | **Totale stimato per canale stereo** | | **~80-110 €** (v0.2: 70-95; delta = buffer/make-up + reti. Fuori tabella: 4 pot doppi taper custom dell'EQ → voce 40) |
 
-## 7. Simulazioni — stato (aggiornamento 2026-09-25)
+## 7. Simulazioni — stato (aggiornamento 2026-09-27)
 
 FATTE:
 1. Celle a contribuzione (v0.2): `sim/cdj-eq/RISULTATI-eq.md` — finding critico
@@ -192,12 +195,22 @@ FATTE:
    riferimento interno −6 dB + summer 49,9k: `sim/eq-serie/` (9 netlist),
    griglie e finding in `docs/fase1/eq-serie-v0.3.md` §9.
 
+7. **GAIN VCA THAT 218x FATTO (2026-09-27, `sim/cdj/vca-law.cir` +
+   `vca-headroom.cir`)**: law dB(θ) via shaper a tratti VERIFICATA (−100…0…+10
+   dB esatti ai θ di progetto, detent 0 dB a 1e-8, costante 6,1 mV/dB);
+   headroom: +18 dBu a GAIN 0 passa pulito (8,70 V out, margine 5,5 dB sul
+   clamp ±16,5); a GAIN +10 su +18 = violazione regola K4 → clamp a 16,5 V
+   (user error documentato, non guasto di design); tracking L/R SENZA trim di
+   law: ±1,3 dB in attenuazione profonda, ±0,83 a −50 dB, 0 al detent, ±0,17
+   a +10 → il trim di law del 2181 azzera (dati per 53/40/voce 37). THD non
+   misurabile in macro lineare: stima da datasheet, verifica al prototipo
+   (stesso trattamento di eq-serie §9.7).
+
 RESTANTI:
-2. VCA THAT 2181: law dB/V, distorsione vs livello a +18 dBu, margine
-3. Peak detector: ballistica a 10 Hz (requisito infrasub) e a 35 kHz
-4. Summing DJ BUS a 4 canali: crosstalk e worst-case
-7. EQ beta-3: modelli op-amp reali (rumore/THD), trim detent, eventuale cella
-   HIGH crossfade-LP2 (dopo questione 68)
+3. Peak detector: ballistica a 10 Hz (requisito infrasub) e a 35 kHz —
+   condiviso col metering FX v0.2; requisiti = questione 19 (aperta)
+4. Summing DJ BUS a 4 canali: crosstalk e worst-case (numeri da sheet §2)
+8. Variante cella HIGH crossfade-LP2: solo se la questione 68 la sceglie
 
 ## 8. Questioni generate/aggiornate da questa v0.3 (stato 2026-09-25)
 
