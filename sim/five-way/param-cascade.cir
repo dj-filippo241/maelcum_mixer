@@ -1,0 +1,69 @@
+* MODULO 5-WAY v0.2 — CASCATA 5 CELLE PARAMETRICHE (EQ creativo §4, item §10.1)
+* 5 celle sottrattive in serie (stessa metodologia di eq-serie cascade):
+* ogni cella H = -(1 - b*BP_norm), SVF OTA con position via gm.
+* Centri PROVVISORI per banda (dec. 66 / questione 67):
+*   EQ1 60 Hz (Q1) | EQ2 180 Hz (Q1) | EQ3 600 Hz (Q3) | EQ4 2 kHz (Q1) |
+*   EQ5 8 kHz (Q0,5)
+* Casi: case=0 TUTTO A DETENT (b=0: piattezza per costruzione, 5 celle in
+* serie); case=1 "curva dub" esempio: EQ1 +12 dB, EQ3 notch, EQ5 +9 dB.
+* C = 33n uniforme per semplicita' di sim; nel reale C per banda scelta
+* per tenere Iabc nella finestra 2-31 u (mirror dal converter master,
+* tecnologia filtro v0.2): [PROVVISORIO — regola 3].
+* Lezione applicata: niente V-source di lettura su nodo isolato (I=0);
+* gm = 2*pi*33n*fc direttamente nell'espressione. Nodo integratore con
+* Rbias 100Meg (floating node error in .op/.ac).
+.param case=0
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 vin 0 DC 0 AC 1
+*
+.subckt OPAMP inp inn out vp vm
+E1 xx 0 value={1e6*(V(inp)-V(inn))}
+R1 xx p1 50Meg
+C1 p1 0 159p
+E2 out 0 value={limit(V(p1),V(vm)+1.5,V(vp)-1.5)}
+.ends OPAMP
+*
+.subckt PCELL in out PARAMS: fc=700 Qv=1 bv=0
+* summer + loop SVF
+Rvin in ns 10k
+Rlp lp_b ns 10k
+Rq bp_b ns {Qv*10k}
+Rf ns hp 10k
+Xsum 0 ns hp vcc vee OPAMP
+G1 0 bp value={2*pi*33n*fc*V(hp)}
+C1i bp 0 33n
+Rbp bp 0 100Meg
+Xb1 bp bp_b bp_b vcc vee OPAMP
+G2 0 lp value={2*pi*33n*fc*V(bp_b)}
+C2i lp 0 33n
+Rlp2 lp 0 100Meg
+Xb2 lp lp_b lp_b vcc vee OPAMP
+* iniezione b (pot tra ±bp_b nel reale; law = eq-serie §10)
+Bw bwv 0 V={bv/4.62*V(bp_b)}
+Rbw bwv ns2 {10k*Qv/4.62}
+Rain in ns2 10k
+Rf2 ns2 out 10k
+Xout 0 ns2 out vcc vee OPAMP
+.ends PCELL
+*
+X1 vin c1 PCELL fc=60 Qv=1 bv={if(case==1,-3,0)}
+X2 c1 c2 PCELL fc=180 Qv=1 bv=0
+X3 c2 c3 PCELL fc=600 Qv=3 bv={if(case==1,1,0)}
+X4 c3 c4 PCELL fc=2000 Qv=1 bv=0
+X5 c4 vout PCELL fc=8000 Qv=0.5 bv={if(case==1,-1.82,0)}
+.step param case LIST 0 1
+.ac dec 200 10 40k
+.meas ac h10 FIND mag(V(vout)) AT 10
+.meas ac h60 FIND mag(V(vout)) AT 60
+.meas ac h180 FIND mag(V(vout)) AT 180
+.meas ac h300 FIND mag(V(vout)) AT 300
+.meas ac h600 FIND mag(V(vout)) AT 600
+.meas ac h1k2 FIND mag(V(vout)) AT 1200
+.meas ac h2k FIND mag(V(vout)) AT 2000
+.meas ac h4k FIND mag(V(vout)) AT 4000
+.meas ac h8k FIND mag(V(vout)) AT 8000
+.meas ac h20k FIND mag(V(vout)) AT 20000
+.meas ac hpk MAX mag(V(vout))
+.meas ac hmin MIN mag(V(vout))
+.end

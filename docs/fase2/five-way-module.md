@@ -1,10 +1,15 @@
 # FASE 2 — Modulo 5-WAY (dub preamp): design v0.2-WIP (2026-09-27)
 
-> **v0.2-WIP (2026-09-27)**: kill bank ALLINEATA IN FASE — soluzione esatta
-> dimostrata (math + LTspice): somma piatta −0,0002…−0,008 dB su 5 Hz–60 kHz
-> senza kill, all-kill = silenzio assoluto invariato (§3.1, §8.2). Il finding
-> v0.1 (buchi −3…−5 dB) è chiuso. Restano per la v0.2 completa: celle
-> parametriche complete, converter position, gate ramp, rumore (§10).
+> **v0.2-WIP (2026-09-27)**: (1) kill bank ALLINEATA IN FASE — soluzione
+> esatta dimostrata (math + LTspice): somma piatta −0,0002…−0,008 dB su
+> 5 Hz–60 kHz senza kill, all-kill = silenzio assoluto invariato (§3.1,
+> §8.2); il finding v0.1 (buchi −3…−5 dB) è chiuso. (2) CELLE PARAMETRICHE +
+> CASCATA 5 in serie VALIDATE: detent ±0,005 dB su 10 Hz–40 kHz, boost ±0,005
+> dB sui target +9/+12/+15, notch −58…−81 dB, Q = comandata, position via gm
+> esatta su 2,6 ottave (§4.1, §8.3); converter di position specificato per
+> banda (§4.1). Restano per la v0.2 completa: gate ramp (modello THAT 2181
+> condiviso con FX v0.2 e CDJ §7), rumore del modulo, drive (dopo questione
+> 61).
 >
 > **v0.1 (2026-09-25)**: primo design del 5-way performance EQ/dub preamp.
 > Copre architettura, matematica del filter bank (questione 8: proposta LR4
@@ -175,10 +180,50 @@ Converter di position: due opzioni [APERTO — ascolto M4L, come questione 67]:
   law a ottave uniforme — feel coerente coi knob del filtro. Raccomandazione:
   (B), costo ~5 converter + mirror.
 
-Silicon per banda per lato: 1 LM13700 (2 OTA integratori) + 2-3 sezioni
-op-amp (summer + inverter ±BP). Totale modulo (v0.2: banca allineata = 14
-quad): **~24-26 quad** (banca 14, EQ ~10, gate/buffer/make-up)
-**+ 10 LM13700 + 5 THAT 2181** [PROVVISORIO, BOM §7].
+### 4.1 v0.2 — Circuito della cella VALIDATO (`sim/five-way/param-cell.cir`)
+
+Circuito completo per cella (per lato):
+1. **Core SVF**: summer invertente (Vin 10k, feedback LP 10k, damping da
+   bp_b via Rq, Rf 10k) + 2 integratori OTA (gm = 19,2·Iabc, LM13700) con
+   C di banda + **buffer di stato obbligatori** (lezione filtro v0.1):
+   f0 = 19,2·Iabc/(2π·C);
+2. **Q (width)**: 1/Q = Rf/Rq — switch 3 posizioni su Rq = Q·10k
+   (30k/10k/5k per Q3/Q1/Q0,5, 0,1%);
+3. **Gain (b)**: pot collegato tra +bp_b e −bp_b (buffer + invertitore):
+   il pot È il moltiplicatore, nel dominio del segnale — nessuna CV nella
+   catena gain (niente rumore di controllo, niente law-Shaper attivo).
+   Wiper → R_b = Q·10k/4,62 (SECONDO deck dello stesso switch width, 0,1%)
+   → summer d'uscita (10k/10k): H = −(1 − b·BP_norm) con b = ±4,62 a fine
+   corsa. Detent = centro fisico: b = 0 → cella = invertitore puro, piatto
+   per costruzione (misurato: ±0,0001 dB);
+4. **Law/taper** [PROVVISORIO — conferma a orecchio in M4L]: eredita la
+   famiglia eq-serie §10 — CW: 0→+max dB lineare-in-dB su mezza corsa;
+   CCW: 0→notch con accelerazione negli ultimi 5% (notch a fine corsa).
+   L'asimmetria di b (+1 per il notch vs −4,62 per +15 dB) sta nel taper
+   custom del pot, NON in gain diversi sui due lati. Pot doppi stereo-
+   linked tracking ≤1% = stessa classe componenti di eq-serie (voci 37/40);
+5. **Position (opzione B, specificata)**: converter master esponenziale
+   (design filtro v0.2, law dec. 70) → mirror BUFFERIZZATI per banda e lato
+   (tracking ≤1,6% dimostrato in filtro v0.2 → disallineamento L/R ≤27 cent,
+   trim a banco). C per banda [PROVVISORIO] scelti per tenere Iabc nella
+   finestra 2-31 µA: EQ1 330n (20-120 Hz), EQ2 100n (80-400), EQ3 33n
+   (250-1,5k), EQ4 10n (800-5k), EQ5 4,7n (3-20k); rapporto mirror
+   0,05-0,6 dalla finestra master 40-240 µA.
+
+Conteggio reale per cella: 1 LM13700 + **5 sezioni op-amp** (summer, buffer
+BP, buffer LP, invertitore −bp_b, summer d'uscita) — la stima v0.1 (2-3)
+dimenticava buffer di stato e invertitore. Per lato: 5 celle = 25 sezioni =
+6,25 quad + 5 LM13700.
+
+Livelli: picco bp_b = Q × riferimento interno (−6 dBu nom, dec. 73); boost
+worst +15 dB su programma +10 dBu interni → territorio drive (§6:
+saturazione intenzionale, invariato). Rumore: il pot nel percorso segnale
+tra due nodi low-Z aggiunge termica + rumore di wiper — da quantificare
+nell'item rumore (§10.5).
+
+Silicon totale modulo (v0.2): banca 14 quad (§3.1) + EQ 12,5 quad +
+gate/buffer/make-up ≈ **~28-30 quad + 10 LM13700 + 5 THAT 2181**
+[PROVVISORIO, BOM §7].
 
 ## 5. Drive e meter (questione 10 — v0.1 = interfaccia, design dopo referenze 61)
 
@@ -214,14 +259,14 @@ quad): **~24-26 quad** (banca 14, EQ ~10, gate/buffer/make-up)
 
 | Voce | Qtà | Note |
 |---|---|---|
-| Quad op-amp low-noise (classe OPA1654/1612) | ~24-26 | banca 14 (v0.2 allineata in fase: 16 SK + 12 allpass), EQ ~10, buffer/make-up |
+| Quad op-amp low-noise (classe OPA1654/1612) | ~28-30 | banca 14 (v0.2 allineata in fase: 16 SK + 12 allpass), EQ 12,5 (5 sezioni/cella × 10, §4.1), gate/buffer/make-up |
 | LM13700 (dual OTA) | 10 | celle parametriche (position gm) |
 | THAT 2181 (dual VCA) | 5 | gate di kill (10 sezioni) |
 | THAT 2181 o JFETmatched | 1-2 | gain drive (stadio 1) |
 | JFET saturazione (coppia matched) | 2-4 | stadio 2 drive (post-61) |
 | Converter expo position + mirror | 5 sezioni | opzione (B) §4 |
 | R 0,1% / C0G-PP / trimmer allineamento | — | banca: 8 edge + 6 sezioni allpass per lato |
-| Stima costo | ~200-280 € | il modulo più siliconato del mixer |
+| Stima costo | ~220-300 € | il modulo più siliconato del mixer |
 
 ## 8. Simulazioni (`sim/five-way/`)
 
@@ -297,7 +342,38 @@ Altri risultati:
   prese di banda allineate in fase sono utili anche per un monitoring CUE
   coerente in fase.
 
-### 8.3 Nota di metodo
+### 8.3 v0.2 — Celle parametriche + cascata (`param-cell.cir`, `param-cascade.cir`)
+
+Cella singola (griglia Q 0,5/1/3 × b 0/+1/−1,82/−3,0/−4,62, f0 = 700 Hz;
+probe diretti: `param-cell-q.cir`, `param-cell-pos.cir`):
+- **detent (b=0): ±0,0001 dB piatto** su 20 Hz–20 kHz per ogni Q —
+  "piatto per costruzione" confermato;
+- **boost: +9,005 / +12,041 / +14,995 dB** (target 9,006 / 12,041 / 14,995):
+  errore ≤0,005 dB, picco esattamente a f0 per ogni Q;
+- **notch (b=+1): −81 dB (Q0,5) / −76 (Q1) / −63 (Q3)** @700 Hz con gm
+  ideale — con LM13700 reale attendersi valori di classe eq-serie
+  (−45…−60): da riverificare coi modelli reali (coda EQ beta-3);
+- **Q: misurata = comandata** (|bp_b| a f0 = Q, errore <0,001 dB); gonne a
+  ±0,58 ottave combaciano con la teoria del 2° ordine (<0,01 dB);
+- **position**: f0 via gm = 19,2·Iabc/(2πC) comandata a 250/450/700/1100/
+  1500 Hz: picco +14,99 dB alla frequenza esatta (±0,005 dB su 2,6 ottave).
+
+Cascata 5 celle in serie (centri PROVVISORI 60/180/600/2k/8k Hz):
+- **tutto a detent: −0,0003…−0,005 dB su 10 Hz–40 kHz** — la cascata non
+  degrada il detent (meglio di eq-serie ±0,02: qui niente summer condiviso);
+- **"curva dub"** (EQ1 +12 @60 Q1, EQ3 notch @600 Q3, EQ5 +9 @8k Q0,5):
+  12,03 / −58,5 / 9,01 dB come comandato; gonne fisicamente coerenti
+  (+1,6 dB @10 Hz = coda della campana EQ1); nessuna interazione indesiderata
+  tra bande.
+
+Lezioni LTspice cumulate (si aggiungono alla lista di sessione): nodo
+integratore pilotato solo da G-source vuole Rbias a massa (100 MΩ: senza,
+"floating node" e OP fallito → AC piatto); V-source di sola lettura su nodo
+isolato dà I = 0 (gm morto — usare .param direttamente nell'espressione);
+.step LIST esegue in ordine CRESCENTE (leggere i log di conseguenza);
+nomi .meas duplicati = run rifiutato.
+
+### 8.4 Nota di metodo
 
 Tutti i valori [PROVVISORIO]; le misure usano il macromodello op-amp classe
 OPA1654 (A0 120 dB, GBW 20 MHz, lineare): la piattezza fine della banca si
@@ -314,10 +390,12 @@ trimmer di allineamento (§3). I gate sono ideali (g = 0/1): THAT 2181 reale
   qualunque frequenze di crossover: resta aperta solo la scelta musicale
   (questione 67 — dato nuovo: spaziature più larghe = kill più profondi,
   ~6 dB per mezza ottava) e le frequenze dell'impianto di Filippo.
-- **9** (EQ creativo): architettura scelta [PROVVISORIO] (parametric SVF
-  sottrattivo + position gm + width a switch); APERTO: law di position
-  (lineare vs esponenziale — opzione A/B §4, ascolto M4L); legge del gain
-  (taper dB); verifica simulata delle celle complete = v0.2.
+- **9** (EQ creativo): circuito cella VALIDATO v0.2 (§4.1, §8.3):
+  detent/boost/notch/Q/position esatti in simulazione; pot gain nel dominio
+  del segnale (tra ±bp_b, niente CV). APERTO: law di position (lineare vs
+  esponenziale — opzione A/B §4, ascolto M4L); law del gain (taper custom,
+  famiglia eq-serie §10 [PROVVISORIO — ascolto M4L]); profondità notch con
+  OTA reali e rumore del modulo (§10.4/§10.5).
 - **10** (drive): struttura a due stadi definita; taper esatto e carattere
   DOPO le referenze di Filippo (61).
 - **24** (layout comandi): invariata — il pannello è design di Filippo;
@@ -332,11 +410,15 @@ trimmer di allineamento (§3). I gate sono ideali (g = 0/1): THAT 2181 reale
    dimostrata e validata (§3.1, §8.2 — `bank-aligned.cir` + `align_math.py`).
    Le spaziature non sono più vincolate dalla matematica: l'ascolto per la
    questione 67 è libero (dato: spaziature più larghe = kill più profondi).
-1. Simulazione celle parametriche complete (gain/position/width, law,
-   interazione tra bande in cascata — stessa metodologia di eq-serie beta).
+1. [FATTO 2026-09-27] Celle parametriche complete + cascata 5 celle
+   VALIDATE (§4.1, §8.3). In coda: modelli reali (LM13700 per notch,
+   OPA16xx per rumore/THD), law del gain da confermare a orecchio in M4L.
 2. Drive: candidati JFET + spettri armonici (dopo referenze 61).
-3. Converter position (opzione B) adattato ai range per banda + mirror.
-4. Gate VCA con ramp 1 ms + verifica click (voce 55).
+3. [SPECIFICATO 2026-09-27] Converter position (opzione B): C per banda e
+   finestra Iabc 2-31 µA, mirror ratio 0,05-0,6 (§4.1); realizzazione =
+   riuso filtro v0.2 (converter master + mirror bufferizzati ≤1,6%).
+4. Gate VCA con ramp 1 ms + verifica click (voce 55) — in coda col modello
+   THAT 2181 CONDIVISO (FX v0.2 + CDJ §7: un modello, tre usi).
 5. Rumore del modulo completo (banca + EQ + drive: il percorso più lungo
    del mixer — budget da sheet §3).
 6. Meter pickup e ballistica 10 Hz (con CDJ §7.3).

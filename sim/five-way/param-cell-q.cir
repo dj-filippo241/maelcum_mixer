@@ -1,0 +1,70 @@
+* MODULO 5-WAY v0.2 — CELLA PARAMETRICA (EQ creativo §4): campana sottrattiva
+* H(s) = -(1 - b*BP_norm(s)), BP_norm = BP/Q (picco 1 esatto a f0).
+*   b = 0      → detent PIATTO per costruzione (cella = invertitore puro)
+*   b = +1     → notch esatto al centro (il -inf del requisito)
+*   b = -1,82  → +9 dB   (EQ5)
+*   b = -3,0   → +12 dB  (EQ4)
+*   b = -4,62  → +15 dB  (EQ1-3)
+* Core SVF: summer invertente (Vin 10k, LP feedback 10k, damping Rq da bp_b)
+* + 2 integratori OTA gm = 19,2*Iabc (LM13700, C 33n) + buffer di stato
+* (lezione filtro v0.1: buffer obbligatori). f0 = 19,2*Iabc/(2*pi*C):
+* Iabc = 7,56 u → f0 = 700 Hz (centro banda MID); position = converter
+* esponenziale opzione B (tecnologia filtro v0.2, mirror per lato).
+* Q: 1/Q = Rf/Rq, Rq = Q*10k — switch 3 posizioni (Q3/Q1/Q0,5) 0,1%.
+* Iniezione b: pot reale tra +bp_b e -bp_b (buffer + invertitore), wiper →
+* R_b = Q*10k/4,62 (STESSA meccanica dello switch Q, 0,1%) → summer uscita.
+* In sim: Bw = sorgente comportamentale (law/taper del pot = eredita
+* eq-serie §10: boost lineare mezza corsa, cut accelerato, detent fisico).
+* Segni: con Iabc positiva (parametro), G1/G2 = +19,2*Iabc (nel filtro era
+* -19,2*I(Vabc) perche' I(Vabc) = -Ic): bp_b = BP invertente (picco -Q),
+* Bw positivo ripristina H = -(1 - b*BP_norm).
+* Valori [PROVVISORIO — regola 3]; macromodello op-amp classe OPA1654.
+.param Qval=1
+.param bq=0
+* Iabc del core: f0 = 19,2*Iabc/(2*pi*33n) = 700 Hz con 7,56 u.
+* (Lezione: NON appendere una V-source di sola lettura a un nodo isolato —
+*  I(V) = 0 senza loop; qui il valore entra come parametro nell'espressione
+*  gm. Il converter reale = circuito filtro v0.2, a parte.)
+.param Iabc=7.56u
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 vin 0 DC 0 AC 1
+.subckt OPAMP inp inn out vp vm
+E1 xx 0 value={1e6*(V(inp)-V(inn))}
+R1 xx p1 50Meg
+C1 p1 0 159p
+E2 out 0 value={limit(V(p1),V(vm)+1.5,V(vp)-1.5)}
+.ends OPAMP
+* --- Core SVF (f0 = 700 Hz) ---
+Rvin vin ns 10k
+Rlp lp_b ns 10k
+Rq bp_b ns {Qval*10k}
+Rf ns hp 10k
+Xsum 0 ns hp vcc vee OPAMP
+G1 0 bp value={19.2*Iabc*V(hp)}
+C1i bp 0 33n
+Rb1 bp 0 100Meg
+Xb1 bp bp_b bp_b vcc vee OPAMP
+G2 0 lp value={19.2*Iabc*V(bp_b)}
+C2i lp 0 33n
+Rb2 lp 0 100Meg
+Xb2 lp lp_b lp_b vcc vee OPAMP
+* --- Iniezione b (pot tra ±bp_b; qui comportamentale: Bw = +(b/4,62)*bp_b ---
+Bw bwv 0 V={bq/4.62*V(bp_b)}
+* --- Summer di uscita (H = -(1 - b*BP_norm)) ---
+Rbw bwv ns2 {10k*Qval/4.62}
+Rain vin ns2 10k
+Rf2 ns2 vout 10k
+Xout 0 ns2 vout vcc vee OPAMP
+*
+.step param Qval LIST 3 1 0.5
+.ac dec 200 20 20k
+.meas ac h700 FIND mag(V(vout)) AT 700
+.meas ac h470 FIND mag(V(vout)) AT 470
+.meas ac h1050 FIND mag(V(vout)) AT 1050
+.meas ac hpk MAX mag(V(vout))
+.meas ac hmin MIN mag(V(vout))
+.meas ac q700 FIND mag(V(bp_b)) AT 700
+.meas ac q470 FIND mag(V(bp_b)) AT 470
+.meas ac q1050 FIND mag(V(bp_b)) AT 1050
+.end
