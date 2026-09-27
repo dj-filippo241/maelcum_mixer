@@ -1,0 +1,53 @@
+* FX v0.2 (§11.1) — DC SERVO del ritorno pedale (requisito banda 5 Hz–40 kHz,
+* dec. 65: niente cap di accoppiamento) — architettura e numeri.
+* Catena: jack (+Vos 3 mV del buffer JFET) → buffer OP1642-class non
+* invertente gain 2 (il nodo di controeazione serve da iniezione al servo)
+* → I/V 10k/5k (= stadio d'ingresso del VCA, gain −0,5 → globale −1) → out.
+* Servo: integratore invertente VERO (Rsi 1M, Ci 330n: guadagno DC = A0,
+* nulling profondo) → Rinj 48,7k sul nodo FB del buffer. Segno del loop:
+* 3 inversioni = feedback negativo (verificato a mano e in .op).
+* Crossover loop fc = 0,5·ki/(2π·τi) ≈ 0,053 Hz (misurato: T(1 Hz) = −25,5 dB).
+* Il servo forma un HP sul SEGNALE con errore quadratico ½(fc/f)²:
+* fc 0,053 Hz → −0,001 dB a 5 Hz; anche fc 0,5 Hz (doc §4) darebbe solo
+* −0,04 dB a 5 Hz: range utile 0,05-0,5 Hz [PROVVISORIO]. Settling τ = 3,1 s
+* (misurato: residuo 20 µV a 15 s da Vos 3 mV, vint → −0,599 V; a regime
+* nulling ≥ 84 dB).
+* Misure: .op = residuo DC (atteso µV contro −3 mV senza servo);
+* .ac = piattezza 1 Hz–100 kHz a servo attivo.
+* Valori [PROVVISORIO — regola 3].
+.include ../lib/opamp-audio.inc
+.subckt OP1642 inp inn out vp vm
+Rn inp inx 1571
+E1 xx 0 value={1e6*(V(inx)-V(inn))}
+R1 xx p1 1k
+C1 p1 0 2n
+E2 out 0 value={limit(V(p1),V(vm)+1.5,V(vp)-1.5)}
+.ends OP1642
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 jack 0 DC 0 AC 1
+Voff jack jbuf DC 3m
+* Buffer JFET gain 2 con nodo di iniezione
+Xbuf jbuf nfb bout vcc vee OP1642
+Rf2 bout nfb 10k
+Rg nfb 0 10k
+* Servo DC
+Rsi vca sint 1Meg
+Ci sint vint 15n
+Xsi 0 sint vint vcc vee OP1612
+Rinj vint nfb 1Meg
+* I/V (stadio d'ingresso VCA): −0,5 → gain globale −1
+Rin bout ns 10k
+Rfiv ns vca 5k
+Xiv 0 ns vca vcc vee OP1612
+*
+.op
+.ac dec 100 1 100k
+.meas DC vca_dc FIND V(vca)
+.meas DC vint_dc FIND V(vint)
+.meas ac h1 FIND mag(V(vca)) AT 1
+.meas ac h5 FIND mag(V(vca)) AT 5
+.meas ac h1k FIND mag(V(vca)) AT 1k
+.meas ac h40k FIND mag(V(vca)) AT 40k
+.meas ac h100k FIND mag(V(vca)) AT 100k
+.end

@@ -1,0 +1,57 @@
+* FX v0.2 (§11.1) — EQ2 ritorni/send: celle serie v0.3 SCALATE + griglia
+* LOW shelf complementare ~120 Hz (canale: 70 Hz con C 100n → qui C 56n:
+* f ∝ 1/(Rp·C), Rp 31k invariato, kill −30 dB dec. 77);
+* HIGH sottrattiva ~4,5 kHz (canale: 5 kHz con Rh1 4,7k/Rh2 2,25k → qui
+* 5,23k/2,5k: f ∝ 1/R, Ch 10n invariato; kill = −(1−HP2) con bump +2,1 dB
+* al corner — questione 68 si applica, stessa decisione del canale);
+* law dedicate = taper custom dei pot (xl: 0,5 detent / 0,999 kill / 0,323
+* boost +6; thh: 0,5 detent / 0 kill / 1 boost +6) — tabella §10 eq-serie.
+* Modi (.step m): 1 detent | 2 kill LOW | 3 boost LOW | 4 kill HIGH |
+* 5 boost HIGH | 6 both kill. Op-amp: celle OP1654, buffer OP1612
+* (`sim/lib/opamp-audio.inc`, beta-3). Valori [PROVVISORIO — regola 3].
+.param m=1
+.param err=0
+.param xl={if(m==2,0.999, if(m==3,0.323, if(m==6,0.999, 0.5)))}
+.param thh={if(m==4,0, if(m==5,1, if(m==6,0, 0.5)))}
+.include ../lib/opamp-audio.inc
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 vin 0 DC 0 AC 1
+* --- Buffer d'ingresso ---
+Xib vin v_pre v_pre vcc vee OP1612
+* --- Cella LOW shelf ~120 Hz (topologia eq-serie, C scalata) ---
+RinL v_pre naL 1k
+RzaL naL nbL {31k*xl*(1+err/2)+1m}
+CzaL naL nbL 56n
+XopL 0 nbL v_lo vcc vee OP1654
+RfL nbL ncL 1k
+RzbL ncL v_lo {31k*(1-xl)*(1-err/2)+1m}
+CzbL ncL v_lo 56n
+* --- Cella HIGH sottrattiva ~4,5 kHz (topologia eq-serie, R scalate) ---
+Ch1 v_lo nha 10n
+Ch2 nha nhb 10n
+Rh1 nha vhp 5.23k
+Rh2 nhb 0 2.5k
+X1h nhb vhp vhp vcc vee OP1654
+Rh3 vhp nvh 10k
+Rh4 nvh vhn {10k*(1+err/2)}
+X2h 0 nvh vhn vcc vee OP1654
+Rp1h vhn wph {10k*thh+1m}
+Rp2h vhp wph {10k*(1-thh)+1m}
+Rah v_lo nsh 49.9k
+Rbh wph nsh 49.9k
+Rfh nsh v_hi 49.9k
+X3h 0 nsh v_hi vcc vee OP1654
+*
+.step param m LIST 1 2 3 4 5 6
+.ac dec 200 10 60k
+.meas ac g20 FIND mag(V(v_hi)) AT 20
+.meas ac g120 FIND mag(V(v_hi)) AT 120
+.meas ac g1k FIND mag(V(v_hi)) AT 1k
+.meas ac g4k5 FIND mag(V(v_hi)) AT 4.5k
+.meas ac g10k FIND mag(V(v_hi)) AT 10k
+.meas ac g20k FIND mag(V(v_hi)) AT 20k
+.meas ac g35k FIND mag(V(v_hi)) AT 35k
+.meas ac gmax MAX mag(V(v_hi))
+.meas ac gmin MIN mag(V(v_hi))
+.end

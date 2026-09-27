@@ -1,0 +1,30 @@
+* FX v0.2 (§11.4) — RITORNO PEDALE: verifica TVS/banda 40 kHz (CORREZIONE §4)
+* Il doc §4 diceva "10 pF a 1 MΩ = −1,6 dB @40 kHz": doppio errore —
+* (a) il conto con 1 MΩ sorgente darebbe −8,6 dB (polo 15,9 kHz);
+* (b) soprattutto la R di bias 1 MΩ NON è la resistenza del polo: il polo
+*     lo fa Z_sorgente × C_nodo. La sorgente reale è bassa Z (pedale rack
+*     ~100 Ω) o media (chitarra passiva ~10 kΩ + cavo 100-300 pF).
+* Casi (.step): sorgente rack 100 Ω (C_nodo = sola TVS) e chitarra 10 kΩ
+* con cavo 220 pF (C_nodo = cavo + TVS); TVS 2/5/10 pF.
+* Atteso: rack → TVS irrilevante (polo ~100-500 MHz); chitarra → domina il
+* cavo (~−3 dB @40 kHz, fisica del pickup, non dell'interfaccia: la TVS
+* low-cap aggiunge ≤0,2 dB). Rbias 1 MΩ resta corretta (carico chitarra).
+.param Rsrc=100
+.param Ctv=5e-12
+V1 in 0 DC 0 AC 1
+Rs in n1 {Rsrc}
+Rbias n1 0 1Meg
+Cpar n1 0 {if(Rsrc==100,Ctv,Ctv+220e-12)}
+Xbuf n1 out out vcc vee BUFIDEAL
+.subckt BUFIDEAL inp inn out vp vm
+E1 out 0 value={V(inp)}
+.ends BUFIDEAL
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+.step param Rsrc LIST 100 10k
+.step param Ctv LIST 2e-12 5e-12 10e-12
+.ac dec 100 1k 100k
+.meas ac h5 FIND mag(V(out)) AT 5
+.meas ac h20k FIND mag(V(out)) AT 20k
+.meas ac h40k FIND mag(V(out)) AT 40k
+.end

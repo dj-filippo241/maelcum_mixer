@@ -82,17 +82,27 @@ L/R con due path matched (centraggio affidabile, no phase games).
   hi-Z ≥1 MΩ** (candidato: OPA1642/JFET discreto 2N5457 — da verificare
   rumore e bias; alternativa: op-amp JFET-input) → **DC-control**:
   requisito banda 5 Hz–40 kHz (infrasub!) → niente cap di accoppiamento
-  economici: **DC servo** (integratore che corregge l'offset del buffer,
-  corner ~0,5 Hz) oppure cap film 22-47 µF (angolo ≤3 Hz con 1 MΩ:
-  22 µF → 7 Hz ✗; 47 µF → 3,4 Hz ✓ [PROVVISORIO]). Raccomandazione:
-  DC servo (nessun elettrolitico nel percorso, coerente col requisito
-  AC ≤5 Hz del progetto, decisione 65).
+  economici: **DC servo VALIDATO v0.2 (§8.4)** — buffer con nodo FB per
+  l'iniezione (gain 2) + integratore vero (1 MΩ/15 nF) + R inj 1 MΩ:
+  corner 0,053 Hz, errore sul segnale a 5 Hz = −0,001 dB (l'errore del
+  servo è quadratico ½(fc/f)²: anche corner 0,5 Hz darebbe −0,04 dB),
+  nulling offset ≥84 dB (3 mV → 191 nV), settling τ ≈ 3 s. Il cap film
+  47 µF resta alternativa economica (angolo 3,4 Hz) ma il servo evita
+  elettrolitici/film enormi nel percorso (coerente con dec. 65).
 - Tolleranza ritorno −20…+18 dBu: il buffer JFET + gain VCA a −∞..0
   assorbe tutto il range; +18 dBu in ingresso = 6,9 Vp: headroom dominio
   ±18 ✓ (stesso worst del canale).
-- Protezione: R serie + TVS bidirezionali low-cap (<5 pF per non tagliare
-  40 kHz su 1 MΩ//5pF... a 1 MΩ anche 10 pF = −1,6 dB @40 kHz: TVS
-  low-cap obbligatoria, verifica in v0.2).
+- Protezione: R serie + TVS bidirezionali low-cap. **Verifica v0.2 (§8.4) —
+  CORREZIONE del claim v0.1** ("10 pF a 1 MΩ = −1,6 dB @40 kHz"): il conto
+  era doppiamente sbagliato (a 1 MΩ sorgente sarebbero −8,6 dB; soprattutto
+  la R di bias NON fa il polo con la C del nodo — lo fa la Z della SORGENTE).
+  Numeri reali: ritorno rack (sorgente ~100 Ω): TVS irrilevante, −0,001 dB
+  @40 kHz anche con 10 pF; ritorno chitarra (10 kΩ + cavo 220 pF): −1,24…
+  −1,32 dB @40 kHz di cui la TVS (2→10 pF) vale 0,07 dB — domina il cavo
+  (fisica del pickup, non dell'interfaccia). TVS low-cap ≤5 pF resta buona
+  pratica (quota ≤0,05 dB); R bias 1 MΩ confermata (carico chitarra
+  −0,087 dB). La banda 5 Hz–40 kHz dell'ELETTRONICA è verificata (servo +
+  buffer piatti, §8.4).
 
 ## 5. Canale di ritorno
 
@@ -127,6 +137,11 @@ Stessa famiglia delle celle serie EQ v0.3 (decisione 76/77):
   partenza, poi graduale" = inversa. Boost +6 su entrambe.
 - "No risonanza/saturazione" (SPEC §7): le celle serie non hanno risonanza
   per costruzione ✓; op-amp in classe lineare.
+- **Valori scalati VERIFICATI v0.2 (§8.4)**: LOW C = 56 nF (shelf ~120 Hz),
+  HIGH Rh1/Rh2 = 5,23k/2,5k con Ch 10 nF (~4,5 kHz); griglia conforme:
+  detent ±0,005 dB su 20 Hz–35 kHz, kill LOW −29,6 dB @20 Hz, boost +5,9…
+  +6,0, kill HIGH −9,3 @35 kHz con bump +0,5 @4,5 kHz (classe canale:
+  questione 68 confermata anche qui).
 - Silicon: 2 celle × (1-3 sezioni) per EQ2: LOW shelf 1 sezione + HIGH
   sottrattiva 3 sezioni = 4 sezioni per EQ2 mono, 8 per stereo — per i
   4 ritorni: 16 sezioni (4 quad); lato send (nei canali): 8 sezioni per
@@ -233,6 +248,35 @@ lo "scatto" che chiude subito (coerente col gate 5-way); 5 ms = fade più
 morbido ma chiusura lenta. Raccomandazione [PROVVISORIO]: **1 ms** per il
 reroute; conferma a orecchio in M4L (dati per la ratifica voce 55).
 
+### 8.4 v0.2 — Banda/TVS, DC servo, EQ2 (`fx-tvs-bw.cir`, `fx-dc-servo.cir`, `fx-eq2.cir`)
+
+**Banda d'ingresso e TVS** (griglia R_sorgente × C_TVS, §4): il polo HF lo
+fa la Z sorgente con la C del nodo, NON la R di bias 1 MΩ. Rack (100 Ω):
+−0,001 dB @40 kHz con TVS fino a 10 pF. Chitarra (10 kΩ + cavo 220 pF):
+−1,24…−1,32 dB @40 kHz (il cavo domina; la TVS aggiunge ≤0,07 dB). Il claim
+v0.1 (−1,6 dB da 10 pF su 1 MΩ) era sbagliato nel modello e nel conto:
+corretto in §4. Scelta componenti: TVS ≤5 pF, R bias 1 MΩ (JFET-input).
+
+**DC servo** (`fx-dc-servo.cir`, buffer OP1642-class con Vos 3 mV): catena
+buffer gain 2 (nodo FB = iniezione) → I/V −0,5 (stadio d'ingresso VCA) →
+servo = integratore invertente (1 MΩ/15 nF, τi 15 ms) → R inj 1 MΩ sul FB.
+- Loop gain misurato (broken-loop): T(1 Hz) = −25,5 dB, pendenza 1/f →
+  fc = 0,053 Hz come da progetto;
+- segnale: piatto 5 Hz–100 kHz, errore a 5 Hz = −0,001 dB (l'iniezione sul
+  FB forma un HP sul segnale con errore quadratico ½(fc/f)²: anche il corner
+  0,5 Hz del v0.1 starebbe in ±0,05 dB — il corner è libero tra 0,05 e 0,5 Hz);
+- offset: nulling da 3 mV a −191 nV (84 dB); settling τ ≈ 3,1 s (residuo
+  20 µV a 15 s dall'accensione — il mute di partenza dei ritorni copre);
+- offset di gain residuo +0,043 dB (R inj carica il partitore FB di 1/1000):
+  si assorbe nel trim di calibrazione del ritorno (gain VCA).
+
+**EQ2 valori scalati** (`fx-eq2.cir`, celle serie v0.3 con OP1654/OP1612 da
+libreria): griglia 6 modi — detent ±0,005 dB (20 Hz–35 kHz); kill LOW
+−29,6 dB @20 Hz (dec. 77); boost LOW +5,93 @20; kill HIGH: bump +0,47
+@4,5k, −5,1 @20k, −9,3 @35k (questione 68 si applica identica al canale);
+boost HIGH +5,1…+5,7 @20-35k; both-kill = somma dei due. Scaling confermato:
+LOW C 56 nF (Rp 31k invariato), HIGH R 5,23k/2,5k (Ch 10 nF invariato).
+
 ## 9. BOM di massima v0.1 [molto PROVVISORIA]
 
 | Voce | Qtà | Note |
@@ -264,9 +308,10 @@ reroute; conferma a orecchio in M4L (dati per la ratifica voce 55).
 
 ## 11. Prossimi passi (v0.2)
 
-1. [LAW + CATENA CV FATTE 2026-09-27, §8.3] Restano i circuiti concreti:
-   DC servo dei ritorni, EQ2 con valori scalati + simulazione (stesso
-   metodo di eq-serie beta-3, macro reali in `sim/lib/opamp-audio.inc`).
+1. [FATTO 2026-09-27/28: law + catena CV (§8.3), DC servo ed EQ2 scalata
+   (§8.4)] Resta l'implementazione a componenti discreti dello shaper
+   (rete diodi/resistori, famiglia filtro) e il layout del nodo d'ingresso
+   (TVS/cavo) — da millefori/PCB.
 2. [FATTO 2026-09-27] Peak detector meter (condiviso con CDJ §7.3):
    `sim/meter/` + `RISULTATI-peak-det.md` — droop a 10 Hz per τ release
    (−2,9/−0,88/−0,31 dB per ciclo con τ 0,3/1/3 s → raccomandazione ≥1 s),
@@ -277,7 +322,9 @@ reroute; conferma a orecchio in M4L (dati per la ratifica voce 55).
    misurabile in macro lineare — datasheet + modello TI + banco al
    prototipo. CORREZIONE: 218x = SINGLE (voce 37 riscritta: i 16 del BOM
    §9 sono 16 CHIP, non 16 sezioni di dual).
-4. Verifica TVS/capacità su banda 40 kHz a 1 MΩ.
+4. [FATTO 2026-09-27] Verifica TVS/banda 40 kHz: claim v0.1 CORRETTO (§4,
+   §8.4) — il polo lo fa la Z sorgente, non la R di bias; TVS ≤5 pF buona
+   pratica, 1 MΩ confermato.
 5. Ratifiche di Filippo: sensitivity return (69), questione 55 (dati ramp
    in §8.3 e five-way §8.5), questione 68.
 6. Prototipo: un bus + un ritorno + un loop con pedale reale prima del PCB.
