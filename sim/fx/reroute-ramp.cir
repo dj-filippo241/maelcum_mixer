@@ -1,0 +1,35 @@
+* FX v0.2 (§11.1) — TRANSIENTE DI REROUTE: smoothing della CV e click
+* Gesto: pot del reroute che chiude di scatto (θ 1 → 0 in 10 µs = mano
+* veloce su BBM; la parte segnale dello switch BBM sta nel design v0.2,
+* qui si isola la catena gain: se la CV è smooth, il VCA non fa click).
+* Confronto τ smoothing: 1 µs (senza) / 1 ms (SPEC minimo) / 5 ms (max).
+* Misura: sonda HP 2 poli ~1,6 kHz sul segnale (come gate-ramp.cir):
+* picco HF post-gesto = click; baseline = programma che attraversa la sonda.
+* Segnale: ritorno 0 dBu (1,096 Vp) a 1 kHz.
+.include ../lib/that2181.inc
+.param tau=1m
+.param Rsm={tau/100n}
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 in 0 SINE(0 1.096 1k)
+* Pot: 5 V → 0 V in 10 µs a t=2,25 ms (gesto veloce, worst al picco)
+Vpot vp 0 PWL(0 5 2.25m 5 2.26m 0 10m 0)
+* Shaper PWL (stessa law di reroute-law.cir)
+Bshp shp 0 V={if(V(vp)<1, 0.610-0.366*V(vp), if(V(vp)<2.25, 0.244-0.0976*(V(vp)-1), if(V(vp)<3.5, 0.122-0.0488*(V(vp)-2.25), if(V(vp)<4.25, 0.061-0.0488*(V(vp)-3.5), if(V(vp)<4.75, 0.0244-0.0366*(V(vp)-4.25), 0.0061-0.0244*(V(vp)-4.75))))))}
+Rsm shp smr {Rsm}
+Csm smr 0 100n
+Bbuf ecm 0 V={V(smr)}
+Xg in out 0 ecm vcc vee THAT2181
+* Sonda click HP 2 poli
+Ch1 out h1 10n
+Rh1 h1 0 10k
+Ch2 h1 h2 10n
+Rh2 h2 0 10k
+*
+.step param tau LIST 1u 1m 5m
+.tran 0 10m 0 1u
+.meas tran vpre MAX ABS(V(out)) FROM 1m TO 2.25m
+.meas tran hpbase MAX ABS(V(h2)) FROM 1m TO 2.25m
+.meas tran hpkill MAX ABS(V(h2)) FROM 2.25m TO 6m
+.meas tran vres MAX ABS(V(out)) FROM 8m TO 10m
+.end

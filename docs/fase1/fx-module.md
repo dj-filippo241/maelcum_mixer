@@ -144,8 +144,14 @@ Stessa famiglia delle celle serie EQ v0.3 (decisione 76/77):
   stessa famiglia dello shaper del filtro (filter-module §4): 6 breakpoint,
   trimmer a banco. Il tratto 95-100% (−1…0 dB) è il controllo finissimo
   vicino all'apertura: è la zona musicale critica del dub feedback.
+  **VERIFICATA end-to-end (§8.3)**: 13 punti di griglia esatti a 1e-8 dB
+  attraverso shaper → smoothing → THAT 218x (macro `sim/lib/that2181.inc`).
+  12 shaper identici (uno per controllo reroute): rete diodi/resistori,
+  replica su PCB, costo trascurabile.
 - **Smoothing 1-5 ms** (SPEC): RC + buffer sulla CV del VCA (1 ms =
-  click-free senza impastare il gesto).
+  click-free senza impastare il gesto — verificato coi numeri in §8.3:
+  click −9,6 dB vs catena non smorzata, chiusura ~5 ms; 5 ms = click sotto
+  il programma ma chiusura ~25 ms).
 - **Stabilità del loop / bounded by design** (§8, simulato): il loop
   ritorno→reroute→bus→pedale→ritorno ha guadagno d'anello g_loop =
   g_reroute · g_pedale_path. SPEC: niente limiter → il bounding è dato
@@ -198,6 +204,35 @@ dinamica del loop e il worst-case del summing, non il carattere sonoro.
 - Crosstalk: −38 dB analitico (virtual-earth, A=1000); nella pratica domina
   il layout (regole §3).
 
+### 8.3 v0.2 — Law a tratti del reroute VERIFICATA (`reroute-law.cir`, `reroute-ramp.cir`)
+
+Catena CV (SPEC §7): pot 0-5 V → shaper a tratti (in sim: PWL via if()
+annidati — LTspice non ha pwl() nei B-source; nel reale: rete
+diodi/resistori a breakpoint, famiglia dello shaper del filtro,
+filter-module §4, trimmer a banco) → smoothing RC 1 ms → EC− del THAT 218x
+(modello condiviso `sim/lib/that2181.inc`, law 6,1 mV/dB).
+
+**Law esatta**: griglia 13 punti (6 breakpoint SPEC + 7 punti medi), errore
+≤1e-8 dB: G = 0/−0,5/−1/−2,5/−4/−7/−10/−15/−20/−30/−40/−70/−100 dB per
+θ = 1/0,975/0,95/0,90/0,85/0,775/0,70/0,575/0,45/0,325/0,20/0,10/0. Il
+tratto 95-100% (−1…0, zona critica del feedback dub) è lineare-in-dB come
+da SPEC; "−∞" = floor −100 dB del VCA (gain range datasheet).
+
+**Transiente di reroute** (gesto: pot chiuso in 10 µs, segnale 0 dBu 1 kHz,
+sonda click HP 2 poli — metodo di `sim/five-way/gate-ramp.cir`):
+
+| τ smoothing | Picco click | vs brusco | Tempo di chiusura |
+|---|---|---|---|
+| 1 µs (assente) | 1,00 V | — | istantaneo |
+| 1 ms | 0,33 V | −9,6 dB | ~5 ms |
+| 5 ms | 0,21 V (= baseline del programma) | −13,4 dB | ~25 ms |
+
+Entrambi i τ della SPEC sono click-free (1 ms resta 1,5 dB sopra il
+residuo di programma; 5 ms scende sotto). La differenza è il feel: 1 ms =
+lo "scatto" che chiude subito (coerente col gate 5-way); 5 ms = fade più
+morbido ma chiusura lenta. Raccomandazione [PROVVISORIO]: **1 ms** per il
+reroute; conferma a orecchio in M4L (dati per la ratifica voce 55).
+
 ## 9. BOM di massima v0.1 [molto PROVVISORIA]
 
 | Voce | Qtà | Note |
@@ -229,10 +264,18 @@ dinamica del loop e il worst-case del summing, non il carattere sonoro.
 
 ## 11. Prossimi passi (v0.2)
 
-1. Circuiti concreti: shaper law reroute, catena CV, DC servo, EQ2 con
-   valori scalati + simulazione (stesso metodo di eq-serie).
-2. Simulazione peak detector meter (condivisa con CDJ §7.3).
-3. Modello THAT 2181 (o candidato reale) per gain/law/THD.
+1. [LAW + CATENA CV FATTE 2026-09-27, §8.3] Restano i circuiti concreti:
+   DC servo dei ritorni, EQ2 con valori scalati + simulazione (stesso
+   metodo di eq-serie beta-3, macro reali in `sim/lib/opamp-audio.inc`).
+2. Simulazione peak detector meter (condivisa con CDJ §7.3) — requisiti
+   bloccati: ballistica 10 Hz (dec. 65), clip latch 300-500 ms; il resto =
+   questione 19.
+3. [FATTO 2026-09-27] Modello THAT 218x: `sim/lib/that2181.inc` condiviso
+   (law/headroom verificati qui §8.3 e in CDJ §7 item 2). THD: non
+   misurabile in macro lineare — datasheet + modello TI + banco al
+   prototipo. CORREZIONE: 218x = SINGLE (voce 37 riscritta: i 16 del BOM
+   §9 sono 16 CHIP, non 16 sezioni di dual).
 4. Verifica TVS/capacità su banda 40 kHz a 1 MΩ.
-5. Ratifiche di Filippo: sensitivity return, questione 55, questione 68.
+5. Ratifiche di Filippo: sensitivity return (69), questione 55 (dati ramp
+   in §8.3 e five-way §8.5), questione 68.
 6. Prototipo: un bus + un ritorno + un loop con pedale reale prima del PCB.
