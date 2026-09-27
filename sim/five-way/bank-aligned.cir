@@ -1,0 +1,130 @@
+* MODULO 5-WAY v0.2 — KILL BANK ALLINEATA IN FASE (obiettivo: somma piatta ESATTA)
+* Design: cascata LR4 a 5 vie con spina HP CONDIVISA (nested: ogni banda
+* passa TUTTE le HP4 dei crossover sotto di essa) + compensazione allpass:
+* ogni banda passa gli allpass A2 dei crossover SOPRA di essa (SUB 3,
+* KICK 2, MID 1, HIGH/SUPER 0). Teorema: LP4(f)+HP4(f) = A2(f) (allpass 2o
+* ordine, |A2|=1) → la somma telescopica = A2(f1)A2(f2)A2(f3)A2(f4),
+* modulo ESATTAMENTE 1 a ogni frequenza (verifica: align_math.py, err 1e-15).
+* Il finding v0.1 (buchi -3…-5 dB) veniva dalle fasi non allineate: la
+* math validata in v0.1 ignorava il telescopio (stessa lezione di eq-src).
+* Sezione allpass AP2 = MFB bandpass Q 0,707 + summer -(1x + 2x) = -A2(s)
+* (2 op-amp/sezione; |H|=1 esatto se i coefficienti del BP tornano:
+*  R1 = 1/(sqrt2*w0*C), R2 = 2*R1, Rf = 1,5*R1, C1 = 2C, C2 = C).
+* Polarita': AP2 inverte → SUB (3 sez) e MID (1 sez) escono invertite,
+* corretta dai gate; somma finale invertita dal summer (make-up ripristina,
+* dec. 73). Gate ideali g=0/1 (THAT 2181 + ramp 1 ms nel reale, §3).
+* Frequenze PROVVISORIE (dec. 66 / questione 67): 90/350/1200/3500 Hz.
+* Valori [PROVVISORIO — regola 3]; op-amp = macromodello ideale GBW 1 GHz.
+.param kcase=0
+*
+.subckt OPAMP inp inn out vp vm
+* Macromodello classe OPA1654: A0 = 120 dB (1e6), polo 20 Hz → GBW 20 MHz.
+* (Il macromodello v0.1 aveva A0 = 60 dB: errore di loop ~0,15 dB in banda,
+*  artefatto che qui viene rimosso per misurare la SOLA bonta' dell'allineamento.)
+E1 xx 0 value={1e6*(V(inp)-V(inn))}
+R1 xx p1 50Meg
+C1 p1 0 159p
+E2 out 0 value={limit(V(p1),V(vm)+1.5,V(vp)-1.5)}
+.ends OPAMP
+.subckt SKLP in out PARAMS: fc=90 Cc=100n
+R1 in n1 {1/(2*pi*fc*sqrt(2)*Cc)}
+R2 n1 n2 {1/(2*pi*fc*sqrt(2)*Cc)}
+C1 n1 out {2*Cc}
+C2 n2 0 {Cc}
+Xop n2 out out vcc vee OPAMP
+.ends SKLP
+.subckt SKHP in out PARAMS: fc=90 Cc=10n
+C1 in n1 {Cc}
+C2 n1 n2 {Cc}
+* Q=0,707 richiede R_feedback = 0,5 * R_gnd (fix 2026-09-25, lezione v0.2)
+R1 n1 out {1/(2*pi*fc*sqrt(2)*Cc)}
+R2 n2 0 {2/(2*pi*fc*sqrt(2)*Cc)}
+Xop n2 out out vcc vee OPAMP
+.ends SKHP
+.subckt MFBPB in out PARAMS: f0=1200 C=10n
+* Bandpass invertente Q=0,707: H = -(s/(R1*C2))/D, D = s^2+s*sqrt2*w0+w0^2
+R1 in n1 {1/(sqrt(2)*2*pi*f0*C)}
+R2 n1 0 {2/(sqrt(2)*2*pi*f0*C)}
+C1 n1 nm {2*C}
+Rf nm out {1.5/(sqrt(2)*2*pi*f0*C)}
+C2 n1 out {C}
+Xop 0 nm out vcc vee OPAMP
+.ends MFBPB
+.subckt APSUM va vb out PARAMS: R=10k
+* out = -(1*va + 2*vb): va = segnale, vb = uscita BP → out = -A2*va
+Ra va n {R}
+Rb vb n {R/2}
+Rf n out {R}
+Xop 0 n out vcc vee OPAMP
+.ends APSUM
+.subckt AP2 in out PARAMS: f0=1200 C=10n
+Xbp in bp MFBPB f0={f0} C={C}
+Xsm in bp out APSUM
+.ends AP2
+*
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 vin 0 DC 0 AC 1
+*
+* --- Spina HP condivisa: vin → HP4(90) → HP4(350) → HP4(1,2k) → HP4(3,5k) ---
+XH1 vin r1 SKHP fc=90 Cc=100n
+XH1b r1 r1b SKHP fc=90 Cc=100n
+XH2 r1b r2 SKHP fc=350 Cc=100n
+XH2b r2 r2b SKHP fc=350 Cc=100n
+XH3 r2b r3 SKHP fc=1200 Cc=10n
+XH3b r3 r3b SKHP fc=1200 Cc=10n
+XH4 r3b r4 SKHP fc=3500 Cc=10n
+XH4b r4 r4b SKHP fc=3500 Cc=10n
+* --- SUB: LP4(90) da vin + allpass A2(350), A2(1200), A2(3500) ---
+XA1 vin s1a SKLP fc=90 Cc=100n
+XA2 s1a s1b SKLP fc=90 Cc=100n
+XP1 s1b s1c AP2 f0=350 C=22n
+XP2 s1c s1d AP2 f0=1200 C=10n
+XP3 s1d sub_o AP2 f0=3500 C=2.2n
+* --- KICK: presa r1b → LP4(350) + allpass A2(1200), A2(3500) ---
+XB1 r1b s2b SKLP fc=350 Cc=100n
+XB2 s2b s2c SKLP fc=350 Cc=100n
+XP4 s2c s2d AP2 f0=1200 C=10n
+XP5 s2d kick_o AP2 f0=3500 C=2.2n
+* --- MID: presa r2b → LP4(1200) + allpass A2(3500) ---
+XC1 r2b s3c SKLP fc=1200 Cc=10n
+XC2 s3c s3d SKLP fc=1200 Cc=10n
+XP6 s3d mid_o AP2 f0=3500 C=2.2n
+* --- HIGH: presa r3b → LP4(3500), nessun allpass ---
+XD1 r3b s4c SKLP fc=3500 Cc=10n
+XD2 s4c high_o SKLP fc=3500 Cc=10n
+* --- SUPER: presa r4b diretta (HP4 x4 dalla spina) ---
+*
+* --- Gate di kill (VCA ideali; polarita' corretta: SUB e MID escono invertite) ---
+Bg1 sub_g 0 V={-V(sub_o)*if(kcase==1,0,if(kcase==6,0,1))}
+Bg2 kick_g 0 V={V(kick_o)*if(kcase==2,0,if(kcase==6,0,1))}
+Bg3 mid_g 0 V={-V(mid_o)*if(kcase==3,0,if(kcase==6,0,1))}
+Bg4 high_g 0 V={V(high_o)*if(kcase==4,0,if(kcase==6,0,1))}
+Bg5 sup_g 0 V={V(r4b)*if(kcase==5,0,if(kcase==6,0,1))}
+*
+* --- Somma invertente (5 ingressi 10k, Rf 10k) ---
+Rs1 sub_g ns 10k
+Rs2 kick_g ns 10k
+Rs3 mid_g ns 10k
+Rs4 high_g ns 10k
+Rs5 sup_g ns 10k
+Rsf ns vsum 10k
+Xsum 0 ns vsum vcc vee OPAMP
+*
+.step param kcase LIST 0 1 2 3 4 5 6
+.ac dec 400 5 60k
+.meas ac g10 FIND mag(V(vsum)) AT 10
+.meas ac g30 FIND mag(V(vsum)) AT 30
+.meas ac g90 FIND mag(V(vsum)) AT 90
+.meas ac g200 FIND mag(V(vsum)) AT 200
+.meas ac g350 FIND mag(V(vsum)) AT 350
+.meas ac g700 FIND mag(V(vsum)) AT 700
+.meas ac g1k2 FIND mag(V(vsum)) AT 1200
+.meas ac g2k5 FIND mag(V(vsum)) AT 2500
+.meas ac g3k5 FIND mag(V(vsum)) AT 3500
+.meas ac g7k FIND mag(V(vsum)) AT 7000
+.meas ac g15k FIND mag(V(vsum)) AT 15000
+.meas ac g25k FIND mag(V(vsum)) AT 25000
+.meas ac gmax MAX mag(V(vsum))
+.meas ac gmin MIN mag(V(vsum))
+.end
