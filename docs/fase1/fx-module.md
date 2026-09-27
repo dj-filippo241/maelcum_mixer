@@ -1,5 +1,13 @@
-# FASE 1 — Modulo FX: design v0.1 (2026-09-25)
+# FASE 1 — Modulo FX: design v0.2 (2026-09-28)
 
+> **v0.2 (2026-09-27/28)**: law a tratti del reroute VERIFICATA end-to-end
+> col macro THAT 218x condiviso (§8.3); DC servo dei ritorni VALIDATO, EQ2
+> valori scalati VALIDATA, TVS/banda 40 kHz verificata con correzione del
+> claim v0.1 (§8.4); peak detector condiviso in `sim/meter/`. CORREZIONE
+> trasversale: THAT 2180/2181 = SINGLE channel (16 chip per questo modulo,
+> voce 37). Design completo salvo implementazione discreta dello shaper
+> (prototipo) e ratifiche di Filippo (69/55/68).
+>
 > **v0.1 (2026-09-25)**: primo design del modulo FX (bus/pedali/ritorni/matrice
 > di feedback). Livello: architettura + funzioni di trasferimento + verifica
 > simulata dei punti a rischio (loop di feedback, summing worst-case). NON
