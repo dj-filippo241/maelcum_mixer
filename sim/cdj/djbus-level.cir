@@ -1,0 +1,35 @@
+* CDJ §7 item 4 — SUMMING DJ BUS 4 canali: livelli worst e clip
+* Topologia [PROVVISORIO — regola 3]: out driver (Z ~47 Ω) → R 10k per
+* canale → virtual earth (OP1612-class, Rf 10k) → vout = −Σ (unity per
+* ingresso). Foglio §2: DJ BUS nominale 0 dBu, worst +12 dBu (4 canali
+* correlati a 0 dBu).
+* Casi (.step): 0 = 4×0 dBu correlati (worst sheet, atteso +12 dBu);
+*               1 = 4×+16 dBu correlati (user-error estremo: clip atteso,
+*                   non è guasto di design — regola K4 violata);
+*               2 = solo ch1 a +16 dBu (singolo canale worst).
+.include ../lib/opamp-audio.inc
+.param A=1.096
+.param cse=0
+.param K={if(cse==0,1,7.94)}
+.param S={if(cse==2,0,1)}
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 c1 0 SINE(0 {A*K} 1k)
+V2 c2 0 SINE(0 {A*K*S} 1k)
+V3 c3 0 SINE(0 {A*K*S} 1k)
+V4 c4 0 SINE(0 {A*K*S} 1k)
+Rd1 c1 d1 47
+Rd2 c2 d2 47
+Rd3 c3 d3 47
+Rd4 c4 d4 47
+R1 d1 ns 10k
+R2 d2 ns 10k
+R3 d3 ns 10k
+R4 d4 ns 10k
+Rf ns vout 10k
+Xsum 0 ns vout vcc vee OP1612
+.step param cse LIST 0 1 2
+.tran 0 4m 0 1u
+.meas tran voutpk MAX ABS(V(vout))
+.meas tran vnspk MAX ABS(V(ns))
+.end

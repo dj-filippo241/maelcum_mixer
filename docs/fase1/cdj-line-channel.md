@@ -206,11 +206,20 @@ FATTE:
    misurabile in macro lineare: stima da datasheet, verifica al prototipo
    (stesso trattamento di eq-serie §9.7).
 
+8. **Summing DJ BUS 4 canali FATTO (2026-09-27, `sim/cdj/djbus-level.cir` +
+   `djbus-crosstalk.cir`)**: worst sheet CONFERMATO — 4×0 dBu correlati →
+   +12,0 dBu (4,36 Vpk, margine 11,6 dB sul clamp ±16,5); singolo canale
+   +16 dBu → 8,66 Vpk (margine 5,6 dB); estremo 4×+16 correlati (+28 dBu =
+   violazione K4) → clamp ±16,5 V (user error documentato, non guasto).
+   Crosstalk via nodo di bus (virtual earth, classe OP1612, topologia
+   [PROVVISORIO] R 10k + driver 47 Ω): −98 dB @1 kHz, −78 @10 kHz, −72
+   @20 kHz, −67 @35 kHz — degrada 6 dB/ott col loop gain, inudibile;
+   nella pratica comanderà l'accoppiamento PCB (design di sistema, 21).
+
 RESTANTI:
 3. Peak detector: ballistica a 10 Hz (requisito infrasub) e a 35 kHz —
    condiviso col metering FX v0.2; requisiti = questione 19 (aperta)
-4. Summing DJ BUS a 4 canali: crosstalk e worst-case (numeri da sheet §2)
-8. Variante cella HIGH crossfade-LP2: solo se la questione 68 la sceglie
+9. Variante cella HIGH crossfade-LP2: solo se la questione 68 la sceglie
 
 ## 8. Questioni generate/aggiornate da questa v0.3 (stato 2026-09-25)
 
