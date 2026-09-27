@@ -247,7 +247,8 @@ gate/buffer/make-up ≈ **~28-30 quad + 10 LM13700 + 12 THAT 218x singoli**
   (stadio 1 a JFET, headroom); uscita recovery low-Z 20-50 Ω, clean +23 dBu
   (sheet: il +24 vero vive solo al master); nessun makeup compression (SPEC).
 - **Meter**: pickup post-drive; detector condiviso col design di canale
-  (CDJ §7.3, simulazione peak detector in coda lì): ballistica a 10 Hz
+  (CDJ §7.3 — peak detector SIMULATO 2026-09-27: `sim/meter/RISULTATI-peak-det.md`,
+  droop 10 Hz e latch clip quantificati, dati alla questione 19): ballistica a 10 Hz
   (dec. 65: no sagging), clip latch 300-500 ms, segmenti = design modulo
   metering (questione 19/54).
 

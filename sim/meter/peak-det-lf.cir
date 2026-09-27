@@ -1,0 +1,41 @@
+* PEAK DETECTOR condiviso (CDJ §7.3 / FX §11.2 / 5-way §5) — DROOP A 10 Hz
+* Requisito bloccato (dec. 65): ballistica a 10 Hz "senza sagging" → il
+* droop tra picchi consecutivi (Δt = 100 ms a 10 Hz) dipende da τ release:
+* si misura qui per τ = 0,3 / 1 / 3 s (dato per questione 19).
+* Metodo pulito: hold caricato a regime (ingresso DC 1,096 V = 0 dBu picco),
+* poi ingresso a 0 → il decay è esponenziale puro (nessuna dinamica di
+* cattura: l'overshoot/ring del superdiodo sul fronte di carica è artefatto
+* del macromodello a poli lumped — progetto reale = op-amp reale + rete
+* compensata o IC metering, verifica a banco in beta-3).
+* Topologia: buffer → superdiodo (op-amp + 1N4148) → C hold 100 nF →
+* R release → buffer out. τ = Rrel·Chold (niente Rfap: vedi OPDET).
+* Valori [PROVVISORIO — regola 3].
+.include ../lib/opamp-audio.inc
+.subckt OPDET inp inn out vp vm
+E1 xx 0 value={3.16e6*(V(inp)-V(inn))}
+R1 xx p1 3955
+C1 p1 0 1.59u
+* Clamp anti-saturazione a -1,5 V: nel reale = diodo anti-windup dal
+* uscita op-amp a riferimento; qui nel limit del macro. Niente Rfap:
+* il nodo hold vede solo Rrel + leakage D1 (decay pulito).
+E2 out 0 value={limit(V(p1),-1.5,V(vp)-1.5)}
+.ends OPDET
+.model D1N4148 D(Is=2.53n Rs=0.568 N=1.752 Cjo=4p M=0.4 Tt=20n Iave=200m Vpk=100)
+.param tau=3
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+* Carica a regime 200 ms, poi step a zero
+V1 in 0 PWL(0 1.096 0.2 1.096 0.2001 0 1 0)
+Xi in bi bi vcc vee OP1612
+Xop bi hold dout vcc vee OPDET
+D1 dout hold D1N4148
+Chold hold 0 100n
+Rrel hold 0 {tau*10Meg}
+Xbuf hold hout hout vcc vee OP1612
+.step param tau LIST 0.3 1 3
+.tran 0 0.5 0 10u
+.meas tran v000 FIND V(hout) AT 0.2001
+.meas tran v050 FIND V(hout) AT 0.25
+.meas tran v100 FIND V(hout) AT 0.3
+.meas tran v300 FIND V(hout) AT 0.5
+.end

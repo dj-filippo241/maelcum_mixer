@@ -216,10 +216,17 @@ FATTE:
    @20 kHz, −67 @35 kHz — degrada 6 dB/ott col loop gain, inudibile;
    nella pratica comanderà l'accoppiamento PCB (design di sistema, 21).
 
+9. **Peak detector condiviso FATTO (2026-09-27, `sim/meter/` +
+   `sim/meter/RISULTATI-peak-det.md`)**: circuito candidato superdiodo +
+   clamp anti-windup; droop a 10 Hz misurato per τ release 0,3/1/3 s
+   (−2,9/−0,88/−0,31 dB per ciclo → meter release ≥1 s, dati per la
+   questione 19); cattura esatta a 1 kHz (+0,006%) e su burst +18 dBu;
+   35 kHz = artefatto del macro (cattura HF da verificare a banco in
+   beta-3); clip latch DIMOSTRATO: flag 442 ms retriggerabile (SPEC
+   300-500 ✓).
+
 RESTANTI:
-3. Peak detector: ballistica a 10 Hz (requisito infrasub) e a 35 kHz —
-   condiviso col metering FX v0.2; requisiti = questione 19 (aperta)
-9. Variante cella HIGH crossfade-LP2: solo se la questione 68 la sceglie
+10. Variante cella HIGH crossfade-LP2: solo se la questione 68 la sceglie
 
 ## 8. Questioni generate/aggiornate da questa v0.3 (stato 2026-09-25)
 

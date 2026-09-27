@@ -1,0 +1,53 @@
+* PEAK DETECTOR condiviso — ACCURATEZZA HF + CLIP LATCH
+* Casi (.step gcase): 0 = 1 kHz 0 dBu; 1 = 35 kHz 0 dBu (accuratezza del
+* picco letto: attesa 1,096 V = precisione del superdiodo, non Vf);
+* 2 = burst +18 dBu (8,7 Vp) 1 kHz lungo 2 ms poi silenzio: hold cattura
+* il picco, latch clip acceso per ~400 ms dopo la fine del burst.
+* Latch = comparatore + one-shot RC (τ 580 ms → tempo sopra soglia 2,5 V
+* = τ·ln2 = 400 ms) [PROVVISORIO — soglie/tempi esatti = questione 19].
+* Soglia clip d'esempio: 8 V (~+18,3 dBu: "vicino al clip" nel dominio
+* ±18 V; la zona red vera la definisce la 19).
+* Release τ = 3 s (dal file gemello: droop minimo a 10 Hz).
+.include ../lib/opamp-audio.inc
+.subckt OPDET inp inn out vp vm
+E1 xx 0 value={3.16e6*(V(inp)-V(inn))}
+R1 xx p1 3955
+C1 p1 0 1.59u
+* Clamp anti-saturazione a -1,5 V: nel reale = diodo anti-windup dal
+* uscita op-amp a riferimento; qui nel limit del macro. Niente Rfap:
+* il nodo hold vede solo Rrel + leakage D1 (decay pulito).
+E2 out 0 value={limit(V(p1),-1.5,V(vp)-1.5)}
+.ends OPDET
+.model D1N4148 D(Is=2.53n Rs=0.568 N=1.752 Cjo=4p M=0.4 Tt=20n Iave=200m Vpk=100)
+.param gcase=0
+.param freq={if(gcase==1,35k,1k)}
+.param amp={if(gcase==2,8.7,1.096)}
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 raw 0 SINE(0 {amp} {freq})
+* Finestra burst per il caso 2 (2 ms poi silenzio)
+Bin in 0 V={V(raw)*if(gcase!=2,1,if(time<2m,1,0))}
+Xi in bi bi vcc vee OP1612
+Xop bi hold dout vcc vee OPDET
+Rcomp dout d1a 1k
+D1 d1a hold D1N4148
+Ccomp dout hold 47p
+* R anti-windup: richiude l'anello durante la tenuta (niente saturazione
+* del macro; droop extra ~0,5% su 10 Hz, tau_eff = Rrel||20Meg)
+Chold hold 0 100n
+Rrel hold 0 30Meg
+Xbuf hold hout hout vcc vee OP1612
+* --- Latch clip comportamentale ---
+Bcmp cmp 0 V={if(V(hold)>8,5,0)}
+Rchg cmp d2a 1k
+D2 d2a led D1N4148
+Rled led 0 7Meg
+Cled led 0 100n
+Xled led ledout ledout vcc vee OP1612
+*
+.step param gcase LIST 0 1 2
+.tran 0 60m 0 0.2u
+.meas tran vholdpk MAX V(hout)
+.meas tran ledpk MAX V(led)
+.meas tran ledoff WHEN V(led)=2.5 FALL=1
+.end

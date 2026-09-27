@@ -267,9 +267,11 @@ reroute; conferma a orecchio in M4L (dati per la ratifica voce 55).
 1. [LAW + CATENA CV FATTE 2026-09-27, §8.3] Restano i circuiti concreti:
    DC servo dei ritorni, EQ2 con valori scalati + simulazione (stesso
    metodo di eq-serie beta-3, macro reali in `sim/lib/opamp-audio.inc`).
-2. Simulazione peak detector meter (condivisa con CDJ §7.3) — requisiti
-   bloccati: ballistica 10 Hz (dec. 65), clip latch 300-500 ms; il resto =
-   questione 19.
+2. [FATTO 2026-09-27] Peak detector meter (condiviso con CDJ §7.3):
+   `sim/meter/` + `RISULTATI-peak-det.md` — droop a 10 Hz per τ release
+   (−2,9/−0,88/−0,31 dB per ciclo con τ 0,3/1/3 s → raccomandazione ≥1 s),
+   clip latch 442 ms retriggerabile dimostrato, cattura HF = banco beta-3.
+   Soglie e zone display = questione 19.
 3. [FATTO 2026-09-27] Modello THAT 218x: `sim/lib/that2181.inc` condiviso
    (law/headroom verificati qui §8.3 e in CDJ §7 item 2). THD: non
    misurabile in macro lineare — datasheet + modello TI + banco al
