@@ -95,6 +95,11 @@ vero esiste solo all'uscita XLR, dove lo stadio discreto lavora su ±24 V.
 | Isolamento control→audio | ≥ 100 dB (verso corretto: il controllo resta 100 dB sotto l'audio) |
 | Phono | budget dedicato al design Rev A/B (input-referred, test inverse-RIAA) |
 
+Nota di verifica (2026-09-27): 5-way out SIMULATO a −108,4 dBu (integrato
+20 Hz–20 kHz non A-pesato, macro uniforme ~6 nV, LM13700/THAT 2181 assenti)
+= 18,4 dB di margine sul target −90; banca 72% del contributo, celle 28%.
+Dettagli: `docs/fase2/five-way-module.md` §8.4 (`sim/five-way/module-noise.cir`).
+
 ## 4. Questioni chiuse da questo sheet
 
 - **31** (margine VCA master): RISOLTA — dominio ±18 V, uso normale con ≥5 dB di margine, estremo = saturazione morbida documentata (verifica sim).

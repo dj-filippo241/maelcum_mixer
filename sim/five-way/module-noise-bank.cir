@@ -1,0 +1,150 @@
+* MODULO 5-WAY v0.2 — RUMORE DEL PERCORSO COMPLETO (§10.5, target sheet §3:
+* out 5-way ≤ −90 dBu A-wtd). Catena mono (1 lato): PAD −6 dB → buffer →
+* KILL BANK allineata (spina HP + LP + 6 allpass, gate ideali g=1) → summer
+* → 5 CELLE PARAMETRICHE a detent (pot gain REALE 5k+5k tra ±bp_b + Rbw) →
+* drive placeholder (buffer 0 dB) → MAKE-UP +6 dB (gain −2 invertente).
+* |gain totale| = 1 (0 dBu in → 0 dBu out; interno −6 dBu, dec. 73).
+* Metodologia eq-serie cascade-b2-noise: macromodello op-amp uniforme con
+* R1 = 1k nella macro (~6 nV/√Hz equivalenti in ingresso — conservativo:
+* OPA1654 reale 4,5, OPA1612 1,1; beta-3 con modelli veri). Integrazione
+* 20 Hz–20 kHz NON A-pesata (conservativo vs target A-wtd).
+* ASSENTI (da beta-3/modelli reali): rumore LM13700 (10 OTA nel percorso,
+* incl. Rout del nodo integratore — qui Rbias 100Meg è artefatto di .op ma
+* in banda è >>Zc quindi ininfluente), THAT 2181 (gate + drive), rumore di
+* wiper dei pot. C celle 33n uniforme (i C per banda §4.1 non cambiano il
+* rumore: percorso dominato dalle R 10k).
+.param kcase=0
+*
+.subckt OPAMP inp inn out vp vm
+E1 xx 0 value={1000*(V(inp)-V(inn))}
+R1 xx p1 1k
+C1 p1 0 159p
+E2 out 0 value={limit(V(p1),V(vm)+1.5,V(vp)-1.5)}
+.ends OPAMP
+.subckt SKLP in out PARAMS: fc=90 Cc=100n
+R1 in n1 {1/(2*pi*fc*sqrt(2)*Cc)}
+R2 n1 n2 {1/(2*pi*fc*sqrt(2)*Cc)}
+C1 n1 out {2*Cc}
+C2 n2 0 {Cc}
+Xop n2 out out vcc vee OPAMP
+.ends SKLP
+.subckt SKHP in out PARAMS: fc=90 Cc=10n
+C1 in n1 {Cc}
+C2 n1 n2 {Cc}
+R1 n1 out {1/(2*pi*fc*sqrt(2)*Cc)}
+R2 n2 0 {2/(2*pi*fc*sqrt(2)*Cc)}
+Xop n2 out out vcc vee OPAMP
+.ends SKHP
+.subckt MFBPB in out PARAMS: f0=1200 C=10n
+R1 in n1 {1/(sqrt(2)*2*pi*f0*C)}
+R2 n1 0 {2/(sqrt(2)*2*pi*f0*C)}
+C1 n1 nm {2*C}
+Rf nm out {1.5/(sqrt(2)*2*pi*f0*C)}
+C2 n1 out {C}
+Xop 0 nm out vcc vee OPAMP
+.ends MFBPB
+.subckt APSUM va vb out PARAMS: R=10k
+Ra va n {R}
+Rb vb n {R/2}
+Rf n out {R}
+Xop 0 n out vcc vee OPAMP
+.ends APSUM
+.subckt AP2 in out PARAMS: f0=1200 C=10n
+Xbp in bp MFBPB f0={f0} C={C}
+Xsm in bp out APSUM
+.ends AP2
+.subckt PCELL in out PARAMS: fc=700 Qv=1
+* Cella parametrica COMPLETA (5 op-amp, §4.1): summer SVF, buffer BP,
+* buffer LP, invertitore −bp_b, summer d'uscita; pot gain reale 10k
+* (2×5k) tra +bp_b e −bp_b, wiper → Rbw = Q·10k/4,62 → summer.
+* A detent: segnale nullo per simmetria, rumore del pot incluso.
+Rvin in ns 10k
+Rlp lp_b ns 10k
+Rq bp_b ns {Qv*10k}
+Rf ns hp 10k
+Xsum 0 ns hp vcc vee OPAMP
+G1 0 bp value={2*pi*33n*fc*V(hp)}
+C1i bp 0 33n
+Rbp bp 0 100Meg
+Xb1 bp bp_b bp_b vcc vee OPAMP
+G2 0 lp value={2*pi*33n*fc*V(bp_b)}
+C2i lp 0 33n
+Rlp2 lp 0 100Meg
+Xb2 lp lp_b lp_b vcc vee OPAMP
+Rib1 bp_b nbi 10k
+Ribf nbi nbp 10k
+Xinv 0 nbi nbp vcc vee OPAMP
+RpT bp_b wp 5k
+RpB nbp wp 5k
+Rbw wp ns2 {10k*Qv/4.62}
+Rain in ns2 10k
+Rf2 ns2 out 10k
+Xout 0 ns2 out vcc vee OPAMP
+.ends PCELL
+*
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 vin 0 DC 0 AC 1
+*
+* --- PAD −6 dB (20k/20k) + buffer ---
+Rpad1 vin npad 20k
+Rpad2 npad 0 20k
+Xpad npad vpad vpad vcc vee OPAMP
+*
+* --- BANCA allineata (bank-aligned.cir, kcase=0: gate g=1) ---
+XH1 vpad r1 SKHP fc=90 Cc=100n
+XH1b r1 r1b SKHP fc=90 Cc=100n
+XH2 r1b r2 SKHP fc=350 Cc=100n
+XH2b r2 r2b SKHP fc=350 Cc=100n
+XH3 r2b r3 SKHP fc=1200 Cc=10n
+XH3b r3 r3b SKHP fc=1200 Cc=10n
+XH4 r3b r4 SKHP fc=3500 Cc=10n
+XH4b r4 r4b SKHP fc=3500 Cc=10n
+XA1 vpad s1a SKLP fc=90 Cc=100n
+XA2 s1a s1b SKLP fc=90 Cc=100n
+XP1 s1b s1c AP2 f0=350 C=22n
+XP2 s1c s1d AP2 f0=1200 C=10n
+XP3 s1d sub_o AP2 f0=3500 C=2.2n
+XB1 r1b s2b SKLP fc=350 Cc=100n
+XB2 s2b s2c SKLP fc=350 Cc=100n
+XP4 s2c s2d AP2 f0=1200 C=10n
+XP5 s2d kick_o AP2 f0=3500 C=2.2n
+XC1 r2b s3c SKLP fc=1200 Cc=10n
+XC2 s3c s3d SKLP fc=1200 Cc=10n
+XP6 s3d mid_o AP2 f0=3500 C=2.2n
+XD1 r3b s4c SKLP fc=3500 Cc=10n
+XD2 s4c high_o SKLP fc=3500 Cc=10n
+Bg1 sub_g 0 V={-V(sub_o)*if(kcase==1,0,if(kcase==6,0,1))}
+Bg2 kick_g 0 V={V(kick_o)*if(kcase==2,0,if(kcase==6,0,1))}
+Bg3 mid_g 0 V={-V(mid_o)*if(kcase==3,0,if(kcase==6,0,1))}
+Bg4 high_g 0 V={V(high_o)*if(kcase==4,0,if(kcase==6,0,1))}
+Bg5 sup_g 0 V={V(r4b)*if(kcase==5,0,if(kcase==6,0,1))}
+Rs1 sub_g ns 10k
+Rs2 kick_g ns 10k
+Rs3 mid_g ns 10k
+Rs4 high_g ns 10k
+Rs5 sup_g ns 10k
+Rsf ns vsum 10k
+Xsum 0 ns vsum vcc vee OPAMP
+*
+* --- 5 CELLE PARAMETRICHE a detent (centri PROVVISORI) ---
+Vw1 vsum e1 DC 0
+Vw2 e1 e2 DC 0
+Vw3 e2 e3 DC 0
+Vw4 e3 e4 DC 0
+Vw5 e4 e5 DC 0
+*
+* --- Drive placeholder (buffer 0 dB; THAT 2181/JFET assenti) ---
+Xdrv e5 edrv edrv vcc vee OPAMP
+*
+* --- MAKE-UP +6 dB (gain −2) ---
+Rmu1 edrv nmu 10k
+Rmu2 nmu vout 20k
+Xmu 0 nmu vout vcc vee OPAMP
+*
+.noise V(vout) V1 dec 200 20 20k
+.meas noise vn2 INTEG V(onoise)*V(onoise)
+.meas noise ndens1k FIND V(onoise) AT 1k
+.meas noise ndens100 FIND V(onoise) AT 100
+.meas noise ndens10k FIND V(onoise) AT 10k
+.end

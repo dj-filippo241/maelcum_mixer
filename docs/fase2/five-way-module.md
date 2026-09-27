@@ -7,9 +7,10 @@
 > CASCATA 5 in serie VALIDATE: detent ±0,005 dB su 10 Hz–40 kHz, boost ±0,005
 > dB sui target +9/+12/+15, notch −58…−81 dB, Q = comandata, position via gm
 > esatta su 2,6 ottave (§4.1, §8.3); converter di position specificato per
-> banda (§4.1). Restano per la v0.2 completa: gate ramp (modello THAT 2181
-> condiviso con FX v0.2 e CDJ §7), rumore del modulo, drive (dopo questione
-> 61).
+> banda (§4.1). (3) RUMORE del percorso completo SIMULATO: −108,4 dBu contro
+> target −90 (sheet §3), margine 18,4 dB (§8.4). Restano per la v0.2
+> completa: gate ramp (modello THAT 2181 condiviso con FX v0.2 e CDJ §7),
+> drive (dopo questione 61), modelli reali (beta-3).
 >
 > **v0.1 (2026-09-25)**: primo design del 5-way performance EQ/dub preamp.
 > Copre architettura, matematica del filter bank (questione 8: proposta LR4
@@ -373,7 +374,32 @@ isolato dà I = 0 (gm morto — usare .param direttamente nell'espressione);
 .step LIST esegue in ordine CRESCENTE (leggere i log di conseguenza);
 nomi .meas duplicati = run rifiutato.
 
-### 8.4 Nota di metodo
+### 8.4 v0.2 — Rumore del percorso completo (`module-noise.cir`)
+
+Catena mono completa: pad −6 dB → banca allineata (28 sezioni, gate g=1) →
+summer → 5 celle parametriche a detent (pot gain REALE 10k incluso) → drive
+placeholder → make-up +6 dB. Metodologia eq-serie: macromodello op-amp
+uniforme ~6 nV/√Hz (conservativo: OPA1654 reale 4,5, OPA1612 1,1),
+integrazione 20 Hz–20 kHz NON A-pesata (conservativo vs target A-wtd).
+
+**PASS: −108,4 dBu** (2,93 µV) contro target sheet §3 ≤ −90 dBu → **18,4 dB
+di margine**. Il percorso più lungo del mixer resta 16 dB sotto il budget del
+singolo canale CDJ: contributo al sistema trascurabile.
+
+| Sezione | Integrato 20-20k | Quota |
+|---|---|---|
+| Totale percorso | −108,4 dBu | 100% |
+| Banca + pad + make-up (`module-noise-bank.cir`) | −109,9 dBu | 72% |
+| 5 celle + drive | −113,9 dBu | 28% |
+
+Densità spettrale d'uscita: 288 nV/√Hz @100 Hz, 298 @1 kHz, 222 @10 kHz
+(piatta: niente code 1/f nel macromodello — i reali peggiorano sotto ~100 Hz,
+beta-3). Assenti dal conteggio (documentati come in eq-serie): rumore
+LM13700 (10 OTA nel percorso + Rout dei nodi integratori), THAT 2181 (gate
+e drive), rumore di wiper dei pot. Con modelli reali la cifra può solo
+muoversi di qualche dB: il margine 18,4 dB assorbe la stima.
+
+### 8.5 Nota di metodo
 
 Tutti i valori [PROVVISORIO]; le misure usano il macromodello op-amp classe
 OPA1654 (A0 120 dB, GBW 20 MHz, lineare): la piattezza fine della banca si
@@ -419,6 +445,7 @@ trimmer di allineamento (§3). I gate sono ideali (g = 0/1): THAT 2181 reale
    riuso filtro v0.2 (converter master + mirror bufferizzati ≤1,6%).
 4. Gate VCA con ramp 1 ms + verifica click (voce 55) — in coda col modello
    THAT 2181 CONDIVISO (FX v0.2 + CDJ §7: un modello, tre usi).
-5. Rumore del modulo completo (banca + EQ + drive: il percorso più lungo
-   del mixer — budget da sheet §3).
+5. [FATTO 2026-09-27] Rumore del modulo completo: −108,4 dBu contro target
+   −90 (sheet §3), margine 18,4 dB (§8.4). Beta-3: modelli reali
+   (LM13700/2181/OPA16xx) e A-pesatura.
 6. Meter pickup e ballistica 10 Hz (con CDJ §7.3).
