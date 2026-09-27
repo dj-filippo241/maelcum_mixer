@@ -3,6 +3,13 @@
 Riferimento design: `docs/fase1/cdj-line-channel.md` §3.3, math `sim/eq_analysis.py`
 (+ `sim/eq_results.txt`). Strumento: LTspice 26.0.2 via `sim/run_ltspice.sh` (batch CLI).
 
+> **[SUPERATO — documento storico]** EQ parallela v0.2 a celle di contribuzione.
+> La decisione 76 ha superato questa topologia: il design corrente è l'EQ in
+> serie (`docs/fase1/eq-serie-v0.3.md`). I finding restano a registro: sono
+> ciò che ha motivato la decisione 76. Attenzione: il −0,06 dB di questa
+> griglia (all-boost @5 kHz) è un numero v0.2 e non va confuso col −0,06 dB
+> dell'all-kill beta-1 (EQ in serie, questione 59).
+
 Storia: primo run 2026-09-20 fallito (`.step m=2: RpotL2 Resistance must not be zero` —
 il modello del pot andava a 0 ohm a fine corsa). Fix applicato lo stesso giorno in
 `eq-circuit.inc` (clamp +1 mohm sulle sezioni) ma mai rieseguito. Re-run completo

@@ -122,9 +122,9 @@ Converter di position: due opzioni [APERTO — ascolto M4L, come questione 67]:
   (B), costo ~5 converter + mirror.
 
 Silicon per banda per lato: 1 LM13700 (2 OTA integratori) + 2-3 sezioni
-op-amp (summer + inverter ±BP) → modulo: 10 LM13700 + ~10 quad (EQ) +
-8 quad (banca) + gate/buffer/make-up ≈ **30 sezioni+ per lato... totale
-~18-20 quad + 10 LM13700 + 5 THAT 2181** [PROVVISORIO, BOM §7].
+op-amp (summer + inverter ±BP); per lato ≈ 30 sezioni op-amp in tutto.
+Totale modulo: **~18-20 quad** (banca 8, EQ ~10, gate/buffer/make-up)
+**+ 10 LM13700 + 5 THAT 2181** [PROVVISORIO, BOM §7].
 
 ## 5. Drive e meter (questione 10 — v0.1 = interfaccia, design dopo referenze 61)
 
@@ -181,7 +181,9 @@ non ha i limiti di fase delle celle sottrattive — a differenza dell'EQ di
 canale, qui il kill È muto).
 
 **FINDING — la somma piatta richiede allineamento di fase (questione 8,
-parzialmente aperta).** Due bug trovati e corretti durante la verifica:
+parzialmente aperta).** Due bug trovati e corretti durante la verifica
+(diagnostica di debug: `sim/five-way/bank-debug.cir`, run STORICO con la Q
+pre-fix — il run di riferimento è `bank-lr4.cir`):
 1. SK HP con R invertiti → Q 0,354 invece di 0,707 (1/Q = ω0·R_fb·(C1+C2):
    R_fb deve essere META di R_gnd per Q 0,707). Bug ereditato da v0.2 —
    corretta anche la cella HIGH di eq-serie (numeri aggiornati là).
