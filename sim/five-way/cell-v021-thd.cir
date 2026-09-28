@@ -1,0 +1,49 @@
+* MODULO 5-WAY — CELLE v0.2.1 (design finale c-A): VERIFICA THD AI LIVELLI REALI
+* Riferimento core −12 dBu (Rvin 40,2k): vin = livello MODULO (−6 dBu nom =
+* 388 mV; worst programma +10 dBu = 2,45 V). Worst corner: Q3 + boost max
+* (+15 dB) + tono a f0 = 700 Hz (Vcm nominale, finestra vds 508 mV):
+*   stato hp = Q3·vin/4 = 291 mV (nominale, dentro finestra) / 1,84 V (worst,
+*   oltre finestra → morbido: "territorio drive" già previsto §6 v0.2).
+* Atteso: ~0,01-0,05% nominale; ~0,5-3% worst (soft, λ-residuo + pinch
+* graduale — carattere, non collasso: confrontare col 6,4% della cella OTA).
+.include ../lib/opamp-audio.inc
+.param A=0.388
+.param Vcm=-1.2881
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 vin 0 SINE(0 {A} 700)
+Vc2 vc2 0 DC {2*Vcm}
+Rvin vin ns 40.2k
+Rlp lp_b ns 10k
+Bqd bqn 0 V={-V(bp_b)}
+Rq bqn ns 30k
+Rf ns hp 10k
+Xsum 0 ns hp vcc vee OP1654
+Rg1a hp g1a 100k
+Rg2a vc2 g1a 100k
+J1 hp g1a nint1 NJFX
+Cint1 nint1 bp 56n
+Xint1 0 nint1 bp vcc vee OP1654
+Rb1 bp 0 1G
+Xb1 bp bp_b bp_b vcc vee OP1654
+Rg1b bp_b g1b 100k
+Rg2b vc2 g1b 100k
+J2 bp_b g1b nint2 NJFX
+Cint2 nint2 lp 56n
+Xint2 0 nint2 lp vcc vee OP1654
+Rb2 lp 0 1G
+Xb2 lp lp_b lp_b vcc vee OP1654
+.model NJFX NJF(Vto=-2 Beta=173u Lambda=5m)
+* boost massimo: bq = +4,62 (convenzione post-fix: H(f0) = |1+bq| = 5,62)
+Bw bwv 0 V={4.62/4.62*V(bp_b)}
+Rbw bwv ns2 {2.5k*3/4.62}
+Rain vin ns2 10k
+Rf2 ns2 vout 10k
+Xout 0 ns2 vout vcc vee OP1654
+.step param A LIST 0.388 2.45
+.tran 0 30m 22m 0.5u
+.four 700 V(vout)
+.meas tran hp_pk MAX ABS(V(hp))
+.meas tran out_pk MAX ABS(V(vout))
+.meas tran gain PARAM out_pk/{A}
+.end

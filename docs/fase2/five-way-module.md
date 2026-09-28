@@ -1,5 +1,16 @@
-# FASE 2 — Modulo 5-WAY (dub preamp): design v0.2-WIP (2026-09-28)
+# FASE 2 — Modulo 5-WAY (dub preamp): design v0.2 + CELLE v0.2.1 (2026-09-28)
 
+> **CELLE v0.2.1 (2026-09-28, §4.2)**: topologia degli integratori cambiata
+> per la questione 70 (tetto di stato 52 mV degli OTA): integratori op-amp +
+> JFET come VCR bootstrappato (gate a Vcm + vds/2: quadraticità cancellata
+> esatta), position via Vcm (law lineare-in-f, shaper esponenziale famiglia
+> dec. 70), core a riferimento locale −12 dBu con make-up ×4 assorbito nel
+> summer d'uscita (zero silicon extra). VERIFICATO sui valori finali
+> (`sim/five-way/cell-v021-*.cir`): law 250-1500 Hz ±0,03%, Q invariante,
+> THD 0,005% nominale / 0,125% worst +10 dBu (500× meglio della cella OTA),
+> notch −46…−47 dB, rumore −121,7 dBu. LM13700 RIMOSSI dalle celle (−10);
+> +10 dual JFET matched. Banca kill, gate VCA, drive: invariati.
+>
 > **CODA BETA-3 CELLE (2026-09-28, `sim/filtro/RISULTATI-ota-real.md` §5)**:
 > celle parametriche riesaminate col LM13700 REALE (`sim/lib/lm13700.inc`) —
 > piccolo segnale CONFERMATO (detent piatto ±0,0001 dB, boost ±0,02 dB, notch
@@ -202,7 +213,7 @@ Converter di position: due opzioni [APERTO — ascolto M4L, come questione 67]:
   law a ottave uniforme — feel coerente coi knob del filtro. Raccomandazione:
   (B), costo ~5 converter + mirror.
 
-### 4.1 v0.2 — Circuito della cella VALIDATO (`sim/five-way/param-cell.cir`)
+### 4.1 v0.2 — Circuito della cella VALIDATO (`sim/five-way/param-cell.cir`) [TOPOLOGIA SUPERATA dalla §4.2 — algebra, griglia e legge H = −(1 − b·BP_norm) restano valide]
 
 Circuito completo per cella (per lato):
 1. **Core SVF**: summer invertente (Vin 10k, feedback LP 10k, damping da
@@ -245,7 +256,79 @@ nell'item rumore (§10.5).
 
 Silicon totale modulo (v0.2): banca 14 quad (§3.1) + EQ 12,5 quad +
 gate/buffer/make-up ≈ **~28-30 quad + 10 LM13700 + 12 THAT 218x singoli**
-(10 gate + 2 drive) [PROVVISORIO, BOM §7].
+(10 gate + 2 drive) [PROVVISORIO, BOM §7] — SUPERATO dalla §4.2 (v0.2.1).
+
+### 4.2 v0.2.1 — Cella definitiva: integratori op-amp + JFET VCR (questione 70, 2026-09-28)
+
+La coda beta-3 (§8.7) ha mostrato il tetto di stato degli integratori OTA
+(52 mV a f0: la cella nuda collassa a −6 dBu); il PoC (`sim/five-way/RISULTATI-cell-clean.md`)
+ha validato la topologia pulita. Scelta ingegneristica: **(c-A) JFET come
+VCR bootstrappato** — l'alternativa (c-B) VCA 218x ×2 resta documentata come
+piano B (law esatta e livelli pieni, ma +20 chip: voce 37).
+
+**Circuito per cella** (7 sezioni op-amp + 1 dual JFET matched; algebra e
+griglia della §4.1 invariate):
+1. **Summer**: Rvin **40,2k** (pad del core a −12 dBu locale: stato Q3 =
+   291 mV nominale contro finestra ≥ 494 mV), Rlp 10k, damping Rq da
+   **−bp_b** (l'invertitore del pot, già a BOM v0.2: con integratori
+   invertenti il segno del damping si prende dallo stato negato), Rf 10k;
+2. **Integratori**: JFET in triode tra stato a monte e nodo virtuale,
+   gate bootstrappato a **Vcm + vds/2** (2 R 100k: dal drain e dal riferimento
+   ×2 — la cancellation della quadraticità Ids = β(2V′vds − vds²) è ESATTA
+   per legge square-law; misura: THD gate rigido 6,50% = formula A/4(V−Vt)
+   a 3 cifre, bootstrappato 0,005%) → Cint → op-amp invertente; finestra
+   di linearità: **vds ≤ 2(Vcm−Vt)**, oltre: soft (λ-residuo + pinch
+   graduale = territorio drive §6, mai collasso);
+3. **Position**: f0 = 2β(Vcm−Vt)/(2πC) → **law lineare in frequenza**:
+   lo shaper θ→Vcm genera l'esponenziale (famiglia law dec. 70, stesso
+   generatore piecewise del filtro); Vcm mai positivo (tabella sotto);
+4. **Gain (b)**: pot tra ±bp_b INVERTITO di segno vs §4.1 (H(f0) = |1+b|:
+   notch a b = −1, boost a b > 0) → **il pot si cabla sul terminale
+   opposto**: gesto, detent fisico e taper (eq-serie §10) invariati;
+   Rbw = **2,5k·Q/4,62** (make-up ×4 del core assorbito nell'iniezione);
+5. **Summer d'uscita**: dry Rain 10k/Rf2 10k (unity, make-up già nel punto 4).
+
+**Tabella bande** (β nom. 173 µA/V², Vt = −2 V [PROVVISORIO — bin Idss/Vp
+da selezionare in acquisto]; C0G/PP):
+
+| banda | f0 | C | rds | V−Vt | Vcm | finestra vds |
+|---|---|---|---|---|---|---|
+| EQ1 | 20-120 Hz | 680n | 11,7-2,0k | 247-1482 mV | −1,75…−0,52 V | 494 mV-2,96 V |
+| EQ2 | 80-400 | 180n | 11,1-2,2k | 261-1307 mV | −1,74…−0,69 | 523 mV-2,62 V |
+| EQ3 | 250-1500 | 56n | 11,4-1,9k | 254-1525 mV | −1,75…−0,47 | 508 mV-3,05 V |
+| EQ4 | 800-5000 | 18n | 11,1-1,8k | 261-1634 mV | −1,74…−0,37 | 523 mV-3,27 V |
+| EQ5 | 3k-20k | 4,7n | 11,3-1,7k | 256-1707 mV | −1,74…−0,29 | 512 mV-3,41 V |
+
+**Distribuzione position** (sostituisce i mirror Iabc della §4.1 punto 5):
+shaper master θ→Vcm (1 per banda, L/R ganged) → buffer gain-2 → bus Vcm2 →
+rete 2×100k per JFET. Tracking L/R = partitore resistivo 0,1% (1,7 cent) +
+coppia JFET matched stesso die (ΔVt ~0,1-0,3 mV = 5-17 cent su ±10 °C) —
+MEGLIO dei mirror Iabc (27 cent); trim 10 giri per lato/banda. Tempco Vt
+assoluta (−2 mV/°C → 0,3-1,7%/°C) = comune per coppia e per bus: trim
+assorbe, deriva musicale trascurabile [PROVVISORIO: verifica a banco].
+
+**Verificato sui valori finali** (`cell-v021-law.cir`, `cell-v021-thd.cir`,
+EQ3): law 250,0/375,0/699,9/1000,0/1499,6 Hz (**±0,03%**); Q invariante
+(bpk ±0,01 dB su 2,6 ottave); notch −46,2…−47,0 dB (spec kill −30: margine
+16 dB; meno profondo dell'ideale −63…−81 ma musicalmente equivalente —
+il kill per via resta lavoro del gate VCA); THD **0,005%** (nominale
+−6 dBu modulo) / **0,125%** (worst +10 dBu, Q3, boost max: soft, senza
+clamp: out 13,66 V su 16,5); gain +14,97 dB; rumore (PoC, core full-scale)
+−121,7/−124,9 dBu → riferito al core −12 dBu: **−109,7 dBu per cella
+worst-boost** → 5 celle ≈ −103, modulo ~−101 contro target −90: PASS ~11 dB
+(a detent il pot cancella l'iniezione: meglio).
+
+**JFET candidati** [reperibilità DA VERIFICARE, come voce 37]: dual matched
+N-channel classe Linear Systems LSK589/IFN5457, oppure singoli MMBF5457/
+2N5457 selezionati a coppie (Idss/Vp). β effettiva per banda: la tabella
+assume 173 µA/V² uniforme; in acquisto si binna per Idss e si regola C
+(C ±20% sposta la finestra Vcm senza toccare la law).
+
+**Silicon v0.2.1**: banca 14 quad + EQ **17,5 quad** (7 sez./cella × 10) +
+gate/buffer/make-up ≈ **~33-35 quad + 10 dual JFET + 12 THAT 218x** —
+LM13700 RIMOSSI dalle celle (restano eventualmente nel filtro, questione 70
+lato filtro). Delta costo vs v0.2: ~+5 quad (+8-12 €) +10 dual JFET
+(+15-30 €) −10 LM13700 (−10-15 €) ≈ **+15-25 €** [PROVVISORIO].
 
 ## 5. Drive e meter (questione 10 — v0.1 = interfaccia, design dopo referenze 61)
 
@@ -282,12 +365,12 @@ gate/buffer/make-up ≈ **~28-30 quad + 10 LM13700 + 12 THAT 218x singoli**
 
 | Voce | Qtà | Note |
 |---|---|---|
-| Quad op-amp low-noise (classe OPA1654/1612) | ~28-30 | banca 14 (v0.2 allineata in fase: 16 SK + 12 allpass), EQ 12,5 (5 sezioni/cella × 10, §4.1), gate/buffer/make-up |
-| LM13700 (dual OTA) | 10 | celle parametriche (position gm) |
+| Quad op-amp low-noise (classe OPA1654/1612) | ~33-35 | banca 14 (v0.2 allineata in fase: 16 SK + 12 allpass), EQ 17,5 (7 sezioni/cella × 10, §4.2 v0.2.1), gate/buffer/make-up |
+| Dual JFET N matched (classe LSK589/MMBF5457 selezionato) | 10 | celle parametriche v0.2.1: VCR bootstrappato, 2 per cella (§4.2) [reperibilità da verificare]; LM13700 RIMOSSI dalle celle (questione 70) |
 | THAT 2180/2181 (SINGLE VCA — datasheet 2026-09-27) | 10 | gate di kill (1 per via per lato); 2162 dual scartato: ±16 V max e THD 0,05% |
 | THAT 2180/2181 o JFET matched | 2 | gain drive (stadio 1, 1 per lato) |
 | JFET saturazione (coppia matched) | 2-4 | stadio 2 drive (post-61) |
-| Converter expo position + mirror | 5 sezioni | opzione (B) §4 |
+| Shaper position θ→Vcm + buffer gain-2 | ~5-8 sezioni | v0.2.1 (§4.2): shaper famiglia dec. 70, 1 per banda L/R ganged; sostituisce converter expo + mirror Iabc |
 | R 0,1% / C0G-PP / trimmer allineamento | — | banca: 8 edge + 6 sezioni allpass per lato |
 | Stima costo | ~220-300 € | il modulo più siliconato del mixer |
 
@@ -490,6 +573,18 @@ OTA è condiviso col filtro). Sintesi per la cella (f0 = 700 Hz, Iabc = 7,56 µA
   su (c-A): C per banda rivisti, distribuzione Vcm a follower+trim, coppia
   JFET matched per lato; segno di b invertito = pot sul terminale opposto).
 
+### 8.8 v0.2.1 — Verifiche sul design finale (`sim/five-way/cell-v021-*.cir`, 2026-09-28)
+
+Sui valori definitivi della §4.2 (EQ3: C 56n, Rvin 40,2k, Rbw 2,5k·Q/4,62,
+Vcm tabellati): law position 250,0/375,0/699,9/1000,0/1499,6 Hz (±0,03%,
+Q invariante bpk ±0,01 dB); notch −46,2…−47,0 dB; THD 0,005% al nominale
+(−6 dBu modulo, core −12 dBu) e 0,125% al worst (+10 dBu, Q3, boost max —
+soft, out 13,66 V senza clamp); gain +14,97 dB. PoC propedeutici:
+`RISULTATI-cell-clean.md` (confronto c-A/c-B) e `param-cell-jfet-*.cir`
+(caratterizzazione VCR, rumore −121,7/−124,9 dBu). Lezione: gli integratori
+invertenti chiedono il damping da −bp_b (loop instabile altrimenti: AC
+sembra sana, tran esplode ai rail — verificare SEMPRE in tran).
+
 ## 9. Questioni toccate
 
 - **8** (matematica filter bank): RISPOSTA v0.2 — banca ALLINEATA IN FASE:
@@ -499,12 +594,13 @@ OTA è condiviso col filtro). Sintesi per la cella (f0 = 700 Hz, Iabc = 7,56 µA
   qualunque frequenze di crossover: resta aperta solo la scelta musicale
   (questione 67 — dato nuovo: spaziature più larghe = kill più profondi,
   ~6 dB per mezza ottava) e le frequenze dell'impianto di Filippo.
-- **9** (EQ creativo): circuito cella VALIDATO v0.2 (§4.1, §8.3):
-  detent/boost/notch/Q/position esatti in simulazione; pot gain nel dominio
-  del segnale (tra ±bp_b, niente CV). APERTO: law di position (lineare vs
-  esponenziale — opzione A/B §4, ascolto M4L); law del gain (taper custom,
-  famiglia eq-serie §10 [PROVVISORIO — ascolto M4L]); profondità notch con
-  OTA reali e rumore del modulo (§10.4/§10.5).
+- **9** (EQ creativo): circuito cella VALIDATO v0.2 (§4.1, §8.3) e
+  RIDISEGNATO **v0.2.1** (§4.2, questione 70: integratori op-amp + JFET VCR
+  bootstrappato — verificato: law ±0,03%, THD 0,005%/0,125%, rumore dentro
+  budget); pot gain nel dominio del segnale (tra ±bp_b, niente CV, cavo sul
+  terminale opposto). APERTO: law del gain (taper custom, famiglia eq-serie
+  §10 [PROVVISORIO — ascolto M4L]); conferma a banco della coppia JFET
+  matched (tracking/temperatura).
 - **10** (drive): struttura a due stadi definita; taper esatto e carattere
   DOPO le referenze di Filippo (61).
 - **24** (layout comandi): invariata — il pannello è design di Filippo;
@@ -513,7 +609,7 @@ OTA è condiviso col filtro). Sintesi per la cella (f0 = 700 Hz, Iabc = 7,56 µA
 - **67** (frequenze 5 vie): la banca è progettata con trimmer per edge →
   le frequenze restano spostabili a banco ±10% senza redesign.
 
-## 10. Prossimi passi (v0.2)
+## 10. Prossimi passi (v0.2/v0.2.1)
 
 0. [FATTO 2026-09-27] **Banca allineata in fase**: soluzione esatta
    dimostrata e validata (§3.1, §8.2 — `bank-aligned.cir` + `align_math.py`).
@@ -523,21 +619,24 @@ OTA è condiviso col filtro). Sintesi per la cella (f0 = 700 Hz, Iabc = 7,56 µA
    VALIDATE (§4.1, §8.3). [CODA BETA-3 FATTA 2026-09-28 (§8.7)]: LM13700
    reale — piccolo segnale e rumore confermati, notch −67…−78 dB con trim
    f0; FINDING: tetto di stato 52 mV → cella nuda inutilizzabile a −6 dBu
-   → **questione 70: PoC VALIDATO (c-A JFET VCR raccomandata,
-   RISULTATI-cell-clean.md)** → celle v0.2.1. Law del gain da confermare a
+   → questione 70: PoC VALIDATO (c-A JFET VCR) → **CELLE v0.2.1 DESIGN
+   RILASCIATO (§4.2, §8.8, 2026-09-28)**. Law del gain da confermare a
    orecchio in M4L.
 2. Drive: candidati JFET + spettri armonici (dopo referenze 61).
-3. [SPECIFICATO 2026-09-27] Converter position (opzione B): C per banda e
-   finestra Iabc 2-31 µA, mirror ratio 0,05-0,6 (§4.1); realizzazione =
-   riuso filtro v0.2 (converter master + mirror bufferizzati ≤1,6%).
+3. [SPECIFICATO v0.2.1 2026-09-28] Position: shaper θ→Vcm (famiglia dec. 70)
+   + buffer gain-2 + trim per lato/banda (§4.2) — sostituisce converter
+   Iabc + mirror (tracking resistivo 0,1% migliore); tabella C/Vcm per banda
+   in §4.2. A banco: verifica coppia JFET matched (ΔVt/temperatura) e bin
+   Idss/Vp per β.
 4. [FATTO 2026-09-27] Gate VCA THAT 218x con ramp 1 ms VALIDATO (§8.5,
    `gate-ramp.cir`): click −8,4 dB vs brusco, floor −100 dB esatto. Modello
    condiviso `sim/lib/that2181.inc` (pronto per FX v0.2 + CDJ §7). A banco:
    feedthrough EC→audio e click da accoppiamento CV.
 5. [FATTO 2026-09-27] Rumore del modulo completo: −108,4 dBu contro target
-   −90 (sheet §3), margine 18,4 dB (§8.4). Beta-3 [PARZIALE 2026-09-28]:
-   contributo celle con LM13700/OPA16xx reali MISURATO (§8.7: −119,7 dBu
-   worst-case boost, dentro budget anche con die 5× peggiore); restano
-   THAT 2181 (gate/drive: modello senza rumore) e A-pesatura. Il totale
-   definitivo segue la topologia della questione 70.
-6. Meter pickup e ballistica 10 Hz (con CDJ §7 item 6).
+   −90 (sheet §3), margine 18,4 dB (§8.4). Beta-3 [v0.2.1 2026-09-28]:
+   celle JFET VCR −121,7/−124,9 dBu (core full-scale) → −109,7 dBu per
+   cella worst-boost al riferimento −12 dBu → modulo ~−101: PASS ~11 dB;
+   restano THAT 2181 (gate/drive: modello senza rumore) e A-pesatura.
+6. [NUOVO v0.2.1] Rieseguire module-noise con la catena v0.2.1 completa
+   (banca + celle JFET a −12 dBu + gate reali): numero definitivo pre-banco.
+7. Meter pickup e ballistica 10 Hz (con CDJ §7 item 6).
