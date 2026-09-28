@@ -2,8 +2,8 @@
 
 > **v0.3-WIP (2026-09-28, `sim/filtro/RISULTATI-ota-real.md`)**: item §9.2 e
 > §9.3 FATTI — (a) ramp BBM validata: τ 1 ms = click −8,4 dB vs brusco,
-> 5 ms ≈ baseline; famiglia unica 1 ms con gate 5-way e reroute FX (dati per
-> ratifica voce 55); il mux di modo resta dopo la questione 63; (b) LM13700
+> 5 ms ≈ baseline; famiglia unica 1 ms con gate 5-way e reroute FX (ratificata:
+> decisione 80); il mux di modo resta dopo la questione 63; (b) LM13700
 > REALE: modello transistor-level condiviso `sim/lib/lm13700.inc` (calibrato
 > datasheet TI SNOSBW2F), law/Q/offset/rumore del core CONFERMATI (fc ≤1,5%,
 > Q 0,70-0,71, stati DC 4-5 mV bounded, rumore −107,8…−134,8 dBu PASS);
@@ -204,8 +204,8 @@ le 11,8 ottave derivano del ~70% su 0-50 °C (misurato, §6).
   clean→gritty→hard dub è sound design: aspetta le referenze di Filippo (questione 61).
   Mux CV: il drive di canale segue la sezione attiva (dec. 67).
 - **Modo OFF**: bypass secco del core (return = send) con break-before-make + ramp
-  1-5 ms generata nel modulo (SPECIFICA §4). Switch analogici famiglia ADG14xx
-  [PROVVISORIO, stessi candidati dell'assign FX — voce 55 per il metodo].
+  1 ms generata nel modulo (SPECIFICA §4, decisione 80). Switch analogici famiglia ADG14xx
+  [PROVVISORIO, stessi candidati dell'assign FX — metodo decisione 80].
 - Livelli interni: send 0 dBu nom/+16 max → buffer in → core (picco risonanza
   +10 dBu sopra il livello, sheet) → drive → recovery → return. Il dominio ±18 V
   del canale resta valido su tutto il modulo (sheet §2).
@@ -325,7 +325,7 @@ distribuzione mirror + tracking (51).
    (`sim/filtro/bbm-ramp.cir`, RISULTATI §4): τ 1 ms = click −8,4 dB vs
    brusco (gesto ~2 ms trasparente), 5 ms ≈ baseline (gesto ~10 ms "soft
    mute"); gap BBM 50 µs muto (floor −100 dB). FAMIGLIA UNICA 1 ms con gate
-   5-way e reroute FX → ratifica voce 55. Circuito = generatore ramp del
+   5-way e reroute FX → ratificata (decisione 80). Circuito = generatore ramp del
    gate 5-way (gate-ramp validato). Il mux di modo (HPF/OFF/LPF) resta
    BLOCCATO su 63 (single-path vs serie).
 3. [FATTO 2026-09-28] Modello LM13700 reale (`sim/lib/lm13700.inc`,

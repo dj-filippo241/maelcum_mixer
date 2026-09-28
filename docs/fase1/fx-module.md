@@ -25,9 +25,9 @@
 | Interfaccia pedali | bus → driver high-headroom → pad selezionabile (prototipo −20 dB) → protezione → pedale → protezione/DC-control → ritorno hi-Z ≥1 MΩ; tolleranza ritorno −20…+18 dBu; banda ~5 Hz–40 kHz; mono pedal = controlled mono sum (mai hard-short L/R); stereo = L/R indipendenti | SPEC §7 |
 | Ritorni | stereo-capable (mono centrato); gain −∞→0→+20 dB; EQ2 (LOW ~100-150, HIGH ~4-6 kHz, −∞→0→+6, broad, no risonanza/saturazione); meter dopo gain+EQ prima del fader (detector rapido, clip latch 300-500 ms); fader stereo linked | SPEC §7 |
 | Regola livelli | livello_in × gain ≤ +23 dBu (K4) | sheet §2 |
-| Reroute/feedback | ogni ritorno → 3 destinazioni (gli altri bus), no self; level −∞→0 dB con law a tratti: 0-20%: −∞…−40; 20-45%: −40…−20; 45-70%: −20…−10; 70-85%: −10…−4; 85-95%: −4…−1; 95-100%: −1…0 dB; tecnologia VCA/attenuatore (solo attenuazione); catena controllo: pot → CV buffer → mappa non lineare → smoothing 1-5 ms → VCA; **niente limiter** | SPEC §7 |
+| Reroute/feedback | ogni ritorno → 3 destinazioni (gli altri bus), no self; level −∞→0 dB con law a tratti: 0-20%: −∞…−40; 20-45%: −40…−20; 45-70%: −20…−10; 70-85%: −10…−4; 85-95%: −4…−1; 95-100%: −1…0 dB; tecnologia VCA/attenuatore (solo attenuazione); catena controllo: pot → CV buffer → mappa non lineare → smoothing 1 ms (decisione 80) → VCA; **niente limiter** | SPEC §7 |
 | Comportamento live | fader del ritorno = udibilità verso MASTER, NON tocca il loop interno (reroute pre-fader): fader giù, il feedback continua; loop unity = oscillazione autosostenuta **bounded by design** | SPEC §7 |
-| Transienti | assign e switching: break-before-make + ramp 1-5 ms (voce 55, proposta uniformata al filtro) | CDJ §3.5 |
+| Transienti | assign e switching: break-before-make + ramp 1 ms (decisione 80, famiglia unica per tutte le commutazioni CV) | CDJ §3.5 |
 
 ## 2. Architettura del modulo
 
@@ -254,8 +254,8 @@ sonda click HP 2 poli — metodo di `sim/five-way/gate-ramp.cir`):
 Entrambi i τ della SPEC sono click-free (1 ms resta 1,5 dB sopra il
 residuo di programma; 5 ms scende sotto). La differenza è il feel: 1 ms =
 lo "scatto" che chiude subito (coerente col gate 5-way); 5 ms = fade più
-morbido ma chiusura lenta. Raccomandazione [PROVVISORIO]: **1 ms** per il
-reroute; conferma a orecchio in M4L (dati per la ratifica voce 55).
+morbido ma chiusura lenta. Raccomandazione RATIFICATA (decisione 80): **1 ms**
+per il reroute, famiglia unica; conferma a orecchio in M4L.
 
 ### 8.4 v0.2 — Banda/TVS, DC servo, EQ2 (`fx-tvs-bw.cir`, `fx-dc-servo.cir`, `fx-eq2.cir`)
 
@@ -305,8 +305,8 @@ LOW C 56 nF (Rp 31k invariato), HIGH R 5,23k/2,5k (Ch 10 nF invariato).
 - **14** (matrice feedback): stabilità e bounded-by-design SIMULATI (§8);
   rumore di loop quantificato; isolamento ok. Restano: circuito concreto
   degli shaper (v0.2) e verifica con pedali reali (prototipo).
-- **55** (transienti): proposta uniformata break-before-make + ramp 1-5 ms
-  anche per assign FX e reroute — DA RATIFICARE.
+- **55** (transienti): CHIUSA 2026-09-28 — decisione 80: BBM + ramp 1 ms,
+  famiglia unica per tutte le commutazioni CV del mixer.
 - **65** (EQ2): allineata alla famiglia serie v0.3; la questione 68 (kill
   HIGH) si applica anche qui — una decisione unica copre tutto.
 - **37** (THAT 2181): il modulo FX ne usa 16 — la verifica di reperibilità
@@ -323,9 +323,10 @@ LOW C 56 nF (Rp 31k invariato), HIGH R 5,23k/2,5k (Ch 10 nF invariato).
    (TVS/cavo) — da millefori/PCB.
 2. [FATTO 2026-09-27] Peak detector meter (condiviso con CDJ §7 item 6):
    `sim/meter/` + `RISULTATI-peak-det.md` — droop a 10 Hz per τ release
-   (−2,9/−0,88/−0,31 dB per ciclo con τ 0,3/1/3 s → raccomandazione ≥1 s),
+   (−2,9/−0,88/−0,31 dB per ciclo con τ 0,3/1/3 s); ballistica RATIFICATA:
+   release ~0,3 s stile Pioneer DJM (decisione 81),
    clip latch 442 ms retriggerabile dimostrato, cattura HF = banco beta-3.
-   Soglie e zone display = questione 19.
+   Soglie e zone display = questione 19 (parte restante).
 3. [FATTO 2026-09-27] Modello THAT 218x: `sim/lib/that2181.inc` condiviso
    (law/headroom verificati qui §8.3 e in CDJ §7 item 4). THD: non
    misurabile in macro lineare — datasheet + modello TI + banco al

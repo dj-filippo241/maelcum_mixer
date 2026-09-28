@@ -143,8 +143,8 @@ v0.3, questione 65) con law dedicate [BLOCCATO dai doc]: LOW "tiene i bassi per 
 la corsa, li toglie rapido solo al taglio estremo"; HIGH "taglia subito in partenza, poi
 graduale". Level −∞..0. Assign multipli simultanei S1-S4: precision analogue switch
 (candidati [PROVVISORIO]: famiglia ADG14xx/DG4xx low-RON low-charge-injection), uno per
-destinazione, pilotati dagli switch del pannello con break-before-make + ramp 1-5 ms
-(stesso metodo del selettore filtro — da ratificare, voce 55). Iniezione bufferizzata
+destinazione, pilotati dagli switch del pannello con break-before-make + ramp 1 ms
+(stesso metodo del selettore filtro — famiglia unica, decisione 80). Iniezione bufferizzata
 sui bus FX (mai collegamento passivo diretto: decisione "buffered signal injection").
 
 ### 3.6 [F] Interfaccia filtro (modulo esterno)
@@ -234,8 +234,9 @@ FATTE:
 6. **Peak detector condiviso FATTO (2026-09-27, `sim/meter/` +
    `sim/meter/RISULTATI-peak-det.md`)**: circuito candidato superdiodo +
    clamp anti-windup; droop a 10 Hz misurato per τ release 0,3/1/3 s
-   (−2,9/−0,88/−0,31 dB per ciclo → meter release ≥1 s, dati per la
-   questione 19); cattura esatta a 1 kHz (+0,006%) e su burst +18 dBu;
+   (−2,9/−0,88/−0,31 dB per ciclo); ballistica RATIFICATA 2026-09-28:
+   release ~0,3 s stile Pioneer DJM (decisione 81 — la pulsazione a 10 Hz
+   è informazione musicale, non difetto); cattura esatta a 1 kHz (+0,006%) e su burst +18 dBu;
    35 kHz = artefatto del macro (cattura HF da verificare a banco in
    beta-3); clip latch DIMOSTRATO: flag 442 ms retriggerabile (SPEC
    300-500 ✓).

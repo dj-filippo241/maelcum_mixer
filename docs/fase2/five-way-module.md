@@ -72,9 +72,10 @@
   con gain di banda e overdrive filtro; JFET prima / BJT asimmetrico poi.
   Riferimenti operativi (corpus §18): normale −6…0 dBu, hot +10, estremo +18,
   clean headroom ≥+24 dove pratico (sheet: qui il dominio ±18 dà +23, ok).
-- METER: dopo drive, prima del master sum (ballistica anche a 10 Hz, dec. 65).
-- Controlli: fader = slider, resto = pot (principio bloccato); layout per via
-  slider vs rotativi = questione 24 (aperta, pannello = design di Filippo).
+- METER: dopo drive, prima del master sum (ballistica stile Pioneer DJM,
+  dec. 81 che revisiona la dec. 65).
+- Controlli: fader = slider, resto = pot (principio bloccato); gain di banda =
+  5 POT ROTATIVI (decisione 85, 2026-09-28 — questione 24 chiusa per il 5-way).
 
 ## 2. Architettura
 
@@ -174,7 +175,7 @@ dato da confermare a orecchio (questione 67, ascolto M4L).
 il "dual" del nome sono i porti di controllo EC+/EC−, verifica datasheet
 2026-09-27; famiglia unica — voce 37): 5×2 = **10 chip singoli**. Kill
 switch fisico (5, uno per via di altoparlanti) + slider/mute: il gate chiude
-con ramp ~1 ms (famiglia voce 55) — VALIDATA in simulazione (§8.5): fade
+con ramp ~1 ms (famiglia decisione 80) — VALIDATA in simulazione (§8.5): fade
 esponenziale senza kink, transiente HF −8,4 dB vs interruzione brusca.
 Kill = g→0: **silenzio della via** (gate, non sottrazione: nessuna
 cancellazione di fase — a differenza dell'EQ di canale che è scultoreo; via
@@ -524,7 +525,7 @@ Floor del gain raggiunto ESATTAMENTE a ogni τ: 34,6 µV = −100 dB (law del
 modello verificata). Sonda click = HP 2 poli ~1,6 kHz (baseline del
 programma puro: 0,69 V). Lettura: 1 ms è il compromesso del gesto dub —
 lo snap resta immediato, il click da gradino sparisce; 3 ms inizia a
-sembrare pigro (dati a supporto della ratifica voce 55). Nel reale restano
+sembrare pigro (voce 55 ratificata: decisione 80, famiglia unica 1 ms). Nel reale restano
 da verificare a banco: feedthrough EC→audio durante la ramp (~−85…−100 dB
 dopo trim) e click da accoppiamento CV (non nel modello) — il layout CV
 lontano dall'audio è la mitigazione (design di sistema, questione 21).
@@ -603,9 +604,9 @@ sembra sana, tran esplode ai rail — verificare SEMPRE in tran).
   matched (tracking/temperatura).
 - **10** (drive): struttura a due stadi definita; taper esatto e carattere
   DOPO le referenze di Filippo (61).
-- **24** (layout comandi): invariata — il pannello è design di Filippo;
-  l'elettronica fornisce: 5 kill switch + 5 slider/pot gain + 5 pot position
-  + 5 switch width + drive pot + (meter).
+- **24** (layout comandi): gain di banda = 5 pot rotativi (decisione 85);
+  l'elettronica fornisce: 5 kill switch + 5 pot rotativi gain + 5 pot position
+  + 5 switch width + drive pot + (meter). Comandi phono → voce 40.
 - **67** (frequenze 5 vie): la banca è progettata con trimmer per edge →
   le frequenze restano spostabili a banco ±10% senza redesign.
 
