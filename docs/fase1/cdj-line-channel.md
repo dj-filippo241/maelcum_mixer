@@ -15,7 +15,7 @@
 > (`sim/eq_analysis.py` + `sim/eq_results.txt`) — **quest'ultima smentita in parte dalla
 > simulazione LTspice (2026-09-24, `sim/cdj-eq/RISULTATI-eq.md`): la math era zero-fase
 > per LOW/HIGH → decisione 76, EQ in serie per banda (Baxandall); ridisegno in v0.3.**
-> Scope: SOLO line/CDJ — phono Rev A resta
+> [SUPERATO 2026-09-28: phono MM v0.1 FATTO (dec. 79), selettore in §3.1bis — nota storica] Scope: SOLO line/CDJ — phono Rev A resta
 > su carta (decisioni 56/61), il front-end dedicato + selettore PHONO/LINE arriverà in Rev B
 > del modulo senza cambiare il resto della catena (status doc PDF §6: "dedicated PHONO and
 > LINE front ends → selector → common DJ GAIN").
@@ -61,7 +61,7 @@
                                                                                               ▼
                                                                               [I] OUT DRV → DJ BUS
 [H2] PSU locale: ±24 in → ±18 audio (LM317/337 + post-filtro) · ±15 LN (LT3045/3094:
-     CV, meter, phono futura) · +5 control (LED/logiche)
+     CV, meter; phono = blocco [A0] §3.1bis) · +5 control (LED/logiche)
 ```
 
 ## 3. Design per stadio
