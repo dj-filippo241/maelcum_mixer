@@ -96,7 +96,7 @@ Motivazione sul requisito bloccato tracking ≤ 0,25 dB:
 **Catena del controllo** (mono, un pot per entrambi i canali):
 ```
 pot lineare 10 kΩ → generatore CV (mappa rotazione → legge dB voluta)
-→ CV buffer → control input THAT 2181 (canali A+B in parallelo elettrico)
+→ CV buffer → control input THAT 2181 (porti EC dei due chip L/R in parallelo elettrico)
 ```
 - Legge target: −∞ (≤ −90 dB) a full CCW · 0 dB (unity) al ~75-80% della corsa · +6 dB a fine corsa
 - Il tratto sotto unity occupa la maggior parte della corsa (uso normale), +6 dB è trim fine in cima — coerente con "positive gain only above unity"

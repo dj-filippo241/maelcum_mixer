@@ -1,6 +1,6 @@
 # PEAK DETECTOR CONDIVISO — risultati simulazioni (2026-09-27)
 
-Riferimenti: CDJ §7.3 (`docs/fase1/cdj-line-channel.md`), FX §11.2
+Riferimenti: CDJ §7 item 6 (`docs/fase1/cdj-line-channel.md`), FX §11.2
 (`docs/fase1/fx-module.md`), 5-way §5 (`docs/fase2/five-way-module.md`),
 questione 19 (costanti/zona display), decisione 65 (ballistica 10 Hz),
 SPEC §7 (clip latch 300-500 ms). Netlist: `peak-det-lf.cir` (droop),

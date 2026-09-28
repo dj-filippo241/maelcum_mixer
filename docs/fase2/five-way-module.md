@@ -247,7 +247,7 @@ gate/buffer/make-up ≈ **~28-30 quad + 10 LM13700 + 12 THAT 218x singoli**
   (stadio 1 a JFET, headroom); uscita recovery low-Z 20-50 Ω, clean +23 dBu
   (sheet: il +24 vero vive solo al master); nessun makeup compression (SPEC).
 - **Meter**: pickup post-drive; detector condiviso col design di canale
-  (CDJ §7.3 — peak detector SIMULATO 2026-09-27: `sim/meter/RISULTATI-peak-det.md`,
+  (CDJ §7 item 6 — peak detector SIMULATO 2026-09-27: `sim/meter/RISULTATI-peak-det.md`,
   droop 10 Hz e latch clip quantificati, dati alla questione 19): ballistica a 10 Hz
   (dec. 65: no sagging), clip latch 300-500 ms, segmenti = design modulo
   metering (questione 19/54).
@@ -483,4 +483,4 @@ il THAT 218x reale con ramp 1 ms è validato a parte (§8.5).
 5. [FATTO 2026-09-27] Rumore del modulo completo: −108,4 dBu contro target
    −90 (sheet §3), margine 18,4 dB (§8.4). Beta-3: modelli reali
    (LM13700/2181/OPA16xx) e A-pesatura.
-6. Meter pickup e ballistica 10 Hz (con CDJ §7.3).
+6. Meter pickup e ballistica 10 Hz (con CDJ §7 item 6).

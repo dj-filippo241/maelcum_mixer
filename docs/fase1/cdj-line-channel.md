@@ -1,7 +1,7 @@
 # FASE 1 — Modulo CANALE CDJ/LINE: design circuitale v0.3
 
 > **v0.3 (2026-09-25)**: SUPERSEDE la v0.2 per §3.3 (EQ in serie, decisioni 76/77 —
-> celle a contribuzione bocciate dalla simulazione) e allinea §4-§8 alle misure beta-2
+> celle a contribuzione bocciate dalla simulazione) e allinea §4-§8 alle misure beta-3
 > (`docs/fase1/eq-serie-v0.3.md`). Il resto del documento è invariato dalla v0.2.
 
 > **v0.2 (2026-09-18)**: SUPERSEDE la v0.1 (in storia git). Allineato a: decisioni 58-76,
@@ -72,7 +72,7 @@ VCA in tutto il mixer, ricambio unico; tracking L/R via trim di law o selezione 
 voce 37) pilotati da UN pot con detent → shaper di law →
 CV 0-5 V (generatore su ±15 V LN). Law: −∞ a full CCW, 0 dB al detent (~50% corsa),
 +10 dB a fine CW. **Law e headroom VERIFICATI in simulazione (2026-09-27, §7
-item 7)**: detent 0 dB esatto, floor −100 dB, +18 dBu pulito con 5,5 dB di
+item 4)**: detent 0 dB esatto, floor −100 dB, +18 dBu pulito con 5,5 dB di
 margine; il tracking L/R richiede trim di law (2181) o selezione di coppia
 (2180) — voce 37. Alternativa economica da scartare solo se la sim dice che il VCA
 colora: pot doppio selezionato + trim (più lavoro di calibrazione, tracking a rischio).
@@ -189,13 +189,13 @@ FATTE:
 1. Celle a contribuzione (v0.2): `sim/cdj-eq/RISULTATI-eq.md` — finding critico
    di fase → decisione 76, topologia serie. THD: non misurabile coi macromodelli
    lineari, si verifica al prototipo col modello TI reale.
-5. Tracking/mismatch: fatto per entrambe le topologie. Serie: pot doppi ≤1% →
+2. Tracking/mismatch: fatto per entrambe le topologie. Serie: pot doppi ≤1% →
    L−R ≤0,16 dB PASS; 2% → 0,32 limite (`low-cell-track.cir`, `cascade-track.cir`).
-6. **EQ serie v0.3 completa (beta-3)**: celle LOW/MID/HIGH + cascata 4 bande +
+3. **EQ serie v0.3 completa (beta-3)**: celle LOW/MID/HIGH + cascata 4 bande +
    riferimento interno −6 dB + summer 49,9k: `sim/eq-serie/` (9 netlist),
    griglie e finding in `docs/fase1/eq-serie-v0.3.md` §9.
 
-7. **GAIN VCA THAT 218x FATTO (2026-09-27, `sim/cdj/vca-law.cir` +
+4. **GAIN VCA THAT 218x FATTO (2026-09-27, `sim/cdj/vca-law.cir` +
    `vca-headroom.cir`)**: law dB(θ) via shaper a tratti VERIFICATA (−100…0…+10
    dB esatti ai θ di progetto, detent 0 dB a 1e-8, costante 6,1 mV/dB);
    headroom: +18 dBu a GAIN 0 passa pulito (8,70 V out, margine 5,5 dB sul
@@ -206,7 +206,7 @@ FATTE:
    misurabile in macro lineare: stima da datasheet, verifica al prototipo
    (stesso trattamento di eq-serie §9.7).
 
-8. **Summing DJ BUS 4 canali FATTO (2026-09-27, `sim/cdj/djbus-level.cir` +
+5. **Summing DJ BUS 4 canali FATTO (2026-09-27, `sim/cdj/djbus-level.cir` +
    `djbus-crosstalk.cir`)**: worst sheet CONFERMATO — 4×0 dBu correlati →
    +12,0 dBu (4,36 Vpk, margine 11,6 dB sul clamp ±16,5); singolo canale
    +16 dBu → 8,66 Vpk (margine 5,6 dB); estremo 4×+16 correlati (+28 dBu =
@@ -216,7 +216,7 @@ FATTE:
    @20 kHz, −67 @35 kHz — degrada 6 dB/ott col loop gain, inudibile;
    nella pratica comanderà l'accoppiamento PCB (design di sistema, 21).
 
-9. **Peak detector condiviso FATTO (2026-09-27, `sim/meter/` +
+6. **Peak detector condiviso FATTO (2026-09-27, `sim/meter/` +
    `sim/meter/RISULTATI-peak-det.md`)**: circuito candidato superdiodo +
    clamp anti-windup; droop a 10 Hz misurato per τ release 0,3/1/3 s
    (−2,9/−0,88/−0,31 dB per ciclo → meter release ≥1 s, dati per la
@@ -226,9 +226,9 @@ FATTE:
    300-500 ✓).
 
 RESTANTI:
-10. Variante cella HIGH crossfade-LP2: solo se la questione 68 la sceglie
+7. Variante cella HIGH crossfade-LP2: solo se la questione 68 la sceglie
 
-## 8. Questioni generate/aggiornate da questa v0.3 (stato 2026-09-25)
+## 8. Questioni generate/aggiornate da questa v0.3 (stato 2026-09-27/28)
 
 - 53 (tracking EQ stereo): numeri misurati — pot doppi ≤1% → L−R ≤0,16 dB PASS;
   2% → 0,32 limite/trim; alternativa VCA documentata. Scelta: sessione hardware (40)

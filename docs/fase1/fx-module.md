@@ -32,7 +32,7 @@
 ## 2. Architettura del modulo
 
 ```
-                        MODULO FX (v0.1)
+                        MODULO FX (v0.2)
  dai canali/mic/generic (backplane): send L/R per sorgente, gia' con
  EQ2+level+assign (lato canale, CDJ §3.5) — il modulo riceve gli assign
  gia' commutati sui 4 bus.
@@ -77,7 +77,7 @@ L/R con due path matched (centraggio affidabile, no phase games).
   problema di swing interno; l'uscita del summing è il punto caldo
   (+21,6 dBu worst) → op-amp di bus su ±18 V con clamp reale ~±16,5.
 
-## 4. Interfaccia pedali (questione 13 — proposta v0.1 [PROVVISORIO])
+## 4. Interfaccia pedali (questione 13 — proposta v0.2 [PROVVISORIO])
 
 - **Send**: summing → driver buffer (OPA1612 class, low-Z ≤50 Ω) →
   **pad selezionabile** solder-pad/DIP: −20 dB (prototipo, chitarra/rack
@@ -195,10 +195,11 @@ Stessa famiglia delle celle serie EQ v0.3 (decisione 76/77):
   propria verso il bus di destinazione, diodo/pista separata): nessun
   accoppiamento tra destinazioni se non via bus (virtual-earth, −38 dB).
 
-## 8. Simulazioni v0.1 (`sim/fx/`)
+## 8. Simulazioni v0.1-v0.2 (`sim/fx/`)
 
-Modelli comportamentali (il circuito reale arriva in v0.2): lo scopo è la
-dinamica del loop e il worst-case del summing, non il carattere sonoro.
+§8.1-8.2 (v0.1): modelli comportamentali — scopo: dinamica del loop e
+worst-case del summing, non il carattere sonoro. §8.3-8.4 (v0.2): modelli
+reali (`sim/lib/that2181.inc`, `sim/lib/opamp-audio.inc`).
 
 ### 8.1 Loop di feedback (fx-loop.cir, comportamentale)
 
@@ -320,13 +321,13 @@ LOW C 56 nF (Rp 31k invariato), HIGH R 5,23k/2,5k (Ch 10 nF invariato).
    (§8.4)] Resta l'implementazione a componenti discreti dello shaper
    (rete diodi/resistori, famiglia filtro) e il layout del nodo d'ingresso
    (TVS/cavo) — da millefori/PCB.
-2. [FATTO 2026-09-27] Peak detector meter (condiviso con CDJ §7.3):
+2. [FATTO 2026-09-27] Peak detector meter (condiviso con CDJ §7 item 6):
    `sim/meter/` + `RISULTATI-peak-det.md` — droop a 10 Hz per τ release
    (−2,9/−0,88/−0,31 dB per ciclo con τ 0,3/1/3 s → raccomandazione ≥1 s),
    clip latch 442 ms retriggerabile dimostrato, cattura HF = banco beta-3.
    Soglie e zone display = questione 19.
 3. [FATTO 2026-09-27] Modello THAT 218x: `sim/lib/that2181.inc` condiviso
-   (law/headroom verificati qui §8.3 e in CDJ §7 item 2). THD: non
+   (law/headroom verificati qui §8.3 e in CDJ §7 item 4). THD: non
    misurabile in macro lineare — datasheet + modello TI + banco al
    prototipo. CORREZIONE: 218x = SINGLE (voce 37 riscritta: i 16 del BOM
    §9 sono 16 CHIP, non 16 sezioni di dual).

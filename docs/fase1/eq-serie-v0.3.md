@@ -1,4 +1,4 @@
-# EQ SERIE v0.3 — celle Baxandall a law asimmetrica (2026-09-24/25)
+# EQ SERIE v0.3 — celle Baxandall a law asimmetrica (2026-09-24/27)
 
 > **Stato: BETA-3 (2026-09-27).** ALPHA (cella LOW) + celle MID/HIGH + cascata
 > 4 bande con rumore/tracking/livelli (§9) + riferimento interno −6 dB e
@@ -142,25 +142,26 @@ decisione dentro la voce 53, costo +4 VCA/canale.
 | R/C reti (0,1% dove il detent dipende) | ~48 | Za/Zb matched per banda |
 | Stima costo | ~45-60 € | vs 70-95 € della v0.2 (silicon: 6 quad + 2 dual) |
 
-## 8. Prossimi passi (v0.3-beta2)
+## 8. Prossimi passi (stato beta-3)
 
 1. FATTO in beta-1 (§9): celle MID/HIGH, cascata 4 bande, residuo all-kill,
    rumore, tracking, livelli.
-2. Headroom interno: picco 15,2 V a +16 dBu in all-boost (1,3 V dal clamp);
-   a +18 dBu lo stadio MH clippa a metà catena. Soluzione candidata:
-   riferimento interno −6 dB con make-up in uscita (stesso principio della
-   decisione 73 per il 5-way).
-3. Rumore: −114,6 dBu (PASS, 22 dB di margine) ma i summer a 100 kΩ dominano
-   (122 nV/√Hz a 1 kHz): scendere a 25-49,9 kΩ in beta-2 (verificando il
-   carico sul wiper del pot).
+2. FATTO in beta-2 (§9.6): riferimento interno −6 dB con make-up in uscita
+   (stesso principio della decisione 73 per il 5-way) — risolve l'headroom
+   interno (picco 15,2 V a +16 dBu in all-boost; a +18 dBu lo stadio MH
+   clippava a metà catena).
+3. FATTO in beta-2 (§9.6): summer a 49,9 kΩ (i 100 kΩ dominavano a
+   122 nV/√Hz); rumore CONFERMATO in beta-3 (§9.7) con op-amp reali:
+   −110,7 dBu, margine 18,7 dB.
 4. Scelte di Filippo: 68 (profondità kill HIGH, §9.3), 53 (tracking: pot
    precision vs VCA), taper (voce 40). Profondità kill shelf DECISA: −30 dB
    (decisione 77).
-5. Integrazione in `cdj-line-channel.md` v0.3 (sostituisce §3.3, aggiorna
-   §6 BOM e §4 level plan); allineamento EQ2 FX (questione 65: le celle
-   shelf/campana di questa famiglia si applicano tali e quali a 2 bande).
-6. Law del pot e taper custom (mappatura θ→x elettrica: boost +6 in metà
-   corsa, cut −30 accelerato agli estremi — filosofia dec. 70).
+5. FATTO: integrazione in `cdj-line-channel.md` v0.3 (sostituisce §3.3,
+   aggiorna §6 BOM e §4 level plan); allineamento EQ2 FX (questione 65)
+   FATTO con le celle serie scalate (`sim/fx/fx-eq2.cir`, fx-module §8.4).
+6. FATTO (§10): law del pot e taper custom specificati (mappatura θ→x
+   elettrica: boost +6 in metà corsa, cut −30 accelerato agli estremi —
+   filosofia dec. 70).
 
 ## 9. Risultati v0.3-BETA-1 (2026-09-25, `sim/eq-serie/`)
 
