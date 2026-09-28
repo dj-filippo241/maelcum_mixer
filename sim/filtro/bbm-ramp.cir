@@ -1,0 +1,48 @@
+* FILTRO v0.3 — COMMUTAZIONE DI MODO: BBM + RAMP (item §9.2, SPECIFICA §4)
+* Requisito [BLOCCATO]: break-before-make + ramp 1-5 ms sulla commutazione
+* modo (HPF/OFF/LPF). Il MUX (interprete single-path vs serie) è BLOCCATO
+* sulla questione 63 — qui si simula il MECCANISMO, indipendente da 63:
+* fade-out del percorso uscente → gap muto (BBM: mai entrambi chiusi) →
+* fade-in del percorso entrante, con VCA THAT 218x (modello condiviso
+* sim/lib/that2181.inc) pilotato da CV a rampa tau.
+* Worst case: commutazione AL PICCO di un segnale +18 dBu (6,16 Vp, 1 kHz)
+* — stesso criterio di gate-ramp.cir (5-way §8.5, voce 55).
+* Variante "brusco" (tau = 1 us): interruttore puro senza rampa = il click
+* di riferimento. Sonda HP 2 poli ~1,6 kHz = "rivelatore di click" (pattern
+* gate-ramp): se il picco post-commutazione resta ≈ baseline, il fade non
+* aggiunge transienti udibili oltre il programma.
+* Gap BBM: 50 us (classe ADG14xx [PROVVISORIO — regola 3]).
+* Nota musicale: durante tau+gap il segnale è MUTA (BBM = interruzione, non
+* crossfade): con tau = 1 ms il buco è ~1 ms (trasparente); con 5 ms è
+* ~5 ms (gesto percepibile, "soft mute"). Dati per ratifica voce 55.
+.include ../lib/that2181.inc
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+Vsig sig 0 SINE(0 6.16 1000)
+.param t0=2.25m
+.param tau=1m
+.param gap=50u
+.param vkill=1.22
+* dry: aperto a t0 con rampa tau (BBM: apre PRIMA)
+Vcd ecd 0 PWL(0 0 {t0} 0 {t0+tau} {vkill} 25m {vkill})
+* wet: muto fino a t0+tau+gap, poi chiuso con rampa tau
+Vcw ecw 0 PWL(0 {vkill} {t0+tau+gap} {vkill} {t0+2*tau+gap} 0 25m 0)
+Xgd sig dry 0 ecd vcc vee THAT2181
+Xgw sig wet 0 ecw vcc vee THAT2181
+* somma delle due vie su carico (driver class 47 Ω + 10 k)
+Rd dry out 47
+Rw wet out 47
+Rl out 0 10k
+* --- sonda HP click (2 poli, fc ~1,6 kHz) ---
+Ch1 out h1 10n
+Rh1 h1 0 10k
+Ch2 h1 h2 10n
+Rh2 h2 0 10k
+.step param tau LIST 1u 0.3m 1m 5m
+.tran 0 25m 0 0.1u
+.meas tran vpre MAX ABS(V(out)) FROM 1m TO {t0}
+.meas tran hpbase MAX ABS(V(h2)) FROM 1m TO {t0}
+.meas tran hpmax MAX ABS(V(h2)) FROM {t0} TO {t0+12m}
+.meas tran vmax MAX ABS(V(out)) FROM {t0} TO {t0+12m}
+.meas tran vgap FIND V(out) AT {t0+tau+gap+tau/2}
+.end

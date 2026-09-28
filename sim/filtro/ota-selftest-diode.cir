@@ -1,0 +1,48 @@
+* FILTRO v0.3 — SELF-TEST DIODI LINEARIZZANTI (datasheet §7.3.2)
+* La cancellation della tanh è ESATTA solo se Is modula ENTRAMBI i diodi
+* (drive differenziale): Iout = Iabc*Is/ID lineare fino a Is = ID.
+* Single-ended (un solo diodo modulato): cancellation parziale, THD2 ≈ x/4.
+* Tre istanze a confronto, Iabc = 500 uA, drive differenziale ±A (1 kHz):
+*   A) nudo: Vd = 2A diretto sulla coppia → THD3 ≈ (2A/52m)²/4, clip a 52 mV
+*   B) diodi gm-matched: Rin 26Ω, ID ≈ 1 mA → 2*(Rin+rd) ≈ 104Ω = 52 mV/mA:
+*      stesso range del nudo ma cancellation esatta (THD → residui beta/Is)
+*   C) diodi range esteso: Rin 260Ω, ID ≈ 1 mA → range ±~290 mV (11×),
+*      gm_eff = Iabc/(ID*2*(Rin+rd)) ≈ 1/11 del nudo (trade-off: gittata
+*      lineare ∝ Rin*ID, Iabc necessario ∝ Rin*ID a f0 fissata).
+* ID: bias da vcc via Rid (14,3k → (15-0,65)/14,3k ≈ 1 mA); dbp/dbn restano
+* ~0,65 V sopra gli ingressi (≈ massa).
+.include ../lib/lm13700.inc
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+.param A=0.013
+Vp sp 0 SINE(0 {A} 1000)
+Vn sn 0 SINE(0 {-A} 1000)
+* --- A) nudo ---
+Xa sp sn out_a iabc_a db_a1 db_a2 vcc vee LM13700
+Ixa vcc iabc_a DC 500u
+Rla out_a 0 1k
+* --- B) diodi gm-matched (Rin 26) ---
+Xb inp_b inn_b out_b iabc_b dbp_b dbn_b vcc vee LM13700
+Ixb vcc iabc_b DC 500u
+Rpb sp inp_b 26
+Rnb sn inn_b 26
+Ridp_b vcc dbp_b 14.3k
+Ridn_b vcc dbn_b 14.3k
+Rlb out_b 0 1k
+* --- C) diodi range esteso (Rin 260) ---
+Xc inp_c inn_c out_c iabc_c dbp_c dbn_c vcc vee LM13700
+Ixc vcc iabc_c DC 500u
+Rpb2 sp inp_c 260
+Rnb2 sn inn_c 260
+Ridp_c vcc dbp_c 14.3k
+Ridn_c vcc dbn_c 14.3k
+Rlc out_c 0 10k
+.step param A LIST 0.0065 0.013 0.026 0.1 0.25
+.tran 0 20m 12m 0.5u
+.four 1k V(out_a)
+.four 1k V(out_b)
+.four 1k V(out_c)
+.meas tran a_pk MAX ABS(V(out_a))
+.meas tran b_pk MAX ABS(V(out_b))
+.meas tran c_pk MAX ABS(V(out_c))
+.end

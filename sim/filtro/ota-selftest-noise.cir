@@ -1,0 +1,22 @@
+* FILTRO v0.3 — SELF-TEST RUMORE del modello LM13700
+* Il datasheet NON dà rumore numerico (solo Fig. 15, grafico): il modello lo
+* genera fisicamente (termica di re = 2*VT/Iabc per lato + Rb + shot di Ib).
+* Atteso: en ≈ sqrt(4kT*2*(Rb+re)) → ~130 nV/√Hz a 100 nA, ~29 a 2 u,
+* ~15 a 7,56 u, ~2,5 a 500 u (limite fisico della coppia; il die reale
+* verosimilmente 2-5x peggio) [PROVVISORIO — verifica a banco].
+* Lettura: V(inoise) = densità riferita all'ingresso (guadagno = gm*Rl,
+* Rl = 10 Meg perché il riferito resti dominato dall'OTA a ogni Iabc).
+.include ../lib/lm13700.inc
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+.param Iabc=500u
+V1 inp 0 DC 0 AC 1
+Rl out 0 10Meg
+Ix vcc iabc1 DC {Iabc}
+X1 inp 0 out iabc1 db1 db2 vcc vee LM13700
+.step param Iabc LIST 100n 2u 7.56u 31u 100u 397u 500u
+.noise V(out) V1 dec 100 10 100k
+.meas noise en100 FIND V(inoise) AT 100
+.meas noise en1k FIND V(inoise) AT 1k
+.meas noise en10k FIND V(inoise) AT 10k
+.end

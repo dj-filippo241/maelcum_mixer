@@ -1,5 +1,16 @@
-# FASE 2 — Modulo 5-WAY (dub preamp): design v0.2-WIP (2026-09-27)
+# FASE 2 — Modulo 5-WAY (dub preamp): design v0.2-WIP (2026-09-28)
 
+> **CODA BETA-3 CELLE (2026-09-28, `sim/filtro/RISULTATI-ota-real.md` §5)**:
+> celle parametriche riesaminate col LM13700 REALE (`sim/lib/lm13700.inc`) —
+> piccolo segnale CONFERMATO (detent piatto ±0,0001 dB, boost ±0,02 dB, notch
+> vero −67…−78 dB con f0 +1% assorbita dal trim position), rumore cella
+> −119,7 dBu (dentro il budget −108,4 di §8.4); **FINDING BLOCCANTE**: il
+> tetto di stato degli integratori OTA (52 mV a f0, strutturale) rende la
+> cella nuda inutilizzabile ai livelli di progetto (a −6 dBu: gain 1,1-1,3
+> contro 5,62, THD 3-6%); scaling+make-up rompe il rumore → **questione 70**
+> (topologia core: raccomandata integratori op-amp + OTA scaler, PoC da
+> simulare). Rilascio celle v0.2.1 dopo 70.
+>
 > **v0.2-WIP (2026-09-27)**: (1) kill bank ALLINEATA IN FASE — soluzione
 > esatta dimostrata (math + LTspice): somma piatta −0,0002…−0,008 dB su
 > 5 Hz–60 kHz senza kill, all-kill = silenzio assoluto invariato (§3.1,
@@ -440,6 +451,31 @@ verifica coi modelli reali (rumore/THD in beta-3) e soprattutto a banco con
 trimmer di allineamento (§3). Gate: nelle sim di banca sono ideali (g = 0/1);
 il THAT 218x reale con ramp 1 ms è validato a parte (§8.5).
 
+### 8.7 Coda beta-3 — celle con LM13700 REALE (`sim/five-way/param-cell-real*.cir`, 2026-09-28)
+
+Risultati completi in `sim/filtro/RISULTATI-ota-real.md` §5-§6 (il modello
+OTA è condiviso col filtro). Sintesi per la cella (f0 = 700 Hz, Iabc = 7,56 µA):
+
+- **Piccolo segnale: la griglia v0.2 REGGE** — detent −0,0001…−0,00003 dB
+  (piatto costruttivo confermato col modello reale), boost +9,005/+14,995 dB
+  (±0,02; solo Q 0,5 a +15 esce a −0,018), notch VERO −67…−78 dB (hmin) con
+  f0 spostata +1% (α/mirror: a 700 Hz fissi si leggerebbe −25…−41) → assorbita
+  dal trim per-banda del converter position (§4.1 opzione B, già a design).
+- **Rumore (worst case boost massimo)**: −119,7 dBu (Q1) / −122,7 (Q3)
+  integrati 20 Hz-20 kHz con en OTA fisico (15 nV/√Hz a 7,56 µA; die reale
+  2-5× peggio → anche +14 dB resta dentro il budget §8.4). Il rumore NON è
+  il problema della cella.
+- **FINDING BLOCCANTE (livelli)**: a −6 dBu (388 mVp) la cella nuda collassa —
+  gain misurato 1,1-1,3 contro 5,62, THD 2,8-6,4%: lo stato Q·Vin su C 33n a
+  700 Hz chiede 168-500 µA all'OTA che ne eroga ~7,5 (tetto strutturale
+  Vstato(f0) = 1/19,2 = 52 mV, indipendente da Iabc/C). La v0.2 non lo vedeva:
+  il modello comportamentale non ha limite di corrente e l'AC linearizza.
+  Riproduttore: `sim/five-way/dbg-cell-tran.cir`. Scaling+make-up bocciato
+  (rumore ×N: −93,7 dBu per cella → modulo ~−85, FAIL §8.4) → **questione 70**:
+  topologia raccomandata = integratori op-amp + OTA come scalatore gm a
+  piccolo segnale (la legge position via gm ∝ Iabc e l'infrastruttura
+  converter/mirror restano valide); PoC da simulare, poi celle v0.2.1.
+
 ## 9. Questioni toccate
 
 - **8** (matematica filter bank): RISPOSTA v0.2 — banca ALLINEATA IN FASE:
@@ -470,8 +506,11 @@ il THAT 218x reale con ramp 1 ms è validato a parte (§8.5).
    Le spaziature non sono più vincolate dalla matematica: l'ascolto per la
    questione 67 è libero (dato: spaziature più larghe = kill più profondi).
 1. [FATTO 2026-09-27] Celle parametriche complete + cascata 5 celle
-   VALIDATE (§4.1, §8.3). In coda: modelli reali (LM13700 per notch,
-   OPA16xx per rumore/THD), law del gain da confermare a orecchio in M4L.
+   VALIDATE (§4.1, §8.3). [CODA BETA-3 FATTA 2026-09-28 (§8.7)]: LM13700
+   reale — piccolo segnale e rumore confermati, notch −67…−78 dB con trim
+   f0; FINDING: tetto di stato 52 mV → cella nuda inutilizzabile a −6 dBu
+   → **questione 70** (topologia core: PoC op-amp integrator + OTA scaler,
+   poi celle v0.2.1). Law del gain da confermare a orecchio in M4L.
 2. Drive: candidati JFET + spettri armonici (dopo referenze 61).
 3. [SPECIFICATO 2026-09-27] Converter position (opzione B): C per banda e
    finestra Iabc 2-31 µA, mirror ratio 0,05-0,6 (§4.1); realizzazione =
@@ -481,6 +520,9 @@ il THAT 218x reale con ramp 1 ms è validato a parte (§8.5).
    condiviso `sim/lib/that2181.inc` (pronto per FX v0.2 + CDJ §7). A banco:
    feedthrough EC→audio e click da accoppiamento CV.
 5. [FATTO 2026-09-27] Rumore del modulo completo: −108,4 dBu contro target
-   −90 (sheet §3), margine 18,4 dB (§8.4). Beta-3: modelli reali
-   (LM13700/2181/OPA16xx) e A-pesatura.
+   −90 (sheet §3), margine 18,4 dB (§8.4). Beta-3 [PARZIALE 2026-09-28]:
+   contributo celle con LM13700/OPA16xx reali MISURATO (§8.7: −119,7 dBu
+   worst-case boost, dentro budget anche con die 5× peggiore); restano
+   THAT 2181 (gate/drive: modello senza rumore) e A-pesatura. Il totale
+   definitivo segue la topologia della questione 70.
 6. Meter pickup e ballistica 10 Hz (con CDJ §7 item 6).

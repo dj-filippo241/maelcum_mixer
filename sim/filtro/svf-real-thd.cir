@@ -1,0 +1,65 @@
+* FILTRO v0.3 — THD del core SVF con LM13700 REALE (fc = 1 kHz)
+* Domanda (item v0.3 §9.3): quanto segnale sopporta il core prima di
+* distorcere? Due vincoli fisici del modello reale:
+*   1. tanh della coppia: Vd ≤ ~3 mV per THD ≤ 0,1% (nudo);
+*   2. picco corrente d'uscita ≈ Iabc → stato ≤ 52 mV a f = f0 (strutturale).
+* Il dominio del send è 0 dBu (775 mV) con headroom +24: il core nudo
+* distorce MASSICCIAMENTE → due istanze a confronto:
+*   A) NUDO: eccitazione come feas-svf (Rvin 10k) — misura la distorsione;
+*   B) SCALATO: Rvin 200k (core eccitato a Vin/20) + make-up −20 dopo LP
+*      (10k/200k invertente, OP1654): stati ≤ ~28 mV a Vin = 775 mV.
+*      [PROVVISORIO — regola 3] Il fattore 20 è la proposta ingegneristica:
+*      costo = rumore OTA riferito ×20 (quantificato in svf-real-noise) +
+*      1 sezione op-amp di make-up per core (già a BOM? no: +8 sezioni).
+* THD in % dal .four (ultima cifra del periodo a regime).
+.include ../lib/lm13700.inc
+.include ../lib/opamp-audio.inc
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+.param A=0.775
+.param Iabc=10.8u
+V1 vin 0 SINE(0 {A} 1000)
+Ix1 vcc iabc1 DC {Iabc}
+Ix2 vcc iabc2 DC {Iabc}
+* ================= A) NUDO (Rvin 10k) =================
+RvinA vin nsA 10k
+RlpA lp_bA nsA 10k
+RbpA bp_bA nsA 7.07k
+RfA nsA hpA 10k
+XsumA 0 nsA hpA vcc vee OP1654
+Xota1A hpA 0 bpA iabc1 dbA1 dbA2 vcc vee LM13700
+C1iA bpA 0 33n
+Rb1A bpA 0 100Meg
+Xb1A bpA bp_bA bp_bA vcc vee OP1654
+Xota2A bp_bA 0 lpA iabc2 dbA3 dbA4 vcc vee LM13700
+C2iA lpA 0 33n
+Rb2A lpA 0 100Meg
+Xb2A lpA lp_bA lp_bA vcc vee OP1654
+* ================= B) SCALATO 1/20 + make-up ×20 =================
+RvinB vin nsB 200k
+RlpB lp_bB nsB 10k
+RbpB bp_bB nsB 7.07k
+RfB nsB hpB 10k
+XsumB 0 nsB hpB vcc vee OP1654
+Xota1B hpB 0 bpB iabc3 dbB1 dbB2 vcc vee LM13700
+Ix3 vcc iabc3 DC {Iabc}
+C1iB bpB 0 33n
+Rb1B bpB 0 100Meg
+Xb1B bpB bp_bB bp_bB vcc vee OP1654
+Xota2B bp_bB 0 lpB iabc4 dbB3 dbB4 vcc vee LM13700
+Ix4 vcc iabc4 DC {Iabc}
+C2iB lpB 0 33n
+Rb2B lpB 0 100Meg
+Xb2B lpB lp_bB lp_bB vcc vee OP1654
+Rmu1 lp_bB nmu 10k
+Rmu2 nmu voutB 200k
+Xmu 0 nmu voutB vcc vee OP1654
+.step param A LIST 0.052 0.104 0.388 0.775 2.45 6.16
+.tran 0 30m 20m 0.5u
+.four 1k V(lp_bA)
+.four 1k V(voutB)
+.meas tran a_lp_pk MAX ABS(V(lp_bA))
+.meas tran a_bp_pk MAX ABS(V(bp_bA))
+.meas tran b_lp_pk MAX ABS(V(lp_bB))
+.meas tran b_out_pk MAX ABS(V(voutB))
+.end

@@ -1,0 +1,18 @@
+* FILTRO v0.3 — SELF-TEST AC del modello LM13700 (sim/lib/lm13700.inc)
+* Verifica 1: gm = 19,2*Iabc su 4 decadi (100 nA ... 500 uA).
+* Datasheet TI SNOSBW2F tab. 6.4: gm 6,7/9,6/13 mS a Iabc = 500 uA.
+* Verifica 2: errore del mirror di coda (1:1, beta finito) sulla law.
+* Lettura: .meas gm1k = |V(out)|/Rl a 1 kHz (V1 = 1 mV → piccolo segnale).
+.include ../lib/lm13700.inc
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+.param Iabc=500u
+V1 inp 0 DC 0 AC 1m
+Rl out 0 100k
+Ix vcc iabc1 DC {Iabc}
+X1 inp 0 out iabc1 db1 db2 vcc vee LM13700
+.step param Iabc LIST 100n 1u 2u 7.56u 31u 100u 397u 500u
+.ac dec 20 10 1Meg
+.meas ac gm1k FIND mag(V(out))/100k AT 1k
+.meas ac gm_ratio PARAM gm1k/{Iabc}
+.end

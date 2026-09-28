@@ -1,0 +1,40 @@
+* FILTRO v0.3 — OFFSET del core SVF con LM13700 REALE (.op)
+* Datasheet tab. 6.4: Vos 0,4 mV typ / 4 mV max; CAMBIO di offset al variare
+* di Iabc (5 u...500 u): 0,1 typ / 3 mV max → spazzando fc 10 Hz-35 kHz il
+* core vede una Vos che CAMBIA con Iabc: l'offset d'uscita segue?
+* Il loop SVF ha feedback DC (LP → summer → HP → integratori): a regime
+* HP → 0 e gli stati si assestano su valori finiti proporzionali a Vos
+* (nessuna deriva a saturazione). Si misura il DC di lp/bp/hp per
+* Vos = 0,4 mV (typ) e 4 mV (max, inviluppo col cambio-Iabc) ai due estremi
+* della spazzolata. Vin = 0 (solo effetto offset).
+* Lettura: tensioni DC dei nodi nel log (.dc fittizio + .meas: in batch il
+* .op non stampa i nodi nel log, li salva solo nel .raw — lezione nuova).
+.include ../lib/lm13700.inc
+.include ../lib/opamp-audio.inc
+.param Iabc=114n
+.param Vosg=0.4m
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+Rvin vin ns 10k
+Rlp lp_b ns 10k
+Rbp bp_b ns 7.07k
+Rf ns hp 10k
+Xsum 0 ns hp vcc vee OP1654
+Xota1 hp 0 bp iabc1 db1 db2 vcc vee LM13700 Vos={Vosg}
+C1i bp 0 33n
+Rb1 bp 0 100Meg
+Xb1 bp bp_b bp_b vcc vee OP1654
+Xota2 bp_b 0 lp iabc2 db3 db4 vcc vee LM13700 Vos={-Vosg}
+C2i lp 0 33n
+Rb2 lp 0 100Meg
+Xb2 lp lp_b lp_b vcc vee OP1654
+* vin a massa (DC 0): solo offset. Vdummy = sweep fittizio per .meas dc.
+Vdummy vdm 0 DC 0
+.step param Iabc LIST 114n 10.8u 397u
+.step param Vosg LIST 0.4m 4m
+.dc Vdummy 0 1 1
+.meas dc v_lp FIND V(lp) AT 1
+.meas dc v_bp FIND V(bp) AT 1
+.meas dc v_hp FIND V(hp) AT 1
+.meas dc v_lpb FIND V(lp_b) AT 1
+.end

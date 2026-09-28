@@ -1,0 +1,40 @@
+* DEBUG — cella parametrica reale in TRAN: copia esatta di param-cell-real.cir
+* (che in AC dà boost +14,995 dB ✓) con analisi tran: bq fisso −4,62, Q = 3,
+* A = 0,388 Vp (−6 dBu) a 700 Hz. Se il picco di vout non è ~2,18 V (×5,62)
+* l'anomalia è nel tran/doppia istanza, non nel wiring.
+.include ../lib/lm13700.inc
+.include ../lib/opamp-audio.inc
+.param Iabc=7.56u
+.param bq=-4.62
+.param Qval=3
+.param A=0.388
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+V1 vin 0 SINE(0 {A} 700)
+Ix1 vcc iabc1 DC {Iabc}
+Ix2 vcc iabc2 DC {Iabc}
+Rvin vin ns 10k
+Rlp lp_b ns 10k
+Rq bp_b ns {Qval*10k}
+Rf ns hp 10k
+Xsum 0 ns hp vcc vee OP1654
+Xota1 hp 0 bp iabc1 db1 db2 vcc vee LM13700
+C1i bp 0 33n
+Rb1 bp 0 100Meg
+Xb1 bp bp_b bp_b vcc vee OP1654
+Xota2 bp_b 0 lp iabc2 db3 db4 vcc vee LM13700
+C2i lp 0 33n
+Rb2 lp 0 100Meg
+Xb2 lp lp_b lp_b vcc vee OP1654
+Bw bwv 0 V={bq/4.62*V(bp_b)}
+Rbw bwv ns2 {10k*Qval/4.62}
+Rain vin ns2 10k
+Rf2 ns2 vout 10k
+Xout 0 ns2 vout vcc vee OP1654
+.tran 0 40m 30m 0.5u
+.four 700 V(vout)
+.meas tran vout_pk MAX ABS(V(vout))
+.meas tran bpb_pk MAX ABS(V(bp_b))
+.meas tran lp_pk MAX ABS(V(lp_b))
+.meas tran hp_pk MAX ABS(V(hp))
+.end

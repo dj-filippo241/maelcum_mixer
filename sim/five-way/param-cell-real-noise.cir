@@ -1,0 +1,58 @@
+* MODULO 5-WAY — RUMORE della cella parametrica con LM13700 REALE
+* (coda beta-3 di §10.5: nel module-noise v0.2 gli OTA erano assenti).
+* CORREZIONE 2026-09-28: la prima versione misurava a detent SENZA pot —
+* a b = 0 e iniezione assente il core è disconnesso dall'uscita (H = −1
+* esatto): misurava il solo percorso dry. Qui si misura il WORST CASE
+* rumore: boost massimo (b = −4,62, iniezione ×4,62/4,62 attiva) — il
+* rumore degli stati bp/lp passa tutto. Q = 1 e Q = 3 (stato bp = Q·Vin:
+* a Q alto più rumore OTA arriva all'iniezione).
+* Il detent reale (pot 5k+5k tra ±bp_b) sta in module-noise v0.2 senza OTA:
+* da lì il delta di questa misura = contributo OTA da aggiungere al −108,4.
+* Integrazione 20 Hz-20 kHz non A-pesata (metodologia consolidata).
+* en OTA a Iabc = 7,56 u: ~15 nV/√Hz (limite fisico del modello; die reale
+* 2-5x peggio → lettura OTTIMISTICA, margine da tenere).
+.include ../lib/lm13700.inc
+* --- macro SENZA clamp per .noise (clamp = DC-bistabilità sul loop SVF:
+* ramo falso saturo → .noise = 0; lezione registrata in RISULTATI-ota-real)
+.subckt OPX inp inn out vp vm
+Rn inp inx 1223
+E1 xx 0 value={1e6*(V(inx)-V(inn))}
+R1 xx p1 5005
+C1 p1 0 1.59u
+E2 out 0 value={V(p1)}
+.ends OPX
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+.param Iabc=7.56u
+.param Qval=3
+.param bq=-4.62
+V1 vin 0 DC 0 AC 1
+Ix1 vcc iabc1 DC {Iabc}
+Ix2 vcc iabc2 DC {Iabc}
+Rvin vin ns 10k
+Rlp lp_b ns 10k
+Rq bp_b ns {Qval*10k}
+Rf ns hp 10k
+Xsum 0 ns hp vcc vee OPX
+Xota1 hp 0 bp iabc1 db1 db2 vcc vee LM13700
+C1i bp 0 33n
+Rb1 bp 0 100Meg
+Xb1 bp bp_b bp_b vcc vee OPX
+Xota2 bp_b 0 lp iabc2 db3 db4 vcc vee LM13700
+C2i lp 0 33n
+Rb2 lp 0 100Meg
+Xb2 lp lp_b lp_b vcc vee OPX
+* --- iniezione boost massimo (worst case rumore) ---
+Bw bwv 0 V={bq/4.62*V(bp_b)}
+Rbw bwv ns2 {10k*Qval/4.62}
+Rain vin ns2 10k
+Rf2 ns2 vout 10k
+Xout 0 ns2 vout vcc vee OPX
+.nodeset V(bp)=0 V(lp)=0 V(hp)=0
+.step param Qval LIST 1 3
+.noise V(vout) V1 dec 200 20 20k
+.meas noise vn2 INTEG V(onoise)*V(onoise)
+.meas noise nd1k FIND V(onoise) AT 1k
+.meas noise nd100 FIND V(onoise) AT 100
+.meas noise nd10k FIND V(onoise) AT 10k
+.end

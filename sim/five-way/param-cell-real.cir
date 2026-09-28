@@ -1,0 +1,53 @@
+* MODULO 5-WAY — CELLA PARAMETRICA con LM13700 REALE (coda beta-3, §10.1)
+* Riesame di param-cell.cir (v0.2: OTA comportamentale gm = 19,2*Iabc
+* ideale + macro op-amp A0 = 1e6) coi modelli reali:
+*   - OTA: sim/lib/lm13700.inc (transistor-level, datasheet TI SNOSBW2F)
+*   - op-amp: OP1654 da sim/lib/opamp-audio.inc (beta-3)
+* Domande: (1) il notch regge? (ideale: −63…−81 dB; attesa reale: classe
+* eq-serie −45…−60, §8.3); (2) il detent resta piatto? (ideale ±0,0001 dB);
+* (3) la griglia Q/boost resta dentro ±0,005 dB del target?
+* f0 = 700 Hz (Iabc = 7,56 u, C = 33n). Rail ±15 V (condizione datasheet
+* LM13700; dominio progetto ±18 = limite assoluto del chip → nota PSU).
+* Bw comportamentale come in param-cell.cir (pot reale = eq-serie §10).
+.include ../lib/lm13700.inc
+.include ../lib/opamp-audio.inc
+.param Qval=1
+.param bq=0
+.param Iabc=7.56u
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+V1 vin 0 DC 0 AC 1
+Ix1 vcc iabc1 DC {Iabc}
+Ix2 vcc iabc2 DC {Iabc}
+* --- Core SVF (f0 = 700 Hz) ---
+Rvin vin ns 10k
+Rlp lp_b ns 10k
+Rq bp_b ns {Qval*10k}
+Rf ns hp 10k
+Xsum 0 ns hp vcc vee OP1654
+Xota1 hp 0 bp iabc1 db1 db2 vcc vee LM13700
+C1i bp 0 33n
+Rb1 bp 0 100Meg
+Xb1 bp bp_b bp_b vcc vee OP1654
+Xota2 bp_b 0 lp iabc2 db3 db4 vcc vee LM13700
+C2i lp 0 33n
+Rb2 lp 0 100Meg
+Xb2 lp lp_b lp_b vcc vee OP1654
+* --- Iniezione b (comportamentale: Bw = (b/4,62)*bp_b) ---
+Bw bwv 0 V={bq/4.62*V(bp_b)}
+* --- Summer di uscita: H = -(1 - b*BP_norm) ---
+Rbw bwv ns2 {10k*Qval/4.62}
+Rain vin ns2 10k
+Rf2 ns2 vout 10k
+Xout 0 ns2 vout vcc vee OP1654
+.step param Qval LIST 3 1 0.5
+.step param bq LIST 0 1 -1.82 -4.62
+.ac dec 200 20 20k
+.meas ac h700 FIND mag(V(vout)) AT 700
+.meas ac h470 FIND mag(V(vout)) AT 470
+.meas ac h1050 FIND mag(V(vout)) AT 1050
+.meas ac hpk MAX mag(V(vout))
+.meas ac hmin MIN mag(V(vout))
+.meas ac h100 FIND mag(V(vout)) AT 100
+.meas ac h10k FIND mag(V(vout)) AT 10k
+.end

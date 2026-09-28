@@ -1,5 +1,18 @@
-# FASE 2 — Modulo FILTRO: design v0.2 (2026-09-25)
+# FASE 2 — Modulo FILTRO: design v0.2 + v0.3-WIP (2026-09-28)
 
+> **v0.3-WIP (2026-09-28, `sim/filtro/RISULTATI-ota-real.md`)**: item §9.2 e
+> §9.3 FATTI — (a) ramp BBM validata: τ 1 ms = click −8,4 dB vs brusco,
+> 5 ms ≈ baseline; famiglia unica 1 ms con gate 5-way e reroute FX (dati per
+> ratifica voce 55); il mux di modo resta dopo la questione 63; (b) LM13700
+> REALE: modello transistor-level condiviso `sim/lib/lm13700.inc` (calibrato
+> datasheet TI SNOSBW2F), law/Q/offset/rumore del core CONFERMATI (fc ≤1,5%,
+> Q 0,70-0,71, stati DC 4-5 mV bounded, rumore −107,8…−134,8 dBu PASS);
+> FINDING STRUTTURALE: tetto di stato 52 mV a f0 (Iout max ≈ Iabc) → il core
+> nudo a 0 dBu è un compressore morbido (~1% THD, collasso a +10 dBu) e lo
+> scaling+make-up non soddisfa THD e rumore insieme → **questione 70**
+> (topologia core; raccomandata: integratori op-amp + OTA scaler). Vincolo
+> PSU: LM13700 raccomandato ±16 V (assoluto ±18) → rail dedicati ±15/±16
+> (questione 20).
 > **v0.2 (2026-09-25)**: aggiunge alla v0.1 il design SIMULATO della risonanza
 > con auto-oscillazione e soft limiting (questione 11: +7,3…+8,6 dBu misurati,
 > target SPEC +6…+10 centrato), l'architettura di distribuzione Iabc agli 8 core
@@ -200,9 +213,13 @@ le 11,8 ottave derivano del ~70% su 0-50 °C (misurato, §6).
 
 ### Stato dei modelli — [PROVVISORIO] (regola 3)
 
-- OTA: macromodello comportamentale gm = 19,2·Iabc (relazione datasheet LM13700),
-  senza rail/limiti propri → il carattere sonoro e la conformità a basso bias
-  (offset, rumore) vanno verificati col modello reale e al prototipo.
+- OTA: [SUPERATO 2026-09-28] macromodello comportamentale gm = 19,2·Iabc senza
+  limiti propri → SOSTITUITO dal modello transistor-level reale
+  `sim/lib/lm13700.inc` (datasheet TI SNOSBW2F: gm 19,4·Iabc ±0,5%, limite
+  Iout ≈ Iabc, rumore fisico, Vos parametrico): il comportamento a grande
+  segnale (tetto 52 mV, compressione morbida) è ora visibile — risultati in
+  `sim/filtro/RISULTATI-ota-real.md` (questione 70). La verifica del carattere
+  sonoro resta al prototipo.
 - BJT: 2N3904 discreti (modello SPICE standard) → in v0.2 coppia monolitica matched.
 - Buffer/summer: macromodello op-amp 1 polo GBW ~1 GHz (ideale audio) → la scelta
   op-amp reale (rumore, offset, GBW minimo) è v0.2.
@@ -285,7 +302,10 @@ controllo RES, law shaper concreto, modello OTA reale, prototipo su millefori.
   Resta la ratifica a ORECCHIO del carattere (riferimento Sherman) al prototipo,
   con le referenze di Filippo (questione 61). Law RES θ→gm_res [PROVVISORIA]:
   0-90% corsa = Q 0,707→∞, 90-100% = oscillazione (margine −0,75…−1,0 nominale,
-  trim a banco).
+  trim a banco). **DATO v0.3 (2026-09-28, RISULTATI-ota-real §3/§6)**: col
+  modello reale il core nudo comprime morbido già a 0 dBu (~1% THD, gain −3,5×
+  a +10 dBu interni): il "carattere OTA" esiste ed è misurato — opzione (a)
+  della questione 70, da ascoltare contro l'opzione pulita (c) con 61/64.
 - **12** (overdrive): requisiti recepiti; topologia dopo le referenze (questione 61).
 - NUOVA da §2: **conferma interpretazione mux CV** — un solo percorso attivo per canale
   (HPF oppure LPF) vs sezioni sempre in serie. La dec. 67 dice "tutti i canali nella
@@ -300,11 +320,29 @@ FATTI in v0.2: RES/oscillazione/limiter (11), shaper law + pre-distorsione (dec.
 distribuzione mirror + tracking (51).
 
 1. Overdrive JFET/BJT dopo le referenze di Filippo (questioni 12/61).
-2. Mux di modo per canale (HPF/OFF/LPF) + generatore di ramp break-before-make
-   1-5 ms (SPECIFICA §4) — design del circuito.
-3. Modello LM13700 reale (o prototipo): offset/rumore a Iabc = 100 nA, swing, THD;
-   THD dell'oscillatore limitata dal limiter (carattere — ascolto).
-4. Prototipo su millefori di UN core + converter + RES: taratura law, verifica
-   tracking 8 core reali, ascolto risonanza/oscillazione (61/63/64 a orecchio).
-5. Layout termico PCB (simmetria converter/mirror/core) e procedura di calibrazione.
-6. Rumore del modulo completo (target: non peggiorare il send 0 dBu — sheet §3).
+2. [FATTO 2026-09-28 — ramp; mux dopo 63] Generatore di ramp BBM VALIDATO
+   (`sim/filtro/bbm-ramp.cir`, RISULTATI §4): τ 1 ms = click −8,4 dB vs
+   brusco (gesto ~2 ms trasparente), 5 ms ≈ baseline (gesto ~10 ms "soft
+   mute"); gap BBM 50 µs muto (floor −100 dB). FAMIGLIA UNICA 1 ms con gate
+   5-way e reroute FX → ratifica voce 55. Circuito = generatore ramp del
+   gate 5-way (gate-ramp validato). Il mux di modo (HPF/OFF/LPF) resta
+   BLOCCATO su 63 (single-path vs serie).
+3. [FATTO 2026-09-28] Modello LM13700 reale (`sim/lib/lm13700.inc`,
+   RISULTATI §1-§3): offset (stati DC 4-5 mV bounded su tutta la sweep,
+   nessun trim), rumore a Iabc 114 n…397 µ (−134,8…−107,8 dBu integrati:
+   PASS ≥17,8 dB anche con die 5× peggiore), swing/THD → FINDING: tetto di
+   stato 52 mV a f0 → core nudo = compressore morbido ~1% a 0 dBu (opzione
+   carattere) ma collasso a +10 dBu; scaling+make-up = trade-off perdente
+   (rumore ×N) → **questione 70: topologia core da decidere PRIMA del
+   prototipo** (raccomandata: integratori op-amp + OTA scaler; PoC da
+   simulare). THD oscillatore/limiter: resta ascolto (61/64).
+4. Prototipo su millefori di UN core + converter + RES — BLOCCATO su 70
+   (la topologia del core cambia il soggetto del prototipo): taratura law,
+   verifica tracking 8 core reali, ascolto risonanza/oscillazione e
+   carattere (a) vs (c) (61/63/64/70 a orecchio).
+5. Layout termico PCB (simmetria converter/mirror/core) e procedura di
+   calibrazione. Invariato da 70 (converter/mirror validi con qualsiasi
+   core a gm ∝ Iabc).
+6. [PARZIALE 2026-09-28] Rumore: CORE nudo −107,8…−134,8 dBu (PASS,
+   RISULTATI §3); il modulo completo (pad/make-up/drive esclusi) segue la
+   topologia della questione 70 (variante scalata: FAIL −82 dBu).

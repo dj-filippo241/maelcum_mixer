@@ -1,0 +1,26 @@
+* FILTRO v0.3 — SELF-TEST TRAN del modello LM13700: LIMITE DI CORRENTE + THD
+* Fisica chiave (datasheet tab. 6.4): picco corrente d'uscita ≈ Iabc
+* (350/500/650 uA a Iabc = 500 uA; 5 uA a Iabc = 5 uA) → in un integratore
+* il nodo di stato non supera Vmax(f) = Iabc/(2*pi*f*C); a f = f0 il limite
+* è 1/19,2 = 52 mV, INDIPENDENTE da Iabc e C (strutturale).
+* E senza diodi la linearità è la tanh della coppia: THD3 ≈ (Vd/52mV)²/4
+* → Vd ≤ ~3 mV per THD ≤ 0,1%.
+* Test: Vd = A (single-ended, inn a massa), Rl = 1k (Iout letto in tensione,
+* gain = gm*Rl = 19,2*Iabc*1k; a Iabc = 500u → 19,2; limite Vpk = Iabc*Rl
+* = 0,5 V). .step su A e su Iabc (500u e 7,56u = finestra celle 5-way).
+.include ../lib/lm13700.inc
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+.param Iabc=500u
+.param A=0.026
+V1 inp 0 SINE(0 {A} 1000)
+Rl out 0 1k
+Ix vcc iabc1 DC {Iabc}
+X1 inp 0 out iabc1 db1 db2 vcc vee LM13700
+.step param Iabc LIST 500u 7.56u
+.step param A LIST 0.005 0.013 0.026 0.052 0.104
+.tran 0 20m 12m 0.5u
+.four 1k V(out)
+.meas tran vpk MAX ABS(V(out))
+.meas tran ipk PARAM vpk/1k
+.end

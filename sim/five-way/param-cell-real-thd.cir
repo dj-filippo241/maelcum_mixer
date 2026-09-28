@@ -1,0 +1,75 @@
+* MODULO 5-WAY — THD della cella parametrica con LM13700 REALE (coda beta-3)
+* Domanda: a riferimento interno −6 dBu (0,388 Vp) e worst +10 dBu (2,45 Vp)
+* la cella in boost (+15 dB, b = −4,62) quanto distorce?
+* Vincolo fisico del modello reale (self-test filtro v0.3): stato ≤ 52 mV
+* a f0 (limite di corrente ≈ Iabc) e Vd ≤ ~3 mV per THD ≤ 0,1% (tanh nuda).
+* Con Iabc = 7,56 u il core nudo è MOLTO oltre → due istanze a confronto:
+*   A) NUDA: come param-cell.cir (Rvin 10k) — misura il danno;
+*   B) SCALATA: Rvin 200k (core a Vin/20) + Rbw/10 → stati /20.
+*      BUG NOTO (2026-09-28): RbwB è /10 ma lo scaling è /20 → il gain di
+*      iniezione è metà (H(f0) ≈ 3,4 invece di 5,62). I dati THD/picchi di
+*      stato RESTANO VALIDI (misurano il clipping degli stati, indipendente
+*      dal gain d'uscita); i picchi voutB vanno letti come "metà boost".
+*      Correzione esatta = RbwB {500*Qval/4.62} se si riesegue.
+* Q = 3 (stato bp_b = Q·Vin_core: worst) e Q = 1. f0 = 700 Hz, tono a f0.
+.include ../lib/lm13700.inc
+.include ../lib/opamp-audio.inc
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+.param A=0.388
+.param Iabc=7.56u
+.param bq=-4.62
+.param Qval=3
+V1 vin 0 SINE(0 {A} 700)
+Ix1 vcc iabc1 DC {Iabc}
+Ix2 vcc iabc2 DC {Iabc}
+Ix3 vcc iabc3 DC {Iabc}
+Ix4 vcc iabc4 DC {Iabc}
+* ================= A) NUDA =================
+RvinA vin nsA 10k
+RlpA lp_bA nsA 10k
+RqA bp_bA nsA {Qval*10k}
+RfA nsA hpA 10k
+XsumA 0 nsA hpA vcc vee OP1654
+Xota1A hpA 0 bpA iabc1 dbA1 dbA2 vcc vee LM13700
+C1iA bpA 0 33n
+Rb1A bpA 0 100Meg
+Xb1A bpA bp_bA bp_bA vcc vee OP1654
+Xota2A bp_bA 0 lpA iabc2 dbA3 dbA4 vcc vee LM13700
+C2iA lpA 0 33n
+Rb2A lpA 0 100Meg
+Xb2A lpA lp_bA lp_bA vcc vee OP1654
+BwA bwvA 0 V={bq/4.62*V(bp_bA)}
+RbwA bwvA ns2A {10k*Qval/4.62}
+RainA vin ns2A 10k
+Rf2A ns2A voutA 10k
+XoutA 0 ns2A voutA vcc vee OP1654
+* ================= B) SCALATA 1/20 =================
+RvinB vin nsB 200k
+RlpB lp_bB nsB 10k
+RqB bp_bB nsB {Qval*10k}
+RfB nsB hpB 10k
+XsumB 0 nsB hpB vcc vee OP1654
+Xota1B hpB 0 bpB iabc3 dbB1 dbB2 vcc vee LM13700
+C1iB bpB 0 33n
+Rb1B bpB 0 100Meg
+Xb1B bpB bp_bB bp_bB vcc vee OP1654
+Xota2B bp_bB 0 lpB iabc4 dbB3 dbB4 vcc vee LM13700
+C2iB lpB 0 33n
+Rb2B lpB 0 100Meg
+Xb2B lpB lp_bB lp_bB vcc vee OP1654
+BwB bwvB 0 V={bq/4.62*V(bp_bB)}
+RbwB bwvB ns2B {1k*Qval/4.62}
+RainB vin ns2B 10k
+Rf2B ns2B voutB 10k
+XoutB 0 ns2B voutB vcc vee OP1654
+.step param Qval LIST 1 3
+.step param A LIST 0.388 2.45
+.tran 0 30m 22m 0.5u
+.four 700 V(voutA)
+.four 700 V(voutB)
+.meas tran a_bp_pk MAX ABS(V(bp_bA))
+.meas tran b_bp_pk MAX ABS(V(bp_bB))
+.meas tran a_out_pk MAX ABS(V(voutA))
+.meas tran b_out_pk MAX ABS(V(voutB))
+.end

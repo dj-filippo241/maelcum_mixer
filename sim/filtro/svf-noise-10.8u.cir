@@ -1,0 +1,72 @@
+* FILTRO v0.3 — RUMORE del core SVF con LM13700 REALE
+* Il modello genera il rumore fisicamente (re = 2*VT/Iabc → en sale al
+* calare di Iabc: ~130 nV/√Hz a 114 nA, ~70 a 397 u). Integrazione
+* 20 Hz-20 kHz non A-pesata (metodologia module-noise 5-way).
+* Istanza A = core nudo (riferito a Vin con gain ~1 in banda LP);
+* istanza B = core scalato 1/20 + make-up ×20 (la proposta THD): il rumore
+* OTA riferito all'ingresso sale ×20 → SI LEGGE QUI il costo della pulizia.
+* Target di sistema: il modulo non deve peggiorare il send 0 dBu
+* (sheet §3, ≤ −90 dBu). Uscite: voutA = buffer LP (gain 1), voutB = make-up.
+.include ../lib/lm13700.inc
+.include ../lib/opamp-audio.inc
+* --- macro op-amp SENZA clamp per .noise (il limit() di opamp-audio.inc
+* rende il loop SVF DC-bistabile: ramo falso = stati saturi → .noise = 0).
+* Stessa en (Rn 1223 = 4,5 nV/√Hz) e stesso polo; solo per analisi rumore.
+.subckt OPX inp inn out vp vm
+Rn inp inx 1223
+E1 xx 0 value={1e6*(V(inx)-V(inn))}
+R1 xx p1 5005
+C1 p1 0 1.59u
+E2 out 0 value={V(p1)}
+.ends OPX
+
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+.param Iabc=10.8u
+V1 vin 0 DC 0 AC 1
+Ix1 vcc iabc1 DC {Iabc}
+Ix2 vcc iabc2 DC {Iabc}
+* ================= A) NUDO =================
+RvinA vin nsA 10k
+RlpA lp_bA nsA 10k
+RbpA bp_bA nsA 7.07k
+RfA nsA hpA 10k
+XsumA 0 nsA hpA vcc vee OPX
+Xota1A hpA 0 bpA iabc1 dbA1 dbA2 vcc vee LM13700
+C1iA bpA 0 33n
+Rb1A bpA 0 100Meg
+Xb1A bpA bp_bA bp_bA vcc vee OPX
+Xota2A bp_bA 0 lpA iabc2 dbA3 dbA4 vcc vee LM13700
+C2iA lpA 0 33n
+Rb2A lpA 0 100Meg
+Xb2A lpA voutA voutA vcc vee OPX
+* ================= B) SCALATO 1/20 + make-up ×20 =================
+RvinB vin nsB 200k
+RlpB lp_bB nsB 10k
+RbpB bp_bB nsB 7.07k
+RfB nsB hpB 10k
+XsumB 0 nsB hpB vcc vee OPX
+Xota1B hpB 0 bpB iabc3 dbB1 dbB2 vcc vee LM13700
+Ix3 vcc iabc3 DC {Iabc}
+C1iB bpB 0 33n
+Rb1B bpB 0 100Meg
+Xb1B bpB bp_bB bp_bB vcc vee OPX
+Xota2B bp_bB 0 lpB iabc4 dbB3 dbB4 vcc vee LM13700
+Ix4 vcc iabc4 DC {Iabc}
+C2iB lpB 0 33n
+Rb2B lpB 0 100Meg
+Xb2B lpB lp_bB lp_bB vcc vee OPX
+Rmu1 lp_bB nmu 10k
+Rmu2 nmu voutB 200k
+Xmu 0 nmu voutB vcc vee OPX
+.options gmin=1e-9 abstol=1e-11 vntol=1e-8
+* Il loop SVF con macro clampate è DC-bistabile (ramo vero = stati a mV;
+* ramo falso = OTA su Ioff·Rb con follower saturo → .noise = 0). Il nodeset
+* ancora Newton al ramo vero a ogni step. (Lezione nuova, da registrare.)
+.nodeset V(bpA)=0 V(lpA)=0 V(hpA)=0 V(bpB)=0 V(lpB)=0 V(hpB)=0
+.noise V(voutA) V1 dec 200 20 20k
+.meas noise a_vn2 INTEG V(onoise)*V(onoise)
+.meas noise a_en1k FIND V(inoise) AT 1k
+.meas noise a_nd100 FIND V(onoise) AT 100
+.meas noise a_nd10k FIND V(onoise) AT 10k
+.end

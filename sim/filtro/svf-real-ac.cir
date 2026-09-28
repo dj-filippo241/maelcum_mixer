@@ -1,0 +1,39 @@
+* FILTRO v0.3 — CORE SVF con LM13700 REALE (modello sim/lib/lm13700.inc)
+* Riesame di feas-svf.cir (v0.1, OTA comportamentale gm = 19,2*Iabc ideale)
+* col modello transistor-level: la legge fc = 19,2*Iabc/(2*pi*C) regge anche
+* coi parassiti reali (mirror beta-finito, Vce, Ib)? E la Q misurata?
+* Struttura IDENTICA a feas-svf (buffer di stato obbligatori — lezione v0.1),
+* summer/buffer = macro reale OP1654 (sim/lib/opamp-audio.inc), rail ±15 V
+* (condizione datasheet LM13700; il dominio ±18 del progetto è AL LIMITE
+* ASSOLUTO del chip: rail dedicati ±15/±16 = nota per questione 20/PSU).
+* Griglia Iabc: 114n (fc ~10,6 Hz) ... 397u (fc ~37 kHz).
+* Atteso: fc entro ~1% (errore mirror/alpha ~0,4%), Q = 0,707 ± pochi %.
+.include ../lib/lm13700.inc
+.include ../lib/opamp-audio.inc
+.param Iabc=114n
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+V1 vin 0 DC 0 AC 1
+Ix1 vcc iabc1 DC {Iabc}
+Ix2 vcc iabc2 DC {Iabc}
+* --- summer + stato (lezione v0.1: R 10k/10k/7,07k, Q = 0,707) ---
+Rvin vin ns 10k
+Rlp lp_b ns 10k
+Rbp bp_b ns 7.07k
+Rf ns hp 10k
+Xsum 0 ns hp vcc vee OP1654
+* --- integratori OTA reali (inp lato segnale, inn a massa) ---
+Xota1 hp 0 bp iabc1 db1 db2 vcc vee LM13700
+C1i bp 0 33n
+Rb1 bp 0 100Meg
+Xb1 bp bp_b bp_b vcc vee OP1654
+Xota2 bp_b 0 lp iabc2 db3 db4 vcc vee LM13700
+C2i lp 0 33n
+Rb2 lp 0 100Meg
+Xb2 lp lp_b lp_b vcc vee OP1654
+.step param Iabc LIST 114n 1.08u 10.8u 108u 397u
+.ac dec 500 1 200k
+.meas ac fc WHEN mag(V(lp))=0.707
+.meas ac bpk MAX mag(V(bp))
+.meas ac fc_bp WHEN mag(V(bp))=0.707
+.end
