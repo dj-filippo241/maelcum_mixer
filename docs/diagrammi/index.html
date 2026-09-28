@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>maelcum mixer — diagrammi di modulo</title>
+<style>
+  body { margin: 0; background: #E8E5DE; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: #141414; }
+  header { padding: 28px 40px 12px; }
+  h1 { font-size: 22px; margin: 0 0 6px; }
+  p.sub { margin: 0; font-size: 13px; color: #555; }
+  nav { padding: 10px 40px 20px; }
+  nav a { display: inline-block; margin-right: 10px; padding: 7px 14px; background: #141414; color: #fff; text-decoration: none; border-radius: 16px; font-size: 12.5px; }
+  nav a:hover { background: #C05A1B; }
+  figure { margin: 0 40px 36px; background: #FBFAF7; border: 1px solid #C9C5BA; border-radius: 10px; padding: 10px; }
+  figure img { width: 100%; height: auto; display: block; }
+  figcaption { font-size: 12px; color: #666; padding: 8px 6px 2px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>maelcum mixer — diagrammi a blocchi dei moduli</h1>
+  <p class="sub">Generati dai design doc correnti (2026-09-28). SVG vettoriali: riapribili e modificabili in Illustrator / Figma / Inkscape. Rosso = audio, blu tratteggiato = controllo CV, viola = risonanza/feedback, ambra = questioni aperte.</p>
+</header>
+<nav>
+  <a href="#canale">Canale CDJ/Line</a>
+  <a href="#fx">FX</a>
+  <a href="#master">Master Out</a>
+  <a href="#fiveway">5-Way</a>
+  <a href="#filtro">Filtro</a>
+</nav>
+
+<figure id="canale"><img src="canale-cdj.svg" alt="Diagramma modulo canale CDJ/Line"><figcaption>Canale CDJ/Line v0.3 — docs/fase1/cdj-line-channel.md (EQ serie beta-3)</figcaption></figure>
+<figure id="fx"><img src="fx.svg" alt="Diagramma modulo FX"><figcaption>FX v0.2 — docs/fase1/fx-module.md (una delle 4 sezioni bus + matrice feedback)</figcaption></figure>
+<figure id="master"><img src="master-out.svg" alt="Diagramma modulo master out"><figcaption>Master Out v0.2 + REC — docs/fase1/master-out.md</figcaption></figure>
+<figure id="fiveway"><img src="five-way.svg" alt="Diagramma modulo 5-way"><figcaption>5-Way dub preamp v0.2 + celle v0.2.1 — docs/fase2/five-way-module.md §2/§4.2</figcaption></figure>
+<figure id="filtro"><img src="filtro.svg" alt="Diagramma modulo filtro"><figcaption>Filtro globale v0.2/v0.3-WIP — docs/fase2/filter-module.md (questione 70: carattere vs pulito)</figcaption></figure>
+</body>
+</html>

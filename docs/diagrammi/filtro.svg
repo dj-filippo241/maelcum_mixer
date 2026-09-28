@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 900" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#C05A1B"/>
+    </marker>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2F6D8E"/>
+    </marker>
+  </defs>
+
+  <rect width="1560" height="900" fill="#FBFAF7"/>
+
+  <text x="40" y="52" font-size="24" font-weight="700" fill="#141414">MODULO FILTRO GLOBALE</text>
+  <text x="40" y="76" font-size="13" fill="#666">maelcum mixer — design v0.2 + v0.3-WIP (2026-09-28) · stile Sherman: 2 sezioni full-range 10 Hz–35 kHz (dec. 74), 8 core mono, risonanza → auto-oscillazione</text>
+  <rect x="1120" y="34" width="400" height="24" rx="12" fill="#D97706"/>
+  <text x="1320" y="50" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">q. 70: carattere (a) OTA vs pulito (c-B) — ascolto 61/64</text>
+
+  <!-- IN -->
+  <rect x="40" y="120" width="200" height="86" rx="6" fill="#141414"/>
+  <text x="140" y="148" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">DAL BACKPLANE</text>
+  <text x="140" y="166" font-size="10.5" fill="#bbb" text-anchor="middle">4 × send stereo (pre-fader,</text>
+  <text x="140" y="182" font-size="10.5" fill="#bbb" text-anchor="middle">post-EQ canale) + 2 bit modo</text>
+  <text x="140" y="198" font-size="10.5" fill="#bbb" text-anchor="middle">per canale · 0 dBu / +16 worst</text>
+
+  <!-- per-canale lane -->
+  <rect x="300" y="120" width="150" height="86" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="375" y="150" font-size="12.5" font-weight="700" text-anchor="middle">BUFFER IN</text>
+  <text x="375" y="168" font-size="10.5" fill="#444" text-anchor="middle">×4 sezioni stereo</text>
+  <text x="375" y="184" font-size="10.5" fill="#444" text-anchor="middle">(CH1…CH4 L/R)</text>
+
+  <!-- CORE -->
+  <rect x="510" y="100" width="330" height="126" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="2"/>
+  <text x="675" y="126" font-size="13" font-weight="700" text-anchor="middle">CORE SVF 4 POLI ×8 (mono)</text>
+  <text x="675" y="144" font-size="10.5" fill="#444" text-anchor="middle">2 sezioni 2-poli in cascata (Q: Butterworth 0,541/1,307</text>
+  <text x="675" y="160" font-size="10.5" fill="#444" text-anchor="middle">o Bessel/LR — allineamento = q. 64) · produce HP e LP</text>
+  <text x="675" y="176" font-size="10.5" fill="#444" text-anchor="middle">summer + buffer di stato + 2 integratori per sezione</text>
+  <text x="675" y="194" font-size="10.5" fill="#8A4A9E" text-anchor="middle">(a) OTA LM13700 = carattere (~1% THD morbido a 0 dBu,</text>
+  <text x="675" y="210" font-size="10.5" fill="#8A4A9E" text-anchor="middle">compressione che cresce) OPPURE (c-B) op-amp + VCA = pulito</text>
+
+  <!-- RES -->
+  <rect x="510" y="250" width="330" height="86" rx="6" fill="#F7F1F9" stroke="#8A4A9E" stroke-width="1.5"/>
+  <text x="675" y="274" font-size="12.5" font-weight="700" fill="#8A4A9E" text-anchor="middle">RISONANZA (v0.2 SIMULATA)</text>
+  <text x="675" y="292" font-size="10.5" fill="#444" text-anchor="middle">iniezione OTA nel summer: 1/Q = Rf·gm_res · law RES:</text>
+  <text x="675" y="308" font-size="10.5" fill="#444" text-anchor="middle">0-90% corsa = Q 0,707→∞ · 90-100% = auto-oscillazione</text>
+  <text x="675" y="324" font-size="10.5" fill="#444" text-anchor="middle">+7,3…+8,6 dBu con soft limiter 3×1N4148 (target SPEC ✓)</text>
+
+  <!-- MUX -->
+  <rect x="900" y="120" width="190" height="86" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="995" y="146" font-size="12.5" font-weight="700" text-anchor="middle">MUX MODO</text>
+  <text x="995" y="164" font-size="10.5" fill="#444" text-anchor="middle">HPF / OFF (bypass) / LPF</text>
+  <text x="995" y="180" font-size="10.5" fill="#444" text-anchor="middle">BBM + ramp 1 ms VALIDATA</text>
+  <text x="995" y="196" font-size="10.5" fill="#D97706" text-anchor="middle">single-path vs serie = q. 63</text>
+
+  <!-- DRIVE -->
+  <rect x="1150" y="120" width="170" height="86" rx="6" fill="#fff" stroke="#8A8A8A" stroke-width="1.5" stroke-dasharray="5 3"/>
+  <text x="1235" y="146" font-size="12.5" font-weight="700" text-anchor="middle">DRIVE (per sez.)</text>
+  <text x="1235" y="164" font-size="10.5" fill="#444" text-anchor="middle">JFET/BJT, colore voluto</text>
+  <text x="1235" y="180" font-size="10.5" fill="#444" text-anchor="middle">mux CV segue il bit modo</text>
+  <text x="1235" y="196" font-size="10.5" fill="#8A4A9E" text-anchor="middle">BLOCCATO su q. 61/12</text>
+
+  <!-- RECOVERY + OUT -->
+  <rect x="1380" y="120" width="140" height="86" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="1450" y="150" font-size="12.5" font-weight="700" text-anchor="middle">RECOVERY</text>
+  <text x="1450" y="168" font-size="10.5" fill="#444" text-anchor="middle">low-Z 20-50Ω</text>
+  <text x="1450" y="184" font-size="10.5" fill="#444" text-anchor="middle">clean +23 dBu</text>
+  <text x="1450" y="228" font-size="10.5" fill="#C05A1B" text-anchor="middle">→ return canale (0 dBu)</text>
+
+  <g stroke="#C05A1B" stroke-width="2.5" fill="none">
+    <path d="M 240 163 L 295 163" marker-end="url(#ar)"/>
+    <path d="M 450 163 L 505 163" marker-end="url(#ar)"/>
+    <path d="M 840 163 L 895 163" marker-end="url(#ar)"/>
+    <path d="M 1090 163 L 1145 163" marker-end="url(#ar)"/>
+    <path d="M 1320 163 L 1375 163" marker-end="url(#ar)"/>
+  </g>
+  <path d="M 675 245 L 675 226" stroke="#8A4A9E" stroke-width="2" fill="none" marker-end="url(#arw)" opacity="0.8"/>
+  <text x="250" y="244" font-size="10" fill="#8A4A9E">iniezione RES nel summer del core</text>
+
+  <!-- SEZIONE CV -->
+  <rect x="40" y="390" width="1480 " height="290" rx="10" fill="#EEF3F6" stroke="#2F6D8E" stroke-width="1.2"/>
+  <text x="66" y="422" font-size="15" font-weight="700" fill="#2F6D8E">SEZIONE CONTROLLO — FREQ (2 knob: HPF e LPF, 0-5 V)</text>
+
+  <rect x="66" y="444" width="200" height="86" rx="6" fill="#fff" stroke="#2F6D8E" stroke-width="1.2"/>
+  <text x="166" y="470" font-size="12" font-weight="700" text-anchor="middle">LAW SHAPER</text>
+  <text x="166" y="488" font-size="10.5" fill="#444" text-anchor="middle">piecewise attivo (dec. 70):</text>
+  <text x="166" y="504" font-size="10.5" fill="#444" text-anchor="middle">expo 90% centrale + accelerazione</text>
+  <text x="166" y="520" font-size="10.5" fill="#444" text-anchor="middle">estremi + pre-distorsione errore</text>
+
+  <rect x="326" y="444" width="220" height="86" rx="6" fill="#fff" stroke="#2F6D8E" stroke-width="1.2"/>
+  <text x="436" y="470" font-size="12" font-weight="700" text-anchor="middle">CONVERTER EXPO</text>
+  <text x="436" y="488" font-size="10.5" fill="#444" text-anchor="middle">coppia BJT matched, ΔVbe PTAT:</text>
+  <text x="436" y="504" font-size="10.5" fill="#444" text-anchor="middle">Iabc 114 nA…397 µA = 10,6 Hz…37 kHz</text>
+  <text x="436" y="520" font-size="10.5" fill="#444" text-anchor="middle">DIMOSTRATO: deriva ≤2,4% (0-50 °C)</text>
+
+  <rect x="606" y="444" width="220" height="86" rx="6" fill="#fff" stroke="#2F6D8E" stroke-width="1.2"/>
+  <text x="716" y="470" font-size="12" font-weight="700" text-anchor="middle">DISTRIBUZIONE</text>
+  <text x="716" y="488" font-size="10.5" fill="#444" text-anchor="middle">mirror bufferizzati ×8 + trim/core</text>
+  <text x="716" y="504" font-size="10.5" fill="#444" text-anchor="middle">tracking ≤1,6% PASS (mirror</text>
+  <text x="716" y="520" font-size="10.5" fill="#444" text-anchor="middle">semplice scartato: β-dipendente)</text>
+
+  <rect x="886" y="444" width="240" height="86" rx="6" fill="#fff" stroke="#2F6D8E" stroke-width="1.2"/>
+  <text x="1006" y="470" font-size="12" font-weight="700" text-anchor="middle">RAMP BBM (v0.3 VALIDATA)</text>
+  <text x="1006" y="488" font-size="10.5" fill="#444" text-anchor="middle">commutazione modo al picco +18 dBu:</text>
+  <text x="1006" y="504" font-size="10.5" fill="#444" text-anchor="middle">τ 1 ms = click −8,4 dB (famiglia unica</text>
+  <text x="1006" y="520" font-size="10.5" fill="#444" text-anchor="middle">con gate 5-way e reroute FX → voce 55)</text>
+
+  <rect x="1186" y="444" width="290" height="86" rx="6" fill="#fff" stroke="#2F6D8E" stroke-width="1.2"/>
+  <text x="1331" y="470" font-size="12" font-weight="700" text-anchor="middle">RES + DRIVE CV</text>
+  <text x="1331" y="488" font-size="10.5" fill="#444" text-anchor="middle">RES: distribuzione a stella bufferizzata</text>
+  <text x="1331" y="504" font-size="10.5" fill="#444" text-anchor="middle">DRIVE: mux per canale segue il bit modo</text>
+  <text x="1331" y="520" font-size="10.5" fill="#444" text-anchor="middle">(smoothing 1-5 ms, ratifica voce 55)</text>
+
+  <g stroke="#2F6D8E" stroke-width="1.5" stroke-dasharray="6 3" fill="none">
+    <path d="M 266 487 L 321 487" marker-end="url(#arw)"/>
+    <path d="M 546 487 L 601 487" marker-end="url(#arw)"/>
+    <path d="M 826 487 L 881 487" marker-end="url(#arw)"/>
+    <path d="M 1126 487 L 1181 487" marker-end="url(#arw)"/>
+    <path d="M 660 439 L 660 380 L 480 380 L 480 180 L 505 180" marker-end="url(#arw)"/>
+  </g>
+  <text x="488" y="372" font-size="10" fill="#2F6D8E">Iabc (o Vc se (c-B)) → integratori dei core</text>
+
+  <!-- verifica box -->
+  <rect x="66" y="556" width="1410" height="100" rx="6" fill="#F2F8F4" stroke="#1F7A4D" stroke-width="1.2"/>
+  <text x="86" y="580" font-size="12" font-weight="700" fill="#1F7A4D">VERIFICATO CON LM13700 REALE (v0.3, sim/filtro/RISULTATI-ota-real.md)</text>
+  <text x="86" y="600" font-size="10.5" fill="#444">law fc: errore ≤1,5% su 10,6 Hz-37,4 kHz · Q 0,702-0,713 · offset DC stati 4-5 mV bounded (nessun trim) · rumore core −134,8/−112,7/−107,8 dBu (fc 10/1k/37k) = PASS ≥17,8 dB</text>
+  <text x="86" y="618" font-size="10.5" fill="#444">FINDING: tetto di stato 52 mV a f0 (strutturale per ogni OTA) → il core nudo è un compressore morbido (~1% THD a 0 dBu, collasso 37% a +10 dBu): è il CARATTERE dell'opzione (a)</text>
+  <text x="86" y="636" font-size="10.5" fill="#444">diodi linearizzanti: non applicabili (drive di tensione) · scaling+make-up: bocciato (rumore ×N) · opzione pulita (c-B): VCA 218x ×2 per core (+16 chip) — scelta musicale al prototipo con 61/64</text>
+
+  <!-- PSU nota -->
+  <rect x="40" y="710" width="900" height="60" rx="6" fill="#F4F2EC" stroke="#8A8A8A" stroke-width="1"/>
+  <text x="60" y="734" font-size="11.5" fill="#444">RAIL: LM13700 raccomandato ±16 V, ASSOLUTO ±18 → rail dedicati ±15/±16 V ultra-low-noise per tutti gli OTA</text>
+  <text x="60" y="752" font-size="11.5" fill="#444">(questione 20/PSU) · BOM v0.1: 20 LM13700 + ~14 quad + 48 diodi limiter + ~30 trimmer + C integratori 33n C0G/PP matched 2%</text>
+
+  <rect x="980" y="710" width="540" height="60" rx="6" fill="#FFF7ED" stroke="#D97706" stroke-width="1.2"/>
+  <text x="1000" y="734" font-size="11.5" fill="#444">PROTOTIPO MILLEFORI (item §9.4): 1 core + converter + RES — confronta a ORECCHIO</text>
+  <text x="1000" y="752" font-size="11.5" fill="#444">(a) carattere OTA vs (c-B) pulito; chiude anche 11 (risonanza) con referenze 61.</text>
+
+  <!-- legenda -->
+  <g font-size="11" fill="#444">
+    <line x1="40" y1="810" x2="90" y2="810" stroke="#C05A1B" stroke-width="2.5"/>
+    <text x="98" y="814">audio (send → return)</text>
+    <line x1="280" y1="810" x2="330" y2="810" stroke="#2F6D8E" stroke-width="1.5" stroke-dasharray="6 3"/>
+    <text x="338" y="814">controllo CV / Iabc</text>
+    <line x1="510" y1="810" x2="560" y2="810" stroke="#8A4A9E" stroke-width="2"/>
+    <text x="568" y="814">risonanza / carattere / bloccato su referenze</text>
+    <rect x="920" y="802" width="52" height="16" rx="3" fill="#fff" stroke="#8A8A8A" stroke-width="1.5" stroke-dasharray="5 3"/>
+    <text x="984" y="814">provvisorio / in attesa</text>
+  </g>
+
+  <text x="40" y="866" font-size="10.5" fill="#999">Fonte: docs/fase2/filter-module.md v0.2+v0.3-WIP (§2-§6, §9) + sim/filtro/ (feas-svf, res-osc, mirror, bbm-ramp, svf-real-*) · livelli: core 0 dBu in/out, picco risonanza +6…+10 dBu (locked) · 2026-09-28</text>
+</svg>
