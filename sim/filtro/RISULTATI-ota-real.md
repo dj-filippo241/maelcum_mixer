@@ -187,19 +187,14 @@ send 0 dBu = 775 mV; stati Q3 = 1,16 V) stanno 7-22× oltre. Conseguenze:
    comunque costosi (290 µA-1 mA per OTA per ±1 V lineari).
 
 **Opzioni per core puliti a livello di progetto** (questione 70):
-- **(c) RACCOMANDATA — integratori op-amp + OTA come scalatore gm**:
-  l'integrazione la fa l'op-amp (livelli/rumore/THD di classe OPA1654:
-  −110 dBu, <0,001%); l'OTA lavora a piccolo segnale (≤5 mV sul porto
-  scalato da partitore: THD ~0,01%) e imposta la legge f0 ∝ Iabc —
-  converter, mirror bufferizzati e trim del filtro v0.2 RESTANO VALIDI
-  tali e quali. Costo: ~2 sezioni op-amp in più per integratore (BOM
-  5-way da ~28-30 a ~48-50 quad; filtro da ~12 a ~20 quad + gli OTA).
-  PoC da simulare PRIMA di adottarla (prossima sessione).
+[SUPERATA — vedi §0 di `sim/five-way/RISULTATI-cell-clean.md`] lo schizzo (c) "OTA scalatore gm" è BOCCIATO dall'analisi: ogni divisione k del segnale con make-up ×k riferisce l'en dell'OTA ×k (muro del rumore ≥ −83 dBu per k ≥ 155) e il prodotto THD×rumore è costante in k. Le varianti pulite PoC-validate sono:
+- **(c-B) VALIDATA — VCA THAT 218x ×2 nel loop SVF** (integratori op-amp): law esatta 5 cifre, Q invariante, griglia v0.2 confermata, livelli pieni; +2 chip per core (`sim/five-way/cell-vca-*.cir`, RISULTATI-cell-clean §1).
+- **(c-A) VALIDATA — JFET VCR bootstrappato** (integratori op-amp): THD 0,004-0,11% ai livelli reali con core −12…−18 dBu locale, rumore −121,7 dBu, costo quasi nullo (`sim/five-way/param-cell-jfet-*.cir` + `sim/filtro/vcr-jfet.cir`, RISULTATI-cell-clean §2). RACCOMANDATA per le celle.
 - (b) diodi + Iabc alto: fattibile sulla carta per il filtro (12-24 mA
   totali), fuori finestra per le celle — scartata.
 - (a) carattere OTA nudo: per il FILTRO è un'opzione musicalmente legittima
   (compressione morbida ~1% a 0 dBu che cresce col livello: la firma
-  Sherman/MS-20) — da ascoltare contro (c) al prototipo, intrecciata con
+  Sherman/MS-20) — da ascoltare contro (c-B) al prototipo, intrecciata con
   61 (referenze) e 64 (allineamento). Per le celle EQ: NON accettabile
   (l'EQ deve restare pulito; il drive è uno stadio separato e voluto).
 
@@ -234,6 +229,6 @@ send 0 dBu = 775 mV; stati Q3 = 1,16 V) stanno 7-22× oltre. Conseguenze:
 - 5-way coda beta-3: **FATTA** — griglia piccolo segnale confermata
   (detent piatto, boost ±0,02 dB, notch −67…−78 con trim f0), rumore
   dentro budget; MA la cella nuda non regge i livelli di progetto →
-  questione 70 (opzione (c) raccomandata, PoC da simulare).
+  questione 70 — PoC c-A/c-B VALIDATI in `sim/five-way/RISULTATI-cell-clean.md` (raccomandazione: JFET VCR per le celle; filtro = scelta musicale (a) vs (c-B)).
 - Trasversale: rail OTA ±15/±16 dedicati (±18 = limite assoluto LM13700)
   → questione 20 (PSU); gm reale ±30% → trim per-core confermato.

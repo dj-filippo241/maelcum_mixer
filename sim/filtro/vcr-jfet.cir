@@ -1,0 +1,35 @@
+* FILTRO/5-WAY — PoC questione 70 opzione (c-A): VCR a JFET linearizzato.
+* Caratterizzazione del resistore controllato: JFET in triode come 2-terminali
+* (d-s), gate bootstrappato a Vcm + vds/2 (tecnica classica: cancella ESATTA
+* la quadraticità Id = Beta(2(Vgs-Vt)vds - vds²) → R lineare; restano i
+* residui di Lambda). Limite fisico: triode vuole vds ≤ 2(Vgs-Vt) → il
+* prodotto rds·vds_max = 1/Beta è COSTANTE: rds alta (basso f0) e segnale
+* grande sono incompatibili (motivo per cui il filtro full-range 11,8 ottave
+* non sta in un JFET solo e le celle vogliono il core a −20 dBu).
+* Punto di lavoro: Vcm −1,85 V → V−Vt = 150 mV → rds ≈ 19,3 kΩ (banda EQ
+* bassa); Vcm −1,1 V → V−Vt = 900 mV → rds ≈ 3,2 kΩ (banda alta).
+* Letture: I = V(rs)/10 → R_eq = A·10/V(rs)_pk; THD della corrente (.four)
+* con bootstrap (J1) contro gate rigido (J2) al variare di A fino al collasso.
+.param A=0.0775
+.param Vcm=-1.85
+V1 va 0 SINE(0 {A} 1000)
+Vc2 vc2 0 DC {2*Vcm}
+* --- J1: VCR bootstrappato (gate = Vcm + va/2) ---
+Rg1 va g1 100k
+Rg2 vc2 g1 100k
+J1 va g1 sb1 NJFX
+Rs1 sb1 0 10
+* --- J2: controllo (gate rigido a Vcm, senza bootstrap) ---
+J2 va2 g2 sb2 NJFX
+Vg2 g2 0 DC {Vcm}
+Rs2 sb2 0 10
+Rlink va va2 0.001
+.model NJFX NJF(Vto=-2 Beta=173u Lambda=5m)
+.step param Vcm LIST -1.85 -1.1
+.step param A LIST 0.039 0.0775 0.233 0.388 1.16 2.45
+.tran 0 20m 12m 0.5u
+.four 1k V(sb1)
+.four 1k V(sb2)
+.meas tran i1_pk MAX ABS(V(sb1))
+.meas tran i2_pk MAX ABS(V(sb2))
+.end

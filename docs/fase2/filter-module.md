@@ -10,7 +10,8 @@
 > FINDING STRUTTURALE: tetto di stato 52 mV a f0 (Iout max ≈ Iabc) → il core
 > nudo a 0 dBu è un compressore morbido (~1% THD, collasso a +10 dBu) e lo
 > scaling+make-up non soddisfa THD e rumore insieme → **questione 70**
-> (topologia core; raccomandata: integratori op-amp + OTA scaler). Vincolo
+> (topologia core — PoC VALIDATO 2026-09-28: `sim/five-way/RISULTATI-cell-clean.md`;
+> per il filtro: scelta musicale (a) carattere nudo vs (c-B) VCA pulito). Vincolo
 > PSU: LM13700 raccomandato ±16 V (assoluto ±18) → rail dedicati ±15/±16
 > (questione 20).
 > **v0.2 (2026-09-25)**: aggiunge alla v0.1 il design SIMULATO della risonanza
@@ -334,12 +335,17 @@ distribuzione mirror + tracking (51).
    stato 52 mV a f0 → core nudo = compressore morbido ~1% a 0 dBu (opzione
    carattere) ma collasso a +10 dBu; scaling+make-up = trade-off perdente
    (rumore ×N) → **questione 70: topologia core da decidere PRIMA del
-   prototipo** (raccomandata: integratori op-amp + OTA scaler; PoC da
-   simulare). THD oscillatore/limiter: resta ascolto (61/64).
-4. Prototipo su millefori di UN core + converter + RES — BLOCCATO su 70
-   (la topologia del core cambia il soggetto del prototipo): taratura law,
-   verifica tracking 8 core reali, ascolto risonanza/oscillazione e
-   carattere (a) vs (c) (61/63/64/70 a orecchio).
+   prototipo** — PoC VALIDATO 2026-09-28 (`sim/five-way/RISULTATI-cell-clean.md`):
+   lo schizzo OTA-scaler è bocciato (muro del rumore); varianti pulite validate
+   (c-B) VCA 218x e (c-A) JFET VCR; per il filtro decide l'ascolto (a) vs (c-B). THD oscillatore/limiter: resta ascolto (61/64).
+4. Prototipo su millefori di UN core + converter + RES — SBLOCCATO PARZIALE
+   (questione 70: PoC topologie pulite VALIDATO, `sim/five-way/RISULTATI-cell-clean.md`):
+   il prototipo confronta a ORECCHIO il core OTA nudo (a — design v0.2
+   invariato, costo zero, ~1% THD morbido = carattere Sherman) contro la
+   variante pulita (c-B) VCA 218x ×2 (validata in sim: law esatta, Q
+   invariante; +16 chip); (c-A) JFET solo come fallback (7,6 ottave < 11,8
+   senza C-switching). Taratura law, verifica tracking 8 core reali, ascolto
+   risonanza/oscillazione e carattere (61/63/64/70 a orecchio).
 5. Layout termico PCB (simmetria converter/mirror/core) e procedura di
    calibrazione. Invariato da 70 (converter/mirror validi con qualsiasi
    core a gm ∝ Iabc).

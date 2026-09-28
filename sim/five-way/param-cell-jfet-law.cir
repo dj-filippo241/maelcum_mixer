@@ -1,0 +1,57 @@
+* MODULO 5-WAY — PoC questione 70 opzione (c-A): cella parametrica con
+* integratori op-amp + VCR JFET bootstrappato (position via rds).
+* LAW: f0 = 1/(2pi·rds(Vcm)·C), rds ≈ 1/(2·Beta·(Vcm−Vt)) → f0 ∝ (Vcm−Vt):
+* control LINEARE in frequenza (lo shaper θ→Vcm genera l'esponenziale:
+* famiglia law dec. 70). Vcm LIST = 284/401/700/988/1725 Hz (±1,3 ottave,
+* la finestra 2,6 ottave del §4.1) con C = 22,8n e Beta = 173u.
+* V−Vt resta 117-711 mV: margine ≥5:1 contro la deriva Vt (~2 mV/°C) ✓.
+* Verifiche: f0 segue la law; Q INVARIANTE (bpk ≈ Q a ogni Vcm — il VCR è
+* dentro entrambi gli integratori come l'Iabc degli OTA); notch profondo.
+* bq = +1 (notch, convenzione IDENTICA a v0.2: due inversioni si cancellano;
+* il damping prende −bp_b dall'invertitore del pot, già a BOM).
+.include ../lib/opamp-audio.inc
+.param Vcm=-1.711
+.param Cint={1/(2*pi*700*9.98k)}
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 vin 0 DC 0 AC 1
+Vc2 vc2 0 DC {2*Vcm}
+* --- summer (v0.2) ---
+Rvin vin ns 10k
+Rlp lp_b ns 10k
+* nodo -bp_b: nel design reale è l'invertitore già previsto per il pot ±bp_b
+Bqd bqn 0 V={-V(bp_b)}
+Rq bqn ns 10k
+Rf ns hp 10k
+Xsum 0 ns hp vcc vee OP1654
+* --- integratore 1: VCR hp→nint1 (gate bootstrappato a Vcm + vds/2) ---
+Rg1a hp g1a 100k
+Rg2a vc2 g1a 100k
+J1 hp g1a nint1 NJFX
+Cint1 nint1 bp {Cint}
+Xint1 0 nint1 bp vcc vee OP1654
+Rb1 bp 0 1G
+Xb1 bp bp_b bp_b vcc vee OP1654
+* --- integratore 2: VCR bp_b→nint2 ---
+Rg1b bp_b g1b 100k
+Rg2b vc2 g1b 100k
+J2 bp_b g1b nint2 NJFX
+Cint2 nint2 lp {Cint}
+Xint2 0 nint2 lp vcc vee OP1654
+Rb2 lp 0 1G
+Xb2 lp lp_b lp_b vcc vee OP1654
+.model NJFX NJF(Vto=-2 Beta=173u Lambda=5m)
+* --- iniezione b (segno invertito: notch a −1) ---
+Bw bwv 0 V={-1/4.62*V(bp_b)}
+Rbw bwv ns2 {10k/4.62}
+Rain vin ns2 10k
+Rf2 ns2 vout 10k
+Xout 0 ns2 vout vcc vee OP1654
+.step param Vcm LIST -1.883 -1.835 -1.711 -1.593 -1.289
+.ac dec 500 20 20k
+.meas ac flo WHEN mag(V(bp))=0.707 CROSS=1
+.meas ac fhi WHEN mag(V(bp))=0.707 CROSS=2
+.meas ac f0geo PARAM sqrt(flo*fhi)
+.meas ac bpk MAX mag(V(bp))
+.meas ac hmin MIN mag(V(vout))
+.end

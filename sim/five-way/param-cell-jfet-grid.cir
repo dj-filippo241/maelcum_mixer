@@ -1,0 +1,47 @@
+* MODULO 5-WAY — PoC (c-A) cella JFET VCR: GRID di verifica (Vcm nominale,
+* f0 = 700 Hz): detent/boost/notch × Q come param-cell-real.cir.
+* Target v0.2: detent ±0,005 dB, boost +9,005/+14,995, notch profondo.
+* Segno bq invertito (notch = −1, boost = +1,82/+4,62).
+.include ../lib/opamp-audio.inc
+.param Qval=1
+.param bq=0
+.param Vcm=-1.711
+.param Cint={1/(2*pi*700*9.98k)}
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 vin 0 DC 0 AC 1
+Vc2 vc2 0 DC {2*Vcm}
+Rvin vin ns 10k
+Rlp lp_b ns 10k
+* nodo -bp_b: nel design reale è l'invertitore già previsto per il pot ±bp_b
+Bqd bqn 0 V={-V(bp_b)}
+Rq bqn ns {Qval*10k}
+Rf ns hp 10k
+Xsum 0 ns hp vcc vee OP1654
+Rg1a hp g1a 100k
+Rg2a vc2 g1a 100k
+J1 hp g1a nint1 NJFX
+Cint1 nint1 bp {Cint}
+Xint1 0 nint1 bp vcc vee OP1654
+Rb1 bp 0 1G
+Xb1 bp bp_b bp_b vcc vee OP1654
+Rg1b bp_b g1b 100k
+Rg2b vc2 g1b 100k
+J2 bp_b g1b nint2 NJFX
+Cint2 nint2 lp {Cint}
+Xint2 0 nint2 lp vcc vee OP1654
+Rb2 lp 0 1G
+Xb2 lp lp_b lp_b vcc vee OP1654
+.model NJFX NJF(Vto=-2 Beta=173u Lambda=5m)
+Bw bwv 0 V={bq/4.62*V(bp_b)}
+Rbw bwv ns2 {10k*Qval/4.62}
+Rain vin ns2 10k
+Rf2 ns2 vout 10k
+Xout 0 ns2 vout vcc vee OP1654
+.step param Qval LIST 3 1 0.5
+.step param bq LIST 0 -1 1.82 4.62
+.ac dec 300 20 20k
+.meas ac h700 FIND mag(V(vout)) AT 700
+.meas ac hpk MAX mag(V(vout))
+.meas ac hmin MIN mag(V(vout))
+.end

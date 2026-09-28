@@ -7,9 +7,12 @@
 > −119,7 dBu (dentro il budget −108,4 di §8.4); **FINDING BLOCCANTE**: il
 > tetto di stato degli integratori OTA (52 mV a f0, strutturale) rende la
 > cella nuda inutilizzabile ai livelli di progetto (a −6 dBu: gain 1,1-1,3
-> contro 5,62, THD 3-6%); scaling+make-up rompe il rumore → **questione 70**
-> (topologia core: raccomandata integratori op-amp + OTA scaler, PoC da
-> simulare). Rilascio celle v0.2.1 dopo 70.
+> contro 5,62, THD 3-6%); scaling+make-up rompe il rumore → **questione 70:
+> PoC VALIDATO 2026-09-28 (`sim/five-way/RISULTATI-cell-clean.md`)** —
+> raccomandata (c-A) JFET VCR bootstrappato (THD 0,004-0,11%, rumore
+> −121,7 dBu, griglia v0.2 confermata, costo ~10-20 €); alternativa (c-B)
+> VCA 218x ×2 (law esatta, livelli pieni, +20 chip). Rilascio celle v0.2.1
+> su (c-A): §8.7.
 >
 > **v0.2-WIP (2026-09-27)**: (1) kill bank ALLINEATA IN FASE — soluzione
 > esatta dimostrata (math + LTspice): somma piatta −0,0002…−0,008 dB su
@@ -471,10 +474,21 @@ OTA è condiviso col filtro). Sintesi per la cella (f0 = 700 Hz, Iabc = 7,56 µA
   Vstato(f0) = 1/19,2 = 52 mV, indipendente da Iabc/C). La v0.2 non lo vedeva:
   il modello comportamentale non ha limite di corrente e l'AC linearizza.
   Riproduttore: `sim/five-way/dbg-cell-tran.cir`. Scaling+make-up bocciato
-  (rumore ×N: −93,7 dBu per cella → modulo ~−85, FAIL §8.4) → **questione 70**:
-  topologia raccomandata = integratori op-amp + OTA come scalatore gm a
-  piccolo segnale (la legge position via gm ∝ Iabc e l'infrastruttura
-  converter/mirror restano valide); PoC da simulare, poi celle v0.2.1.
+  (rumore ×N: −93,7 dBu per cella → modulo ~−85, FAIL §8.4) → **questione 70:
+  PoC delle topologie pulite FATTO E VALIDATO (2026-09-28,
+  `sim/five-way/RISULTATI-cell-clean.md`)** — lo schizzo "OTA scalatore" è
+  bocciato dall'analisi (muro del rumore en×k); raccomandata **(c-A) JFET
+  VCR bootstrappato**: integratori op-amp + JFET in triode come resistore
+  controllato (gate a Vcm+vds/2: quadraticità cancellata esatta), THD
+  0,004% (core −20 dBu) / 0,11% (worst +10 dBu), rumore −121,7/−124,9 dBu
+  (meglio della cella OTA), law position lineare-in-f ±1,8% (shaper θ→Vcm
+  famiglia dec. 70), detent −0,0001 dB e boost ±0,008 dB (griglia v0.2
+  confermata), Q invariante ±0,07%; riferimento core locale −12…−18 dBu con
+  make-up nel summer d'uscita (zero silicon extra). Alternativa (c-B) VCA
+  218x ×2 validata (law esatta 5 cifre, livelli pieni dec. 73 invariata,
+  +20 chip → voce 37). Prossimo rilascio: celle v0.2.1 (design dettagliato
+  su (c-A): C per banda rivisti, distribuzione Vcm a follower+trim, coppia
+  JFET matched per lato; segno di b invertito = pot sul terminale opposto).
 
 ## 9. Questioni toccate
 
@@ -509,8 +523,9 @@ OTA è condiviso col filtro). Sintesi per la cella (f0 = 700 Hz, Iabc = 7,56 µA
    VALIDATE (§4.1, §8.3). [CODA BETA-3 FATTA 2026-09-28 (§8.7)]: LM13700
    reale — piccolo segnale e rumore confermati, notch −67…−78 dB con trim
    f0; FINDING: tetto di stato 52 mV → cella nuda inutilizzabile a −6 dBu
-   → **questione 70** (topologia core: PoC op-amp integrator + OTA scaler,
-   poi celle v0.2.1). Law del gain da confermare a orecchio in M4L.
+   → **questione 70: PoC VALIDATO (c-A JFET VCR raccomandata,
+   RISULTATI-cell-clean.md)** → celle v0.2.1. Law del gain da confermare a
+   orecchio in M4L.
 2. Drive: candidati JFET + spettri armonici (dopo referenze 61).
 3. [SPECIFICATO 2026-09-27] Converter position (opzione B): C per banda e
    finestra Iabc 2-31 µA, mirror ratio 0,05-0,6 (§4.1); realizzazione =

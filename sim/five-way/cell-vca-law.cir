@@ -1,0 +1,45 @@
+* MODULO 5-WAY — PoC (c-B): LAW di position della cella VCA.
+* f0 = g·700 Hz con g = 10^(Vc/0,122) (Vc su ecp): ±1,3 ottave = ±47,8 mV.
+* Verifiche: (1) f0 segue la law (misura al picco di |bp|); (2) Q INVARIANTE
+* (bpk = Q a ogni Vc: il punto critico vs il single-VCA); (3) profondità
+* notch invariata (hmin). bq = −1 (notch: post-fix damping σ=+1 → H=|1+bq|; in hardware il pot si cabla sul terminale opposto).
+.include ../lib/that2181.inc
+.include ../lib/opamp-audio.inc
+.param Vc=0
+.param Cint={1/(2*pi*700*10k)}
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 vin 0 DC 0 AC 1
+Vctl ecp_n 0 DC {Vc}
+Rvin vin ns 10k
+Rlp lp_b ns 10k
+* nodo -bp_b: nel design reale è l'invertitore già previsto per il pot ±bp_b
+Bqd bqn 0 V={-V(bp_b)}
+Rq bqn ns 10k
+Rf ns hp 10k
+Xsum 0 ns hp vcc vee OP1654
+Xg1 hp hpg ecp_n 0 vcc vee THAT2181
+Rint1 hpg nint1 10k
+Cint1 nint1 bp {Cint}
+Xint1 0 nint1 bp vcc vee OP1654
+Rb1 bp 0 1G
+Xb1 bp bp_b bp_b vcc vee OP1654
+Xg2 bp_b bpg ecp_n 0 vcc vee THAT2181
+Rint2 bpg nint2 10k
+Cint2 nint2 lp {Cint}
+Xint2 0 nint2 lp vcc vee OP1654
+Rb2 lp 0 1G
+Xb2 lp lp_b lp_b vcc vee OP1654
+Bw bwv 0 V={-1/4.62*V(bp_b)}
+Rbw bwv ns2 {10k/4.62}
+Rain vin ns2 10k
+Rf2 ns2 vout 10k
+Xout 0 ns2 vout vcc vee OP1654
+.step param Vc LIST -0.0478 -0.0239 0 0.0239 0.0478
+.ac dec 500 20 20k
+.meas ac flo WHEN mag(V(bp))=0.707 CROSS=1
+.meas ac fhi WHEN mag(V(bp))=0.707 CROSS=2
+.meas ac f0geo PARAM sqrt(flo*fhi)
+.meas ac bpk MAX mag(V(bp))
+.meas ac hmin MIN mag(V(vout))
+.end

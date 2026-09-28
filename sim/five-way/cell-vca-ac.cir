@@ -1,0 +1,59 @@
+* MODULO 5-WAY — PoC QUESTIONE 70 opzione (c-B): cella parametrica con
+* integratori op-amp scalati da DUE VCA THAT 218x nel loop SVF.
+* Algebra da verificare: con g su ENTRAMBI gli integratori ω0 = g/(2piRC)
+* (law esponenziale nativa 6,1 mV/dB = 36,7 mV/ottava) e Q_eff = Q esatta
+* (invariante con la position). Con UN solo VCA: Q ∝ 1/√g — inaccettabile.
+* Struttura: summer v0.2 invariato; hp → VCA1 → Rint/Cint → bp; bp_b → VCA2
+* → Rint/Cint → lp. Segni: due integrazioni invertenti → bp_b in antifase
+* rispetto alla v0.2 → bq cambia segno (grid identica in |H|; nel design
+* reale: inverter o terminali del pot scambiati).
+* Grid: Vc = 0 (f0 = 700 Hz), bq × Qval come param-cell(-real).cir.
+* Modello THAT2181 = moltiplicatore ideale: THD assente (datasheet 0,0025%
+* grado A) e rumore assente (stampa: floor −94 dBV / classe ~30 nV/√Hz) —
+* i numeri fini restano da banco, come per gli altri modelli condivisi.
+.include ../lib/that2181.inc
+.include ../lib/opamp-audio.inc
+.param Qval=1
+.param bq=0
+.param Vc=0
+.param Cint={1/(2*pi*700*10k)}
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 vin 0 DC 0 AC 1
+Vctl ecp_n 0 DC {Vc}
+* --- summer (v0.2) ---
+Rvin vin ns 10k
+Rlp lp_b ns 10k
+* nodo -bp_b: nel design reale è l'invertitore già previsto per il pot ±bp_b
+Bqd bqn 0 V={-V(bp_b)}
+Rq bqn ns {Qval*10k}
+Rf ns hp 10k
+Xsum 0 ns hp vcc vee OP1654
+* --- VCA1 + integratore 1 ---
+Xg1 hp hpg ecp_n 0 vcc vee THAT2181
+Rint1 hpg nint1 10k
+Cint1 nint1 bp {Cint}
+Xint1 0 nint1 bp vcc vee OP1654
+Rb1 bp 0 1G
+Xb1 bp bp_b bp_b vcc vee OP1654
+* --- VCA2 + integratore 2 ---
+Xg2 bp_b bpg ecp_n 0 vcc vee THAT2181
+Rint2 bpg nint2 10k
+Cint2 nint2 lp {Cint}
+Xint2 0 nint2 lp vcc vee OP1654
+Rb2 lp 0 1G
+Xb2 lp lp_b lp_b vcc vee OP1654
+* --- iniezione b (convenzione IDENTICA a v0.2: i due integratori invertono due volte; il damping prende -bp_b) ---
+Bw bwv 0 V={bq/4.62*V(bp_b)}
+Rbw bwv ns2 {10k*Qval/4.62}
+Rain vin ns2 10k
+Rf2 ns2 vout 10k
+Xout 0 ns2 vout vcc vee OP1654
+.step param Qval LIST 3 1 0.5
+.step param bq LIST 0 -1 1.82 4.62
+.ac dec 300 20 20k
+.meas ac h700 FIND mag(V(vout)) AT 700
+.meas ac hpk MAX mag(V(vout))
+.meas ac hmin MIN mag(V(vout))
+.meas ac bpk MAX mag(V(bp))
+.end
