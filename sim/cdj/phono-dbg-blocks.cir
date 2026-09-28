@@ -1,0 +1,69 @@
+* CANALE — FRONT-END PHONO MM v0.1: RISPOSTA RIAA (AC)
+* Topologia: [A1] stadio 1 non-inv ×21 (OPA1612, sorgente testina ~1k) →
+* [A2] subsonica Sallen-Key HP 2 poli 12 Hz Q 0,707 (OPA1612) →
+* [A3] rete RIAA PASSIVA (serie R1, shunt C1, shunt R2+C2; equazioni ESATTE:
+*   tau2 = R2C2 = 318u; tau1+tau3 = R1C1+R1C2+R2C2; tau1*tau3 = R1R2C1C2) →
+* [A4] 1 polo subsonico 15,9 Hz (C3+Rb2, blocca anche la DC) →
+* [A5] stadio 2 non-inv ×60,6 (OPA1654: sorgente ~3k, regola d'uso FET).
+* Guadagno totale a 1 kHz ≈ 42 dB (sheet: out −2 dBu con testina 5 mV).
+* Loading testina [PROVVISORIO q7]: 47k || C 100/200/300 pF (step).
+* Confronto con RIAA ideale: tabella errori calcolata a parte (python)
+* sui valori di mag(V(vout)) misurati qui.
+.include ../lib/opamp-audio.inc
+.param Cload=200p
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+* --- testina MM: sorgente + resistenza bobina ---
+Vcart cart 0 DC 0 AC 1
+Rcart cart in 660
+Rload in 0 47k
+Cload in 0 {Cload}
+* --- [A1] stadio 1: non-inv gain 21 ---
+X1 in fb1 s1 vcc vee OP1612
+Rg1 fb1 0 1k
+Rf1 fb1 s1 20k
+* --- [A2] Sallen-Key HP 2 poli 12 Hz Q 0,707, unity gain (out = −in):
+*     C1 150n serie, C2 75n serie, R 115k: fc 13 Hz Q 0,707 ---
+Cs1 s1 n1 150n
+Cs2 n1 s2a 75n
+Rs1 n1 s2 115k
+Rs2 s2a 0 115k
+X2 s2a s2 s2 vcc vee OP1612
+* --- [A3] rete RIAA passiva ---
+Rr1 s2 p 21.8k
+Cr1 p 0 34.8n
+Rr2 p p2 3.16k
+Cr2 p2 0 100n
+* --- [A4] 1 polo 15,9 Hz + DC block ---
+C3 p q 100n
+Rb2 q 0 100k
+* --- [A5] stadio 2: non-inv gain 57,2 ---
+X3 q qn vout vcc vee OP1654
+Rg2 qn 0 1k
+Rf2 qn vout 59.6k
+.step param Cload LIST 100p 200p 300p
+.ac dec 200 5 100k
+.meas ac a20 FIND mag(V(s1)) AT 20
+.meas ac b20 FIND mag(V(s2)) AT 20
+.meas ac c20 FIND mag(V(p)) AT 20
+.meas ac a50 FIND mag(V(s1)) AT 50
+.meas ac b50 FIND mag(V(s2)) AT 50
+.meas ac c50 FIND mag(V(p)) AT 50
+.meas ac a100 FIND mag(V(s1)) AT 100
+.meas ac b100 FIND mag(V(s2)) AT 100
+.meas ac c100 FIND mag(V(p)) AT 100
+.meas ac a1k FIND mag(V(s1)) AT 1k
+.meas ac b1k FIND mag(V(s2)) AT 1k
+.meas ac c1k FIND mag(V(p)) AT 1k
+.meas ac g20 FIND mag(V(vout)) AT 20
+.meas ac g30 FIND mag(V(vout)) AT 30
+.meas ac g50 FIND mag(V(vout)) AT 50
+.meas ac g100 FIND mag(V(vout)) AT 100
+.meas ac g200 FIND mag(V(vout)) AT 200
+.meas ac g500 FIND mag(V(vout)) AT 500
+.meas ac g1k FIND mag(V(vout)) AT 1k
+.meas ac g2k FIND mag(V(vout)) AT 2k
+.meas ac g5k FIND mag(V(vout)) AT 5k
+.meas ac g10k FIND mag(V(vout)) AT 10k
+.meas ac g20k FIND mag(V(vout)) AT 20k
+.end

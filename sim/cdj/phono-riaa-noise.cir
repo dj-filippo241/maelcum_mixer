@@ -1,0 +1,36 @@
+* CANALE — FRONT-END PHONO MM v0.1: RUMORE (input-referred)
+* Stessa catena di phono-riaa-ac.cir. .noise V(vout) Vcart: V(inoise) =
+* densità riferita all'INGRESSO testina (include Rcart 660 e load 47k||C).
+* Integrazione 20 Hz-20 kHz NON pesata (metodologia progetto) + lettura
+* densità a 100/1k/10k. Atteso: EIN integrato ~1-3 uV (vinile reale sta
+* ~−60 dBu A-wtd: il rumore elettrico deve starci ≥20 dB sotto).
+* Cload 200 pF nominale.
+.include ../lib/opamp-audio.inc
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+Vcart cart 0 DC 0 AC 1
+Rcart cart in 660
+Rload in 0 47k
+Cload in 0 200p
+X1 in fb1 s1 vcc vee OP1612
+Rg1 fb1 0 1k
+Rf1 fb1 s1 20k
+Cs1 s1 n1 100n
+Cs2 n1 s2a 100n
+Rs1 n1 s2 86.6k
+Rs2 s2a 0 174k
+X2 s2a s2 s2 vcc vee OP1612
+Rr1 s2 p 21.8k
+Cr1 p 0 34.8n
+Rr2 p p2 3.16k
+Cr2 p2 0 100n
+X3 p qn vout vcc vee OP1654
+Rg2 qn 0 1k
+Rf2 qn vout 59.6k
+.noise V(vout) Vcart dec 300 10 40k
+.meas noise ein2 INTEG V(inoise)*V(inoise)
+.meas noise ein100 FIND V(inoise) AT 100
+.meas noise ein1k FIND V(inoise) AT 1k
+.meas noise ein10k FIND V(inoise) AT 10k
+.meas noise eout2 INTEG V(onoise)*V(onoise)
+.end

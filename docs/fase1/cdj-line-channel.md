@@ -1,4 +1,10 @@
-# FASE 1 — Modulo CANALE CDJ/LINE: design circuitale v0.3
+# FASE 1 — Modulo CANALE CDJ/LINE: design circuitale v0.4 (2026-09-28)
+
+> **v0.4 (2026-09-28)**: aggiunge il front-end PHONO MM come variante
+> d'ingresso (decisione 56 realizzata): design completo in
+> `docs/fase1/phono-stage.md` v0.1 (decisione 79) — catena RIAA passiva
+> 42 dB, EIN 0,36 µV, overload +18 dBu; selettore LINE/PHONO dopo il blocco
+> phono, prima di [B] GAIN. Il resto del canale è invariato dalla v0.3.
 
 > **v0.3 (2026-09-25)**: SUPERSEDE la v0.2 per §3.3 (EQ in serie, decisioni 76/77 —
 > celle a contribuzione bocciate dalla simulazione) e allinea §4-§8 alle misure beta-3
@@ -63,6 +69,15 @@
 ### 3.1 [A] Ingresso line + protezione
 Invariato dalla v0.1: RCA dorato isolato da chassis (rondella dedicata); R serie 100 Ω +
 TVS low-cap + bead; polo RC >100 kHz; buffer OPA1612 unity, Z_in ≥47 kΩ, dominio ±18 V.
+
+### 3.1bis [A0] Ingresso PHONO e selettore (v0.4, rinvia a phono-stage.md)
+
+RCA phono isolati + terminale GND (stella analogue-0V, q. 21); loading
+47 kΩ || C 100/200/300 pF switch [PROVVISORIO q7]; blocco RIAA =
+phono-stage.md §2-3 (42 dB, out −2 dBu nom su ±15 V LN); uscita del blocco
+→ selettore LINE/PHONO (switch analogico precisione, famiglia assign FX,
+BBM + mute breve) → ingresso di [B] GAIN (stesso nodo del buffer line [A]).
+MC esclusa da questa variante (dec. 62; q. 7 per il futuro).
 
 ### 3.2 [B] GAIN — raccomandazione: VCA stereo a singola CV
 Il tracking ≤0,5 dB esclude il pot doppio meccanico diretto (±1-2 dB tipici). Raccomandato

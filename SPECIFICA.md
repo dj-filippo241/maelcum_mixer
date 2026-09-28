@@ -73,7 +73,7 @@ Moduli [BLOCCATO dai doc §33, consolidamento [PROVVISORIO]]: DJ CH1-4 · FILTRO
 
 ## 4. Canale DJ (modulo ×4, stereo identici)
 
-Catena [BLOCCATO]: RCA stereo → protezione → front-end (LINE; PHONO futuro con front-end dedicato + selettore) → GAIN → EQ 4 bande → nodo split post-EQ: (1) CUE, (2) FX SEND, (3) dry → FILTER SEND/RETURN → METER → FADER → out driver ≤50 Ω → DJ BUS.
+Catena [BLOCCATO]: RCA stereo → protezione → front-end (LINE; PHONO MM v0.1 con front-end dedicato + selettore, decisione 79, `docs/fase1/phono-stage.md`) → GAIN → EQ 4 bande → nodo split post-EQ: (1) CUE, (2) FX SEND, (3) dry → FILTER SEND/RETURN → METER → FADER → out driver ≤50 Ω → DJ BUS.
 
 - GAIN [BLOCCATO]: −∞ → 0 (detent) → +10 dB; stereo linked; tracking ≤0,5 dB.
 - EQ 4 bande [BLOCCATO nel comportamento]: LOW / LOW-MID / MID-HIGH / HIGH; ogni knob −∞ → 0 (flat, detent) → +6 dB; tracking stereo ≤0,25 dB; law: lenta al centro, rapida agli estremi. **[rev. decisione 77, 2026-09-24]** l'estremo "−∞" si intende come kill di banda a **−30 dB** (profondità misurata della cella serie): il silenzio assoluto del canale resta compito del fader — il kill è un gesto musicale, non un mute. Stato beta-3 (2026-09-27, `docs/fase1/eq-serie-v0.3.md` §9.7): griglia confermata con op-amp reali OPA1654/1612 (kill LOW −29,2 @20 Hz, gonna larga; notch MID −44,2 @1 kHz); offset detent RISOLTO (−0,0001 dB con coppia 0,1%, trim multi-giro non serve); rumore −110,7 dBu PASS; kill HIGH = bump +2 dB al corner e −9…−14 dB a 20-35 kHz → questione 68 aperta (accettare il gesto "scurente" o cella crossfade-LP2).
