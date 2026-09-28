@@ -1,6 +1,6 @@
 # SPECIFICA — MAELCUM MIXER (mixer dub modulare analogico, esemplare unico)
 
-> **v0.1 (2026-09-18, rev. 2026-09-28: decisioni 76-79 + esiti simulazioni)** — Compilata da: decisioni 1-78 (`docs/01-decisioni-bloccate.md`),
+> **v0.1 (2026-09-18, rev. 2026-09-28/29: decisioni 76-85 + esiti simulazioni e sessione decisioni)** — Compilata da: decisioni 1-85 (`docs/01-decisioni-bloccate.md`),
 > status doc ChatGPT rev2 (`docs/export-chatgpt/`, corpus chiuso — decisione 58),
 > gain-staging sheet (`docs/fase1/gain-staging-sheet.md`), revisione critica (`docs/03`).
 > Livello: REQUISITI. Il dettaglio circuitale vive nei design doc di `docs/fase1/` e `docs/fase2/`.
