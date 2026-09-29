@@ -1,4 +1,4 @@
-# FASE 1 — Modulo MASTER OUT: design circuitale v0.2
+# FASE 1 — Modulo MASTER OUT: design circuitale v0.2 + ADDENDA (stadio finale v0.3 DEFINITIVA 2026-09-29)
 
 > **v0.2 (2026-09-18)**: integrate le risposte di Filippo alle 7 voci (§8): uscite
 > universali per DSP/registratori standard, booth XLR, detent a unity, meter di
@@ -126,8 +126,8 @@ stadio diamond discreto in class AB (±24 V, dentro il feedback globale dell'OPA
 - CMRR dell'uscita limitato dal matching delle resistenze: 0,1% → ~60 dB, adeguato per linea
 
 **Protezioni allo stadio**:
-- Limitazione di corrente: resistenze di emettitore + clamp Vbe sui drive (corrente di corto < 60 mA per ramo [PROVVISORIO])
-- Safe area: i MJE340/350 reggono il corto verso massa con Re = 47 Ω e bias basso — da verificare in simulazione termica semplificata
+- Limitazione di corrente: resistenze di emettitore + clamp Vbe sui drive (corrente di corto < 60 mA per ramo [PROVVISORIO — REVISIONATO v0.3 2026-09-29: il bootstrap auto-limita a 106 mA, dissipazione = worst di programma; nessun clamp dedicato, ADDENDUM pt.5])
+- Safe area: i MJE340/350 reggono il corto verso massa con Re = 47 Ω e bias basso [v0.2: Re finale = 33 Ω; corto VERIFICATO v0.3 Test 11: 2,15 W pk / 1,01 W medi]
 - DC: **servo DC** (integratore lento in anello sull'OPA1612, offset d'uscita < 5 mV) invece di condensatori in serie al segnale — obbligatorio con banda 8 Hz (un cap di blocco a 8 Hz su 10 kΩ sarebbe ~2 µF: colore e ingombro)
 - Relay di mute in serie all'XLR (contatti dorati, segnale < 5 V: G6K/G5V o equivalenti)
 
@@ -239,7 +239,7 @@ Conseguenza onesta da registrare: a MASTER LEVEL a +6 dB con programma già a +1
 
 **Stima BOM modulo master out: ~60-90 €** (esclusi PCB, connettori backplane, manopole). [PROVVISORIO]
 
-## 6. Simulazioni da eseguire (LTspice) — prima di qualunque ordine
+## 6. Simulazioni da eseguire (LTspice) — prima di qualunque ordine [FATTE: v0.2 Test 1-4 + v0.3 Test 5-12 bootstrap — `sim/master-out/RISULTATI-composite.md`]
 
 1. Summing 8 ingressi: THD+N vs livello (target: < 0,005% a +16 dBu), noise residuo in uscita, interazione R_in/C_f con banda 8 Hz–35 kHz (±0,5 dB)
 2. Composite amplifier [F]+[G]: swing massimo su 10 kΩ e 600 Ω, THD a +24 dBu/1 kHz e a 35 kHz, margine di fase con carico capacitivo (cavo 100 m ~ 10 nF), comportamento di corto
@@ -272,7 +272,7 @@ Restano utili ma NON bloccanti: modello del DSP e del registratore quando ci sar
 ## 9. Prossimi passi
 
 1. [FATTO 2026-09-18] Risposte di Filippo integrate → questo documento è v0.2
-2. Simulazioni LTspice §6 (i file `.asc` versionati in `sim/master-out/`) — primo candidato: composite amplifier §3.3 (è il cuore elettrico del modulo)
+2. [FATTO 2026-09-29] Simulazioni LTspice §6 — composite amplifier §3.3 completo: v0.2 Test 1-4 + v0.3 bootstrap Test 5-12 (`sim/master-out/compB-*.cir`, RISULTATI-composite §v0.3)
 3. Alla chiusura dell'export ChatGPT: verifica che questa sezione non contraddica decisioni prese là (in particolare: chi fa il summing, standard I/O del backplane, posizione esatta del meter, logica colori)
 4. Solo dopo: schema elettrico definitivo e PCB del modulo
 
@@ -301,7 +301,7 @@ l'alto, PNP verso il basso) generano rail locali che seguono l'uscita a distanza
 (Δ ≈ 3-5 V, stringa LED/zener come riferimento, bias ≈ Iq 40 mA + margine). Al tetto
 dello swing i pass saturano dolcemente sui rail statici ±23,7 V (handoff senza gradini):
 l'op-amp guadagna esattamente i volt che gli mancavano, il follower arriva a ±21…21,5 V
-= **+25,0…+25,2 dBu** (requisito ≥+24 rispettato, ~1 dB di margine; il level plan del
+= **+25,7…+25,9 dBu** (conversione dBu corretta il 2026-09-29; requisito ≥+24 rispettato, ~1,7 dB di margine; ATTESO SUPERATO lo stesso giorno: senza Iq reale — capability definitiva ±20,4-20,9 V = +25,4…+25,6 dBu nei punti 1-5 qui sotto; il level plan del
 modulo worst +22 dBu resta dentro con 3 dB).
 
 **SWING VALIDATO 2026-09-29** (`sim/master-out/compB-swing.cir`, RISULTATI-composite

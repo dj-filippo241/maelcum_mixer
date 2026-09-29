@@ -6,7 +6,7 @@
 > → JFET CS nudo «nastro» (ginocchio 0,7-1,0 Vp; a CCW il pulito lo garantisce
 > la law: −9,4 dB prima del saturatore) → DIFF PAIR PNP single-ended «fuzz»
 > (steering ±1,9 V = clip duro asimmetrico; basi dal drain via R matched:
-> niente latch, nothing to trim) → recovery invertente 2k/2k (polarità totale
+> niente latch; trim non previsto — il servo nulla l'offset, eventuale trim pair solo se il banco lo chiede) → recovery invertente 2k/2k (polarità totale
 > non invertente) + servo DC 2 op-amp (−65 µV). Tutto DC-coupled (SUB 10 Hz).
 > Griglia musicale θ×programma misurata in §5.3 (numeri → conferma di Filippo);
 > lezioni di 7 iterazioni in §5.4; D5 (risonanza) e D6 (rumore) pendenti.
@@ -342,7 +342,7 @@ LM13700 RIMOSSI dalle celle (restano eventualmente nel filtro, questione 70
 lato filtro). Delta costo vs v0.2: ~+5 quad (+8-12 €) +10 dual JFET
 (+15-30 €) −10 LM13700 (−10-15 €) ≈ **+15-25 €** [PROVVISORIO].
 
-## 5. Drive e meter (questione 10 — v0.3-WIP: design post-referenze, 2026-09-29)
+## 5. Drive e meter (questione 10 — v0.3 VALIDATA: design post-referenze, 2026-09-29)
 
 ### 5.1 Requisiti (BLOCCATI)
 
@@ -383,8 +383,9 @@ somma EQ (−6 dBu nom, worst +10…+25 dBu §6)
   │     polarità TOTALE non invertente (VCA + · CS − · pair + · recovery −);
   │     SERVO DC 2 op-amp (TL062: integratore + invertitore = +∫reco,
   │     fc 0,31 Hz, Rinj 2,2 k sul nodo di somma → autorità ±14,5 V):
-  │     residuo misurato −65 µV…−12 mV (deep fuzz: pochi 0,1 V, il servo
-  │     è più lento della rettifica — coperto dal servo master a valle)
+  │     residuo misurato: −65 µV…−12 mV secondo il livello (rettifica del
+  │     segnale); in deep fuzz transitori di pochi decimi di V — il servo
+  │     (fc 0,31 Hz) è più lento della rettifica: coperto dal servo master a valle
   ▼ R serie 33 Ω → METER pickup → MAKE-UP +6 dB + trim → MASTER SUM
 ```
 
@@ -452,11 +453,11 @@ il drive "sente" come suoni, non solo dove sta la manopola). Taper/knee esatti
 - **D4h** `drive-chain8.cir` — catena finale: griglia §5.3, servo −65 µV.
 - Netlist SUPERATI (storici, non cancellare): `drive-tape2/-dc` (shunt clipper:
   canale acceso carica il nodo −32 dB), `drive-tape3` (CS in loop: feedback
-  positivo; e follower-limiter: non pincha mai), `drive-fuzz`/`drive-chain…7`
+  positivo; e follower-limiter: non pincha mai), `drive-fuzz`/`drive-chain…7`, `drive-dbg2`/`drive-dbg3` (dump nodi), `drive-law-dbg` (verifica shaper in DC)
   (PNP CE single-ended: bias incompatibile). LEZIONI: (1) feedback sul drain
   di un CS = positivo; (2) shunt JFET parzialmente acceso = carico; (3) R serie
   verso basi BJT + correnti di base = latch di saturazione (3 varianti);
-  (4) servo a iniezione-FB deve sentire il nodo che nullla (reco, non coll);
+  (4) servo a iniezione-FB deve sentire il nodo di cui annulla l'offset (reco, non coll);
   (5) batch LTspice = una analisi per netlist; law verificate in DC (.tran FIND),
   non con .ac db() su catene di B-source.
 - Da fare: **D5** interazione risonanza filtro (dopo ascolto q70); **D6** rumore
@@ -499,8 +500,9 @@ A banco: trim bilanciamento pair solo se il servo esce dall'autorità (±14,5 V)
 | Quad op-amp low-noise (classe OPA1654/1612) | ~33-35 | banca 14 (v0.2 allineata in fase: 16 SK + 12 allpass), EQ 17,5 (7 sezioni/cella × 10, §4.2 v0.2.1), gate/buffer/make-up |
 | Dual JFET N matched (classe LSK589/MMBF5457 selezionato) | 10 | celle parametriche v0.2.1: VCR bootstrappato, 2 per cella (§4.2) [reperibilità da verificare]; LM13700 RIMOSSI dalle celle (questione 70) |
 | THAT 2180/2181 (SINGLE VCA — datasheet 2026-09-27) | 10 | gate di kill (1 per via per lato); 2162 dual scartato: ±16 V max e THD 0,05% |
-| THAT 2180/2181 o JFET matched | 2 | gain drive (stadio 1, 1 per lato) |
-| JFET saturazione (coppia matched) | 2-4 | stadio 2 drive (post-61) |
+| THAT 2180/2181 (SINGLE) | 2 | gain drive stadio 1 (v0.3: solo 218x, law nativa dB — voce 37) |
+| JFET J310-like + PNP 2N3906-like | 2+4 | drive v0.3 §5.5: nastro CS 1/lato + diff pair fuzz 2/lato |
+| OPA1612 dual (recovery) + TL062 dual (servo) | 1+2 | recovery condiviso L/R; 1 TL062 per lato per il servo (§5.5) |
 | Shaper position θ→Vcm + buffer gain-2 | ~5-8 sezioni | v0.2.1 (§4.2): shaper famiglia dec. 70, 1 per banda L/R ganged; sostituisce converter expo + mirror Iabc |
 | R 0,1% / C0G-PP / trimmer allineamento | — | banca: 8 edge + 6 sezioni allpass per lato |
 | Stima costo | ~220-300 € | il modulo più siliconato del mixer |
