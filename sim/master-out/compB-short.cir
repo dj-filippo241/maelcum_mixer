@@ -1,0 +1,99 @@
+* ============================================================
+* MASTER OUT v0.3 — Test 11: corto verso massa (composito bootstrap)
+* Confronto con comp-short.cir (v0.2, rail fissi ±18): 460 mA di
+* picco per ramo, 4,3 W su Q1, OUT residuo 0,59 V — senza protezione.
+* IPOTESI v0.3: il bootstrap LIMITA DA SOLO la corrente di corto.
+* Meccanismo: in corto OUT ≈ 0 → i rail locali collassano a ±Δ ≈
+* ±4,4 V → il clamp della macro scende a ±2,9 V → il drive del
+* diamond ha pochissima escursione → corrente disponibile piccola.
+* La v0.2 aveva rail ±18 fissi: clamp ±16,5 → drive enorme → 460 mA.
+* DOMANDE: (a) quanta corrente di picco per ramo col bootstrap?
+* (b) serve ancora il limitatore Vbe dedicato (target §3.3 <60 mA)?
+* (c) dissipazione Q1/Q2 e pass Q7/Q8 durante il corto (SOA)?
+* (d) il corto sostenuto e' un caso termico, non elettrico: quanti W?
+* Ingresso 10 Vp (programma alto) e 22 Vp (abuso, oltre il clip).
+* Modelli [PROVVISORIO — regola 3].
+* ============================================================
+
+.inc opamac-isup-t.inc
+
+.model MJE340 NPN(IS=1e-13 BF=150 VAF=150 IKF=0.5 BR=5 CJC=4p CJE=15p TF=2n TR=20n RB=5 RC=1 RE=0.1 Vceo=300 Icrating=500m mfg=ON)
+.model MJE350 PNP(IS=1e-13 BF=100 VAF=120 IKF=0.4 BR=3 CJC=4p CJE=15p TF=5n TR=50n RB=5 RC=1.5 RE=0.15 Vceo=300 Icrating=500m mfg=ON)
+.model QMULT NPN(IS=1e-14 BF=200 VAF=100 CJC=8p CJE=25p TF=400p)
+.model DIO D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p Tt=4n)
+.model NJF245 NJF(Beta=4m Vto=-1.4 Lambda=10m Cgs=10p Cgd=4p Is=10f)
+
+Vp24 vp24 0 DC 24
+Vm24 vm24 0 DC -24
+V1 in 0 SINE(0 {amp} 1k)
+
+* Bootstrap superiore (CCS JFET)
+J1 vp24 j1s bu NJF245
+Rj1 j1s bu 47
+Q7 vp24 bu vplus MJE340
+D1 bu s1 DIO
+D2 s1 s2 DIO
+D3 s2 s3 DIO
+D4 s3 s4 DIO
+D5 s4 s5 DIO
+D6 s5 s6 DIO
+D7 s6 s7 DIO
+D15 s7 s8 DIO
+D16 s8 out DIO
+
+* Bootstrap inferiore (CCS JFET)
+J2 nb2 j2s vm24 NJF245
+Rj2 j2s vm24 47
+Q8 vm24 nb2 vminus MJE350
+D8 out t1 DIO
+D9 t1 t2 DIO
+D10 t2 t3 DIO
+D11 t3 t4 DIO
+D12 t4 t5 DIO
+D13 t5 t6 DIO
+D14 t6 t7 DIO
+D17 t7 t8 DIO
+D18 t8 nb2 DIO
+
+* Composito v0.2 (feedback diretto: il servo non conta sul corto)
+X1 in out drv vplus vminus OPAMAC
+Q3 drv mid b2 QMULT
+Ra drv mid 2.2k
+Rbm mid b2 1k
+Q1 vp24 drv e1 MJE340
+Q2 vm24 b2 e2 MJE350
+Re1 e1 out 33
+Re2 e2 out 33
+* NOTA v0.3c (misurato, THD): Cboot 1u+100n rail↔OUT PROVATI E RIMOSSI:
+* interagendo col kink degli specchi di assorbimento (cambio ramo a ogni
+* attraversamento della corrente di carico) producevano glitch 0,3-0,4 V
+* una volta per periodo → THD 5,9-38 % (comb). Il picco closed-loop MHz
+* (fuori banda, innocuo: g8hz-35k piatto) si lascia com'era in v0.2
+* (+3,3 dB @50 MHz senza carico). A banco: eventuale decoupling rail
+* da provare SOLO con valori piccoli (100n) e misura THD prima/dopo.
+
+
+* CORTO: 1 Ohm verso massa (resistenza di contatto realistica)
+RL out 0 1
+
+.step param amp LIST 10 22
+
+.options noopiter
+.tran 0 40m 0 5u
+
+* Correnti di picco nei rami d'uscita (stesse misure di comp-short)
+.meas tran iq1_pk MAX I(Re1) FROM 30m TO 40m
+.meas tran iq2_pk MIN I(Re2) FROM 30m TO 40m
+* Dissipazione Q1/Q2 (picco e media = caso termico sostenuto)
+.meas tran pq1_pk MAX V(vp24,e1)*I(Re1) FROM 30m TO 40m
+.meas tran pq1_avg AVG V(vp24,e1)*I(Re1) FROM 30m TO 40m
+.meas tran pq2_pk MAX V(e2,vm24)*(-I(Re2)) FROM 30m TO 40m
+.meas tran pq2_avg AVG V(e2,vm24)*(-I(Re2)) FROM 30m TO 40m
+* Tensione residua in uscita durante il corto
+.meas tran vout_pk MAX V(out) FROM 30m TO 40m
+* Rail locali durante il corto (verifica meccanismo di limitazione)
+.meas tran vp_short MAX V(vplus) FROM 30m TO 40m
+.meas tran vm_short MIN V(vminus) FROM 30m TO 40m
+* Corrente assorbita dai rail (dissipazione pass durante il corto)
+.meas tran i24_pk MAX I(Vp24) FROM 30m TO 40m
+.end

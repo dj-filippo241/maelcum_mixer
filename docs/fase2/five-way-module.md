@@ -1,4 +1,15 @@
-# FASE 2 — Modulo 5-WAY (dub preamp): design v0.2 + CELLE v0.2.1 (2026-09-28)
+# FASE 2 — Modulo 5-WAY (dub preamp): design v0.2 + CELLE v0.2.1 (2026-09-28) + DRIVE v0.3 (2026-09-29)
+
+> **DRIVE v0.3 VALIDATO (2026-09-29, §5)**: sbloccato dalla decisione 82
+> (referenze «prima nastro, ultimi 20% fuzz»). Catena finale: THAT 218x
+> (law 0→+7→+12→+16 dB compensata sullo shaper, end-to-end MISURATA ESATTA)
+> → JFET CS nudo «nastro» (ginocchio 0,7-1,0 Vp; a CCW il pulito lo garantisce
+> la law: −9,4 dB prima del saturatore) → DIFF PAIR PNP single-ended «fuzz»
+> (steering ±1,9 V = clip duro asimmetrico; basi dal drain via R matched:
+> niente latch, nothing to trim) → recovery invertente 2k/2k (polarità totale
+> non invertente) + servo DC 2 op-amp (−65 µV). Tutto DC-coupled (SUB 10 Hz).
+> Griglia musicale θ×programma misurata in §5.3 (numeri → conferma di Filippo);
+> lezioni di 7 iterazioni in §5.4; D5 (risonanza) e D6 (rumore) pendenti.
 
 > **CELLE v0.2.1 (2026-09-28, §4.2)**: topologia degli integratori cambiata
 > per la questione 70 (tetto di stato 52 mV degli OTA): integratori op-amp +
@@ -331,23 +342,142 @@ LM13700 RIMOSSI dalle celle (restano eventualmente nel filtro, questione 70
 lato filtro). Delta costo vs v0.2: ~+5 quad (+8-12 €) +10 dual JFET
 (+15-30 €) −10 LM13700 (−10-15 €) ≈ **+15-25 €** [PROVVISORIO].
 
-## 5. Drive e meter (questione 10 — v0.1 = interfaccia, design dopo referenze 61)
+## 5. Drive e meter (questione 10 — v0.3-WIP: design post-referenze, 2026-09-29)
 
-- **Struttura in due stadi** che realizza la law bloccata senza compressione:
-  stadio 1 = gain pulito variabile 0…+7 dB (CCW→50%, law dB lineare via
-  CV); stadio 2 = saturatore morbido a soglia fissa (JFET soft-sat, poi
-  BJT asimmetrico — corpus §18): oltre il 50% il segnale entra progressivamente
-  nella saturazione. L'"interazione con gain di banda e overdrive filtro"
-  è automatica: le bande spinte e il filtro saturo arrivano già caldi qui.
-  Carattere = sound design: **aspetta le referenze di Filippo (questione 61)**;
-  v0.2 con modelli JFET reali + spettro armonico per candidato.
-- Interfaccia elettrica: dominio ±18 V; ingresso tollera +18 dBu clean
-  (stadio 1 a JFET, headroom); uscita recovery low-Z 20-50 Ω, clean +23 dBu
-  (sheet: il +24 vero vive solo al master); nessun makeup compression (SPEC).
+### 5.1 Requisiti (BLOCCATI)
+
+- Posizione: dopo la somma EQ, prima del meter (§2). Law (decisione 82,
+  SPECIFICA §6): CCW = 0 dB pulito · ~50% = +7 dB pulito (punto ottimale) ·
+  50→80% = colore nastro progressivo · 80→100% = territorio fuzz. Solo gain
+  positivo CW. Referenze di Filippo (dec. 82): nastro = saturazione calda che
+  infittisce senza rompersi, compressione leggera; fuzz = saturazione dura.
+- Interfaccia elettrica: dominio ±18 V; ingresso tollera +18 dBu clean;
+  recovery low-Z 20-50 Ω, clean +23 dBu; nessun makeup compression.
+- Interazione con gain di banda e overdrive filtro: automatica (soglie fisse
+  del saturatore: le bande spinte e la risonanza del filtro arrivano già calde).
+
+### 5.2 Topologia v0.3 FINALE (2026-09-29, validata D1+D4h; valori [PROVVISORI — regola 3])
+
+Catena per lato L/R (il conteggio chip voce 37 già include "2 drive"):
+
+```
+somma EQ (−6 dBu nom, worst +10…+25 dBu §6)
+  │
+  ▼ [1] THAT 218x — gain pulito variabile, law dB-lineare nativa
+  │     pot 0-5 V → shaper PWL 3 tratti → CV 6,1 mV/dB, smoothing 1 ms (dec. 80)
+  │     law VCA = totale − G2 → θ 0/50/80/100% = −9,4/−2,4/+2,6/+6,6 dB
+  │     (G2 ≈ +9,4 dB della catena a valle, assorbito nell'offset shaper)
+  ▼ [2a] NASTRO: JFET common-source nudo (J310-like), soglia fissa
+  │     Rg 10 k (rumore), Rd 4,7 k → +18, Rs 1,05 k self-bias (Id ≈ 2,2 mA),
+  │     gain ≈ 3,35; ginocchio morbido 0,7-1,0 Vp: coda quadratica, asimmetrico
+  │     (positivo comprime, negativo aperto). A θ0 la LAW garantisce il pulito:
+  │     il VCA attenua −9,4 dB PRIMA del saturatore → 2a vede 0,13 Vp → ~0,002 %
+  ▼ [2b] FUZZ: DIFF PAIR PNP single-ended (2N3906-like ×2 = "BJT asimmetrico")
+  │     basi alimentate DAL DRAIN via R 4,7 k matched ×2 (il DC insegue la
+  │     deriva del drain; baser bypassata 100 µ = AC ground → segnale tutto
+  │     differenziale); Re 470 ×2 + tail 2,2 k → +18 (≈ 4,5 mA); Rc 4,7 k → −18:
+  │     coll ≈ −7,5 V (Vce ≈ −14: MAI saturo → Baker inutile); steering
+  │     completo ≈ ±1,9 V = clip DURO asimmetrico (lato Ic→0 tondo, lato
+  │     Ic→Itail piatto); ceiling ±2,79 V = +11,9 dBu pre-makeup
+  ▼ [3] RECOVERY invertente 2k/2k (OPA1612 dual condiviso L/R):
+  │     polarità TOTALE non invertente (VCA + · CS − · pair + · recovery −);
+  │     SERVO DC 2 op-amp (TL062: integratore + invertitore = +∫reco,
+  │     fc 0,31 Hz, Rinj 2,2 k sul nodo di somma → autorità ±14,5 V):
+  │     residuo misurato −65 µV…−12 mV (deep fuzz: pochi 0,1 V, il servo
+  │     è più lento della rettifica — coperto dal servo master a valle)
+  ▼ R serie 33 Ω → METER pickup → MAKE-UP +6 dB + trim → MASTER SUM
+```
+
+Tutto DC-coupled, nessun cap in serie al segnale (SUB 10 Hz rispettato);
+Cbyp 100 µ solo sulla base di riferimento (fuori dal percorso segnale).
+
+Scelte di design (ingegneria, regola 2):
+- **Stadio 1 = 218x**: law dB-lineare nativa, chip già conteggiato (voce 37),
+  headroom +18 dBu verificato (`sim/cdj/vca-headroom.cir`), trim = procedura
+  q53 condivisa. **Law totale end-to-end MISURATA ESATTA** (D4h): 0/+7/+9,5/
+  +12/+14/+16 dB a θ 0/50/65/80/90/100 % — la law bloccata dec. 82 rispettata.
+- **Perché il CS nudo (non in loop)**: il feedback sul drain di un CS è
+  POSITIVO (il CS inverte — verificato in sim); la pulizia a CCW la garantisce
+  la law stessa (attenuazione VCA a monte del saturatore).
+- **Perché la diff pair PNP (non il singolo PNP CE del primo sketch)**: il CE
+  single-ended non concilia bias DC derivato dal segnale, guadagno e autorità
+  del servo (tre latch misurati, §5.4); la pair con Rc verso −18 non satura
+  mai, le basi matched dal drain inseguono la deriva, lo steering è asimmetrico
+  per costruzione = il carattere fuzz della referenza.
+- **Soglie fisse, gain variabile**: «nastro → fuzz» = profondità di ingresso
+  nelle soglie in cascata (2a da θ≈50-65 %, pair da θ≈80-100 %). Programma hot
+  a θ50 è già al ceiling (18,7 % misurati): le manopole lavorano insieme da
+  sole (dec. 82 (3) «sporca progressivamente» = fisica della catena).
+
+### 5.3 Specifica per stadio e numeri misurati (deliverable decisione 82)
+
+**Carattere per stadio** (cosa si sente, e quando):
+
+| Stadio | Zona | Cosa si sente | Firma | THD tipica |
+|---|---|---|---|---|
+| 1 (218x) | θ 0-50, programma nom | trasparente: solo più forte, il dub resta pulito | — (datasheet 0,0025 %) | < 0,16 % misurati in catena |
+| 2a (JFET CS) | θ 50-80, picchi | nastro: il suono si fa denso e caldo, la compressione è una carezza — le code si accorciano senza spezzarsi, i picchi «appoggiano» | coda quadratica asimmetrica: H2/H3 caldi, lato positivo comprime per primo | 0,16-3,3 % |
+| 2b (diff pair) | θ 80-100 / hot | fuzz: raschio duro che mangia la dinamica, il sustain si squadra, il gesto diventa effetto — il ceiling ±2,79 V è il muro su cui il segnale si spiattella | steering: un lato tondo (Ic→0), l'altro piatto (Ic→Itail), comb fitto | 10-36 % |
+| interazione | risonanza filtro | il picco OTA (+7…8 dBu, q70(a)) arriva qui già caldo e morde PRIMA del programma: la wah-ring del filtro entra nel nastro e ne esce sporca — famiglia Sherman | — | — |
+
+**Griglia musicale misurata** (D4h, `drive-chain8.cir`) — THD % (1 kHz, uscita
+drive pre-makeup), righe = θ, colonne = programma:
+
+| θ \ programma | −6 dBu (nom) | 0 dBu | +10 dBu (hot) |
+|---|---|---|---|
+| 0 % (0 dB) | 0,068 | 0,139 | 0,70 |
+| 50 % (+7 dB) | 0,157 | 0,361 | 18,7 (ceiling) |
+| 65 % (+9,5) | 0,216 | 0,606 | 24,8 (ceiling) |
+| 80 % (+12) | 0,308 | 3,29 | 29,9 (fuzz) |
+| 90 % (+14) | 0,431 | 10,2 (fuzz) | 33,3 (fuzz) |
+| 100 % (+16) | 0,703 | 16,0 (fuzz) | 36,1 (fuzz) |
+
+Guadagno totale verificato sulla griglia θ: 0/+7,0/+9,5/+12,0/+14,0/+15,9 dB
+(target dec. 82 esatto); ceiling fuzz ±2,79 V (+11,9 dBu) → col makeup +6 dB
+= +17,9 dBu al master sum: dentro il level plan (worst +22).
+**Numeri musicali per la conferma di Filippo (regola 2)**: programma normale a
+θ0-50 resta pulito/caldo (0,07-0,36 %); il nastro si sente da θ≈65 sui picchi
+e diventa evidente a θ80 con programma a 0 dBu (3,3 %); il fuzz pieno sta a
+θ≥90 con programma caldo, oppure a θ50+ con picchi +10 dBu (interazione voluta:
+il drive "sente" come suoni, non solo dove sta la manopola). Taper/knee esatti
+= ascolto M4L (dec. 78) — la griglia sopra è il punto di partenza.
+
+### 5.4 Simulazioni eseguite e lezioni (`sim/five-way/drive-*.cir`, 2026-09-29)
+
+- **D1** `drive-law.cir` — shaper+VCA: griglia esatta; ANOMALIA NOTATA: la
+  misura standalone dà +3,2 dB costanti contro la law end-to-end ESATTA in
+  D4h (quirk della misura isolata, non della catena — law di riferimento = D4h).
+- **D2** `drive-tape.cir` — CS JFET standalone VALIDATO: gain 3,35, ginocchio
+  0,7-1,0 Vp, THD 0,14→29 % progressiva (carattere nastro).
+- **D4h** `drive-chain8.cir` — catena finale: griglia §5.3, servo −65 µV.
+- Netlist SUPERATI (storici, non cancellare): `drive-tape2/-dc` (shunt clipper:
+  canale acceso carica il nodo −32 dB), `drive-tape3` (CS in loop: feedback
+  positivo; e follower-limiter: non pincha mai), `drive-fuzz`/`drive-chain…7`
+  (PNP CE single-ended: bias incompatibile). LEZIONI: (1) feedback sul drain
+  di un CS = positivo; (2) shunt JFET parzialmente acceso = carico; (3) R serie
+  verso basi BJT + correnti di base = latch di saturazione (3 varianti);
+  (4) servo a iniezione-FB deve sentire il nodo che nullla (reco, non coll);
+  (5) batch LTspice = una analisi per netlist; law verificate in DC (.tran FIND),
+  non con .ac db() su catene di B-source.
+- Da fare: **D5** interazione risonanza filtro (dopo ascolto q70); **D6** rumore
+  catena drive (stima −98 dBu, dentro budget modulo −90 → conferma in task
+  module-noise v0.2.1); shaper op-amp/diodi reale (famiglia fx-shaper-discreto).
+
+### 5.5 BOM aggiuntiva drive (per lato) [PROVVISORIO]
+
+1× THAT 218x (già conteggiato voce 37) · 1× JFET J310-like · 2× PNP 2N3906-like
+(pair, anche non matched: l'offset residuo lo nulla il servo) · ~16 R + Cbyp 100 µ.
+Condivisi L/R: 1× OPA1612 dual (recovery) + 1× TL062 dual (servo) + rete servo
+(1M/470n/100k/2,2k). Comando: pot rotativo (famiglia dec. 85; pannello → voce 40).
+A banco: trim bilanciamento pair solo se il servo esce dall'autorità (±14,5 V).
+
+### 5.6 Meter (invariato v0.1)
+
 - **Meter**: pickup post-drive; detector condiviso col design di canale
   (CDJ §7 item 6 — peak detector SIMULATO 2026-09-27: `sim/meter/RISULTATI-peak-det.md`,
-  droop 10 Hz e latch clip quantificati, dati alla questione 19): ballistica a 10 Hz
-  (dec. 65: no sagging), clip latch 300-500 ms, segmenti = design modulo
+  droop 10 Hz e latch clip quantificati, dati alla questione 19): ballistica
+  stile Pioneer DJM (dec. 81 che revisiona dec. 65: release ~0,3 s «leggibile
+  a zone con ballistica viva»), clip latch 300-500 ms, segmenti = design modulo
   metering (questione 19/54).
 
 ## 6. Headroom e livelli (sheet §2, dec. 73)
@@ -602,8 +732,10 @@ sembra sana, tran esplode ai rail — verificare SEMPRE in tran).
   terminale opposto). APERTO: law del gain (taper custom, famiglia eq-serie
   §10 [PROVVISORIO — ascolto M4L]); conferma a banco della coppia JFET
   matched (tracking/temperatura).
-- **10** (drive): struttura a due stadi definita; taper esatto e carattere
-  DOPO le referenze di Filippo (61).
+- **10** (drive): v0.3 VALIDATA (§5, 2026-09-29) — 218x + JFET CS nastro +
+  diff pair PNP fuzz + recovery/servo; law end-to-end esatta (D4h), griglia
+  musicale §5.3 → conferma di Filippo (regola 2); taper/knee fini → ascolto
+  M4L (dec. 78). Pendenti: D5 risonanza (dopo q70), D6 rumore (task module-noise).
 - **24** (layout comandi): gain di banda = 5 pot rotativi (decisione 85);
   l'elettronica fornisce: 5 kill switch + 5 pot rotativi gain + 5 pot position
   + 5 switch width + drive pot + (meter). Comandi phono → voce 40.
@@ -623,7 +755,12 @@ sembra sana, tran esplode ai rail — verificare SEMPRE in tran).
    → questione 70: PoC VALIDATO (c-A JFET VCR) → **CELLE v0.2.1 DESIGN
    RILASCIATO (§4.2, §8.8, 2026-09-28)**. Law del gain da confermare a
    orecchio in M4L.
-2. Drive: candidati JFET + spettri armonici (dopo referenze 61).
+2. [FATTO 2026-09-29] Drive v0.3 VALIDATO (§5, `drive-chain8.cir`): law
+   end-to-end esatta 0/+7/+9,5/+12/+14/+16 dB, griglia musicale §5.3 →
+   conferma di Filippo pendente; RESTANO: D5 interazione risonanza (dopo
+   ascolto q70), D6 rumore drive (→ task module-noise v0.2.1), shaper fisico
+   op-amp/diodi (famiglia fx-shaper-discreto), trim pair solo se il banco
+   lo chiede.
 3. [SPECIFICATO v0.2.1 2026-09-28] Position: shaper θ→Vcm (famiglia dec. 70)
    + buffer gain-2 + trim per lato/banda (§4.2) — sostituisce converter
    Iabc + mirror (tracking resistivo 0,1% migliore); tabella C/Vcm per banda

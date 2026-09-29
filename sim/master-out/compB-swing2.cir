@@ -1,0 +1,96 @@
+* ============================================================
+* MASTER OUT v0.3 — Test 7: swing DEFINITIVO + sizing pass con Iq reale
+* Base: compB-swing.cir (Test 6, swing PASS) con due cambiamenti:
+*   1. macro OPAMAC-ISUP (Iq 40 mA + corrente d'uscita dai rail)
+*   2. Rbleed 10k RIMOSSO (era solo-sim: ora la Iq del chip alimenta
+*      il nodo vminus, come nel circuito reale)
+* DOMANDE: (a) lo swing validato regge con l'assorbimento reale?
+* (b) quanta dissipano Q7/Q8 nel worst case (sizing aletta/rame)?
+* (c) le R di bias stringa reggono con Ib reale dei pass?
+* Riferimento: decisione 86, master-out.md ADDENDUM 2026-09-29 item 1.
+* Modelli [PROVVISORIO — regola 3]: MJE340/350 rappresentativi,
+* 1N4148 standard. PSRR/rumore stringa NON modellati (nota in doc).
+* ============================================================
+
+.inc opamac-isup.inc
+
+.model MJE340 NPN(IS=1e-13 BF=150 VAF=150 IKF=0.5 BR=5 CJC=4p CJE=15p TF=2n TR=20n RB=5 RC=1 RE=0.1 Vceo=300 Icrating=500m mfg=ON)
+.model MJE350 PNP(IS=1e-13 BF=100 VAF=120 IKF=0.4 BR=3 CJC=4p CJE=15p TF=5n TR=50n RB=5 RC=1.5 RE=0.15 Vceo=300 Icrating=500m mfg=ON)
+.model QMULT NPN(IS=1e-14 BF=200 VAF=100 CJC=8p CJE=25p TF=400p)
+.model DIO D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p Tt=4n)
+
+* ---------- Alimentazioni statiche ----------
+Vp24 vp24 0 DC 24
+Vm24 vm24 0 DC -24
+
+* ---------- Ingresso ----------
+V1 in 0 SINE(0 {amp} 1k)
+
+* ---------- Bootstrap rail SUPERIORE ----------
+* Sense Vq7s: V-source 0 V per misurare Ic(Q7) e la dissipazione
+Vq7s vp24 q7c DC 0
+Rbu q7c bu 4.7k
+Q7 q7c bu vplus MJE340
+D1 bu s1 DIO
+D2 s1 s2 DIO
+D3 s2 s3 DIO
+D4 s3 s4 DIO
+D5 s4 s5 DIO
+D6 s5 s6 DIO
+D7 s6 out DIO
+
+* ---------- Bootstrap rail INFERIORE ----------
+Vq8s q8c vm24 DC 0
+Rbl nb2 q8c 4.7k
+Q8 q8c nb2 vminus MJE350
+D8 out t1 DIO
+D9 t1 t2 DIO
+D10 t2 t3 DIO
+D11 t3 t4 DIO
+D12 t4 t5 DIO
+D13 t5 t6 DIO
+D14 t6 nb2 DIO
+
+* ---------- Composito v0.2 (rail = bootstrap) ----------
+X1 in out drv vplus vminus OPAMAC
+Q3 drv mid b2 QMULT
+Ra drv mid 2.2k
+Rbm mid b2 1k
+Q1 vp24 drv e1 MJE340
+Q2 vm24 b2 e2 MJE350
+Re1 e1 out 33
+Re2 e2 out 33
+
+* ---------- Carico ----------
+RL out 0 10k
+
+* ---------- Analisi ----------
+.options noopiter
+.tran 0 12m 0 1u
+.step param amp 10 22 2
+
+* Swing uscita e rail
+.meas tran vpk_max MAX V(out) FROM 6m TO 12m
+.meas tran vpk_min MIN V(out) FROM 6m TO 12m
+.meas tran vp_min MIN V(vplus) FROM 6m TO 12m
+.meas tran vp_max MAX V(vplus) FROM 6m TO 12m
+.meas tran vm_min MIN V(vminus) FROM 6m TO 12m
+.meas tran vm_max MAX V(vminus) FROM 6m TO 12m
+
+* Sizing pass: dissipazione Q7 (Vce x Ic) e Q8
+* I(Vq7s) = Ic(Q7) (entra nel collettore); I(Vq8s) = Ic(Q8)
+.meas tran pq7_pk MAX V(q7c,vplus)*I(Vq7s) FROM 6m TO 12m
+.meas tran pq7_avg AVG V(q7c,vplus)*I(Vq7s) FROM 6m TO 12m
+.meas tran pq8_pk MAX V(vminus,q8c)*I(Vq8s) FROM 6m TO 12m
+.meas tran pq8_avg AVG V(vminus,q8c)*I(Vq8s) FROM 6m TO 12m
+* Corrente di collettore picco (verifica Rbu/Rbl e Ib)
+* Iq(Q7) entra nel collettore: I(Vq7s) > 0. Q8 PNP: Ic esce dal
+* collettore verso vm24: anche I(Vq8s) > 0 nel verso reale.
+.meas tran iq7_pk MAX I(Vq7s) FROM 6m TO 12m
+.meas tran iq8_pk MAX I(Vq8s) FROM 6m TO 12m
+* Corrente nelle R di bias stringa
+.meas tran ibu_max MAX I(Rbu) FROM 6m TO 12m
+.meas tran ibu_min MIN I(Rbu) FROM 6m TO 12m
+.meas tran ibl_max MAX I(Rbl) FROM 6m TO 12m
+.meas tran ibl_min MIN I(Rbl) FROM 6m TO 12m
+.end

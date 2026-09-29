@@ -1,0 +1,51 @@
+* ============================================================
+* 5-WAY DRIVE v0.3ter — Test D2c: nastro = CS JFET IN LOOP locale
+* Storia: CS nudo (D2) = 0,14 % sotto il knee (viola "CCW pulito");
+* shunt clipper (D2b) = canale acceso carica il nodo (−32 dB);
+* follower limiter = non pincha mai (bias domina la corrente).
+* v3: op-amp attorno al CS (feedback dal drain): sotto il knee il
+* loop linearizza (THD ≈ 0,2 %/14 ≈ 0,015 % ✓); sopra, il JFET
+* va in pinchoff → coda quadratica morbida = compressione nastro.
+* Drenaggio su REFERIMENTO +2,2 V (non +18): Rd 4,7 k verso vref
+* → Id ≈ 0,47 mA a Vd 0 → ginocchio SOFT ≈ +1,2-1,8 V (positivo);
+* negativo lineare fino a ~−13 (gate drive) → asimmetria calda:
+* picchi positivi comprimono (nastro), negativi restano aperti.
+* Drain DC = 0 V imposto dal loop (deriva Idss/temperatura nulla).
+* Gain = 1 (unity buffer saturante): la law vive tutta nel VCA.
+* DOMANDE: (a) THD sotto knee < 0,05 %?; (b) knee reale e pendenza
+* compressione; (c) H2/H3 sopra il knee; (d) ceiling negativo.
+* Modelli [PROVVISORIO — regola 3]: NJ310-like, OA ideale.
+* ============================================================
+
+.model NJ310 NJF(Beta=5m Vto=-3 Lambda=6m Cgs=25p Cgd=4p Is=10f)
+.subckt OPAMP0 inp inn out
+E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
+.ends OPAMP0
+
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 in 0 SINE(0 {amp} 1k)
+
+* Vref +2,2 V (partitore irrigidito)
+Rv1 vcc vref 7.15k
+Rv2 vref 0 1k
+Cv vref 0 10u
+
+* Loop: OA1 non invertente, gate pilotato, feedback dal drain
+Rser in oain 1k
+X1 oain drain goa OPAMP0
+J1 drain goa src NJ310
+Rd vref drain 2.2k
+Rs src 0 1.5k
+
+* Carico: partitore 2b (~124k)
+Rload drain 0 124k
+
+.options noopiter
+.nodeset V(drain)=0 V(src)=1.5 V(goa)=0
+.tran 0 20m 0 5u
+.step param amp LIST 0.2 0.4 0.7 1.0 1.3 1.6 2.0 2.5 3.5 5.0
+.meas tran vout_pk MAX V(drain) FROM 10m TO 20m
+.meas tran vout_pkmin MIN V(drain) FROM 10m TO 20m
+.four 1k 9 V(drain)
+.end

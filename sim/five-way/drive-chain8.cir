@@ -1,0 +1,104 @@
+* ============================================================
+* 5-WAY DRIVE v0.3 — Test D4h: catena FINALE (pair PNP, basi dal drain)
+* VCA 218x → 2a CS JFET nastro (Rg 10k, Rd 4,7k, gain 3,35, knee
+* 0,7-1,0 Vp) → Rdc 4,7k → 2b DIFF PAIR PNP single-ended (fuzz;
+* entrambe le basi alimentate dal DRAIN via R matched 4,7k: il DC
+* segue la deriva del drain automaticamente, niente Vref; Cbyp
+* 100u su baser = AC ground → tutto il segnale e' differenziale)
+* → recovery invertente 2k/2k (polarita' totale NON invertente)
+* + servo DC 2 op-amp che nulla RECO (lezione chain6/7: il servo
+* a iniezione FB sposta reco, non coll → deve sentire reco;
+* +integratore = 2 stadi) → R33 → meter/makeup.
+* PNP pair con Rc 4,7k verso −18: Vce ≈ −14 (mai saturo: Baker
+* inutile, RIMOSSO); coll ≈ −7,5 V (il servo porta reco a 0:
+* svout_ss ≈ +8 V, dentro ±16 con Rinj 2,2k → autorita' ±14,5 V).
+* Servo: R1s 1M/C1s 470n da reco → svint = −∫reco → X5 inverte
+* → svout2 = +∫reco → Rinj 2,2k → recn: reco↑ → svout2↑ →
+* i_inj↑ → reco = −(coll + 0,909·svout2) ↓ = NEGATIVO ✓.
+* fc ≈ 0,31 Hz (SUB 10 Hz: −0,005 dB); settling ~1 s.
+* G2 ≈ 3,35 × 0,975 × 1,39 ≈ 4,53 = +13,1 dB → law VCA = totale
+* − 13,2: θ 0/50/80/100 → −13,2/−6,2/−1,2/+2,8 dB.
+* MAPPING (dec. 82): θ0 nom 2a-in 0,086 Vp → ~0,002 % PULITO;
+* θ50 nom 0,19 → ~0,008 % PULITO; θ80 hot → knee NASTRO;
+* θ100 nom → drain 1,8 = steering onset; θ100 hot → FUZZ pieno.
+* Bilanciamento: mismatch β → offset coll ±0,5 V → entro autorita'
+* servo; trimmer opzionale solo se il banco lo chiede.
+* GRIGLIA: amp (−6/0/+10 dBu) × θ (0/50/65/80/90/100 %).
+* Modelli [PROVVISORIO — regola 3].
+* ============================================================
+
+.model NJ310 NJF(Beta=5m Vto=-3 Lambda=6m Cgs=25p Cgd=4p Is=10f)
+.model PNP3906 PNP(Is=1.72f Bf=190 Vaf=49.7 Ikr=0.237 Ne=2 Ise=43.4f Ikf=0.222 Br=4.9 Rb=1 Rc=3.7 Cje=19.2p Mje=0.37 Vje=0.75 Cjc=9.7p Mjc=0.34 Vjc=0.75 Fc=0.5 Tf=2.1n Tr=200n)
+.subckt OPAMP0 inp inn out
+E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
+.ends OPAMP0
+
+.param th=0.5
+.param amp=0.775
+
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 in 0 SINE(0 {amp} 1k)
+Vpot w 0 DC {5*th}
+
+* --- Stadio 1: shaper law + THAT 218x ---
+Bdb lawv 0 V={if(V(w)<2.5, -9.4+2.8*V(w), if(V(w)<4, -2.4+(V(w)-2.5)*3.3333, 2.6+(V(w)-4)*4))}
+Becp ecp 0 V={0.0061*max(0,V(lawv))}
+Becm ecm 0 V={0.0061*max(0,-V(lawv))}
+.subckt VCAM in out ecp ecm vp vm PARAMS: km=0.122
+Bg nout0 0 V={V(in)*limit(10**((V(ecp)-V(ecm))/km),1e-5,100)}
+Rpol nout0 nout1 1k
+Cpol nout1 0 8p
+Eout out 0 value={limit(V(nout1),V(vm)+1.5,V(vp)-1.5)}
+.ends VCAM
+X1 in vcaout ecp ecm vcc vee VCAM km=0.122
+
+* --- Stadio 2a: nastro = CS JFET ---
+Rg vcaout gate 10k
+J1 drain gate source NJ310
+Rd vcc drain 4.7k
+Rs source 0 1.05k
+
+* --- Basi pair dal drain (DC matched) ---
+Rdc drain basea 4.7k
+Rb2 drain baser 4.7k
+Cbyp baser 0 100u
+
+* --- Stadio 2b: fuzz = diff pair PNP single-ended ---
+Q3 coll basea emita PNP3906
+Q4 collb baser emitb PNP3906
+Rea emita tailp 470
+Reb emitb tailp 470
+Rc coll vee 4.7k
+Rc4 collb vee 4.7k
+Re3 tailp vcc 2.2k
+
+* --- Recovery invertente 2k/2k + servo DC 2 stadi su reco ---
+Rsrc coll recn 2k
+Rf recn reco 2k
+X3 0 recn reco OPAMP0
+R1s reco svinn 1Meg
+C1s svinn svint 470n
+X4 0 svinn svint OPAMP0
+Ri1 svint svi2n 100k
+Rfb svi2n svout2 100k
+X5 0 svi2n svout2 OPAMP0
+Rinj svout2 recn 2.2k
+Rser2 reco out 33
+Rl out 0 100k
+
+.options noopiter
+.nodeset V(drain)=6.5 V(gate)=0 V(source)=2.4 V(basea)=6.4 V(baser)=6.4 V(emita)=7.05 V(emitb)=7.05 V(tailp)=8.1 V(coll)=-7.5 V(collb)=-7.5 V(svint)=0 V(svout2)=8
+
+.tran 0 30m 0 5u
+.step param amp LIST 0.388 0.775 2.45
+.step param th LIST 0 0.5 0.65 0.8 0.9 1.0
+
+.meas tran vout_pk MAX V(out) FROM 20m TO 30m
+.meas tran vout_pkmin MIN V(out) FROM 20m TO 30m
+.meas tran vout_dc AVG V(out) FROM 29m TO 30m
+.meas tran vca_pk MAX V(vcaout) FROM 20m TO 30m
+.meas tran vdrain_pk MAX V(drain) FROM 20m TO 30m
+.meas tran vcoll_dc AVG V(coll) FROM 29m TO 30m
+.four 1k 9 V(out)
+.end

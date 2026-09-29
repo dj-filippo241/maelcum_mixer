@@ -1,0 +1,112 @@
+* ============================================================
+* 5-WAY DRIVE v0.3quater — Test D4d: catena FINALE candidata
+* VCA 218x → 2a CS JFET nudo (D2: knee 0,7-1,0 Vp al gate, gain
+* 3,35, THD quadratica sotto knee → a θ0 il VCA attenua −10 dB →
+* THD catena ~0,002 % = "CCW pulito" ✓ garantito dalla LAW, non
+* dal loop: il loop sul drain CS e' positivo — lezione 2026-09-29)
+* → pad −12 dB (4k7/1k5) → 2b DIFF PAIR NPN single-ended (fuzz:
+* steering ±~1,8 V al pair = clip duro asimmetrico: lato Ic→0
+* tondo, lato Ic→Itail piatto; Re 470, Rc 4,7k verso −18 →
+* coll ≈ +2 V DC, gain ≈ 4,8) → servo DC 2 stadi (+∫, TL062) su
+* baser (Rtrack 100k da basea per il DC comune) → recovery unity.
+* G2 ≈ 3,35 × 0,25 × 0,77 × 4,8 × 1,001 ≈ +9,9 dB → law VCA =
+* totale − 10,1: θ 0/50/80/100 → −10,1/−3,1/+1,9/+5,9 dB.
+* MAPPING ATTESO (dec. 82): θ0 nominale: 2a in 0,12 Vp → 0,002 %;
+* θ50 nom: 0,19 → ~0,02 % pulito; θ80 nom: 0,44 → drain 1,5 →
+* pad 0,37 → nastro nascente; θ100 nom: 0,77 = knee → tape;
+* hot +10 dBu: θ50 colora (0,48→0,24 % interazione), θ100 = 
+* drain 4,8 → pad 1,2 → pair steering → FUZZ.
+* Rumore stimato ~−99 dBu (Rg 100k, pad basso-Z): verifica D6.
+* GRIGLIA: amp (−6/0/+10 dBu) × θ (0/50/65/80/90/100 %).
+* Modelli [PROVVISORIO — regola 3].
+* ============================================================
+
+.model NJ310 NJF(Beta=5m Vto=-3 Lambda=6m Cgs=25p Cgd=4p Is=10f)
+.model NPN3904 NPN(Is=6.7f Bf=190 Vaf=74 Ikf=0.237 Ne=1.2 Ise=6.7f Ikr=0.222 Br=4.9 Rb=1 Rc=3.7 Cje=19.2p Mje=0.37 Vje=0.75 Cjc=9.7p Mjc=0.34 Vjc=0.75 Fc=0.5 Tf=2.1n Tr=200n)
+.subckt OPAMP0 inp inn out
+E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
+.ends OPAMP0
+
+.param th=0.5
+.param amp=0.775
+
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 in 0 SINE(0 {amp} 1k)
+Vpot w 0 DC {5*th}
+
+* --- Stadio 1: shaper law + THAT 218x ---
+Bdb lawv 0 V={if(V(w)<2.5, -10.1+2.8*V(w), if(V(w)<4, -3.1+(V(w)-2.5)*3.3333, 1.9+(V(w)-4)*4))}
+Becp ecp 0 V={0.0061*max(0,V(lawv))}
+Becm ecm 0 V={0.0061*max(0,-V(lawv))}
+.subckt VCAM in out ecp ecm vp vm PARAMS: km=0.122
+Bg nout0 0 V={V(in)*limit(10**((V(ecp)-V(ecm))/km),1e-5,100)}
+Rpol nout0 nout1 1k
+Cpol nout1 0 8p
+Eout out 0 value={limit(V(nout1),V(vm)+1.5,V(vp)-1.5)}
+.ends VCAM
+X1 in vcaout ecp ecm vcc vee VCAM km=0.122
+
+* --- Stadio 2a: CS JFET nastro (topologia D2 validata) ---
+Rg vcaout gate 100k
+J1 drain gate source NJ310
+Rd vcc drain 4.7k
+Rs source 0 1.05k
+
+* --- Pad −12 dB ---
+Rp1 drain padn 4.7k
+Rp2 padn 0 1.5k
+
+* --- Accoppiamento DC → diff pair ---
+Rdc padn basea 4.7k
+* Rtrack RIMOSSO (2026-09-29): accoppiava il servo al modo comune
+* → latch (basi sotto gli emettitori, tail morto). baser sta su
+* Rinj da solo: autorita' ±16 V × (93k/1,093M) = ±1,36 V = range
+* di steering completo; basea resta agganciata al pad via Rdc.
+
+* --- Stadio 2b: fuzz = diff pair single-ended ---
+Q3 coll basea emita NPN3904
+Q4 collb baser emitb NPN3904
+Rea emita tailp 470
+Reb emitb tailp 470
+Rc coll vee 4.7k
+Rc4 collb vee 4.7k
+Re3 tailp vee 2.2k
+
+* --- DC SERVO 2 stadi (coll → +∫ → baser) ---
+R1s coll svinn 220k
+C1s svinn svint 15n
+X4 0 svinn svint OPAMP0
+Ri1 svint svi2n 100k
+Rfb svi2n svout2 100k
+X5 0 svi2n svout2 OPAMP0
+Rinj svout2 baser 1Meg
+
+* --- Recovery unity → meter/makeup ---
+X3 coll recn reco OPAMP0
+Rf recn reco 1k
+Rgr recn 0 1Meg
+Rser2 reco out 33
+Rl out 0 100k
+
+.options noopiter
+.nodeset V(drain)=7.6 V(gate)=0 V(source)=2.4 V(padn)=1.8 V(basea)=1.5 V(baser)=1.5 V(coll)=2 V(tailp)=0.8 V(emita)=0.8 V(emitb)=0.8 V(svint)=0 V(svout2)=0
+
+.tran 0 20m 0 5u
+
+.meas tran n_drain FIND V(drain) AT 19m
+.meas tran n_gate FIND V(gate) AT 19m
+.meas tran n_source FIND V(source) AT 19m
+.meas tran n_pad FIND V(padn) AT 19m
+.meas tran n_basea FIND V(basea) AT 19m
+.meas tran n_baser FIND V(baser) AT 19m
+.meas tran n_emita FIND V(emita) AT 19m
+.meas tran n_tailp FIND V(tailp) AT 19m
+.meas tran n_coll FIND V(coll) AT 19m
+.meas tran n_collb FIND V(collb) AT 19m
+.meas tran n_svint FIND V(svint) AT 19m
+.meas tran n_svout2 FIND V(svout2) AT 19m
+.meas tran n_vcaout FIND V(vcaout) AT 19m
+.meas tran n_reco FIND V(reco) AT 19m
+
+.end

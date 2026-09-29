@@ -1,0 +1,102 @@
+* ============================================================
+* 5-WAY DRIVE v0.3ter — Test D4c: catena completa FINALE
+* VCA 218x (law totale compensata G2) → 2a CS JFET in loop locale
+* (nastro: sotto knee THD~0, sopra coda quadratica, ceiling +2,2 V,
+* negativo aperto) → 2b COPPIA DIFFERENZIALE BJT single-ended
+* (fuzz: steering completo a ±2-3 V = clip duro asimmetrico,
+* "BJT asimmetrico" del corpus §18) → servo DC a due stadi
+* (integratore+invertitore, TL062: coll → base lato riferimento)
+* → recovery unity OPA1612-class → R 33 → meter/makeup.
+* Perche' la diff pair (iterazione 2026-09-29): il singolo PNP CE
+* non concilia bias DC da un nodo a 0 V, guadagno e range servo
+* (partitore mangia segnale); la coppia ha basi a ~0 V (drain 2a
+* bloccato dal loop), Rc verso −18 → coll ≈ 0 V, gain 6, steering
+* asimmetrico per costruzione (lato Ic→0 tondo, lato Ic→Itail piatto).
+* G2 ≈ 0,86 (Rdc) × 6 (pair) × 1,001 ≈ +14,2 dB [PROVVISORIO] →
+* law VCA = totale − 14,2: θ 0/50/80/100 → −14,2/−7,2/−2,2/+1,8 dB.
+* Mapping atteso [dec. 82]: θ50 nominale (0,87 Vp post-2a) pulito;
+* θ80 nominale (1,55) = ginocchio nastro; θ100 nominale (2,45) =
+* oltre il ceiling 2a → steering parziale (fuzz sui picchi);
+* hot +10 dBu a θ100 = fuzz pieno; hot a θ50 colora gia' (interazione).
+* GRIGLIA: amp (−6/0/+10 dBu) × θ (0/50/65/80/90/100 %).
+* Modelli [PROVVISORIO — regola 3].
+* ============================================================
+
+.model NJ310 NJF(Beta=5m Vto=-3 Lambda=6m Cgs=25p Cgd=4p Is=10f)
+.model NPN3904 NPN(Is=6.7f Bf=190 Vaf=74 Ikf=0.237 Ne=1.2 Ise=6.7f Ikr=0.222 Br=4.9 Rb=1 Rc=3.7 Cje=19.2p Mje=0.37 Vje=0.75 Cjc=9.7p Mjc=0.34 Vjc=0.75 Fc=0.5 Tf=2.1n Tr=200n)
+.subckt OPAMP0 inp inn out
+E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
+.ends OPAMP0
+
+.param th=0.5
+.param amp=0.775
+
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 in 0 SINE(0 {amp} 1k)
+Vpot w 0 DC {5*th}
+
+* --- Stadio 1: shaper law 3 tratti + THAT 218x ---
+Bdb lawv 0 V={if(V(w)<2.5, -14.2+2.8*V(w), if(V(w)<4, -7.2+(V(w)-2.5)*3.3333, -2.2+(V(w)-4)*4))}
+Becp ecp 0 V={0.0061*max(0,V(lawv))}
+Becm ecm 0 V={0.0061*max(0,-V(lawv))}
+.subckt VCAM in out ecp ecm vp vm PARAMS: km=0.122
+Bg nout0 0 V={V(in)*limit(10**((V(ecp)-V(ecm))/km),1e-5,100)}
+Rpol nout0 nout1 1k
+Cpol nout1 0 8p
+Eout out 0 value={limit(V(nout1),V(vm)+1.5,V(vp)-1.5)}
+.ends VCAM
+X1 in vcaout ecp ecm vcc vee VCAM km=0.122
+
+* --- Stadio 2a: nastro = CS JFET in loop (drain DC = 0 V) ---
+Rser vcaout oain 1k
+X2 oain drain goa OPAMP0
+J1 drain goa src NJ310
+Rv1 vcc vref 7.15k
+Rv2 vref 0 1k
+Cv vref 0 10u
+Rd vref drain 2.2k
+Rs src 0 1.5k
+
+* --- Accoppiamento DC 2a→2b ---
+Rdc drain basea 47k
+
+* --- Stadio 2b: fuzz = diff pair NPN single-ended ---
+Q3 coll basea emita NPN3904
+Q4 collb baser emitb NPN3904
+Rea emita tailp 1k
+Reb emitb tailp 1k
+Rc coll vee 12k
+Rc4 collb vee 12k
+Re3 tailp vee 5.6k
+Rbref baser 0 100k
+
+* --- DC SERVO due stadi: coll → +∫ → base lato riferimento ---
+R1s coll svinn 220k
+C1s svinn svint 15n
+X4 0 svinn svint OPAMP0
+Ri1 svint svi2n 100k
+Rfb svi2n svout2 100k
+X5 0 svi2n svout2 OPAMP0
+Rinj svout2 baser 1Meg
+
+* --- Recovery unity → meter/makeup ---
+X3 coll recn reco OPAMP0
+Rf recn reco 1k
+Rgr recn 0 1Meg
+Rser2 reco out 33
+Rl out 0 100k
+
+.options noopiter
+.nodeset V(drain)=0 V(src)=1.5 V(goa)=0 V(basea)=0 V(baser)=0 V(coll)=0 V(tailp)=-2.2 V(emita)=-2.2 V(emitb)=-2.2 V(svint)=0 V(svout2)=0
+
+.tran 0 20m 0 5u
+.step param amp LIST 0.388 0.775 2.45
+.step param th LIST 0 0.5 0.65 0.8 0.9 1.0
+
+.meas tran vout_pk MAX V(out) FROM 10m TO 20m
+.meas tran vout_pkmin MIN V(out) FROM 10m TO 20m
+.meas tran vout_dc AVG V(out) FROM 19m TO 20m
+.meas tran vca_pk MAX V(vcaout) FROM 10m TO 20m
+.four 1k 9 V(out)
+.end

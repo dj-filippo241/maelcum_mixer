@@ -1,0 +1,118 @@
+* ============================================================
+* MASTER OUT v0.3 — Test 8: banda e stabilita' col bootstrap + servo DC
+* Confronto diretto A/B con comp-ac.cir (v0.2, rail ±18 fissi):
+* stessa struttura di misura, stessi carichi (0/10/33 nF).
+* ATTESA da decisione 86: composito invariato (A_vas = 1, stabilita'
+* nota) → risposta = v0.2; i rail bootstrap entrano solo nei clamp
+* della macro e nel piccolo segnale dei pass (verifica qui).
+* Requisito: banda 8 Hz-35 kHz ±0,5 dB; nessun picco closed-loop
+* in banda (proxy margine di fase, lezione Test 5).
+* --- RETE SERVO DC (nuova, finale) ---
+* Il composito v0.2 aveva feedback DIRETTO out→inn: nessun nodo di
+* somma per il servo. Soluzione adottata: Rf 1k nel feedback + Rg 1M
+* a massa (guadagno 1,001 = +0,0087 dB) e ingresso via Rsrc 1k con
+* iniezione servo via Rinj 1M (attenuazione 0,999 = −0,0087 dB):
+* guadagno netto di segnale = 1,000. Nodo di somma = inp (alta Z).
+* Integratore invertente (OPAMP0 ideale, rail statici ±18): R1 220k
+* da OUT, C 15n → corner servo fc = 1/(2πR1C) = 0,048 Hz (dentro la
+* finestra libera 0,05-0,5 Hz del DC servo FX validato 2026-09-28).
+* Segno verificato in DC: OUT che deriva positivo → servo out negativo
+* → inp tirato giu' → OUT corretto (anello negativo).
+* Modelli [PROVVISORIO — regola 3].
+* ============================================================
+
+.inc opamac-isup.inc
+
+* Servo: op-amp ideale (nel reale: FET-input low-Iq, es. TL061/OPA827;
+* la sua Iq NON grava sui rail bootstrap perche' sta sui ±18 statici)
+.subckt OPAMP0 inp inn out
+E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
+.ends OPAMP0
+
+.model MJE340 NPN(IS=1e-13 BF=150 VAF=150 IKF=0.5 BR=5 CJC=4p CJE=15p TF=2n TR=20n RB=5 RC=1 RE=0.1 Vceo=300 Icrating=500m mfg=ON)
+.model MJE350 PNP(IS=1e-13 BF=100 VAF=120 IKF=0.4 BR=3 CJC=4p CJE=15p TF=5n TR=50n RB=5 RC=1.5 RE=0.15 Vceo=300 Icrating=500m mfg=ON)
+.model QMULT NPN(IS=1e-14 BF=200 VAF=100 CJC=8p CJE=25p TF=400p)
+.model DIO D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p Tt=4n)
+.model NJF245 NJF(Beta=4m Vto=-1.4 Lambda=10m Cgs=10p Cgd=4p Is=10f)
+
+Vp24 vp24 0 DC 24
+Vm24 vm24 0 DC -24
+
+* ---------- Ingresso (via Rsrc, nodo di somma servo) ----------
+V1 src 0 DC 0 AC 1
+Rsrc src in 1k
+
+* ---------- Bootstrap rail SUPERIORE (CCS JFET, Test 7b) ----------
+J1 vp24 j1s bu NJF245
+Rj1 j1s bu 47
+Q7 vp24 bu vplus MJE340
+D1 bu s1 DIO
+D2 s1 s2 DIO
+D3 s2 s3 DIO
+D4 s3 s4 DIO
+D5 s4 s5 DIO
+D6 s5 s6 DIO
+D7 s6 s7 DIO
+D15 s7 s8 DIO
+D16 s8 out DIO
+
+* ---------- Bootstrap rail INFERIORE (CCS JFET, Test 7b) ----------
+J2 nb2 j2s vm24 NJF245
+Rj2 j2s vm24 47
+Q8 vm24 nb2 vminus MJE350
+D8 out t1 DIO
+D9 t1 t2 DIO
+D10 t2 t3 DIO
+D11 t3 t4 DIO
+D12 t4 t5 DIO
+D13 t5 t6 DIO
+D14 t6 t7 DIO
+D17 t7 t8 DIO
+D18 t8 nb2 DIO
+
+* ---------- Composito v0.2 (rail = bootstrap, feedback via Rf) ----------
+X1 in inn drv vplus vminus OPAMAC
+Q3 drv mid b2 QMULT
+Ra drv mid 2.2k
+Rbm mid b2 1k
+Q1 vp24 drv e1 MJE340
+Q2 vm24 b2 e2 MJE350
+Re1 e1 out 33
+Re2 e2 out 33
+* NOTA v0.3c (misurato, THD): Cboot 1u+100n rail↔OUT PROVATI E RIMOSSI:
+* interagendo col kink degli specchi di assorbimento (cambio ramo a ogni
+* attraversamento della corrente di carico) producevano glitch 0,3-0,4 V
+* una volta per periodo → THD 5,9-38 % (comb). Il picco closed-loop MHz
+* (fuori banda, innocuo: g8hz-35k piatto) si lascia com'era in v0.2
+* (+3,3 dB @50 MHz senza carico). A banco: eventuale decoupling rail
+* da provare SOLO con valori piccoli (100n) e misura THD prima/dopo.
+
+
+* ---------- Rete feedback + servo DC ----------
+Rf inn out 1k
+Rg inn 0 1Meg
+Rinj svout in 1Meg
+X2 0 svinn svout OPAMP0
+R1s out svinn 220k
+C1s svinn svout 15n
+
+* ---------- Carico ----------
+RL out 0 10k
+Cload out 0 {cl}
+.step param cl LIST 0 10n 33n
+
+* ---------- Analisi ----------
+.options noopiter
+* Punto di partenza per Newton (lezione Test 5): senza, il source
+* stepping resta appeso con lo specchio lineare + bootstrap
+.nodeset V(out)=0 V(in)=0 V(inn)=0 V(drv)=0.7 V(vplus)=5.4 V(vminus)=-5.4 V(svout)=0 V(svinn)=0
+.ac dec 200 1 100Meg
+* Stesse misure di comp-ac.cir (v0.2) per confronto diretto
+.meas ac g8hz FIND mag(V(out)) AT 8
+.meas ac g35khz FIND mag(V(out)) AT 35k
+.meas ac g1khz FIND mag(V(out)) AT 1k
+.meas ac gmax MAX mag(V(out))
+.meas ac f3db WHEN mag(V(out))=0.707
+* Corner del servo (atteso 0,048 Hz, sotto la banda di misura)
+.meas ac g100mhz FIND mag(V(out)) AT 100Meg
+.end

@@ -223,6 +223,11 @@ Conseguenza onesta da registrare: a MASTER LEVEL a +6 dB con programma già a +1
 | Op-amp audio summing/buffer/meter | OPA1612AID (dual) | ±18 V max, 1,1 nV/√Hz, THD ~0,00008% — verificare Iq a datasheet | ~4-6 € |
 | VCA master + booth level | 4× THAT 2180/2181 SINGOLI (2 master + 2 booth) | 218x = single channel (datasheet 2026-09-27); tracking via trim di law (2181) o selezione coppie (2180); clone CoolAudio V2181 alternativo — voce 37 | ~12-24 € |
 | Transistor diamond output | MJE340/MJE350 o BD139/BD140 | TO-126, 500 mA — abbondanti per linea | ~0,5-1 € la coppia |
+| Pass bootstrap rail (v0.3) | MJE340/MJE350 ×2 per canale | dissipano Iq 40 mA: 0,75 W idle / 1,0 W programma medio / 2,7 W picco → ≥4 cm² rame o alettina | ~1 € la coppia |
+| Stringhe riferimento bootstrap | 9×1N4148 per lato (Δ ≈ 5,3 V) | alternativa [PROVVISORIA]: 3 LED rossi (meno rumore/TC, scelta al prototipo) | ~0,5 € |
+| Bias stringhe (CRD) | JFET BF245B-class ×2 per canale | gate-source corti = CRD, Idss ≈ 4 mA; spread Idss ±30% → Δ ±0,3 V (margine intatto); R 47 Ω opzionale | ~1 € |
+| Rete servo DC (v0.3) | Rsrc/Rf 1k, Rg/Rinj 1M, 220k/15n | guadagno netto 1,000; fc 0,048 Hz | ~0,5 € |
+| Op-amp servo | TL061-class FET-input low-Iq (½ dual per canale) | su ±18 statici: la sua Iq NON grava sul bootstrap | ~0,5 € |
 | Coppia d'ingresso diamond (se serve matching) | KSC1845/KSA992 | sostituti moderni dei classici Toshiba 2SC2240/2SA970 | ~1 € la coppia |
 | Comparator clip purple | LM339 ×1 | quad, open-collector | ~0,5 € |
 | Scale meter | LM3915 ×4 | 10 segmenti log 3 dB cad., 2 in cascata per canale, bar mode | ~1-2 € cad |
@@ -300,19 +305,43 @@ l'op-amp guadagna esattamente i volt che gli mancavano, il follower arriva a ±2
 modulo worst +22 dBu resta dentro con 3 dB).
 
 **SWING VALIDATO 2026-09-29** (`sim/master-out/compB-swing.cir`, RISULTATI-composite
-§v0.3 Test 6): capability ±21,1-21,5 V = **+25,0…+25,2 dBu** — requisito ≥+24 dBu
-PASS con ~1,7 dB di margine; tracking rail OUT±4,4 V e handoff statico verificati.
-Da completare per la v0.3 definitiva:
-1. Rete bootstrap: valori stringa (LED low-noise preferiti ai diodi 1N4148 della sim),
-   bias inferiore con JFET CCS invece di R (simmetria −0,35 V), dimensionamento reale
-   con Iq 40 mA (pass: worst ~1,6 W → aletta/rame), comportamento ad accensione
-   (OUT = 0 → rail ±Δ ≈ ±4,4 V ≥ ±2,25 V minimi datasheet ✓ in sim).
-2. Rumore dei riferimenti sui rail → attenuato dalla PSRR del chip (~120 dB LF, in calo in
-   frequenza): quantificare; eventuale RC di filtro sulle stringhe.
-3. Finestra common-mode/uscite della macro entro i rail flottanti a swing pieno.
-4. Suite LTspice: comp-swing/comp-ac/comp-thd/comp-short ripetuti sul composito bootstrapped
-   + confronto diretto con la v0.2 (la macro clamp riferita a vp/vm modella il tracking
-   automaticamente; PSRR assente nella macro = ottimismo sul coupling d'alimentazione →
-   verifica a banco).
-5. Protezioni (limitazione corrente, clamp Vbe, SOA) e servo DC: sempre pendenti dal v0.2,
-   da dimensionare sui numeri del test corto (460 mA/4,3 W misurati).
+§v0.3 Test 6): capability ±21,1-21,5 V — requisito ≥+24 dBu PASS. **SUPERATO dal
+Test 7**: il Test 6 ignorava l'assorbimento reale del chip (macro senza Iq) →
+capability ottimistica; i numeri definitivi sono qui sotto.
+
+**v0.3 DEFINITIVA — SUITE COMPLETA 2026-09-29** (`sim/master-out/compB-*.cir` +
+`opamac-isup{,-t}.inc`, RISULTATI-composite §v0.3 Test 7-12). Checklist dell'addendum
+CHIUSA punto per punto:
+1. Rete bootstrap FINALE: pass MJE340/350; stringa **9×1N4148 per lato** (Δ ≈ 5,3 V;
+   opzione LED = 3 rossi, al prototipo); bias stringhe a **JFET in modo CRD**
+   (gate-source corti, Id = Idss ≈ 4 mA: handoff a bassa Z, simmetria +/−0,5 V);
+   sizing reale con Iq 40 mA: **pass ≈ 0,75 W idle / 1,0 W programma medio /
+   2,7 W picco worst → TO-126 su ≥4 cm² di rame o alettina**; power-on: supply chip
+   ≥ 8,4 V in ogni condizione (min datasheet 4,5 ✓); transiente d'accensione
+   +8/−15 V coperto dal mute relay [BLOCCATO §3.7] → timing 1,5-2 s confermato.
+2. Rumore riferimenti/rail → Test 10: stringa ≈ 2,7 nV/√Hz → via PSRR ~120 dB =
+   fV-level: trascurabile, **nessun RC di filtro necessario**; rumore residuo
+   d'uscita misurato **−119,2 dBu** (target < −100: PASS 19 dB).
+3. Finestra CM: CM = OUT sempre centrata nei rail flottanti (strutturale); clamp
+   drv con margine ≥ 2 V al livello di requisito (lezione Test 9: sotto ~1,5 V
+   il limit() sfiora → comb THD).
+4. Suite: swing **±20,4-20,9 V = +25,4…+25,6 dBu PASS con 1,4-1,6 dB di margine**
+   (capability 600 Ω ≈ +20,2 V, margine ≥1,3 dB); AC banda 8 Hz-35 kHz
+   **−0,0002…+0,008 dB PASS** (picchi closed-loop solo >1 MHz, fuori banda, come
+   v0.2); THD a 14 Vp **identica alla v0.2** (A/B ✓) e a **+24 dBu (17,37 Vp,
+   requisito vero): 0,00012 % @1 kHz / 0,0042 % @35 kHz su 600 Ω — PASS <0,005 %**;
+   corto: **106/67 mA picco auto-limitati dal collasso dei rail** (v0.2: 460 mA),
+   Q1 2,15 W pk / 1,01 W avg = worst di programma → corto sostenuto sopravvive
+   col rame standard.
+5. Protezioni: **il bootstrap È il limitatore** → niente limitatore Vbe dedicato;
+   il target §3.3 "< 60 mA/ramo" [PROVVISORIO] è REVISIONATO dai dati: ≤ ~110 mA
+   auto-limitati + SOA dentro la curva MJE con margine; protezione per abuso
+   prolungato = dominio PSU (task sistema). **Servo DC VALIDATO**: rete definitiva
+   Rsrc 1k / Rinj 1M / Rf 1k / Rg 1M (guadagno netto 1,000 ±0,001) + integratore
+   220k/15n (fc 0,048 Hz) + op-amp FET-input low-Iq su ±18 statici → Vos 3 mV
+   nulla a **−30 µV** (target <5 mV rispettato 170×), settling τ ≈ 3,3 s,
+   nessun ringing, errore a 8 Hz −0,0002 dB.
+
+Restano per banco/prototipo (dichiarati): modello TI ufficiale (THD/rumore del chip
+reale), ripple/PSRR con PSU vero, corto sostenuto termico su rame, scelta LED vs
+1N4148, trim law 2181 (q53), eventuale smorzamento picco MHz (Zobel già al connettore).

@@ -1,0 +1,87 @@
+* ============================================================
+* 5-WAY DRIVE v0.3bis — Test D4b: catena completa finale
+* VCA 218x (law totale diretta) → clipper shunt JFET (nastro) →
+* PNP CE asimmetrico (fuzz) → servo DC → recovery unity.
+* Cambi vs drive-chain.cir (v1): (1) 2a CS sostituito da SHUNT
+* clipper (sotto il ginocchio THD ~0 → "CCW pulito" rispettato);
+* (2) law VCA = totale − G2 con G2 ≈ +7,3 dB [PROVVISORIO:
+* ricalibrare su misura]; (3) servo inietta su base2 (autorita'
+* ±0,37 V → ∓3,7 V su coll: sufficiente; su clip sarebbe 1/4700).
+* Law totale [BLOCCATO dec. 82]: θ0 = 0 dB · θ50 = +7 · θ80 = +12
+* · θ100 = +16. VCA: −7,3 → −0,3 → +4,7 → +8,7 dB (3 tratti).
+* Ginocchio clipper ≈ +1,3-1,5 V (Vg −1,78, Vto −3) / negativo
+* ≈ −2,4 V → mapping atteso: θ50 nominale (0,36 Vp post-VCA)
+* pulito; hot +10 dBu colora gia' a θ50 (interazione voluta);
+* θ80 nominale ≈ ginocchio (nastro sui picchi); θ100 hot = fuzz.
+* GRIGLIA: amp (−6/0/+10 dBu) × θ (0/50/65/80/90/100 %).
+* Modelli [PROVVISORIO — regola 3].
+* ============================================================
+
+.model NJ310 NJF(Beta=5m Vto=-3 Lambda=6m Cgs=25p Cgd=4p Is=10f)
+.model PNP3906 PNP(Is=1.72f Bf=190 Vaf=49.7 Ikr=0.237 Ne=2 Ise=43.4f Ikf=0.222 Br=4.9 Rb=1 Rc=3.7 Cje=19.2p Mje=0.37 Vje=0.75 Cjc=9.7p Mjc=0.34 Vjc=0.75 Fc=0.5 Tf=2.1n Tr=200n)
+
+.subckt OPAMP0 inp inn out
+E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
+.ends OPAMP0
+
+.param th=0.5
+.param amp=0.775
+
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 in 0 SINE(0 {amp} 1k)
+Vpot w 0 DC {5*th}
+
+* --- Shaper law 3 tratti + THAT 218x (stadio 1) ---
+Bdb lawv 0 V={if(V(w)<2.5, -7.3+2.8*V(w), if(V(w)<4, -0.3+(V(w)-2.5)*3.3333, 4.7+(V(w)-4)*4))}
+Becp ecp 0 V={0.0061*max(0,V(lawv))}
+Becm ecm 0 V={0.0061*max(0,-V(lawv))}
+.subckt VCAM in out ecp ecm vp vm PARAMS: km=0.122
+Bg nout0 0 V={V(in)*limit(10**((V(ecp)-V(ecm))/km),1e-5,100)}
+Rpol nout0 nout1 1k
+Cpol nout1 0 8p
+Eout out 0 value={limit(V(nout1),V(vm)+1.5,V(vp)-1.5)}
+.ends VCAM
+X1 in vcaout ecp ecm vcc vee VCAM km=0.122
+
+* --- Stadio 2a: clipper shunt JFET (nastro) ---
+Rser vcaout clip 1k
+J1 clip 0 gate NJ310
+Rgn vee gate 62k
+Rgg gate 0 6.8k
+
+* --- Accoppiamento DC 2a→2b ---
+Rdc clip base2 100k
+Rtop vcc base2 33k
+
+* --- Stadio 2b: PNP CE asimmetrico (fuzz) ---
+Q2 coll base2 emit2 PNP3906
+Re2 vcc emit2 470
+Rc2 coll vee 4.7k
+
+* --- DC SERVO: coll → integratore → base2 (fc 0,048 Hz) ---
+Rinj svout base2 1Meg
+X4 0 svinn svout OPAMP0
+R1s coll svinn 220k
+C1s svinn svout 15n
+
+* --- Recovery unity (OPA1612-class, ideale qui) → meter/makeup ---
+X3 coll recn reco OPAMP0
+Rf recn reco 1k
+Rgr recn 0 1Meg
+Rser2 reco out 33
+Rl out 0 100k
+
+.options noopiter
+.nodeset V(clip)=0 V(gate)=-1.78 V(base2)=13.5 V(coll)=0 V(svout)=0 V(vcaout)=0 V(reco)=0
+
+.tran 0 20m 0 5u
+.step param amp LIST 0.388 0.775 2.45
+.step param th LIST 0 0.5 0.65 0.8 0.9 1.0
+
+.meas tran vout_pk MAX V(out) FROM 10m TO 20m
+.meas tran vout_pkmin MIN V(out) FROM 10m TO 20m
+.meas tran vout_dc AVG V(out) FROM 19m TO 20m
+.meas tran vca_pk MAX V(vcaout) FROM 10m TO 20m
+.four 1k 9 V(out)
+.end

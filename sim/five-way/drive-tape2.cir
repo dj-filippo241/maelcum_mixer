@@ -1,0 +1,41 @@
+* ============================================================
+* 5-WAY DRIVE v0.3bis — Test D2b: saturatore nastro = JFET SHUNT
+* Sostituisce il CS di drive-tape.cir: il common-source distorce
+* SEMPRE (0,14-0,2 % sotto il ginocchio → viola "CCW = pulito").
+* Topologia shunt: sotto il ginocchio il JFET e' interdetto (canale
+* spento, THD ~0, carico nullo); sopra, il canale conduce e shunta
+* il nodo morbidamente (coda quadratica) → compressione calda.
+* ASIMMETRIA intrinseca (volunta, famiglia nastro): lato positivo
+* clippa a Vgate−Vto ≈ +1,5 V; lato negativo il canale resta acceso
+* finche' il gate non va in diretta (≈ −(Vg+0,6)) → negativo piu'
+* aperto → H2 presente + H3 → calore asimmetrico.
+* Bias gate [PROVVISORIO — regola 3]: partitore 62k/6,8k da −18 →
+* Vg ≈ −1,78 V → ginocchio ≈ 1,3-1,5 V (verifica .dc sotto).
+* DOMANDE: (a) trasferimento .dc (ginocchio +/−); (b) sotto il
+* ginocchio THD < 0,01 %?; (c) progressione armonica sopra (H2/H3);
+* (d) impedenza di carico del partitore 2b (Rdc+Rtop ≈ 25 k) sul
+* ginocchio.
+* ============================================================
+
+.model NJ310 NJF(Beta=5m Vto=-3 Lambda=6m Cgs=25p Cgd=4p Is=10f)
+
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 in 0 SINE(0 {amp} 1k)
+
+* VCA a monte = sorgente ideale per questo test (livello = post-VCA)
+Rser in clip 1k
+* Shunt JFET: drain=clip, source=0, gate bias −1,78
+J1 clip 0 gate NJ310
+Rgn vee gate 62k
+Rgg gate 0 6.8k
+* Carico: rete bias 2b (Rdc 100k + Rtop 33k verso +18 → ~25k verso AC)
+Rload clip 0 25k
+
+.options noopiter
+.tran 0 20m 0 5u
+.step param amp LIST 0.3 0.6 0.9 1.2 1.5 2.5 4.0 6.0
+.meas tran vout_pk MAX V(clip) FROM 10m TO 20m
+.meas tran vout_pkmin MIN V(clip) FROM 10m TO 20m
+.four 1k 9 V(clip)
+.end

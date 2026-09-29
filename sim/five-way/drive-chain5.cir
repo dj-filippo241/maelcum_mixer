@@ -1,0 +1,115 @@
+* ============================================================
+* 5-WAY DRIVE v0.3 — Test D4e: catena FINALE (architettura chiusa)
+* VCA 218x (law diretta) → 2a CS JFET nastro (D2 validato: knee
+* 0,7-1,0 Vp, gain ~3,35, Rg 100k per rumore) → pad −12 dB
+* (4k7/1k5) → 2b DIFF PAIR NPN single-ended (fuzz asimmetrico:
+* steering ±~1,8 V; Re 470; Rc 4,7k verso −18) → recovery
+* INVERTENTE 2k/2k (gain −1: polarita' totale NON invertente —
+* VCA +, CS −, pair +, recovery −) + SERVO DC a iniezione FB
+* (pattern validato FX 2026-09-28 e master-out v0.3: nodo di
+* somma = recn virtual ground, autorita' ±0,68 V = coll ±3,4 V)
+* → R 33 → meter/makeup.
+* --- LEZIONI INTEGRATE (2026-09-29, tre iterazioni) ---
+* 1. Loop sul drain del CS = POSITIVO (CS inverte) → 2a resta nudo:
+*    la pulizia a CCW la garantisce la LAW (VCA −6 dB a θ0 →
+*    THD catena ~0,01 %: distorsione CS ∝ (v/knee)²).
+* 2. Rtrack basea-baser + servo sul baser = LATCH di modo comune
+*    (basi sotto gli emettitori, tail morto) → RIMOSSO: le due
+*    basi prendono lo STESSO DC dal pad (Rdc 4,7k ×2 matched),
+*    baser bypassata 220u (AC ground, DC tracking del drain).
+* 3. Latch di saturazione Q3 (Ib 2,4 mA via Rdc → pad collassa):
+*    diodo Baker basea→coll (anti-saturazione) + Rdc piccolo.
+* 4. Shunt clipper JFET (D2b) = canale acceso carica il nodo;
+*    follower limiter non pincha; CS-in-loop = feedback positivo.
+* G2 ≈ 3,35 × 0,242 × 0,95 × 2,62 × 1 ≈ 2,0 = +6,1 dB → law VCA =
+* totale − 6,1: θ 0/50/80/100 → −6,1/+0,9/+5,9/+9,9 dB.
+* MAPPING ATTESO (dec. 82): θ0 nom → 2a in 0,20 Vp → ~0,01 % PULITO;
+* θ50 nom → 0,43 → 0,05 % (quasi pulito, H2 caldo); θ80 nom → 0,77
+* = knee → NASTRO sui picchi; θ100 nom → 1,23 → tape/fuzz;
+* hot +10 dBu θ100 → 7,7 → steering pair = FUZZ pieno; hot θ50 →
+* 1,1 → colora gia' (interazione voluta dec. 82).
+* Servo: fc ≈ 0,09 Hz (R1s 220k, C1s 330n, Rf/Rinj = 2k/47k);
+* segno: senso da COLL (pre-inversione) → integratore invertente
+* → iniezione recn: anello negativo (verificato in continua).
+* GRIGLIA: amp (−6/0/+10 dBu) × θ (0/50/65/80/90/100 %).
+* Modelli [PROVVISORIO — regola 3].
+* ============================================================
+
+.model NJ310 NJF(Beta=5m Vto=-3 Lambda=6m Cgs=25p Cgd=4p Is=10f)
+.model NPN3904 NPN(Is=6.7f Bf=190 Vaf=74 Ikf=0.237 Ne=1.2 Ise=6.7f Ikr=0.222 Br=4.9 Rb=1 Rc=3.7 Cje=19.2p Mje=0.37 Vje=0.75 Cjc=9.7p Mjc=0.34 Vjc=0.75 Fc=0.5 Tf=2.1n Tr=200n)
+.model DIO D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p Tt=4n)
+.subckt OPAMP0 inp inn out
+E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
+.ends OPAMP0
+
+.param th=0.5
+.param amp=0.775
+
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 in 0 SINE(0 {amp} 1k)
+Vpot w 0 DC {5*th}
+
+* --- Stadio 1: shaper law + THAT 218x ---
+Bdb lawv 0 V={if(V(w)<2.5, -6.1+2.8*V(w), if(V(w)<4, 0.9+(V(w)-2.5)*3.3333, 5.9+(V(w)-4)*4))}
+Becp ecp 0 V={0.0061*max(0,V(lawv))}
+Becm ecm 0 V={0.0061*max(0,-V(lawv))}
+.subckt VCAM in out ecp ecm vp vm PARAMS: km=0.122
+Bg nout0 0 V={V(in)*limit(10**((V(ecp)-V(ecm))/km),1e-5,100)}
+Rpol nout0 nout1 1k
+Cpol nout1 0 8p
+Eout out 0 value={limit(V(nout1),V(vm)+1.5,V(vp)-1.5)}
+.ends VCAM
+X1 in vcaout ecp ecm vcc vee VCAM km=0.122
+
+* --- Stadio 2a: nastro = CS JFET (D2) ---
+Rg vcaout gate 100k
+J1 drain gate source NJ310
+Rd vcc drain 4.7k
+Rs source 0 1.05k
+
+* --- Pad −12 dB ---
+Rp1 drain padn 4.7k
+Rp2 padn 0 1.5k
+
+* --- Basi pair: DC matched dal pad, baser AC-ground ---
+Rdc padn basea 4.7k
+Rdc2 padn baser 4.7k
+Cbyp baser 0 220u
+
+* --- Stadio 2b: fuzz = diff pair single-ended + Baker ---
+Q3 coll basea emita NPN3904
+Q4 collb baser emitb NPN3904
+Rea emita tailp 470
+Reb emitb tailp 470
+Rc coll vee 4.7k
+Rc4 collb vee 4.7k
+Re3 tailp vee 2.2k
+Dbake basea coll DIO
+
+* --- Recovery invertente 2k/2k + servo DC (iniezione FB) ---
+Rsrc coll recn 2k
+Rf recn reco 2k
+X3 0 recn reco OPAMP0
+R1s coll svinn 220k
+C1s svinn svout 330n
+X4 0 svinn svout OPAMP0
+Rinj svout recn 47k
+Rser2 reco out 33
+Rl out 0 100k
+
+.options noopiter
+.nodeset V(drain)=4 V(gate)=0 V(source)=2.3 V(padn)=1 V(basea)=1 V(baser)=1 V(coll)=1.7 V(collb)=1.7 V(tailp)=0.3 V(emita)=0.3 V(emitb)=0.3 V(svout)=0
+
+.tran 0 20m 0 5u
+.step param amp LIST 0.388 0.775 2.45
+.step param th LIST 0 0.5 0.65 0.8 0.9 1.0
+
+.meas tran vout_pk MAX V(out) FROM 10m TO 20m
+.meas tran vout_pkmin MIN V(out) FROM 10m TO 20m
+.meas tran vout_dc AVG V(out) FROM 19m TO 20m
+.meas tran vca_pk MAX V(vcaout) FROM 10m TO 20m
+.meas tran vdrain_pk MAX V(drain) FROM 10m TO 20m
+.meas tran vcoll_dc AVG V(coll) FROM 19m TO 20m
+.four 1k 9 V(out)
+.end

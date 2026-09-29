@@ -1,0 +1,54 @@
+* ============================================================
+* 5-WAY DRIVE v0.3 — Test D2: saturatore nastro (stadio 2a, JFET)
+* Referenza decisione 82: «prima nastro» — saturazione calda che
+* infittisce senza rompersi, compressione leggera.
+* TOPOLOGIA: common-source J310-class, self-bias Rs NON bypassata
+* (feedback locale = ginocchio morbido), Rd 4,7k, accoppiamento DC
+* (Rg 1M dall'uscita VCA stadio 1). Guadagno sotto il ginocchio
+* ≈ Rd/(Rs+1/gm) ≈ 3,9 (+11,8 dB) — G2 misurato qui entra nella
+* law dello stadio 1 (VCA offset = −G2, drive-law.cir).
+* Polarizzazione desk [PROVVISORIO — regola 3]: Id ≈ 2,2 mA,
+* Vgs ≈ −2,4 V, Vd ≈ +7,6 V. Ginocchio atteso ~0,3-0,6 Vp in
+* ingresso (da misurare: .dc + .four).
+* DOMANDE: (a) punto di ginocchio (input Vp e dBu); (b) firma
+* armonica (H2/H3 — calore nastro: H2 visibile, H3 presente,
+* niente comb duro); (c) compressione (rapporto Δout/Δin oltre
+* il ginocchio); (d) asimmetria (JFET CS clippa prima da un lato).
+* Modello JFET [PROVVISORIO]: NJ310-like (Idss ~22 mA, Vp −3).
+* Alternativa da valutare se il carattere non convince: cella
+* op-amp + JFET VCR in feedback (famiglia v0.2.1, candidate B).
+* ============================================================
+
+.model NJ310 NJF(Beta=5m Vto=-3 Lambda=6m Cgs=25p Cgd=4p Is=10f)
+
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 in 0 SINE(0 {amp} 1k)
+
+* --- Stadio 2a: CS JFET self-bias ---
+Rg in gate 1Meg
+J1 drain gate source NJ310
+Rd vcc drain 4.7k
+Rs source 0 1.05k
+
+* Carico: rete di bias dello stadio successivo (2b) — qui il solo
+* effetto di carico reale: Rdc+Rtop verso il nodo base 2b (~30 k)
+Rload drain 0 30k
+
+* ---------- Analisi ----------
+.options noopiter
+
+* Punto di lavoro
+.op
+
+* Curva di trasferimento (ginocchio e asimmetria)
+* (eseguire come run separato se il .step disturba: prima tran)
+.tran 0 20m 0 5u
+.step param amp LIST 0.2 0.4 0.7 1.0 1.5 2.5 4.0
+
+.meas tran vout_pk MAX V(drain) FROM 10m TO 20m
+.meas tran vout_pkmin MIN V(drain) FROM 10m TO 20m
+* Escursione DC del drain (per verificare headroom verso il knee)
+.meas tran vd_avg AVG V(drain) FROM 10m TO 20m
+.four 1k 9 V(drain)
+.end

@@ -1,0 +1,124 @@
+* ============================================================
+* MASTER OUT v0.3 — Test 12: servo DC (offset nullo + settling)
+* + POWER-ON (transiente d'accensione da nodi scarichi, uic)
+* Requisito §3.3: offset d'uscita < 5 mV SENZA condensatori in serie
+* al segnale (banda 8 Hz obbliga il DC-coupling). OPA1612 ha Vos
+* max ±0,5 mV (precisione): gia' sotto il target da solo, ma il
+* servo deve nullare anche deriva termica e invecchiamento → test
+* pessimistico con Vos = 3 mV (caso FX 2026-09-28).
+* --- TOPOLOGIA SERVO (nuova, da v0.3) ---
+* v0.2 aveva feedback diretto out→inn: nessun nodo di somma.
+* v0.3: Rf 1k (out→inn) + Rg 1M (inn→GND) → guadagno 1,001;
+* ingresso via Rsrc 1k + iniezione servo via Rinj 1M → attenuazione
+* 0,999. Guadagno netto di segnale = 1,000 (−0,000 dB).
+* Integratore invertente (OPAMP0 ideale ±16 V clamp, nel reale
+* FET-input low-Iq su ±18 statici — la sua Iq NON grava sul
+* bootstrap): R1 220k da OUT, C 15n → corner fc = 0,048 Hz,
+* dentro la finestra libera 0,05-0,5 Hz validata nel DC servo FX.
+* DOMANDE: (a) OUT_dc a regime (target < 5 mV, atteso ~µV);
+* (b) tempo di settling sotto 5 mV; (c) nessun ringhing (stabilita'
+* dell'anello servo); (d) escursione svout (deve restare ±16 V).
+* Modelli [PROVVISORIO — regola 3].
+* ============================================================
+
+.inc opamac-isup-t.inc
+
+.subckt OPAMP0 inp inn out
+E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
+.ends OPAMP0
+
+.model MJE340 NPN(IS=1e-13 BF=150 VAF=150 IKF=0.5 BR=5 CJC=4p CJE=15p TF=2n TR=20n RB=5 RC=1 RE=0.1 Vceo=300 Icrating=500m mfg=ON)
+.model MJE350 PNP(IS=1e-13 BF=100 VAF=120 IKF=0.4 BR=3 CJC=4p CJE=15p TF=5n TR=50n RB=5 RC=1.5 RE=0.15 Vceo=300 Icrating=500m mfg=ON)
+.model QMULT NPN(IS=1e-14 BF=200 VAF=100 CJC=8p CJE=25p TF=400p)
+.model DIO D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p Tt=4n)
+.model NJF245 NJF(Beta=4m Vto=-1.4 Lambda=10m Cgs=10p Cgd=4p Is=10f)
+
+Vp24 vp24 0 DC 24
+Vm24 vm24 0 DC -24
+
+* Ingresso a massa (test solo DC) + Vos pessimistico 3 mV
+V1 src 0 DC 0
+Rsrc src in 1k
+Vos in ina DC 3m
+
+* Bootstrap superiore (CCS JFET)
+J1 vp24 j1s bu NJF245
+Rj1 j1s bu 47
+Q7 vp24 bu vplus MJE340
+D1 bu s1 DIO
+D2 s1 s2 DIO
+D3 s2 s3 DIO
+D4 s3 s4 DIO
+D5 s4 s5 DIO
+D6 s5 s6 DIO
+D7 s6 s7 DIO
+D15 s7 s8 DIO
+D16 s8 out DIO
+
+* Bootstrap inferiore (CCS JFET)
+J2 nb2 j2s vm24 NJF245
+Rj2 j2s vm24 47
+Q8 vm24 nb2 vminus MJE350
+D8 out t1 DIO
+D9 t1 t2 DIO
+D10 t2 t3 DIO
+D11 t3 t4 DIO
+D12 t4 t5 DIO
+D13 t5 t6 DIO
+D14 t6 t7 DIO
+D17 t7 t8 DIO
+D18 t8 nb2 DIO
+
+* Composito (feedback via Rf/Rg, ingresso su ina)
+X1 ina inn drv vplus vminus OPAMAC
+Q3 drv mid b2 QMULT
+Ra drv mid 2.2k
+Rbm mid b2 1k
+Q1 vp24 drv e1 MJE340
+Q2 vm24 b2 e2 MJE350
+Re1 e1 out 33
+Re2 e2 out 33
+* NOTA v0.3c (misurato, THD): Cboot 1u+100n rail↔OUT PROVATI E RIMOSSI:
+* interagendo col kink degli specchi di assorbimento (cambio ramo a ogni
+* attraversamento della corrente di carico) producevano glitch 0,3-0,4 V
+* una volta per periodo → THD 5,9-38 % (comb). Il picco closed-loop MHz
+* (fuori banda, innocuo: g8hz-35k piatto) si lascia com'era in v0.2
+* (+3,3 dB @50 MHz senza carico). A banco: eventuale decoupling rail
+* da provare SOLO con valori piccoli (100n) e misura THD prima/dopo.
+
+
+* Rete feedback + servo DC
+Rf inn out 1k
+Rg inn 0 1Meg
+Rinj svout in 1Meg
+X2 0 svinn svout OPAMP0
+R1s out svinn 220k
+C1s svinn svout 15n
+
+RL out 0 10k
+
+.options noopiter
+* uic: condensatori scarichi, nodi a 0 → la sim PARTE DA POWER-ON:
+* cattura insieme (a) accensione (rail bootstrap che salgono da 0,
+* caso peggiore: gradino istantaneo, senza rampa PSU ne' mute [M])
+* e (b) settling del servo da Vos 3 mV con C1s scarico.
+.tran 0 40s 0 1m uic
+
+* --- Power-on (primi 100 ms) ---
+.meas tran vboot_out_max MAX V(out) FROM 0 TO 0.1
+.meas tran vboot_out_min MIN V(out) FROM 0 TO 0.1
+.meas tran vboot_sup_min MIN V(vplus,vminus) FROM 0 TO 0.1
+.meas tran vboot_sup_max MAX V(vplus,vminus) FROM 0 TO 0.1
+* --- Servo: offset e settling ---
+.meas tran vout_t1 FIND V(out) AT 1
+.meas tran vout_t3 FIND V(out) AT 3
+.meas tran vout_t10 FIND V(out) AT 10
+.meas tran vout_t20 FIND V(out) AT 20
+.meas tran vout_fin AVG V(out) FROM 35 TO 40
+* Settling sotto 1 mV (decadimento da ~3 mV: atteso ~2-3 tau ≈ 7-10 s)
+.meas tran t_settle WHEN V(out)=1m CROSS 1
+* Escursione uscita servo (limite ±16 V) e overshoot (ringing anello)
+.meas tran svout_min MIN V(svout) FROM 0 TO 40
+.meas tran svout_max MAX V(svout) FROM 0 TO 40
+.meas tran vout_min MIN V(out) FROM 0.1 TO 40
+.end

@@ -1,0 +1,42 @@
+* ============================================================
+* 5-WAY DRIVE v0.3bis — Test D1: law VCA (verifica DC per θ × km)
+* Law TOTALE bloccata [dec. 82]: θ 0/50/80/100% = 0/+7/+12/+16 dB.
+* G2 catena (CS × diff-pair PNP × recovery) = +9,4 dB MISURATO (D4h)
+* → law VCA = totale − G2: −9,4 / −2,4 / +2,6 / +6,6 dB (G2 misurato +9,4 dB in D4h).
+* Shaper PWL 3 tratti (if annidati — lezione FX) su pot 0-5 V;
+* EC = 6,1 mV/dB; km 0,120/0,122/0,124 (spread ±1,6% → trim, q53).
+* METODO: verifica in DC (.tran + FIND, ingresso 1 mV) — la misura
+* .ac db(V(out)) su catena di B-source dava letture anomale
+* (lezione 2026-09-29: law sempre verificata in DC).
+* ATTESA: gain = 10^(lawv/20) esatta; spread km = ±0,14 dB (±1,6%).
+* ============================================================
+
+.param th=0.5
+.param km=0.122
+
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 in 0 DC 1m
+Vpot w 0 DC {5*th}
+
+Bdb lawv 0 V={if(V(w)<2.5, -6.1+2.8*V(w), if(V(w)<4, 0.9+(V(w)-2.5)*3.3333, 5.9+(V(w)-4)*4))}
+Becp ecp 0 V={0.0061*max(0,V(lawv))}
+Becm ecm 0 V={0.0061*max(0,-V(lawv))}
+
+.subckt VCAM in out ecp ecm vp vm PARAMS: km=0.122
+Bg nout0 0 V={V(in)*limit(10**((V(ecp)-V(ecm))/km),1e-5,100)}
+Rpol nout0 nout1 1k
+Cpol nout1 0 8p
+Eout out 0 value={limit(V(nout1),V(vm)+1.5,V(vp)-1.5)}
+.ends VCAM
+
+X1 in out ecp ecm vcc vee VCAM km={km}
+Rl out 0 10k
+
+.step param th LIST 0 0.25 0.5 0.65 0.8 0.9 1.0
+.step param km LIST 0.120 0.122 0.124
+
+.tran 0 2u 0 1u
+.meas tran gain FIND V(out)/1m AT 1.9u
+.meas tran lawv_chk FIND V(lawv) AT 1.9u
+.end

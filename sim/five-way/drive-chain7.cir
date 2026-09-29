@@ -1,0 +1,109 @@
+* ============================================================
+* 5-WAY DRIVE v0.3 — Test D4g: catena FINALE (PNP pair + follower bias)
+* Architettura chiusa 2026-09-29 (7 iterazioni, lezioni in calce):
+* VCA 218x (law totale − G2) → 2a CS JFET nastro (Rg 10k, Rd 4,7k,
+* gain ~3,35, knee 0,7-1,0 Vp) → Csig 33u → 2b DIFF PAIR PNP
+* single-ended (fuzz asimmetrico; emettitori verso +18 via Re 470
+* + tail 2,2k; Rc 4,7k verso −18 → coll ≈ −3,5 V attivo, Vce ≈ −5)
+* → recovery invertente 2k/2k (polarita' totale NON invertente:
+* VCA + · CS − · pair + · recovery −) + servo DC iniezione FB
+* (pattern FX/master-out VALIDATO; Rinj 4,7k → autorita' ±6,8 V;
+* R1s 220k/C1s 1u → fc 0,31 Hz: SUB 10 Hz −0,005 dB) → R33 → out.
+* Bias pair: Vref +1,43 V (100k/8,6k da +18, Cvref 10u) → DUE
+* FOLLOWER NPN (Q5/Q6) → basea/baser a Z ≈ 12 Ohm: nessun latch
+* possibile (lezione chain4/5/6: R serie verso le basi + correnti
+* di base = auto-blocco), nessun carico sul segnale (lezione 6:
+* Rva 1k mangiava 15 dB), Csig blocca il DC del drain (4-8,5 V e
+* deriva di rettifica) fuori dal pair.
+* Baker PNP: Dbake coll→basea (anti-saturazione in fuzz profondo).
+* Bilanciamento: Vref matched in sim; nel reale trimmer multi-giro
+* su un ramo (filosofia trim 2181) per coll entro ±3 V (servo).
+* G2 ≈ 3,35 × 0,99 × 1,40 ≈ 4,65 = +13,3 dB → law VCA = totale −
+* 13,2: θ 0/50/80/100 → −13,2/−6,2/−1,2/+2,8 dB.
+* MAPPING atteso (dec. 82): θ0 nom → 2a in 0,086 → ~0,002 % PULITO;
+* θ50 nom 0,19 → ~0,008 % PULITO; θ80 hot → knee NASTRO; θ100 nom
+* → drain ~1,8 → clip pair nascente; θ100 hot → FUZZ pieno.
+* GRIGLIA: amp (−6/0/+10 dBu) × θ (0/50/65/80/90/100 %).
+* Modelli [PROVVISORIO — regola 3].
+* ============================================================
+
+.model NJ310 NJF(Beta=5m Vto=-3 Lambda=6m Cgs=25p Cgd=4p Is=10f)
+.model NPN3904 NPN(Is=6.7f Bf=190 Vaf=74 Ikf=0.237 Ne=1.2 Ise=6.7f Ikr=0.222 Br=4.9 Rb=1 Rc=3.7 Cje=19.2p Mje=0.37 Vje=0.75 Cjc=9.7p Mjc=0.34 Vjc=0.75 Fc=0.5 Tf=2.1n Tr=200n)
+.model PNP3906 PNP(Is=1.72f Bf=190 Vaf=49.7 Ikr=0.237 Ne=2 Ise=43.4f Ikf=0.222 Br=4.9 Rb=1 Rc=3.7 Cje=19.2p Mje=0.37 Vje=0.75 Cjc=9.7p Mjc=0.34 Vjc=0.75 Fc=0.5 Tf=2.1n Tr=200n)
+.model DIO D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p Tt=4n)
+.subckt OPAMP0 inp inn out
+E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
+.ends OPAMP0
+
+.param th=0.5
+.param amp=0.775
+
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 in 0 SINE(0 {amp} 1k)
+Vpot w 0 DC {5*th}
+
+* --- Stadio 1: shaper law + THAT 218x ---
+Bdb lawv 0 V={if(V(w)<2.5, -13.2+2.8*V(w), if(V(w)<4, -6.2+(V(w)-2.5)*3.3333, -1.2+(V(w)-4)*4))}
+Becp ecp 0 V={0.0061*max(0,V(lawv))}
+Becm ecm 0 V={0.0061*max(0,-V(lawv))}
+.subckt VCAM in out ecp ecm vp vm PARAMS: km=0.122
+Bg nout0 0 V={V(in)*limit(10**((V(ecp)-V(ecm))/km),1e-5,100)}
+Rpol nout0 nout1 1k
+Cpol nout1 0 8p
+Eout out 0 value={limit(V(nout1),V(vm)+1.5,V(vp)-1.5)}
+.ends VCAM
+X1 in vcaout ecp ecm vcc vee VCAM km=0.122
+
+* --- Stadio 2a: nastro = CS JFET ---
+Rg vcaout gate 10k
+J1 drain gate source NJ310
+Rd vcc drain 4.7k
+Rs source 0 1.05k
+
+* --- Accoppiamento AC drain → pair ---
+Csig drain basea 33u
+
+* --- Vref +1,43 V e follower di bias ---
+Rv1 vcc vrefn 100k
+Rv2 vrefn 0 8.6k
+Cvref vrefn 0 10u
+Q5 vcc vrefn basea NPN3904
+Q6 vcc vrefn baser NPN3904
+
+* --- Stadio 2b: fuzz = diff pair PNP single-ended + Baker ---
+Q3 coll basea emita PNP3906
+Q4 collb baser emitb PNP3906
+Rea emita tailp 470
+Reb emitb tailp 470
+Rc coll vee 4.7k
+Rc4 collb vee 4.7k
+Re3 tailp vcc 2.2k
+Dbake coll basea DIO
+
+* --- Recovery invertente 2k/2k + servo DC (iniezione FB) ---
+Rsrc coll recn 2k
+Rf recn reco 2k
+X3 0 recn reco OPAMP0
+R1s coll svinn 220k
+C1s svinn svout 1u
+X4 0 svinn svout OPAMP0
+Rinj svout recn 4.7k
+Rser2 reco out 33
+Rl out 0 100k
+
+.options noopiter
+.nodeset V(drain)=6.5 V(gate)=0 V(source)=2.4 V(vrefn)=1.43 V(basea)=0.78 V(baser)=0.78 V(emita)=1.43 V(emitb)=1.43 V(tailp)=2.9 V(coll)=-3.5 V(collb)=-3.5 V(svout)=0
+
+.tran 0 20m 0 5u
+.step param amp LIST 0.388 0.775 2.45
+.step param th LIST 0 0.5 0.65 0.8 0.9 1.0
+
+.meas tran vout_pk MAX V(out) FROM 10m TO 20m
+.meas tran vout_pkmin MIN V(out) FROM 10m TO 20m
+.meas tran vout_dc AVG V(out) FROM 19m TO 20m
+.meas tran vca_pk MAX V(vcaout) FROM 10m TO 20m
+.meas tran vdrain_pk MAX V(drain) FROM 10m TO 20m
+.meas tran vcoll_dc AVG V(coll) FROM 19m TO 20m
+.four 1k 9 V(out)
+.end

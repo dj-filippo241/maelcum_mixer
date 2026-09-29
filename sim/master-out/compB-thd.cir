@@ -1,0 +1,84 @@
+* ============================================================
+* MASTER OUT v0.3 — Test 9: THD al livello di requisito +24 dBu
+* Confronto con comp-thd.cir (v0.2): li' la THD si misurava a 14 Vp
+* perche' il composito nudo saturava a ±15,85 V. Col bootstrap lo
+* swing e' ±21 V, quindi POSSO misurare al livello che la specifica
+* richiede davvero: +24 dBu = 17,37 Vp (12,28 Vrms).
+* Misuro a 17,37 Vp (requisito) e a 14 Vp (confronto diretto v0.2).
+* Frequenze 1 kHz e 35 kHz; carichi 600 Ohm e 10 kOhm.
+* Target doc §6.1-6.2: THD < 0,005 % al livello nominale.
+* Modelli [PROVVISORIO — regola 3]. Macro op-amp lineare: la THD
+* misurata = stadio d'uscita + correzione d'anello (nel reale
+* l'OPA1612 aggiunge la sua, dominata comunque dall'anello).
+* ============================================================
+
+.inc opamac-isup-t.inc
+
+.model MJE340 NPN(IS=1e-13 BF=150 VAF=150 IKF=0.5 BR=5 CJC=4p CJE=15p TF=2n TR=20n RB=5 RC=1 RE=0.1 Vceo=300 Icrating=500m mfg=ON)
+.model MJE350 PNP(IS=1e-13 BF=100 VAF=120 IKF=0.4 BR=3 CJC=4p CJE=15p TF=5n TR=50n RB=5 RC=1.5 RE=0.15 Vceo=300 Icrating=500m mfg=ON)
+.model QMULT NPN(IS=1e-14 BF=200 VAF=100 CJC=8p CJE=25p TF=400p)
+.model DIO D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p Tt=4n)
+.model NJF245 NJF(Beta=4m Vto=-1.4 Lambda=10m Cgs=10p Cgd=4p Is=10f)
+
+Vp24 vp24 0 DC 24
+Vm24 vm24 0 DC -24
+V1 in 0 SINE(0 {amp} {f})
+
+* Bootstrap superiore (CCS JFET, Test 7b)
+J1 vp24 j1s bu NJF245
+Rj1 j1s bu 47
+Q7 vp24 bu vplus MJE340
+D1 bu s1 DIO
+D2 s1 s2 DIO
+D3 s2 s3 DIO
+D4 s3 s4 DIO
+D5 s4 s5 DIO
+D6 s5 s6 DIO
+D7 s6 s7 DIO
+D15 s7 s8 DIO
+D16 s8 out DIO
+
+* Bootstrap inferiore (CCS JFET, Test 7b)
+J2 nb2 j2s vm24 NJF245
+Rj2 j2s vm24 47
+Q8 vm24 nb2 vminus MJE350
+D8 out t1 DIO
+D9 t1 t2 DIO
+D10 t2 t3 DIO
+D11 t3 t4 DIO
+D12 t4 t5 DIO
+D13 t5 t6 DIO
+D14 t6 t7 DIO
+D17 t7 t8 DIO
+D18 t8 nb2 DIO
+
+* Composito (feedback diretto: per la THD il servo non cambia nulla
+* in banda audio, corner 0,048 Hz; tengo la rete minima)
+X1 in out drv vplus vminus OPAMAC
+Q3 drv mid b2 QMULT
+Ra drv mid 2.2k
+Rbm mid b2 1k
+Q1 vp24 drv e1 MJE340
+Q2 vm24 b2 e2 MJE350
+Re1 e1 out 33
+Re2 e2 out 33
+* NOTA v0.3c (misurato, THD): Cboot 1u+100n rail↔OUT PROVATI E RIMOSSI:
+* interagendo col kink degli specchi di assorbimento (cambio ramo a ogni
+* attraversamento della corrente di carico) producevano glitch 0,3-0,4 V
+* una volta per periodo → THD 5,9-38 % (comb). Il picco closed-loop MHz
+* (fuori banda, innocuo: g8hz-35k piatto) si lascia com'era in v0.2
+* (+3,3 dB @50 MHz senza carico). A banco: eventuale decoupling rail
+* da provare SOLO con valori piccoli (100n) e misura THD prima/dopo.
+
+RL out 0 {rl}
+
+.step param f LIST 1k 35k
+.step param rl LIST 600 10k
+.step param amp LIST 14 17.37
+
+.options noopiter
+.tran 0 40m 0 100n
+.four {f} 9 V(out)
+.meas tran voutpk MAX V(out) FROM 30m TO 40m
+.meas tran voutpk_min MIN V(out) FROM 30m TO 40m
+.end

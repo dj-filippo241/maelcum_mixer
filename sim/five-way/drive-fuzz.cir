@@ -1,0 +1,79 @@
+* ============================================================
+* 5-WAY DRIVE v0.3 — Test D3: cascata nastro→fuzz (2a JFET + 2b BJT)
+* Referenza decisione 82: «nell'ultimo 20% entra nel territorio del
+* fuzz» — saturazione DURA asimmetrica dopo il colore nastro.
+* STADIO 2b: PNP common-emitter (2N3906-class) asimmetrico per
+* costruzione (single-ended): clip = cutoff da un lato (tondo),
+* saturazione dall'altro (piatto) → comb armonico fitto = fuzz.
+* Collettore DC ≈ 0 V (Rc verso −18) → recovery non invertente
+* DC-coupled + servo DC possibili (niente cap in serie, banda 10 Hz).
+* Polarizzazione desk [PROVVISORIO — regola 3]:
+*   2a: Id ≈ 2,2 mA, Vd ≈ +7,6 V (come drive-tape.cir)
+*   2b: base ≈ (18/47k + Vd/100k)/(1/47k+1/100k+1/r_in) ≈ 15 V,
+*       Ie ≈ 4-6 mA, Vc ≈ 0 V, guadagno ≈ Rc/(Re+re) ≈ 7
+*   Attenuazione partitore drain→base ≈ 0,25; G2(2a+2b) ≈ +10 dB
+*   (da misurare → offset law stadio 1).
+* DOMANDE: (a) a che livello 2b inizia il clip duro (soglia fuzz in
+* dBu riferita all'ingresso catena); (b) spettro a clip profondo
+* (comb fino a H9+, rapporto H dispari/pari); (c) asimmetria
+* (picco + vs picco −); (d) G2 piccolo segnale; (e) DC out (Vc).
+* ============================================================
+
+.model NJ310 NJF(Beta=5m Vto=-3 Lambda=6m Cgs=25p Cgd=4p Is=10f)
+* Servo DC: op-amp ideale (nel reale FET-input low-Iq, meta' TL062)
+.subckt OPAMP0 inp inn out
+E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
+.ends OPAMP0
+
+.model PNP3906 PNP(Is=1.72f Bf=190 Vaf=49.7 Ikr=0.237 Ne=2 Ise=43.4f Ikf=0.222 Br=4.9 Rb=1 Rc=3.7 Cje=19.2p Mje=0.37 Vje=0.75 Cjc=9.7p Mjc=0.34 Vjc=0.75 Fc=0.5 Tf=2.1n Tr=200n)
+
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 in 0 SINE(0 {amp} 1k)
+
+* --- Stadio 2a: CS JFET (nastro) ---
+Rg in gate 1Meg
+J1 drain gate source NJ310
+Rd vcc drain 4.7k
+Rs source 0 1.05k
+
+* --- Accoppiamento DC 2a→2b ---
+Rdc drain base2 100k
+Rtop vcc base2 33k
+
+* --- Stadio 2b: PNP CE asimmetrico (fuzz) ---
+Q2 coll base2 emit2 PNP3906
+Re2 vcc emit2 470
+Rc2 coll vee 4.7k
+
+* --- Carico: ingresso recovery (alta Z) ---
+Rload coll 0 100k
+
+* --- DC SERVO (v0.3bis): nulla coll a 0 V assorbendo derive ---
+* (Idss JFET, beta PNP, temperatura, rettifica a grande segnale).
+* Anello: coll → integratore → gate di 2a. Segno verificato:
+* coll sale → svout scende → gate scende → Id(2a) scende → Vd sale
+* → base2 sale → Veb(PNP) scende → Ic scende → coll scende. NEGATIVO.
+* Rinj 4,7M vs Rg 1M: attenuazione segnale 0,82 (−1,7 dB) assorbita
+* nella law dello stadio 1 (G2 effettivo da misurare qui).
+Rinj svout gate 4.7Meg
+X4 0 svinn svout OPAMP0
+R1s coll svinn 220k
+C1s svinn svout 15n
+
+.nodeset V(drain)=6.5 V(gate)=0 V(source)=2.4 V(base2)=15.4 V(coll)=0 V(svout)=0
+
+.options noopiter
+.op
+
+.tran 0 20m 0 5u
+.step param amp LIST 0.2 0.4 0.7 1.0 1.5 2.5 4.0 6.0
+
+.meas tran vout_pk MAX V(coll) FROM 10m TO 20m
+.meas tran vout_pkmin MIN V(coll) FROM 10m TO 20m
+.meas tran vout_avg AVG V(coll) FROM 10m TO 20m
+.meas tran vcoll_dc AVG V(coll) FROM 19m TO 20m
+.meas tran vdrain_dc AVG V(drain) FROM 19m TO 20m
+* Asimmetria: dai due picchi sopra (rapporto tra lato piatto e tondo)
+.four 1k 9 V(coll)
+.end

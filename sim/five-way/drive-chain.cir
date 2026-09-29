@@ -1,0 +1,88 @@
+* ============================================================
+* 5-WAY DRIVE v0.3 — Test D4: catena completa (law + colore)
+* THAT 218x (stadio 1, law shiftata −G2) → 2a JFET nastro →
+* 2b PNP fuzz → recovery unity + servo DC (famiglia master-out v0.3)
+* → R serie 33 → meter pickup / makeup (fuori da questo test).
+* GRIGLIA: θ (0/50/65/80/90/100 %) × programma (−6/0/+10 dBu,
+* 1 kHz) → tabella gain + THD + armoniche per il doc = i NUMERI
+* MUSICALI da mostrare a Filippo (regola 2).
+* Law VCA [PROVVISORIO — regola 3]: G2 desk ≈ +10 dB (misurato in
+* drive-fuzz .op/.tran → offset da confermare):
+*   θ 0→50%:  VCA −10 → −3 dB (totale 0 → +7, pulito)
+*   θ 50→80%: VCA −3 → +2 dB (totale +7 → +12, zona nastro)
+*   θ 80→100%: VCA +2 → +6 dB (totale +12 → +16, zona fuzz)
+* ATTESE da decisione 82 + SPECIFICA §6:
+*   θ0, −6 dBu: THD < 0,01 % (pulito); θ50%, −6/0 dBu: ancora pulito
+*   (< 0,05 %); θ80%: picchi di programma nel ginocchio (0,5-3 %);
+*   θ100% hot: comb fuzz (> 10 %).
+* Il servo nullo il DC di catena (Vc ≈ 0 → out ≈ 0) già nel .op.
+* Modelli [PROVVISORIO]: NJ310-like, 2N3906-like, 218x macro v0.1.
+* ============================================================
+
+.model NJ310 NJF(Beta=5m Vto=-3 Lambda=6m Cgs=25p Cgd=4p Is=10f)
+.model PNP3906 PNP(Is=1.72f Bf=190 Vaf=49.7 Ikr=0.237 Ne=2 Ise=43.4f Ikf=0.222 Br=4.9 Rb=1 Rc=3.7 Cje=19.2p Mje=0.37 Vje=0.75 Cjc=9.7p Mjc=0.34 Vjc=0.75 Fc=0.5 Tf=2.1n Tr=200n)
+
+.subckt OPAMP0 inp inn out
+E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
+.ends OPAMP0
+
+.param th=0.5
+.param amp=0.775
+
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 in 0 SINE(0 {amp} 1k)
+Vpot w 0 DC {5*th}
+
+* --- Stadio 1: shaper law 3 tratti + THAT 218x ---
+Bdb db10 0 V={if(V(w)<2.5, -10+2.8*V(w), if(V(w)<4, -3+(V(w)-2.5)*3.3333, 2+(V(w)-4)*4))}
+Becp ecp 0 V={0.0061*max(0,V(db10))}
+Becm ecm 0 V={0.0061*max(0,-V(db10))}
+.subckt VCAM in out ecp ecm vp vm PARAMS: km=0.122
+Bg nout0 0 V={V(in)*limit(10**((V(ecp)-V(ecm))/km),1e-5,100)}
+Rpol nout0 nout1 1k
+Cpol nout1 0 8p
+Eout out 0 value={limit(V(nout1),V(vm)+1.5,V(vp)-1.5)}
+.ends VCAM
+X1 in vcaout ecp ecm vcc vee VCAM km=0.122
+
+* --- Stadio 2a: CS JFET (nastro) ---
+Rg vcaout gate 1Meg
+J1 drain gate source NJ310
+Rd vcc drain 4.7k
+Rs source 0 1.05k
+
+* --- Accoppiamento DC 2a→2b ---
+Rdc drain base2 100k
+Rtop vcc base2 33k
+
+* --- Stadio 2b: PNP CE asimmetrico (fuzz) ---
+Q2 coll base2 emit2 PNP3906
+Re2 vcc emit2 470
+Rc2 coll vee 4.7k
+
+* --- Recovery unity + servo DC (corner 0,048 Hz) ---
+X3 coll recn reco OPAMP0
+Rf recn reco 1k
+Rgr recn 0 1Meg
+Rinj svout gate 4.7Meg
+X4 0 svinn svout OPAMP0
+R1s reco svinn 220k
+C1s svinn svout 15n
+Rser reco out 33
+Rl out 0 10k
+
+.options noopiter
+.nodeset V(drain)=6.5 V(gate)=0 V(source)=2.4 V(base2)=15.4 V(coll)=0 V(svout)=0 V(reco)=0
+.tran 0 20m 0 5u
+
+.step param amp LIST 0.388 0.775 2.45
+.step param th LIST 0 0.5 0.65 0.8 0.9 1.0
+
+.meas tran vout_pk MAX V(out) FROM 10m TO 20m
+.meas tran vout_pkmin MIN V(out) FROM 10m TO 20m
+.meas tran vout_dc AVG V(out) FROM 10m TO 20m
+* Verifica clamp VCA (saturazione intenzionale §6 agli estremi)
+.meas tran vca_pk MAX V(vcaout) FROM 10m TO 20m
+.four 1k 9 V(out)
+.end
