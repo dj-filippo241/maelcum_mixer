@@ -299,9 +299,14 @@ l'op-amp guadagna esattamente i volt che gli mancavano, il follower arriva a ±2
 = **+25,0…+25,2 dBu** (requisito ≥+24 rispettato, ~1 dB di margine; il level plan del
 modulo worst +22 dBu resta dentro con 3 dB).
 
-Da progettare e validare (v0.3, prossimo passo):
-1. Rete bootstrap: valori stringa (LED low-noise preferiti agli zener), corrente di bias,
-   comportamento ad accensione (OUT = 0 → rail ±Δ ≥ ±2,25 V minimi datasheet).
+**SWING VALIDATO 2026-09-29** (`sim/master-out/compB-swing.cir`, RISULTATI-composite
+§v0.3 Test 6): capability ±21,1-21,5 V = **+25,0…+25,2 dBu** — requisito ≥+24 dBu
+PASS con ~1,7 dB di margine; tracking rail OUT±4,4 V e handoff statico verificati.
+Da completare per la v0.3 definitiva:
+1. Rete bootstrap: valori stringa (LED low-noise preferiti ai diodi 1N4148 della sim),
+   bias inferiore con JFET CCS invece di R (simmetria −0,35 V), dimensionamento reale
+   con Iq 40 mA (pass: worst ~1,6 W → aletta/rame), comportamento ad accensione
+   (OUT = 0 → rail ±Δ ≈ ±4,4 V ≥ ±2,25 V minimi datasheet ✓ in sim).
 2. Rumore dei riferimenti sui rail → attenuato dalla PSRR del chip (~120 dB LF, in calo in
    frequenza): quantificare; eventuale RC di filtro sulle stringhe.
 3. Finestra common-mode/uscite della macro entro i rail flottanti a swing pieno.

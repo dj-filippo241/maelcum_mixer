@@ -137,3 +137,41 @@ Design e verifica = master-out v0.3 (prossima sessione di ingegneria).
 sim/run_ltspice.sh sim/master-out/compG-ac.cir    # sweep Cc×Rz×Cf, picchi closed-loop
 sim/run_ltspice.sh sim/master-out/compG-op.cir    # diagnostica DC del latch (.dc + .meas FIND)
 ```
+
+---
+
+## v0.3 Test 6 — BOOTSTRAP rail OPA1612 (decisione 86): swing PASS (2026-09-29)
+
+Topologia: composito v0.2 invariato (OPAMAC 2 poli + diamond, feedback unity a −in);
+rail op-amp locali flottanti: vplus = OUT + Δ, vminus = OUT − Δ con Δ ≈ 4,4 V
+(stringa 7×1N4148 + Vbe del pass); pass serie Q7 NPN da +24 / Q8 PNP verso −24
+(MJE340/350); bias stringhe R 4,7 k; handoff dolce ai rail statici ±23,7 V oltre
+OUT ≈ ±19,3 V. Netlist: `compB-swing.cir` (carico 10 k, 1 kHz, amp 10→22 Vp).
+
+| Amp in (Vp) | OUT picco + | OUT picco − | vplus max | vminus min |
+|---|---|---|---|---|
+| 10 → 20 | segue 1:1 | segue 1:1 | OUT+4,36 (tracking ✓) | OUT−4,36 |
+| 22 | **+21,50 V** | **−21,15 V** | 24,0 (handoff statico ✓) | −24…−26,3 (transitorio) |
+
+**Risultato chiave: capability ±21,1-21,5 V = +25,0…+25,2 dBu** contro requisito
+locked ≥ +24 dBu (17,4 Vp): PASS con ~1,7 dB di margine; target §3.3 (±21 V =
++25 dBu) raggiunto. v0.2 nuda: ±15,85 V (+23,2). Asimmetria −0,35 V sul negativo:
+la stringa inferiore perde corrente di bias vicino a −24 (nb2 < vm24) e Δ si
+riduce prima dell'handoff — accettata (margine intatto); se serve simmetrico:
+bias inferiore con JFET CCS invece di R (da valutare in v0.3 definitiva).
+Il −26,3 V di vminus al picco = artefatto capacitivo transitorio della stringa
+(misura MIN su finestra 6 ms), non quasi-statico: il clamp inferiore resta
+sopra il drive richiesto (−21,9 V) con margine.
+
+Limiti della macro (onesti, da verifica a banco/prototipo): PSRR assente → il
+rumore delle stringhe LED/diodi sui rail NON è attenuato in sim (nel reale
+OPA1612 PSRR ~120 dB LF); Iq assente → nel reale i pass vedono 40 mA continui
+(dimensionamento: Q7 worst (24−(OUT+4,4))·40 mA ≈ 1,6 W a OUT −21 → aletta/
+rame PCB; Rbu/Rbl da ricontrollare con Iq: stringa 4 mA + Ib 0,3 mA ok).
+Mancano alla suite v0.3: AC/stabilità (attesa = v0.2: A_vas = 1 invariato, i
+rail entrano solo nei clamp), THD, rumore residuo d'uscita, corto con protezioni
+(sempre pendenti dal v0.2), servo DC.
+
+```bash
+sim/run_ltspice.sh sim/master-out/compB-swing.cir   # swing bootstrap (questo test)
+```
