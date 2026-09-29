@@ -1,0 +1,91 @@
+* ============================================================
+* MASTER OUT v0.3 — composito CON VAS a guadagno (decisione 83)
+* Test 1: swing massimo (verifica requisito +24 dBu = 17,4 Vp)
+* Riferimento: docs/fase1/master-out.md §3.3 v0.3
+* ============================================================
+* Topologia v0.3 (vs v0.2 follower unity):
+*   OPA1612 (±18 V): feedback globale a +in (Rfb/Rg 20k, β=0,5),
+*   segnale a −in (Rin 20k + Rfi 20k da OUT) → closed-loop +1.
+*   Due inversioni nell'avanti (op-amp −A, CE −g) → loop negativo
+*   solo col feedback sul +in. Polarità: out = +in (non invertente).
+*   → Rp/Cp (2° polo macro 40 MHz) → Rb → CE NPN Q4 (MJE340):
+*   Re4 2.2k → −24; carico = CCS PNP Q6 12 mA → nodo drv.
+*   Anti-latch: CCS 12 mA > capacità di sink con b4 al max →
+*   Q4 non satura mai con drv alto (nessun latch bistabile).
+*   → diamond class AB invariato (±24 V, Re 33, idle ~12 mA) → OUT.
+*   Compensazione: Miller Cc 100p + Rz 1k (drv→b4) + feedforward
+*   Cf 22p (opf2→drv) — valori iniziali, taratura via AC.
+* STATO MODELLI [PROVVISORIO — regola 3]: OP1612 = macro libreria
+*   condivisa (Rn 73 = en 1,1 nV/√Hz, GBW 80 MHz, clamp ±16,5 V);
+*   MJE340/350 modelli rappresentativi TO-126 (come v0.2).
+* Semplificazioni deliberate (come v0.2): niente servo DC, niente
+*   protezioni, carico 10 kOhm puro.
+
+.include ../lib/opamp-audio.inc
+
+* ---------- Modelli transistor [PROVVISORIO] ----------
+.model MJE340 NPN(IS=1e-13 BF=150 VAF=150 IKF=0.5 BR=5 CJC=4p CJE=15p TF=2n TR=20n RB=5 RC=1 RE=0.1 Vceo=300 Icrating=500m mfg=ON)
+.model MJE350 PNP(IS=1e-13 BF=100 VAF=120 IKF=0.4 BR=3 CJC=4p CJE=15p TF=5n TR=50n RB=5 RC=1.5 RE=0.15 Vceo=300 Icrating=500m mfg=ON)
+.model DBAK D(Is=1e-14 Rs=1 Tt=4n Cjo=4p)
+.model QMULT NPN(IS=1e-14 BF=200 VAF=100 CJC=8p CJE=25p TF=400p)
+
+* ---------- Alimentazioni ----------
+Vp24 vp24 0 DC 24
+Vm24 vm24 0 DC -24
+Vp18 vp18 0 DC 18
+Vm18 vm18 0 DC -18
+
+* ---------- Ingresso ----------
+V1 in 0 SINE(0 {amp} 1k)
+
+* ---------- OPA1612: feedback globale diretto a +in (β=1),
+*            segnale a −in (Rin/Rfi 20k) → out = +in ----------
+* (β<1 con rete −in simmetrica degenera: closed-loop mai +1)
+Xop out ninv opout vp18 vm18 OP1612
+Rin in ninv 20k
+Rfi out ninv 20k
+
+* ---------- Secondo polo macro 40 MHz ----------
+Rp opout opf2 1k
+Cp opf2 0 3.98p
+
+* ---------- VAS: CE NPN Q4, carico CCS PNP Q6 (12 mA) ----------
+Rb opf2 b4 10k
+D1 b4 drv DBAK
+Q4 drv b4 e4 MJE340
+Re4 e4 vm24 2.2k
+Q6 drv b6 e6 MJE350
+Re6 vp24 e6 220
+Rbt vp24 b6 3.3k
+Rbb b6 vm24 45k
+Cb6 b6 0 10u
+
+* ---------- Compensazione ----------
+Cc drv nb 100p
+Rz nb b4 1k
+Cf opf2 drv 22p
+
+* ---------- Diamond class AB (invariato da v0.2) ----------
+Q3 drv mid b2 QMULT
+Ra drv mid 2.2k
+Rbm mid b2 1k
+Q1 vp24 drv e1 MJE340
+Q2 vm24 b2 e2 MJE350
+Re1 e1 out 33
+Re2 e2 out 33
+
+* ---------- Carico ----------
+RL out 0 10k
+
+* ---------- Analisi ----------
+.options noopiter
+.op
+.tran 0 12m 0 1u
+.step param amp 10 22 2
+.meas tran vpk_max MAX V(out) FROM 6m TO 12m
+.meas tran vpk_min MIN V(out) FROM 6m TO 12m
+.meas tran iop_pk MAX I(Rp) FROM 6m TO 12m
+.meas tran icc_pk MAX I(Re6) FROM 6m TO 12m
+.meas tran iq1_pk MAX I(Re1) FROM 6m TO 12m
+.meas tran iq2_pk MIN I(Re2) FROM 6m TO 12m
+.end

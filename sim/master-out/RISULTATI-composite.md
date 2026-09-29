@@ -89,3 +89,51 @@ Valore letto: "Partial Harmonic Distortion" (somma armoniche 2-9); il campo
 sim/run_ltspice.sh sim/master-out/comp-swing.cir   # poi comp-ac / comp-thd / comp-short
 # risultati nei .log accanto ai netlist (~1 min di avvio Wine per run)
 ```
+
+---
+
+## v0.3 Test 5 — VAS discreto a guadagno (decisione 83, opzione a) — BOCCIATO (2026-09-29)
+
+Tentativo: OPA1612 → CE NPN (MJE340, Re 2,2-4,7 kΩ → −24 V, carico CCS PNP 6-12 mA) →
+diamond invariato; feedback globale a +in (due inversioni nell'avanti → il loop negativo
+richiede feedback sul non-invertente; con −in il .op non converge: verificato).
+Netlist: `compG-swing.cir` / `compG-ac.cir` / `compG-op.cir` (diagnostica .dc + .meas).
+
+**Finding 1 — latch d'accensione (bistabilità).** Prima iterazione (CCS 6 mA, Re4 4,7 k,
+Rb 1k): uscita bloccata a +11,3 V fissi, sorda all'ingresso. Meccanismo misurato
+(compG-op): il CE satura (Vce = 0,03 V) perché la corrente di base sommata a Ic su Re4
+alza l'emettitore fino al nodo drv; in saturazione il segno dell'anello si inverte e lo
+stato si autoconserva (op-amp a +16,5 V, catena bias del diamond morta: v_mid = v_b2 =
+v_drv). Mitigazioni trovate: CCS 12 mA + Rb 10 k + diodo Baker (b4→drv) — ma la fragilità
+resta strutturale (nodo drv ad alta Z senza padrone DC).
+
+**Finding 2 — muro di stabilità (il killer).** Con .nodeset sul punto buono, risposta in
+frequenza (carico 10 k ‖ 10 nF):
+
+| Cc (Miller) | Cf (feedforward) | Rz | Picco closed-loop | f picco |
+|---|---|---|---|---|
+| 22 p | 22 p | 1 k | +13,0 dB | 64 kHz |
+| 100 p | 22 p | 1 k | +8,1 dB | 148 kHz |
+| 330 p | 22 p | 1 k | +4,9 dB | 99 kHz |
+| 330 p | 100 p | 1 k | **+4,7 dB (migliore)** | 79 kHz |
+| 330 p | 22-330 p | 2,2-4,7 k | +9,9…+29,1 dB | 54-69 kHz |
+
+E nella migliore combinazione la banda audio è già fuori specifica: **+3…+4,5 dB a 35 kHz**
+(target ±0,5 dB). Analisi: la macro OPA1612 è un integratore (−90° da 25 Hz); qualunque
+polo del VAS sotto il crossover aggiunge il secondo −90° → margine ~0. Un booster a
+guadagno 2,2 piatto fino al crossover (188 MHz) è irrealizzabile a discreti (nodo drv
+5,2 kΩ, Cob 4 pF → polo ~1 MHz). Lezioni: (1) op-amp compensato + stadio a guadagno in
+anello = doppio integratore, non si compensa con Miller/lead passivi; (2) il feedback va
+sul +in quando l'avanti ha due inversioni (il −in dà anello positivo); (3) .nodeset è lo
+strumento per forzare Newton sul punto buono e misurare l'AC vero; (4) il latch da
+saturazione del VAS è un modo di guasto da cercare SEMPRE nei compositi (test d'accensione).
+
+**Esito → decisione 86**: via adottata = BOOTSTRAP delle alimentazioni OPA1612 (opzione b
+della questione 60): composito v0.2 invariato (A_vas = 1, stabilità già verificata), rail
+locali flottanti che seguono l'uscita (Δ ≈ 3-5 V), swing atteso ±21…21,5 V = +25 dBu.
+Design e verifica = master-out v0.3 (prossima sessione di ingegneria).
+
+```bash
+sim/run_ltspice.sh sim/master-out/compG-ac.cir    # sweep Cc×Rz×Cf, picchi closed-loop
+sim/run_ltspice.sh sim/master-out/compG-op.cir    # diagnostica DC del latch (.dc + .meas FIND)
+```

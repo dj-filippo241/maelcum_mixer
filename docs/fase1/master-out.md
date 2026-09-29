@@ -276,3 +276,38 @@ Restano utili ma NON bloccanti: modello del DSP e del registratore quando ci sar
 ## ADDENDUM 2026-09-18 — correzione REC (decisione 63)
 
 REC OUT: **0 dBu nominali fissi** («la cosa più semplice e standard»), nessun controllo utente. I pad solder-only 0/−10/−20 dB sul PCB (accesso tecnico) sostituiscono il jumper utente proposto in §3.5. Il resto della v0.2 resta valido; gli status doc confermano il master meter come "most precise meter" (compatibile con la scala 20 segmenti, decisione 53).
+
+---
+
+## ADDENDUM 2026-09-29 — stadio d'uscita: VAS discreto BOCCIATO, via BOOTSTRAP (decisioni 83→86)
+
+La decisione 83 aveva scelto il finale a guadagno (opzione (a) della questione 60). Il tentativo
+discreto è stato progettato e simulato (`sim/master-out/compG-*.cir`): **bocciato** — latch
+d'accensione (il CE del VAS satura e inverte il segno dell'anello: uscita bloccata a +11,3 V) e
+muro di stabilità strutturale (con un op-amp già compensato, ogni VAS pole sotto il crossover
+porta il margine di fase a ~0: picchi closed-loop +4,7…+14 dB a 56-148 kHz su 15 combinazioni
+di compensazione, residuo +3…+4,5 dB a 35 kHz = fuori banda). Numeri e lezione in
+`sim/master-out/RISULTATI-composite.md` §v0.3.
+
+**Topologia adottata (decisione 86): BOOTSTRAP delle alimentazioni OPA1612** — opzione (b)
+originaria della questione 60. Il composito resta ESATTAMENTE la v0.2 (diamond class AB,
+feedback unity), ma i rail dell'op-amp non sono più ±18 V fissi: due pass serie (NPN verso
+l'alto, PNP verso il basso) generano rail locali che seguono l'uscita a distanza fissa
+(Δ ≈ 3-5 V, stringa LED/zener come riferimento, bias ≈ Iq 40 mA + margine). Al tetto
+dello swing i pass saturano dolcemente sui rail statici ±23,7 V (handoff senza gradini):
+l'op-amp guadagna esattamente i volt che gli mancavano, il follower arriva a ±21…21,5 V
+= **+25,0…+25,2 dBu** (requisito ≥+24 rispettato, ~1 dB di margine; il level plan del
+modulo worst +22 dBu resta dentro con 3 dB).
+
+Da progettare e validare (v0.3, prossimo passo):
+1. Rete bootstrap: valori stringa (LED low-noise preferiti agli zener), corrente di bias,
+   comportamento ad accensione (OUT = 0 → rail ±Δ ≥ ±2,25 V minimi datasheet).
+2. Rumore dei riferimenti sui rail → attenuato dalla PSRR del chip (~120 dB LF, in calo in
+   frequenza): quantificare; eventuale RC di filtro sulle stringhe.
+3. Finestra common-mode/uscite della macro entro i rail flottanti a swing pieno.
+4. Suite LTspice: comp-swing/comp-ac/comp-thd/comp-short ripetuti sul composito bootstrapped
+   + confronto diretto con la v0.2 (la macro clamp riferita a vp/vm modella il tracking
+   automaticamente; PSRR assente nella macro = ottimismo sul coupling d'alimentazione →
+   verifica a banco).
+5. Protezioni (limitazione corrente, clamp Vbe, SOA) e servo DC: sempre pendenti dal v0.2,
+   da dimensionare sui numeri del test corto (460 mA/4,3 W misurati).

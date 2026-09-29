@@ -122,9 +122,9 @@ Catena [BLOCCATO]: RCA stereo → protezione → front-end (LINE; PHONO MM v0.1 
 
 ## 9. Master, Booth, Rec — requisiti
 
-Design circuitale: `docs/fase1/master-out.md` v0.2 + addendum (valido salvo stadio finale: ridisegno a guadagno per decisione 83 → v0.3).
+Design circuitale: `docs/fase1/master-out.md` v0.2 + addendum (valido salvo stadio finale: bootstrap delle alimentazioni OPA1612 per decisioni 83→86 → v0.3).
 
-- [BLOCCATO] SUMMING nel modulo master (contributori: 5-WAY, 4 FX returns, MIC, GENERIC) → MASTER LEVEL VCA −∞→0(detent)→+6 dB, stereo-linked tracking ≤0,25 dB (VCA a singola CV) → METER (post-level, il più preciso) → front ±18 V → stadio HV composito ±24 V con finale a guadagno nel feedback globale (decisione 83: il follower misurava +23,2 dBu, il requisito ≥+24 va realizzato a progetto) → XLR bilanciati attivi (Z out <50 Ω, ≥+24 dBu clean, no trasformatore, no colorazione).
+- [BLOCCATO] SUMMING nel modulo master (contributori: 5-WAY, 4 FX returns, MIC, GENERIC) → MASTER LEVEL VCA −∞→0(detent)→+6 dB, stereo-linked tracking ≤0,25 dB (VCA a singola CV) → METER (post-level, il più preciso) → front ±18 V → stadio HV composito ±24 V con alimentazioni OPA1612 in BOOTSTRAP sull'uscita (decisioni 83→86: il VAS discreto a guadagno è bocciato dalla simulazione; follower e stabilità v0.2 invariati, swing atteso ±21 V = +25 dBu contro il follower nudo che misurava +23,2) → XLR bilanciati attivi (Z out <50 Ω, ≥+24 dBu clean, no trasformatore, no colorazione).
 - [BLOCCATO] BOOTH: presa pre-level, −∞→0, linked, buffer dedicato, XLR.
 - [BLOCCATO] REC: presa pre-tutto, 0 dBu fissi, buffer dedicato, pad solder-only 0/−10/−20 dB.
 - [BLOCCATO] Protezioni: corto/DC/RF/transienti al connettore; mute power-on (~1,5-2 s) e power-off (<10-20 ms) con relay + controller analogico; DC servo (niente cap in serie al segnale).
