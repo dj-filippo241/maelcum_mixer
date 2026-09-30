@@ -1,0 +1,105 @@
+* FILTRO v0.3 — RUMORE core SVF LM13700 REALE — 71A output A (nudo)
+* RERUN VOCE 71A (2026-09-30): metodo CORRETTO — densita' a 31 punti
+* (griglia 1/6 ottava 20 Hz-20 kHz) + integrazione trapezoidale python
+* (MAI .meas INTEG: quirk LTspice 26.0.2 integra en^2*sqrt(df), five-way
+* 8.9). La riga INTEG resta SOLO come riferimento per il delta. Pesatura A
+* calcolata in post. Derivato da svf-noise-397u.cir senza modifiche al circuito.
+* Il modello genera il rumore fisicamente (re = 2*VT/Iabc → en sale al
+* calare di Iabc: ~130 nV/√Hz a 114 nA, ~70 a 397 u). Integrazione
+* 20 Hz-20 kHz non A-pesata (metodologia module-noise 5-way).
+* Istanza A = core nudo (riferito a Vin con gain ~1 in banda LP);
+* istanza B = core scalato 1/20 + make-up ×20 (la proposta THD): il rumore
+* OTA riferito all'ingresso sale ×20 → SI LEGGE QUI il costo della pulizia.
+* Target di sistema: il modulo non deve peggiorare il send 0 dBu
+* (sheet §3, ≤ −90 dBu). Uscite: voutA = buffer LP (gain 1), voutB = make-up.
+.include ../lib/lm13700.inc
+.include ../lib/opamp-audio.inc
+* --- macro op-amp SENZA clamp per .noise (il limit() di opamp-audio.inc
+* rende il loop SVF DC-bistabile: ramo falso = stati saturi → .noise = 0).
+* Stessa en (Rn 1223 = 4,5 nV/√Hz) e stesso polo; solo per analisi rumore.
+.subckt OPX inp inn out vp vm
+Rn inp inx 1223
+E1 xx 0 value={1e6*(V(inx)-V(inn))}
+R1 xx p1 5005
+C1 p1 0 1.59u
+E2 out 0 value={V(p1)}
+.ends OPX
+
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+.param Iabc=397u
+V1 vin 0 DC 0 AC 1
+Ix1 vcc iabc1 DC {Iabc}
+Ix2 vcc iabc2 DC {Iabc}
+* ================= A) NUDO =================
+RvinA vin nsA 10k
+RlpA lp_bA nsA 10k
+RbpA bp_bA nsA 7.07k
+RfA nsA hpA 10k
+XsumA 0 nsA hpA vcc vee OPX
+Xota1A hpA 0 bpA iabc1 dbA1 dbA2 vcc vee LM13700
+C1iA bpA 0 33n
+Rb1A bpA 0 100Meg
+Xb1A bpA bp_bA bp_bA vcc vee OPX
+Xota2A bp_bA 0 lpA iabc2 dbA3 dbA4 vcc vee LM13700
+C2iA lpA 0 33n
+Rb2A lpA 0 100Meg
+Xb2A lpA voutA voutA vcc vee OPX
+* ================= B) SCALATO 1/20 + make-up ×20 =================
+RvinB vin nsB 200k
+RlpB lp_bB nsB 10k
+RbpB bp_bB nsB 7.07k
+RfB nsB hpB 10k
+XsumB 0 nsB hpB vcc vee OPX
+Xota1B hpB 0 bpB iabc3 dbB1 dbB2 vcc vee LM13700
+Ix3 vcc iabc3 DC {Iabc}
+C1iB bpB 0 33n
+Rb1B bpB 0 100Meg
+Xb1B bpB bp_bB bp_bB vcc vee OPX
+Xota2B bp_bB 0 lpB iabc4 dbB3 dbB4 vcc vee LM13700
+Ix4 vcc iabc4 DC {Iabc}
+C2iB lpB 0 33n
+Rb2B lpB 0 100Meg
+Xb2B lpB lp_bB lp_bB vcc vee OPX
+Rmu1 lp_bB nmu 10k
+Rmu2 nmu voutB 200k
+Xmu 0 nmu voutB vcc vee OPX
+.options gmin=1e-9 abstol=1e-11 vntol=1e-8
+* Il loop SVF con macro clampate è DC-bistabile (ramo vero = stati a mV;
+* ramo falso = OTA su Ioff·Rb con follower saturo → .noise = 0). Il nodeset
+* ancora Newton al ramo vero a ogni step. (Lezione nuova, da registrare.)
+.nodeset V(bpA)=0 V(lpA)=0 V(hpA)=0 V(bpB)=0 V(lpB)=0 V(hpB)=0
+.noise V(voutA) V1 dec 200 20 20k
+.meas noise a_vn2 INTEG V(onoise)*V(onoise)
+.meas noise d01 FIND V(onoise) AT 20
+.meas noise d02 FIND V(onoise) AT 25
+.meas noise d03 FIND V(onoise) AT 31.5
+.meas noise d04 FIND V(onoise) AT 40
+.meas noise d05 FIND V(onoise) AT 50
+.meas noise d06 FIND V(onoise) AT 63
+.meas noise d07 FIND V(onoise) AT 80
+.meas noise d08 FIND V(onoise) AT 100
+.meas noise d09 FIND V(onoise) AT 125
+.meas noise d10 FIND V(onoise) AT 160
+.meas noise d11 FIND V(onoise) AT 200
+.meas noise d12 FIND V(onoise) AT 250
+.meas noise d13 FIND V(onoise) AT 315
+.meas noise d14 FIND V(onoise) AT 400
+.meas noise d15 FIND V(onoise) AT 500
+.meas noise d16 FIND V(onoise) AT 630
+.meas noise d17 FIND V(onoise) AT 800
+.meas noise d18 FIND V(onoise) AT 1000
+.meas noise d19 FIND V(onoise) AT 1250
+.meas noise d20 FIND V(onoise) AT 1600
+.meas noise d21 FIND V(onoise) AT 2000
+.meas noise d22 FIND V(onoise) AT 2500
+.meas noise d23 FIND V(onoise) AT 3150
+.meas noise d24 FIND V(onoise) AT 4000
+.meas noise d25 FIND V(onoise) AT 5000
+.meas noise d26 FIND V(onoise) AT 6300
+.meas noise d27 FIND V(onoise) AT 8000
+.meas noise d28 FIND V(onoise) AT 10000
+.meas noise d29 FIND V(onoise) AT 12500
+.meas noise d30 FIND V(onoise) AT 16000
+.meas noise d31 FIND V(onoise) AT 20000
+.end

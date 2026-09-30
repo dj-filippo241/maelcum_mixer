@@ -1,0 +1,139 @@
+* ============================================================
+* CANALE CDJ/LINE v0.4 — BUDGET RUMORE COMPLETO (voce 71A, 2026-09-30)
+* Punto di misura: OUT DRIVER di canale (sheet §3: target ≤ −92 dBu A-wtd
+* [DA RITARARE — 71A]); carico = iniezione DJ bus 10k.
+* Catena (cdj-line-channel.md §2, guadagni nominali): [A] prot+buffer
+* unity → [B] GAIN VCA THAT 218x al detent 0 dB → [C] EQ β3 4 celle al
+* detent (net 0 dB: buffer −0.5 × makeup −2) → [H] FADER pot 10k a unity
+* + buffer → [I] out driver ≤50 Ω. CUE/FX send/meter = diramazioni
+* post-EQ pre-fader: contributo al out nullo (buffer), carico incluso
+* come Rsend 20k [ASSUNZIONE da verificare col design send].
+* METODO (§8.9 five-way, quirk LTspice 26.0.2): MAI .meas INTEG —
+* densità a 11 punti 10 Hz-20 kHz + integrazione trapezoidale python.
+* Rumore VCA 218x da datasheet THAT: −98 dBV 20-20k unweighted a 0 dB
+* gain (Rout 20k, SENZA I/V) = 12,6 µV → densità equivalente 89 nV/√Hz
+* → Rvn = en²/4kT = 476k (stesso pattern E-4-nodi di module-noise-v03).
+* NOTA METODO: v03 usava Rvn 240k (63 nV) con commento "47 nV" (che
+* corrisponde a 133k = −104 dBV, config I/V 10k): 240k = −101 dBV, via
+* di mezzo — il rumore drive del modulo è stato sovrastimato ~2,6 dB
+* (direzione conservativa). Qui per il GAIN si usa 476k = −98 dBV esatto.
+* Fader pot 10k [PROVVISORIO — valore reale voce 40]: a unity la pista
+* 10k carica l'uscita EQ (inclusa), contatto wiper ~1k serie.
+* ============================================================
+.include ../lib/opamp-audio.inc
+.param err=0
+.param xl=0.5
+.param tlm=0.5
+.param tmh=0.5
+.param thh=0.5
+*
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 vin 0 DC 0 AC 1
+*
+* ============ [A] PROTEZIONE + BUFFER IN (unity) ============
+Rprot vin nprot 100
+Xpa nprot bufa bufa vcc vee OP1612
+*
+* ============ [B] GAIN VCA 218x @ detent 0 dB ============
+* segnale unity (macro that2181 non necessaria al detent: law verificata
+* in vca-law.cir) + rumore datasheet iniettato con E lineare 4 nodi
+Rvnb vn 0 476k
+Evn2 vcasig bufa vn 0 1
+*
+* ============ [C] EQ β3 (da cascade-b3-noise.cir, invariata) ============
+* --- BUFFER IN EQ (gain -0.5, rif. interno -6 dB) ---
+Rib vcasig nib 20k
+Ribf nib v_pre 10k
+Xib 0 nib v_pre vcc vee OP1612
+*
+* --- CELLA LOW (shelf 70 Hz) ---
+RinL v_pre naL 1k
+RzaL naL nbL {31k*xl*(1+err/2)+1m}
+CzaL naL nbL 100n
+XopL 0 nbL v_lo vcc vee OP1654
+RfL nbL ncL 1k
+RzbL ncL v_lo {31k*(1-xl)*(1-err/2)+1m}
+CzbL ncL v_lo 100n
+*
+* --- CELLA MID-LM (250 Hz Q0,8) ---
+R1a v_lo nma 5.11k
+R2a nma 0 18.2k
+C1a nma nmb 100n
+C2a nma vbp1 100n
+R3a vbp1 nmb 10.2k
+X1a 0 nmb vbp1 vcc vee OP1654
+Ri1a vbp1 nvia 10k
+Ri2a nvia vbn1 {10k*(1+err/2)}
+X2a 0 nvia vbn1 vcc vee OP1654
+Rp1a vbp1 wpa {10k*tlm+1m}
+Rp2a vbn1 wpa {10k*(1-tlm)+1m}
+Raa v_lo nsa 49.9k
+Rba wpa nsa 49.9k
+Rfa nsa v_lm 49.9k
+X3a 0 nsa v_lm vcc vee OP1654
+*
+* --- CELLA MID-MH (1 kHz Q0,9) ---
+R1b v_lm nmc 4.32k
+R2b nmc 0 6.98k
+C1b nmc nmd 33n
+C2b nmc vbp2 33n
+R3b vbp2 nmd 8.66k
+X1b 0 nmd vbp2 vcc vee OP1654
+Ri1b vbp2 nvib 10k
+Ri2b nvib vbn2 {10k*(1+err/2)}
+X2b 0 nvib vbn2 vcc vee OP1654
+Rp1b vbp2 wpb {10k*tmh+1m}
+Rp2b vbn2 wpb {10k*(1-tmh)+1m}
+Rab v_lm nsb 49.9k
+Rbb wpb nsb 49.9k
+Rfb nsb v_mh 49.9k
+X3b 0 nsb v_mh vcc vee OP1654
+*
+* --- CELLA HIGH (sottrattiva HP2 ~5 kHz) ---
+Ch1 v_mh nha 10n
+Ch2 nha nhb 10n
+Rh1 nha vhp 4.7k
+Rh2 nhb 0 2.25k
+X1h nhb vhp vhp vcc vee OP1654
+Rh3 vhp nvh 10k
+Rh4 nvh vhn {10k*(1+err/2)}
+X2h 0 nvh vhn vcc vee OP1654
+Rp1h vhn wph {10k*thh+1m}
+Rp2h vhp wph {10k*(1-thh)+1m}
+Rah v_mh nsh 49.9k
+Rbh wph nsh 49.9k
+Rfh nsh v_hi0 49.9k
+X3h 0 nsh v_hi0 vcc vee OP1654
+*
+* --- MAKE-UP EQ (gain -2, trim detent) ---
+Rom v_hi0 nom 49.9k
+Rfm nom v_hi 99.8k
+Xom 0 nom v_hi vcc vee OP1612
+*
+* ============ Carico diramazioni send/meter (post-EQ pre-fader) ============
+Rsend v_hi 0 20k
+*
+* ============ [H] FADER (pot 10k, unity) + buffer ============
+Rtrack v_hi 0 10k
+Rwip v_hi fad_o 1k
+Xfb fad_o fadb fadb vcc vee OP1612
+*
+* ============ [I] OUT DRIVER ≤50 Ω + carico DJ bus 10k ============
+Xod fadb vdrv vdrv vcc vee OP1612
+Rout vdrv vout 47
+Rload vout 0 10k
+*
+.noise V(vout) V1 dec 200 20 20k
+.meas noise nd10 FIND V(onoise) AT 10
+.meas noise nd20 FIND V(onoise) AT 20
+.meas noise nd50 FIND V(onoise) AT 50
+.meas noise nd100 FIND V(onoise) AT 100
+.meas noise nd200 FIND V(onoise) AT 200
+.meas noise nd500 FIND V(onoise) AT 500
+.meas noise nd1k FIND V(onoise) AT 1k
+.meas noise nd2k FIND V(onoise) AT 2k
+.meas noise nd5k FIND V(onoise) AT 5k
+.meas noise nd10k FIND V(onoise) AT 10k
+.meas noise nd20k FIND V(onoise) AT 20k
+.end
