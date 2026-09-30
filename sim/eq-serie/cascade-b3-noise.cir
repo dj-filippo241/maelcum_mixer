@@ -80,6 +80,15 @@ Rfm nom v_hi 99.8k
 Xom 0 nom v_hi vcc vee OP1612
 *
 .noise V(v_hi) V1 dec 200 20 20k
-.meas noise vn2 INTEG V(onoise)*V(onoise)
-.meas noise ndens FIND V(onoise) AT 1k
+.meas noise nd10 FIND V(onoise) AT 10
+.meas noise nd20 FIND V(onoise) AT 20
+.meas noise nd50 FIND V(onoise) AT 50
+.meas noise nd100 FIND V(onoise) AT 100
+.meas noise nd200 FIND V(onoise) AT 200
+.meas noise nd500 FIND V(onoise) AT 500
+.meas noise nd1k FIND V(onoise) AT 1k
+.meas noise nd2k FIND V(onoise) AT 2k
+.meas noise nd5k FIND V(onoise) AT 5k
+.meas noise nd10k FIND V(onoise) AT 10k
+.meas noise nd20k FIND V(onoise) AT 20k
 .end

@@ -2,7 +2,7 @@
 
 > **v0.3-WIP (2026-09-28, `sim/filtro/RISULTATI-ota-real.md`)**: item §9.2 e
 > §9.3 FATTI — (a) ramp BBM validata: τ 1 ms = click −8,4 dB vs brusco,
-> 5 ms ≈ baseline; famiglia unica 1 ms con gate 5-way e reroute FX (ratificata:
+> 5 ms ≈ baseline; famiglia unica 1 ms con gate 5-way [escluso dec. 88: kill hard-cut a switch] e reroute FX (ratificata:
 > decisione 80); il mux di modo resta dopo la questione 63; (b) LM13700
 > REALE: modello transistor-level condiviso `sim/lib/lm13700.inc` (calibrato
 > datasheet TI SNOSBW2F), law/Q/offset/rumore del core CONFERMATI (fc ≤1,5%,
@@ -326,7 +326,7 @@ distribuzione mirror + tracking (51).
    brusco (gesto ~2 ms trasparente), 5 ms ≈ baseline (gesto ~10 ms "soft
    mute"); gap BBM 50 µs muto (floor −100 dB). FAMIGLIA UNICA 1 ms con gate
    5-way e reroute FX → ratificata (decisione 80). Circuito = generatore ramp del
-   gate 5-way (gate-ramp validato). Il mux di modo (HPF/OFF/LPF) resta
+   gate 5-way (gate-ramp validato; dal 2026-09-30 il kill è a switch per dec. 88 — il circuito resta riferimento per gli altri usi della famiglia). Il mux di modo (HPF/OFF/LPF) resta
    BLOCCATO su 63 (single-path vs serie).
 3. [FATTO 2026-09-28] Modello LM13700 reale (`sim/lib/lm13700.inc`,
    RISULTATI §1-§3): offset (stati DC 4-5 mV bounded su tutta la sweep,

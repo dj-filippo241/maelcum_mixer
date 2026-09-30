@@ -90,7 +90,7 @@ vero esiste solo all'uscita XLR, dove lo stadio discreto lavora su ±24 V.
 |---|---|
 | Out driver di canale | ≤ −92 dBu |
 | Bus FX (contributori terminati) | ≤ −88 dBu |
-| Out 5-way | ≤ −90 dBu |
+| Out 5-way | **≤ −80 dBu A-wtd** (dec. 88, 2026-09-30: out modulo, ingressi terminati, gain nominali, drive θ0; misurato −83,2, margine 3,2 dB; il rumore segue la law del drive: +3,6 dB a θ50 con +7 dB di segnale) |
 | XLR MASTER (fader unity) | ≤ −92 dBu → sistema ≤ −90 dBu con margine |
 | Isolamento control→audio | ≥ 100 dB (verso corretto: il controllo resta 100 dB sotto l'audio) |
 | Phono | budget dedicato al design Rev A/B (input-referred, test inverse-RIAA) |
@@ -99,6 +99,19 @@ Nota di verifica (2026-09-27): 5-way out SIMULATO a −108,4 dBu (integrato
 20 Hz–20 kHz non A-pesato, macro uniforme ~6 nV, LM13700/THAT 2181 assenti)
 = 18,4 dB di margine sul target −90; banca 72% del contributo, celle 28%.
 Dettagli: `docs/fase2/five-way-module.md` §8.4 (`sim/five-way/module-noise.cir`).
+
+**[REVISIONE 2026-09-30 — la nota sopra è INVALIDA DUE VOLTE]** (righe Out driver canale ≤−92, Bus FX ≤−88 e XLR MASTER ≤−92: **DA RITARARE** dopo i budget mancanti — EQ β3 reale −89,2 dBu supera da sola il −92 di canale; voce 71A docs/02): (1) quirk
+LTspice `.meas INTEG` → tutti i totali √INTEG del repo ~21,5 dB ottimisti;
+(2) il rumore dei THAT 218x era assente. Misura corretta con 6 218x reali
+nel percorso mono (5 gate + drive, −98 dBV datasheet): **5-way out −77,3 dBu
+(θ0) / −73,0 (θ50) — il target −90 di questa tabella è irraggiungibile con
+l'architettura bloccata**; realistico con fix ingegneristiche −83…−86 A-wtd.
+Target 5-way RISOLTO: **≤ −80 dBu A-wtd ratificato (decisione 88)** dopo
+benchmark su 9 costruttori della scena (`docs/05-benchmark-preamp-scena-
+2026-09-30.md`). Restano **DA RITARARE (voce 71A)**: canale, bus FX, XLR
+master — dopo la simulazione dei budget mancanti. Dettagli: five-way §8.9 + `sim/five-way/RISULTATI-module-noise-v021.md`.
+Impatto sistema: il 5-way domina il rumore della catena master → anche
+XLR MASTER ≤−92 va ritarato sulla voce 71A (budget canale/FX/master).
 
 ## 4. Questioni chiuse da questo sheet
 

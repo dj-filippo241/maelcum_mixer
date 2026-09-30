@@ -8,8 +8,12 @@
 > (steering ±1,9 V = clip duro asimmetrico; basi dal drain via R matched:
 > niente latch; trim non previsto — il servo nulla l'offset, eventuale trim pair solo se il banco lo chiede) → recovery invertente 2k/2k (polarità totale
 > non invertente) + servo DC 2 op-amp (−65 µV). Tutto DC-coupled (SUB 10 Hz).
-> Griglia musicale θ×programma misurata in §5.3 (numeri → conferma di Filippo);
-> lezioni di 7 iterazioni in §5.4; D5 (risonanza) e D6 (rumore) pendenti.
+> Griglia musicale θ×programma misurata in §5.3 (CONFERMATA da Filippo 2026-09-30, decisione 87 — review estetica sul prototipo M4L);
+> lezioni di 7 iterazioni in §5.4; D6 (rumore) FATTO 2026-09-30 (§8.9: −85,7 dBu
+> drive, VCA dominante → target −90 irraggiungibile) → **DECISIONE 88: kill a
+> SWITCH analogici (10 VCA rimossi dai gate), drive tiene il 218x, target
+> nuovo ≤ −80 dBu A-wtd — misurato con switch+fix: −83,2 A-wtd θ0** (§8.9);
+> D5 pendente.
 
 > **CELLE v0.2.1 (2026-09-28, §4.2)**: topologia degli integratori cambiata
 > per la questione 70 (tetto di stato 52 mV degli OTA): integratori op-amp +
@@ -19,14 +23,14 @@
 > summer d'uscita (zero silicon extra). VERIFICATO sui valori finali
 > (`sim/five-way/cell-v021-*.cir`): law 250-1500 Hz ±0,03%, Q invariante,
 > THD 0,005% nominale / 0,125% worst +10 dBu (500× meglio della cella OTA),
-> notch −46…−47 dB, rumore −121,7 dBu. LM13700 RIMOSSI dalle celle (−10);
-> +10 dual JFET matched. Banca kill, gate VCA, drive: invariati.
+> notch −46…−47 dB, rumore −121,7 dBu [√INTEG SUPERATO → 71A]. LM13700 RIMOSSI dalle celle (−10);
+> +10 dual JFET matched. Banca kill invariata; gate VCA [SUPERATO dec. 88 → switch]; drive invariato.
 >
 > **CODA BETA-3 CELLE (2026-09-28, `sim/filtro/RISULTATI-ota-real.md` §5)**:
 > celle parametriche riesaminate col LM13700 REALE (`sim/lib/lm13700.inc`) —
 > piccolo segnale CONFERMATO (detent piatto ±0,0001 dB, boost ±0,02 dB, notch
 > vero −67…−78 dB con f0 +1% assorbita dal trim position), rumore cella
-> −119,7 dBu (dentro il budget −108,4 di §8.4); **FINDING BLOCCANTE**: il
+> −119,7 dBu [√INTEG SUPERATO → 71A] (dentro il budget −108,4 di §8.4 [superato → §8.9]); **FINDING BLOCCANTE**: il
 > tetto di stato degli integratori OTA (52 mV a f0, strutturale) rende la
 > cella nuda inutilizzabile ai livelli di progetto (a −6 dBu: gain 1,1-1,3
 > contro 5,62, THD 3-6%); scaling+make-up rompe il rumore → **questione 70:
@@ -43,9 +47,10 @@
 > CASCATA 5 in serie VALIDATE: detent ±0,005 dB su 10 Hz–40 kHz, boost ±0,005
 > dB sui target +9/+12/+15, notch −58…−81 dB, Q = comandata, position via gm
 > esatta su 2,6 ottave (§4.1, §8.3); converter di position specificato per
-> banda (§4.1). (3) RUMORE del percorso completo SIMULATO: −108,4 dBu contro
-> target −90 (sheet §3), margine 18,4 dB (§8.4). (4) GATE VCA + RAMP 1 ms
-> VALIDATO col macromodello THAT 218x condiviso (`sim/lib/that2181.inc`):
+> banda (§4.1). (3) RUMORE percorso completo: −108,4 dBu contro target −90,
+> margine 18,4 dB [SUPERATO 2026-09-30 → §8.9: reale −77,3/−73,0 con 6 VCA;
+> −83,2 A-wtd con switch dec. 88]. (4) GATE VCA + RAMP 1 ms [SUPERATO per il
+> kill → dec. 88: switch] VALIDATO col macromodello THAT 218x condiviso (`sim/lib/that2181.inc`):
 > click −8,4 dB vs brusco, floor −100 dB (§8.5). CORREZIONE trasversale da
 > datasheet: 2180/2181 sono SINGLE channel (10 chip per i gate, non 5) —
 > voce 37 aggiornata. Resta per la v0.2 completa: drive (dopo questione 61)
@@ -95,7 +100,10 @@ DJ BUS L/R (0 dBu nom, +16 worst)
   │
   ▼ PAD −6 dB (dec. 73) → buffer
   │
-  ▼ KILL BANK (per lato): LR4 5 vie, gate VCA per via + kill switch
+  ▼ KILL BANK (per lato): LR4 5 vie, GATE = SWITCH analogico di precisione
+  │   in serie per via + kill switch pannello (DEC. 88, 2026-09-30: era VCA
+  │   218x con ramp 1 ms; hard-cut accettato = standard di scena; dec. 80
+  │   revocata per questa parte, resta per FX/BBM filtro)
   │   SUB ──[gate K1]──┐
   │   KICK ─[gate K2]──┤
   │   MID ──[gate K3]──┤   (banca complementare: somma piatta §3)
@@ -182,17 +190,21 @@ dentro la finestra di fusione (~20 ms) — comportamento normale di un
 crossover ripido; il DSP acustico a valle fa il suo allineamento. Comunque
 dato da confermare a orecchio (questione 67, ascolto M4L).
 
-**Gate di kill**: 1 VCA per via per lato (THAT 2180/2181 — SINGLE channel:
-il "dual" del nome sono i porti di controllo EC+/EC−, verifica datasheet
-2026-09-27; famiglia unica — voce 37): 5×2 = **10 chip singoli**. Kill
-switch fisico (5, uno per via di altoparlanti) + slider/mute: il gate chiude
-con ramp ~1 ms (famiglia decisione 80) — VALIDATA in simulazione (§8.5): fade
-esponenziale senza kink, transiente HF −8,4 dB vs interruzione brusca.
-Kill = g→0: **silenzio della via** (gate, non sottrazione: nessuna
-cancellazione di fase — a differenza dell'EQ di canale che è scultoreo; via
-killata = l'altoparlante tace; EQ creativo = gesto sul materiale vivo).
-Nel reale il floor non è −inf ma il feedthrough del VCA (~−90…−100 dB dopo
-trim, datasheet): comunque silenzio pratico, sotto il rumore del modulo.
+**Gate di kill [REV 2026-09-30 → decisione 88]**: **SWITCH analogico di
+precisione** per via per lato, in serie al percorso di banda (Ron ~33 Ω
+classe, IC famiglia selettore assign FX/LINE-PHONO), pilotato dagli switch
+fisici di pannello esistenti — l'audio NON passa dai contatti di pannello
+(usura/crackle evitati, gesto invariato). Hard-cut: il click è accettato
+(misure §8.5: transiente 3,64 V hard vs 1,39 V con ramp 1 ms; standard di
+scena: Jah Tubbys/JB cut-out, Mostec relè — docs/05). Kill = apertura:
+**silenzio della via** (gate, non sottrazione: nessuna cancellazione di
+fase; via killata = l'altoparlante tace; EQ creativo = gesto sul materiale
+vivo). Residuo off-state = off-isolation capacitiva dello switch
+(~−60…−70 dB a 20 kHz attesi — DA QUANTIFICARE nel redesign; il VCA era
+−90…−100 dB dopo trim). [Design precedente v0.2: 1 VCA THAT 218x per via
+per lato = 10 chip con ramp 1 ms VALIDATA §8.5 — SUPERATO dalla dec. 88 per
+rumore: i floor −98 dBV dei 6 VCA nel percorso rendevano irraggiungibile il
+target sheet §3; dec. 80 revocata per il kill, resta per FX/BBM filtro.]
 
 **Verifica simulata** (`sim/five-way/bank-lr4.cir`, gate ideali): [RISULTATI §8]
 
@@ -323,11 +335,11 @@ assorbe, deriva musicale trascurabile [PROVVISORIO: verifica a banco].
 EQ3): law 250,0/375,0/699,9/1000,0/1499,6 Hz (**±0,03%**); Q invariante
 (bpk ±0,01 dB su 2,6 ottave); notch −46,2…−47,0 dB (spec kill −30: margine
 16 dB; meno profondo dell'ideale −63…−81 ma musicalmente equivalente —
-il kill per via resta lavoro del gate VCA); THD **0,005%** (nominale
+il kill per via resta lavoro del gate [VCA → switch, dec. 88]); THD **0,005%** (nominale
 −6 dBu modulo) / **0,125%** (worst +10 dBu, Q3, boost max: soft, senza
 clamp: out 13,66 V su 16,5); gain +14,97 dB; rumore (PoC, core full-scale)
 −121,7/−124,9 dBu → riferito al core −12 dBu: **−109,7 dBu per cella
-worst-boost** → 5 celle ≈ −103, modulo ~−101 contro target −90: PASS ~11 dB
+worst-boost** → 5 celle ≈ −103, modulo ~−101 contro target −90: PASS ~11 dB [totali √INTEG SUPERATI 2026-09-30 → voce 71A; numeri reali di modulo: §8.9]
 (a detent il pot cancella l'iniezione: meglio).
 
 **JFET candidati** [reperibilità DA VERIFICARE, come voce 37]: dual matched
@@ -337,7 +349,7 @@ assume 173 µA/V² uniforme; in acquisto si binna per Idss e si regola C
 (C ±20% sposta la finestra Vcm senza toccare la law).
 
 **Silicon v0.2.1**: banca 14 quad + EQ **17,5 quad** (7 sez./cella × 10) +
-gate/buffer/make-up ≈ **~33-35 quad + 10 dual JFET + 12 THAT 218x** —
+gate/buffer/make-up ≈ **~33-35 quad + 10 dual JFET + 2 THAT 218x (solo drive: gate a switch, dec. 88) + 10 switch analogici di precisione (famiglia assign FX)** —
 LM13700 RIMOSSI dalle celle (restano eventualmente nel filtro, questione 70
 lato filtro). Delta costo vs v0.2: ~+5 quad (+8-12 €) +10 dual JFET
 (+15-30 €) −10 LM13700 (−10-15 €) ≈ **+15-25 €** [PROVVISORIO].
@@ -381,7 +393,8 @@ somma EQ (−6 dBu nom, worst +10…+25 dBu §6)
   │     Ic→Itail piatto); ceiling ±2,79 V = +11,9 dBu pre-makeup
   ▼ [3] RECOVERY invertente 2k/2k (OPA1612 dual condiviso L/R):
   │     polarità TOTALE non invertente (VCA + · CS − · pair + · recovery −);
-  │     SERVO DC 2 op-amp (TL062: integratore + invertitore = +∫reco,
+  │     SERVO DC 2 op-amp (draft TL062; dec. 88 → classe OPA2134, 8 nV/√Hz:
+  │     integratore + invertitore = +∫reco,
   │     fc 0,31 Hz, Rinj 2,2 k sul nodo di somma → autorità ±14,5 V):
   │     residuo misurato: −65 µV…−12 mV secondo il livello (rettifica del
   │     segnale); in deep fuzz transitori di pochi decimi di V — il servo
@@ -436,12 +449,14 @@ drive pre-makeup), righe = θ, colonne = programma:
 Guadagno totale verificato sulla griglia θ: 0/+7,0/+9,5/+12,0/+14,0/+15,9 dB
 (target dec. 82 esatto); ceiling fuzz ±2,79 V (+11,9 dBu) → col makeup +6 dB
 = +17,9 dBu al master sum: dentro il level plan (worst +22).
-**Numeri musicali per la conferma di Filippo (regola 2)**: programma normale a
+**Numeri musicali CONFERMATI da Filippo (2026-09-30, decisione 87 — regola 2
+soddisfatta; la review dei valori «estetici» si farà a orecchio sul prototipo
+M4L, dec. 78)**: programma normale a
 θ0-50 resta pulito/caldo (0,07-0,36 %); il nastro si sente da θ≈65 sui picchi
 e diventa evidente a θ80 con programma a 0 dBu (3,3 %); il fuzz pieno sta a
 θ≥90 con programma caldo, oppure a θ50+ con picchi +10 dBu (interazione voluta:
 il drive "sente" come suoni, non solo dove sta la manopola). Taper/knee esatti
-= ascolto M4L (dec. 78) — la griglia sopra è il punto di partenza.
+= ascolto M4L (dec. 78) — la griglia sopra è il punto di partenza, valori bloccati.
 
 ### 5.4 Simulazioni eseguite e lezioni (`sim/five-way/drive-*.cir`, 2026-09-29)
 
@@ -460,15 +475,17 @@ il drive "sente" come suoni, non solo dove sta la manopola). Taper/knee esatti
   (4) servo a iniezione-FB deve sentire il nodo di cui annulla l'offset (reco, non coll);
   (5) batch LTspice = una analisi per netlist; law verificate in DC (.tran FIND),
   non con .ac db() su catene di B-source.
-- Da fare: **D5** interazione risonanza filtro (dopo ascolto q70); **D6** rumore
-  catena drive (stima −98 dBu, dentro budget modulo −90 → conferma in task
-  module-noise v0.2.1); shaper op-amp/diodi reale (famiglia fx-shaper-discreto).
+- **D6 FATTO (2026-09-30, §8.9)**: −85,7 dBu pre-makeup, VCA dominante
+  (la stima −98/Rg era sbagliata) → modulo completo −77,3…−73,0 dBu:
+  target −90 irraggiungibile con 6 218x → voce 71 docs/02.
+- Da fare: **D5** interazione risonanza filtro (dopo ascolto q70);
+  shaper op-amp/diodi reale (famiglia fx-shaper-discreto).
 
 ### 5.5 BOM aggiuntiva drive (per lato) [PROVVISORIO]
 
 1× THAT 218x (già conteggiato voce 37) · 1× JFET J310-like · 2× PNP 2N3906-like
 (pair, anche non matched: l'offset residuo lo nulla il servo) · ~16 R + Cbyp 100 µ.
-Condivisi L/R: 1× OPA1612 dual (recovery) + 1× TL062 dual (servo) + rete servo
+Condivisi L/R: 1× OPA1612 dual (recovery) + 1× dual classe OPA2134 (servo, dec. 88; draft TL062) + rete servo
 (1M/470n/100k/2,2k). Comando: pot rotativo (famiglia dec. 85; pannello → voce 40).
 A banco: trim bilanciamento pair solo se il servo esce dall'autorità (±14,5 V).
 
@@ -499,10 +516,10 @@ A banco: trim bilanciamento pair solo se il servo esce dall'autorità (±14,5 V)
 |---|---|---|
 | Quad op-amp low-noise (classe OPA1654/1612) | ~33-35 | banca 14 (v0.2 allineata in fase: 16 SK + 12 allpass), EQ 17,5 (7 sezioni/cella × 10, §4.2 v0.2.1), gate/buffer/make-up |
 | Dual JFET N matched (classe LSK589/MMBF5457 selezionato) | 10 | celle parametriche v0.2.1: VCR bootstrappato, 2 per cella (§4.2) [reperibilità da verificare]; LM13700 RIMOSSI dalle celle (questione 70) |
-| THAT 2180/2181 (SINGLE VCA — datasheet 2026-09-27) | 10 | gate di kill (1 per via per lato); 2162 dual scartato: ±16 V max e THD 0,05% |
+| THAT 2180/2181 per gate kill → **RIMOSSI (dec. 88): 10 switch analogici di precisione** | 0 VCA gate / 10 switch | gate = switch hard-cut famiglia assign FX (Ron ~33 Ω classe); il drive tiene 2× 218x (§5.5); 2162 dual resta scartato (±16 V, THD 0,05%) |
 | THAT 2180/2181 (SINGLE) | 2 | gain drive stadio 1 (v0.3: solo 218x, law nativa dB — voce 37) |
 | JFET J310-like + PNP 2N3906-like | 2+4 | drive v0.3 §5.5: nastro CS 1/lato + diff pair fuzz 2/lato |
-| OPA1612 dual (recovery) + TL062 dual (servo) | 1+2 | recovery condiviso L/R; 1 TL062 per lato per il servo (§5.5) |
+| OPA1612 dual (recovery) + dual classe OPA2134 (servo, dec. 88; draft TL062) | 1+2 | recovery condiviso L/R; 1 dual per lato per il servo (§5.5) |
 | Shaper position θ→Vcm + buffer gain-2 | ~5-8 sezioni | v0.2.1 (§4.2): shaper famiglia dec. 70, 1 per banda L/R ganged; sostituisce converter expo + mirror Iabc |
 | R 0,1% / C0G-PP / trimmer allineamento | — | banca: 8 edge + 6 sezioni allpass per lato |
 | Stima costo | ~220-300 € | il modulo più siliconato del mixer |
@@ -514,7 +531,7 @@ A banco: trim bilanciamento pair solo se il servo esce dall'autorità (±14,5 V)
 **Funzione KILL: VALIDATA.** Ogni via killata scende nella sua banda con le
 code LR4 (KILL SUB: −76 dB @10 Hz; KILL KICK: −24 dB @200; KILL MID: −21
 @700; KILL HIGH: −15 @2,5k; KILL SUPER: −51 @15k, −68 @25k) e le altre vie
-restano intatte; ALL-KILL = −inf (silenzio assoluto by design: il gate VCA
+restano intatte; ALL-KILL = −inf (silenzio assoluto by design [SUPERATO dec. 88: switch hard-cut, all-kill = off-isolation ~−60…−70 dB da quantificare]: il gate VCA
 non ha i limiti di fase delle celle sottrattive — a differenza dell'EQ di
 canale, qui il kill È muto).
 
@@ -557,7 +574,7 @@ al centesimo di dB:
 | KILL MID | −16,4 dB (min @~650) | −21 @700 | vedi nota sotto |
 | KILL HIGH | −14,0 dB (min @~2k) | −15 @2,5k | vedi nota sotto |
 | KILL SUPER | −50,5 @15k / −68,2 @25k | −51 / −68 | invariato |
-| ALL-KILL | −inf (silenzio assoluto) | −inf | gate VCA, invariato |
+| ALL-KILL | −inf (silenzio assoluto) [v0.2 VCA; dec. 88: switch, off-isolation da quantificare] | −inf | gate VCA [→ switch, dec. 88] |
 
 Nota sui kill interni "meno profondi": i numeri v0.1 erano gonfiati dalla
 cancellazione di fase (le bande residue si sommavano fuori fase e scavavano
@@ -614,6 +631,11 @@ nomi .meas duplicati = run rifiutato.
 
 ### 8.4 v0.2 — Rumore del percorso completo (`module-noise.cir`)
 
+> **[SUPERATO 2026-09-30 — §8.9]** I totali −108,4/−109,9/−113,9 dBu qui
+> sotto sono viziati DUE volte: (1) quirk LTspice `.meas INTEG` (√INTEG ≈
+> 21,5 dB ottimista); (2) rumore THAT 218x assente (gate e drive). Numeri
+> corretti e catena completa v0.2.1: §8.9 + `RISULTATI-module-noise-v021.md`.
+
 Catena mono completa: pad −6 dB → banca allineata (28 sezioni, gate g=1) →
 summer → 5 celle parametriche a detent (pot gain REALE 10k incluso) → drive
 placeholder → make-up +6 dB. Metodologia eq-serie: macromodello op-amp
@@ -637,7 +659,7 @@ LM13700 (10 OTA nel percorso + Rout dei nodi integratori), THAT 2181 (gate
 e drive), rumore di wiper dei pot. Con modelli reali la cifra può solo
 muoversi di qualche dB: il margine 18,4 dB assorbe la stima.
 
-### 8.5 v0.2 — Gate VCA THAT 218x + ramp anti-click (`gate-ramp.cir`)
+### 8.5 v0.2 — Gate VCA THAT 218x + ramp anti-click (`gate-ramp.cir`) [SUPERATO per il kill dalla dec. 88: gate = switch hard-cut; i dati ramp restano validi per reroute/assign FX e BBM filtro]
 
 Macromodello condiviso `sim/lib/that2181.inc` (law Blackmer ±6,1 mV/dB da
 datasheet, gain range −100…+40 dB, polo 20 MHz, clamp rail): un modello,
@@ -671,6 +693,8 @@ trimmer di allineamento (§3). Gate: nelle sim di banca sono ideali (g = 0/1);
 il THAT 218x reale con ramp 1 ms è validato a parte (§8.5).
 
 ### 8.7 Coda beta-3 — celle con LM13700 REALE (`sim/five-way/param-cell-real*.cir`, 2026-09-28)
+
+> [NOTA 2026-09-30: i totali di rumore integrati qui sotto sono √INTEG → ~21,5 dB ottimisti (quirk LTspice, voce 71A). Numeri reali di modulo: §8.9.]
 
 Risultati completi in `sim/filtro/RISULTATI-ota-real.md` §5-§6 (il modello
 OTA è condiviso col filtro). Sintesi per la cella (f0 = 700 Hz, Iabc = 7,56 µA):
@@ -708,6 +732,8 @@ OTA è condiviso col filtro). Sintesi per la cella (f0 = 700 Hz, Iabc = 7,56 µA
 
 ### 8.8 v0.2.1 — Verifiche sul design finale (`sim/five-way/cell-v021-*.cir`, 2026-09-28)
 
+> [NOTA 2026-09-30: i totali di rumore integrati qui sotto sono √INTEG → ~21,5 dB ottimisti (quirk LTspice, voce 71A). Numeri reali di modulo: §8.9.]
+
 Sui valori definitivi della §4.2 (EQ3: C 56n, Rvin 40,2k, Rbw 2,5k·Q/4,62,
 Vcm tabellati): law position 250,0/375,0/699,9/1000,0/1499,6 Hz (±0,03%,
 Q invariante bpk ±0,01 dB); notch −46,2…−47,0 dB; THD 0,005% al nominale
@@ -717,6 +743,60 @@ soft, out 13,66 V senza clamp); gain +14,97 dB. PoC propedeutici:
 (caratterizzazione VCR, rumore −121,7/−124,9 dBu). Lezione: gli integratori
 invertenti chiedono il damping da −bp_b (loop instabile altrimenti: AC
 sembra sana, tran esplode ai rail — verificare SEMPRE in tran).
+
+### 8.9 v0.2.1 — Module-noise COMPLETO incl. D6 + QUIRK INTEGRAZIONE (`drive-noise.cir`, `module-noise-v021.cir`, `RISULTATI-module-noise-v021.md`, 2026-09-30)
+
+Metodologia nuova (due quirk LTspice verificati con test minimi): totali di
+rumore MAI da `.meas INTEG` (restituisce en²·√Δf: test R 10 Ω, fattore 141 =
+√19980 → tutti i √INTEG del repo ~21,5 dB ottimisti); densità a 10-12 punti +
+integrazione trapezoidale python. Iniezioni rumore con E LINEARE 4 nodi
+(le `value={}` a riferimento non-gnd non propagano). VCAM come subckt +
+banca SK/AP2 = bug parse «Instance already defined» → inline con nomi unici.
+
+**D6 — drive (θ-invariante, pre-makeup)**: completa **40,25 µV = −85,7 dBu**
+(284,7 nV/√Hz); contributi: **VCA 218x 37,6 µV DOMINANTE (87%)**, servo
+TL062 via Rinj 10,1 µV (l'iniezione sospettata a desk è reale), Rg 10k
+5,4 µV, discreti+recovery il resto. La stima handoff «−98 dBu, Rg dominante»
+è doppiamente smentita. Fix disponibili: servo silenzioso o Rinj×10 (−6…−9
+dB drive), I/V VCA 10k (−2,5 dB).
+
+**218x rumore**: datasheet THAT 2181 LETTO in locale (poppler, 2026-09-30):
+−98 dBV a 0 dB gain, 20 Hz–20 kHz NON pesati, Rout 20 kΩ (89 nV/√Hz);
+−104 dBV typ con I/V 10k; −88 dBV a +15 dB gain (il floor segue il gain:
+punto di misura dichiarato nella dec. 88). Dettagli in
+`docs/05-benchmark-preamp-scena-2026-09-30.md`.
+
+**Modulo completo v0.2.1** (banca 6n + 5 gate 218x rumorosi + 5 celle
+v0.2.1 detent OP1654 reali + drive reale + makeup):
+
+| config | dBu out | vs −90 A-wtd |
+|---|---|---|
+| θ0 VCA −98 dBV | **−77,3** | FAIL ~10,5 dB |
+| θ0 VCA −104 dBV | −79,5 | FAIL ~8,3 |
+| θ0 VCA silenziosi | −84,1 | FAIL ~3,7 |
+| θ50 VCA −98 dBV | −73,0 | FAIL ~14,8 |
+
+Scomposizione θ0: VCA (6×) −78,4 dBu; resto −84,1 dBu (banca: R SK
+86,6k/174k = 37-53 nV/√Hz ciascuna; servo TL062; celle). **Il target
+−90 dBu è irraggiungibile con 6 THAT 218x nel percorso**; realistico con
+fix ingegneristiche −81…−84 unweighted ≈ −83…−86 A-wtd → DECISIONE DI
+FILIPPO (voce 71 docs/02): deroga target / ridisegno gate-drive / ibrido.
+Contesto: −80 dBu = 20 dB sotto il fruscio vinile, 80 dB sotto il nominale.
+
+**ESITO 2026-09-30 (decisione 88, ratifica di Filippo)**: opzione «via i VCA
+dai kill» + pacchetto fix. Catena misurata `module-noise-v03.cir` (switch
+33 Ω per via, banca OP1654 reali 4,5 nV, servo classe OPA2134 8 nV, VCA drive
+−104 dBV con I/V 10k): **θ0 −81,0 dBu unweighted = −83,2 A-wtd; θ50 −77,4 =
+−79,6 A-wtd** (+3,7 dB vs architettura 6-VCA). **TARGET NUOVO: ≤ −80 dBu
+A-wtd** (out modulo, ingressi terminati, gain nominali, drive θ0 — margine
+3,2 dB). Il contributo dominante residuo è il VCA del drive (277 nV/√Hz
+post-makeup): sotto il floor −104 dBV × G2 × makeup non si scende senza
+toccare la law (dec. 82). Benchmark di scena in `docs/05-benchmark-preamp-scena-2026-09-30.md` (9 costruttori: unico numero Ligwa −80 dB; 0 VCA nel
+percorso; −90 dBuA era più severo di qualsiasi spec di categoria). Follow-up
+ingegneristici del gate switch: scelta IC dalla famiglia assign FX, misura
+off-isolation (capacitiva, ~−60…−70 dB a 20 kHz attesi), pilotaggio dagli
+switch di pannello esistenti, verifica click in tran (dati ramp §8.5 come
+riferimento storico).
 
 ## 9. Questioni toccate
 
@@ -736,8 +816,10 @@ sembra sana, tran esplode ai rail — verificare SEMPRE in tran).
   matched (tracking/temperatura).
 - **10** (drive): v0.3 VALIDATA (§5, 2026-09-29) — 218x + JFET CS nastro +
   diff pair PNP fuzz + recovery/servo; law end-to-end esatta (D4h), griglia
-  musicale §5.3 → conferma di Filippo (regola 2); taper/knee fini → ascolto
-  M4L (dec. 78). Pendenti: D5 risonanza (dopo q70), D6 rumore (task module-noise).
+  musicale §5.3 CONFERMATA da Filippo (2026-09-30, dec. 87 — regola 2);
+  taper/knee fini → ascolto M4L (dec. 78). D6 rumore FATTO 2026-09-30
+  (§8.9) → DECISIONE 88: kill a switch, 10 VCA rimossi, target −80 dBu A-wtd
+  (misurato −83,2 con fix); pendente: D5 risonanza (dopo q70).
 - **24** (layout comandi): gain di banda = 5 pot rotativi (decisione 85);
   l'elettronica fornisce: 5 kill switch + 5 pot rotativi gain + 5 pot position
   + 5 switch width + drive pot + (meter). Comandi phono → voce 40.
@@ -759,8 +841,9 @@ sembra sana, tran esplode ai rail — verificare SEMPRE in tran).
    orecchio in M4L.
 2. [FATTO 2026-09-29] Drive v0.3 VALIDATO (§5, `drive-chain8.cir`): law
    end-to-end esatta 0/+7/+9,5/+12/+14/+16 dB, griglia musicale §5.3 →
-   conferma di Filippo pendente; RESTANO: D5 interazione risonanza (dopo
-   ascolto q70), D6 rumore drive (→ task module-noise v0.2.1), shaper fisico
+   CONFERMATA da Filippo 2026-09-30 (dec. 87, review estetica su M4L);
+   RESTANO: D5 interazione risonanza (dopo
+   ascolto q70), shaper fisico
    op-amp/diodi (famiglia fx-shaper-discreto), trim pair solo se il banco
    lo chiede.
 3. [SPECIFICATO v0.2.1 2026-09-28] Position: shaper θ→Vcm (famiglia dec. 70)
@@ -770,13 +853,18 @@ sembra sana, tran esplode ai rail — verificare SEMPRE in tran).
    Idss/Vp per β.
 4. [FATTO 2026-09-27] Gate VCA THAT 218x con ramp 1 ms VALIDATO (§8.5,
    `gate-ramp.cir`): click −8,4 dB vs brusco, floor −100 dB esatto. Modello
-   condiviso `sim/lib/that2181.inc` (pronto per FX v0.2 + CDJ §7). A banco:
+   condiviso `sim/lib/that2181.inc` (pronto per FX v0.2 + CDJ §7; parte kill SUPERATA da dec. 88 → switch hard-cut, dati ramp restano per FX/BBM). A banco:
    feedthrough EC→audio e click da accoppiamento CV.
 5. [FATTO 2026-09-27] Rumore del modulo completo: −108,4 dBu contro target
-   −90 (sheet §3), margine 18,4 dB (§8.4). Beta-3 [v0.2.1 2026-09-28]:
-   celle JFET VCR −121,7/−124,9 dBu (core full-scale) → −109,7 dBu per
-   cella worst-boost al riferimento −12 dBu → modulo ~−101: PASS ~11 dB;
-   restano THAT 2181 (gate/drive: modello senza rumore) e A-pesatura.
-6. [NUOVO v0.2.1] Rieseguire module-noise con la catena v0.2.1 completa
-   (banca + celle JFET a −12 dBu + gate reali): numero definitivo pre-banco.
+   −90 (sheet §3), margine 18,4 dB (§8.4). **[SUPERATO 2026-09-30: i totali
+   √INTEG sono ~21,5 dB ottimisti (quirk LTspice) e i 218x erano assenti.]**
+   Beta-3 [v0.2.1 2026-09-28]: celle JFET VCR −121,7/−124,9 dBu (√INTEG,
+   da ricalcolare — voce 71 docs/02).
+6. [FATTO 2026-09-30] Module-noise v0.2.1 completo (§8.9 + RISULTATI):
+   −77,3/−73,0 dBu — target −90 FALLITO → **DECISIONE 88 (Filippo)**: kill a
+   switch (10 VCA via), drive tiene 218x con I/V 10k, fix servo/banca;
+   catena v0.3-switch misurata −83,2 dBu A-wtd θ0 → **target nuovo ≤ −80
+   A-wtd RATIFICATO**. Follow-up: redesign gate a switch (IC famiglia FX,
+   off-isolation, pilotaggio pannello) + ritaratura sheet §3 canale/FX/master
+   dopo budget mancanti (voce 71A).
 7. Meter pickup e ballistica 10 Hz (con CDJ §7 item 6).

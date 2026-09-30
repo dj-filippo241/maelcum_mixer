@@ -3,7 +3,7 @@
 > **Stato: BETA-3 (2026-09-27).** ALPHA (cella LOW) + celle MID/HIGH + cascata
 > 4 bande con rumore/tracking/livelli (§9) + riferimento interno −6 dB e
 > summer 49,9k (§9.6) + specifica law/taper (§10) + OP-AMP REALI E TRIM
-> (§9.7): rumore confermato −110,7 dBu, offset detent risolto (−0,0001 dB con
+> (§9.7): [REV 2026-09-30: −110,7 dBu INVALIDATO dal quirk INTEG LTspice — reale −89,2 dBu, den 190 nV/√Hz piatta 20-20k (`cascade-b3-noise.cir` a 10 punti); voce 71], offset detent risolto (−0,0001 dB con
 > coppia 0,1% 49,9k/99,8k — il −0,12 dB era artefatto della macro). Resta:
 > THD a banco, ascolto M4L delle questioni 66-68 (prototipo IN PAUSA per
 > direzione di Filippo 2026-09-25: prima il design completo).
@@ -152,7 +152,7 @@ decisione dentro la voce 53, costo +4 VCA/canale.
    clippava a metà catena).
 3. FATTO in beta-2 (§9.6): summer a 49,9 kΩ (i 100 kΩ dominavano a
    122 nV/√Hz); rumore CONFERMATO in beta-3 (§9.7) con op-amp reali:
-   −110,7 dBu, margine 18,7 dB.
+   −110,7 dBu [REV 2026-09-30 INVALIDATO: reale −89,2 dBu — quirk INTEG, voce 71]; il «margine 18,7 dB» non esiste.
 4. Scelte di Filippo: 68 (profondità kill HIGH, §9.3), 53 (tracking: pot
    precision vs VCA), taper (voce 40). Profondità kill shelf DECISA: −30 dB
    (decisione 77).
@@ -270,10 +270,10 @@ Risultati:
 - **Detent**: offset costante −0,12 dB (guadagni d'anello finiti + make-up
   2,004): si azzera col trim del make-up (Rf 100k → multi-giro o coppia
   matched) — piattezza relativa ±0,02 dB confermata.
-- **Rumore**: −110,7 dBu integrato (era −114,6): le DUE sezioni op-amp in più
+- **Rumore**: [REV 2026-09-30: valori √INTEG invalidati dal quirk LTspice — REALE −89,2 dBu: densità 190,5 nV/√Hz PIATTA 20-20k, ricalcolata a 10 punti] −110,7 dBu integrato (era −114,6): le DUE sezioni op-amp in più
   (buffer/make-up) pesano nel macromodello uniforme a ~6 nV/√Hz. Nel design
   reale buffer e make-up sono OPA1612 (1,1 nV/√Hz): il contributo extra crolla.
-  Margine sul target −92 dBu: 18,7 dB → PASS anche così. Densità @1 kHz:
+  Margine sul target −92 dBu: 18,7 dB → PASS anche così. [REV 2026-09-30 SUPERATO: reale −89,2 dBu, target −92 MANCATO → ritaratura voce 71A] Densità @1 kHz:
   189 nV/√Hz (beta-3: ricalcolare con modelli reali).
 - All-kill, kill per banda, boost: immutati (finding 59/68 validi).
 
@@ -293,10 +293,10 @@ Macromodelli calibrati su datasheet TI (libreria condivisa — la riusano anche
   R = 50 MΩ il polo da solo metteva 18-150 nV/√Hz in uscita).
 
 Risultati:
-- **Rumore CONFERMATO**: −110,7 dBu integrato 20 Hz–20 kHz (identico a
+- **Rumore [REV 2026-09-30 — INVALIDATO: reale −89,2 dBu, den 190 nV/√Hz piatta; quirk INTEG LTspice → voce 71]**: −110,7 dBu integrato 20 Hz–20 kHz (identico a
   beta-2: la macro "uniforme ~6 nV" era già tarata vicino alla OPA1654
   reale; i 1612 sono 2 sezioni su 12 e il miglioramento cade dentro
-  l'arrotondamento). Densità @1 kHz: 191 nV/√Hz. Margine 18,7 dB → PASS.
+  l'arrotondamento). Densità @1 kHz: 191 nV/√Hz. Margine 18,7 dB → PASS. [REV 2026-09-30 SUPERATO: reale −89,2 dBu, target −92 MANCATO → voce 71A]
   Ancora assenti: 1/f sotto ~10 Hz, THD, rumore di wiper dei pot.
 - **Offset detent RISOLTO**: il −0,12 dB di beta-2 era INTERAMENTE guadagno
   d'anello della vecchia macro (A0 60 dB). Con A0 reali e Rfm = 99,8 kΩ su

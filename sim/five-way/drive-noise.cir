@@ -1,0 +1,112 @@
+* ============================================================
+* 5-WAY DRIVE v0.3 — D6: RUMORE CATENA DRIVE (task module-noise v0.2.1,
+* 2026-09-30). Topologia = drive-chain8.cir VALIDATO (θ law esatta), con:
+*   - recovery OPA1612 REALE (macro rumorosa ../lib: 1,1 nV/√Hz)
+*   - servo X4/X5 = TL062-class: rumore equivalente via R 74k termica
+*     (35 nV/√Hz) + E unitario sull'ingresso + (verifica iniezione Rinj)
+*   - 218x: rumore datasheet (product page THAT: output noise −98 dBV a
+*     0 dB gain, 20-20k, recommended application) = 12,6 µV integrati
+*     = 89 nV/√Hz bianchi → R 481k termica + E unitario in serie a vcaout.
+*     Con I/V a 10k il datasheet dà −104 dBV → caso ottimistico 240k
+*     (47 nV/√Hz): incluso come case 4.
+*   - J310/2N3906: modelli LTspice completi (rumore canale/shot/rb inclusi)
+*   - Rpar 1G su C1s: chiude il loop DC per la convergenza .op (a 20 Hz
+*     è 630x l'impedenza di C1s: ininfluente; suo rumore shuntato da Zc)
+* ABLAZIONI (.step case): 0=completa −98 dBV; 1=VCA silente; 2=servo
+* silente; 3=Rg 100Ω (verifica dominio Rg); 4=VCA −104 dBV (I/V 10k).
+* .step th: 0 / 0,5 / 1,0 (law shaper come chain8).
+* Uscita misurata su Rl 100k = pickup meter/makeup (pre make-up +6 dB).
+* Integrazione 20 Hz-20 kHz NON A-pesata. ATTENZIONE: .meas INTEG su noise
+* in LTspice 26.0.2 dà en²·√Δf (QUIRK verificato con R 10Ω nota): totale
+* calcolato a mano dalle densità a 10 punti (python, trapezoidale su en²).
+* ============================================================
+.include ../lib/opamp-audio.inc
+.model NJ310 NJF(Beta=5m Vto=-3 Lambda=6m Cgs=25p Cgd=4p Is=10f)
+.model PNP3906 PNP(Is=1.72f Bf=190 Vaf=49.7 Ikr=0.237 Ne=2 Ise=43.4f Ikf=0.222 Br=4.9 Rb=1 Rc=3.7 Cje=19.2p Mje=0.37 Vje=0.75 Cjc=9.7p Mjc=0.34 Vjc=0.75 Fc=0.5 Tf=2.1n Tr=200n)
+* op-amp ideale silenzioso (solo servo: X4/X5; rumore aggiunto esternamente)
+.subckt OPAMP0 inp inn out
+E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
+.ends OPAMP0
+.subckt VCAM in out ecp ecm vp vm PARAMS: km=0.122
+Bg nout0 0 V={V(in)*limit(10**((V(ecp)-V(ecm))/km),1e-5,100)}
+Rpol nout0 nout1 1k
+Cpol nout1 0 8p
+Eout out 0 value={limit(V(nout1),V(vm)+1.5,V(vp)-1.5)}
+.ends VCAM
+
+.param case=0
+.param th=0.5
+* th fisso: il rumore d'uscita non dipende da θ (nessuna sorgente a monte del VCA)
+* valori dipendenti dal case di ablazione
+
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 in 0 DC 0 AC 1
+Vpot w 0 DC {5*th}
+
+* --- Stadio 1: shaper law + THAT 218x + rumore VCA ---
+Bdb lawv 0 V={if(V(w)<2.5, -9.4+2.8*V(w), if(V(w)<4, -2.4+(V(w)-2.5)*3.3333, 2.6+(V(w)-4)*4))}
+Becp ecp 0 V={0.0061*max(0,V(lawv))}
+Becm ecm 0 V={0.0061*max(0,-V(lawv))}
+X1 in vca0 ecp ecm vcc vee VCAM km=0.122
+Rvn vn 0 {if(case==1,1,if(case==4,240k,481k))}
+Evn vcaout vca0 vn 0 1
+
+* --- Stadio 2a: nastro = CS JFET ---
+Rg vcaout gate {if(case==3,100,10k)}
+J1 drain gate source NJ310
+Rd vcc drain 4.7k
+Rs source 0 1.05k
+
+* --- Basi pair dal drain (DC matched) ---
+Rdc drain basea 4.7k
+Rb2 drain baser 4.7k
+Cbyp baser 0 100u
+
+* --- Stadio 2b: fuzz = diff pair PNP single-ended ---
+Q3 coll basea emita PNP3906
+Q4 collb baser emitb PNP3906
+Rea emita tailp 470
+Reb emitb tailp 470
+Rc coll vee 4.7k
+Rc4 collb vee 4.7k
+Re3 tailp vcc 2.2k
+
+* --- Recovery invertente 2k/2k (OPA1612 REALE, rumoroso) ---
+Rsrc coll recn 2k
+Rf recn reco 2k
+X3 0 recn reco vcc vee OP1612
+
+* --- Servo DC 2 stadi (TL062-class: Rn 74k = 35 nV/√Hz cadauno) ---
+R1s reco svinn 1Meg
+C1s svinn svint 470n
+Rpar svinn svint 1G
+Rn4 n4 0 {if(case==2,1,74k)}
+En4 in4 0 n4 0 1
+X4 in4 svinn svint OPAMP0
+Ri1 svint svi2n 100k
+Rfb svi2n svout2 100k
+Rn5 n5 0 {if(case==2,1,74k)}
+En5 in5 0 n5 0 1
+X5 in5 svi2n svout2 OPAMP0
+Rinj svout2 recn 2.2k
+Rser2 reco out 33
+Rl out 0 100k
+
+.options method=gear reltol=1e-4
+.nodeset V(drain)=6.5 V(gate)=0 V(source)=2.4 V(basea)=6.4 V(baser)=6.4 V(emita)=7.05 V(emitb)=7.05 V(tailp)=8.1 V(coll)=-7.5 V(collb)=-7.5 V(svint)=0 V(svout2)=8
+
+.noise V(out) V1 dec 100 20 20k
+.step param case LIST 0 1 2 3 4
+
+.meas noise nd20 FIND V(onoise) AT 20
+.meas noise nd50 FIND V(onoise) AT 50
+.meas noise nd100 FIND V(onoise) AT 100
+.meas noise nd200 FIND V(onoise) AT 200
+.meas noise nd500 FIND V(onoise) AT 500
+.meas noise nd1k FIND V(onoise) AT 1k
+.meas noise nd2k FIND V(onoise) AT 2k
+.meas noise nd5k FIND V(onoise) AT 5k
+.meas noise nd10k FIND V(onoise) AT 10k
+.meas noise nd20k FIND V(onoise) AT 20k
+.end

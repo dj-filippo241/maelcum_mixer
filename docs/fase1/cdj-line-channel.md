@@ -3,7 +3,7 @@
 > **v0.4 (2026-09-28)**: aggiunge il front-end PHONO MM come variante
 > d'ingresso (decisione 56 realizzata): design completo in
 > `docs/fase1/phono-stage.md` v0.1 (decisione 79) — catena RIAA passiva
-> 42 dB, EIN 0,36 µV, overload +18 dBu; selettore LINE/PHONO dopo il blocco
+> 42 dB, EIN 1,79 µV (10-20k, ricalc. 2026-09-30), overload +18 dBu; selettore LINE/PHONO dopo il blocco
 > phono, prima di [B] GAIN. Il resto del canale è invariato dalla v0.3.
 
 > **v0.3 (2026-09-25)**: SUPERSEDE la v0.2 per §3.3 (EQ in serie, decisioni 76/77 —
@@ -116,7 +116,7 @@ Proprietà misurate (LTspice, macromodelli — dettagli e griglie in eq-serie-v0
    HIGH debole) → il fader resta il muto vero; auto-mute = questione 59 (numeri
    definitivi registrati).
 5. Curva dub (LOW+HIGH su, medi giù): +5,6 / −45 / −46 / +5,5 dB — estetica target.
-6. Rumore: −110,7 dBu integrato (target ≤−92: margine 18,7 dB; migliora con op-amp reali).
+6. Rumore: [REV 2026-09-30: −110,7 INVALIDATO dal quirk INTEG LTspice — EQ reale −89,2 dBu (den 190 nV/√Hz piatta): il target canale ≤−92 è superato dalla sola EQ → ritaratura sistema = voce 71].
 7. Livelli: picco interno 7,6 V a +16 dBu all-boost (riferimento −6 dB); estremo
    +18 dBu = saturazione d'uscita intenzionale, niente clipping a metà catena.
 8. Tracking stereo: pot doppi ≤1% → L−R ≤0,16 dB (PASS ≤0,25); 2% → 0,32 (limite,
@@ -178,8 +178,8 @@ tracking ≤0,5 dB con selezione/trim; buffer OPA1612 ≤50 Ω → DJ BUS (injec
 
 **Misurato v0.3 beta-3** (`sim/eq-serie/cascade-b3-noise.cir`, cascata EQ al detent,
 20 Hz–20 kHz, macro reali OPA1654/OPA1612 da `sim/lib/opamp-audio.inc`):
-**−110,7 dBu** integrato → margine 18,7 dB sul target (la macro "uniforme" di beta-2
-era già calibrata vicina alla OPA1654 reale: numero CONFERMATO, non solo stimato).
+**−110,7 dBu** integrato [REV 2026-09-30 INVALIDATO: reale −89,2 dBu — quirk INTEG, voce 71] → margine 18,7 dB sul target (la macro "uniforme" di beta-2
+era già calibrata vicina alla OPA1654 reale: numero CONFERMATO, non solo stimato). [REV 2026-09-30: il margine non esiste — reale −89,2 dBu vs target −92: MANCATO → voce 71A]
 Regole confermate: pot 10 kΩ sulle celle (voce 48), summer a 49,9 kΩ (non 100 k),
 bracci shelf ≤31 kΩ; OPA1612 solo su nodi a bassa Z (regola in libreria: bipolare,
 sorgenti <100 Ω). Restano da aggiungere: VCA di gain (a monte, già nel budget del

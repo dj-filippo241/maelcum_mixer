@@ -253,7 +253,7 @@ sonda click HP 2 poli — metodo di `sim/five-way/gate-ramp.cir`):
 
 Entrambi i τ della SPEC sono click-free (1 ms resta 1,5 dB sopra il
 residuo di programma; 5 ms scende sotto). La differenza è il feel: 1 ms =
-lo "scatto" che chiude subito (coerente col gate 5-way); 5 ms = fade più
+lo "scatto" che chiude subito (coerente col gate 5-way [escluso dalla famiglia con dec. 88: kill hard-cut a switch]); 5 ms = fade più
 morbido ma chiusura lenta. Raccomandazione RATIFICATA (decisione 80): **1 ms**
 per il reroute, famiglia unica; conferma a orecchio in M4L.
 
@@ -290,7 +290,7 @@ LOW C 56 nF (Rp 31k invariato), HIGH R 5,23k/2,5k (Ch 10 nF invariato).
 
 | Voce | Qtà | Note |
 |---|---|---|
-| THAT 2180/2181 (SINGLE VCA — datasheet 2026-09-27: "dual" = porti di controllo, non canali) | 12 reroute + 4 gain ritorno = 16 chip | voce 37 (reperibilità/prezzo: ~34-36 chip in tutto il mixer) |
+| THAT 2180/2181 (SINGLE VCA — datasheet 2026-09-27: "dual" = porti di controllo, non canali) | 12 reroute + 4 gain ritorno = 16 chip | voce 37 (reperibilità/prezzo: ~24-26 chip in tutto il mixer post-dec. 88 (era ~34-36)) |
 | Quad op-amp (bus driver, buffer, summing, EQ2 ritorni, servo DC) | ~10-12 | classe OPA1654/1612 mista |
 | JFET buffer ritorno (o op-amp JFET-input) | 8 | hi-Z ≥1 MΩ |
 | Shaper law reroute (diodi/R/trimmer) | 8 canali CV | famiglia shaper filtro |

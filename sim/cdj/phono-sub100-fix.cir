@@ -1,0 +1,55 @@
+* PHONO v0.1 — FIX RESIDUO SUB-100 Hz (task phono-refine, 2026-09-30)
+* Variante FIX: Rb2 100k → 1M → polo C3/Rb2 da 15,9 Hz a 1,59 Hz.
+* Effetti attesi: (1) sparisce l'attenuazione sul basso dub (il polo non
+* mangia più 20-100 Hz); (2) sparisce l'interazione Z-thévenin p2 × C3
+* (a 20 Hz il ramo C3+1M è ~10x l'impedenza di Cr2: la rete RIAA vede la
+* terminazione ideale delle sue equazioni); (3) DC block mantenuto.
+* La protezione warp resta alla SK 13 Hz (2 poli); opzione pannello
+* "subsonica profonda" (voce 40) copre i dischi molto imbarcati.
+* Confronto diretto con phono-riaa-ac.cir via riaa_error.py (stesse .meas).
+.include ../lib/opamp-audio.inc
+.param Cload=200p
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+Vcart cart 0 DC 0 AC 1
+Rcart cart in 660
+Rload in 0 47k
+Cload in 0 {Cload}
+* --- [A1] stadio 1 non-inv x21 ---
+X1 in fb1 s1 vcc vee OP1612
+Rg1 fb1 0 1k
+Rf1 fb1 s1 20k
+* --- [A2] Sallen-Key HP 2 poli 13 Hz Q 0,707 unity ---
+Cs1 s1 n1 100n
+Cs2 n1 s2a 100n
+Rs1 n1 s2 86.6k
+Rs2 s2a 0 174k
+X2 s2a s2 s2 vcc vee OP1612
+* --- [A3] rete RIAA passiva ---
+Rr1 s2 p 21.8k
+Cr1 p 0 34.8n
+Rr2 p p2 3.16k
+Cr2 p2 0 100n
+* --- [A4] DC block: polo 1,59 Hz (FIX: era 15,9 Hz) ---
+* NB: C3 preleva da p (nodo d'uscita della rete, come nell'originale),
+* non da p2 (nodo interno Rr2/Cr2).
+C3 p q 100n
+Rb2 q 0 1Meg
+* --- [A5] stadio 2 non-inv x60,6 ---
+X3 q qn vout vcc vee OP1654
+Rg2 qn 0 1k
+Rf2 qn vout 59.6k
+.step param Cload LIST 100p 200p 300p
+.ac dec 200 5 100k
+.meas ac g20 FIND mag(V(vout)) AT 20
+.meas ac g30 FIND mag(V(vout)) AT 30
+.meas ac g50 FIND mag(V(vout)) AT 50
+.meas ac g100 FIND mag(V(vout)) AT 100
+.meas ac g200 FIND mag(V(vout)) AT 200
+.meas ac g500 FIND mag(V(vout)) AT 500
+.meas ac g1k FIND mag(V(vout)) AT 1k
+.meas ac g2k FIND mag(V(vout)) AT 2k
+.meas ac g5k FIND mag(V(vout)) AT 5k
+.meas ac g10k FIND mag(V(vout)) AT 10k
+.meas ac g20k FIND mag(V(vout)) AT 20k
+.end
