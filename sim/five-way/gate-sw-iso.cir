@@ -1,0 +1,81 @@
+* ============================================================
+* GATE KILL A SWITCH (redesign dec. 88) — OFF-ISOLATION
+* Confronto 4 casi su carico reale (ingresso summer 10k, invertente
+* Rf 10k, come bank-lr4/module-noise-v03):
+*   SER-OFF : solo serie aperta (SPST) — residuo = partitore Coff/10k
+*   SER-ON  : riferimento perdita d'inserzione
+*   PI-OFF  : serie aperta + shunt a GND chiuso (SPDT: polo a GND)
+*   PI-ON   : serie chiusa + shunt aperto
+* Switch classe ADG1434 (quad SPDT iCMOS, Ron 4.7 ohm max, ±15 V,
+* break-before-make — dati Mouser/ADI 2026-09-30, DA VERIFICARE su
+* datasheet ufficiale prima del PCB). Coff non nota con certezza:
+* sweep parametrico 2p/10p/30p/60p.
+* In AC il segnale e' 1 V: mag(V(vX)) = isolamento diretto (dB=20log).
+* METODO: solo .ac/.meas FIND (nessun INTEG — quirk LTspice 26.0.2,
+* five-way §8.9).
+* ============================================================
+.step param koff LIST 2p 10p 30p 60p
+V1 src 0 DC 0 AC 1
+Rsrc src src_o 10
+.model SWKILL SW(Ron=4.7 Roff=1G Vt=2.5)
+.subckt OPAMP inp inn out vp vm
+E1 xx 0 value={1000*(V(inp)-V(inn))}
+R1 xx p1 1k
+C1 p1 0 159p
+E2 out 0 value={limit(V(p1),V(vm)+1.5,V(vp)-1.5)}
+.ends OPAMP
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+* --- SER-OFF: SPST aperto ---
+SwA src_o nA ctlA 0 SWKILL
+CoffA src_o nA {koff}
+VgA ctlA 0 DC 0
+RsA nA nsA 10k
+RfA nsA vA 10k
+XopA 0 nsA vA vcc vee OPAMP
+* --- SER-ON: SPST chiuso (riferimento) ---
+SwB src_o nB ctlB 0 SWKILL
+CoffB src_o nB {koff}
+VgB ctlB 0 DC 5
+RsB nB nsB 10k
+RfB nsB vB 10k
+XopB 0 nsB vB vcc vee OPAMP
+* --- PI-OFF: serie aperto + shunt chiuso a GND (SPDT off) ---
+SwC src_o nC ctlC 0 SWKILL
+CoffC src_o nC {koff}
+VgC ctlC 0 DC 0
+SwD nC 0 ctlD 0 SWKILL
+CoffD nC 0 {koff}
+VgD ctlD 0 DC 5
+RsC nC nsC 10k
+RfC nsC vC 10k
+XopC 0 nsC vC vcc vee OPAMP
+* --- PI-ON: serie chiuso + shunt aperto (SPDT on) ---
+SwE src_o nE ctlE 0 SWKILL
+CoffE src_o nE {koff}
+VgE ctlE 0 DC 5
+SwF nE 0 ctlF 0 SWKILL
+CoffF nE 0 {koff}
+VgF ctlF 0 DC 0
+RsE nE nsE 10k
+RfE nsE vE 10k
+XopE 0 nsE vE vcc vee OPAMP
+.ac dec 100 10 100k
+.meas ac ser_off_20  FIND mag(V(vA)) AT 20
+.meas ac ser_off_350 FIND mag(V(vA)) AT 350
+.meas ac ser_off_1k  FIND mag(V(vA)) AT 1k
+.meas ac ser_off_3k5 FIND mag(V(vA)) AT 3500
+.meas ac ser_off_20k FIND mag(V(vA)) AT 20k
+.meas ac ser_off_50k FIND mag(V(vA)) AT 50k
+.meas ac ser_on_1k   FIND mag(V(vB)) AT 1k
+.meas ac ser_on_20k  FIND mag(V(vB)) AT 20k
+.meas ac pi_off_20   FIND mag(V(vC)) AT 20
+.meas ac pi_off_350  FIND mag(V(vC)) AT 350
+.meas ac pi_off_1k   FIND mag(V(vC)) AT 1k
+.meas ac pi_off_3k5  FIND mag(V(vC)) AT 3500
+.meas ac pi_off_20k  FIND mag(V(vC)) AT 20k
+.meas ac pi_off_50k  FIND mag(V(vC)) AT 50k
+.meas ac pi_on_1k    FIND mag(V(vE)) AT 1k
+.meas ac pi_on_20k   FIND mag(V(vE)) AT 20k
+.meas ac pi_on_60k   FIND mag(V(vE)) AT 60k
+.end

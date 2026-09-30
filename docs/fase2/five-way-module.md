@@ -24,7 +24,7 @@
 > (`sim/five-way/cell-v021-*.cir`): law 250-1500 Hz ±0,03%, Q invariante,
 > THD 0,005% nominale / 0,125% worst +10 dBu (500× meglio della cella OTA),
 > notch −46…−47 dB, rumore −121,7 dBu [√INTEG SUPERATO → 71A]. LM13700 RIMOSSI dalle celle (−10);
-> +10 dual JFET matched. Banca kill invariata; gate VCA [SUPERATO dec. 88 → switch]; drive invariato.
+> +10 dual JFET matched. Banca kill invariata; gate VCA [SUPERATO dec. 88 → switch π SPDT classe ADG1434 + invertitori SUB/MID, design CHIUSO §8.10]; drive invariato.
 >
 > **CODA BETA-3 CELLE (2026-09-28, `sim/filtro/RISULTATI-ota-real.md` §5)**:
 > celle parametriche riesaminate col LM13700 REALE (`sim/lib/lm13700.inc`) —
@@ -100,10 +100,11 @@ DJ BUS L/R (0 dBu nom, +16 worst)
   │
   ▼ PAD −6 dB (dec. 73) → buffer
   │
-  ▼ KILL BANK (per lato): LR4 5 vie, GATE = SWITCH analogico di precisione
-  │   in serie per via + kill switch pannello (DEC. 88, 2026-09-30: era VCA
-  │   218x con ramp 1 ms; hard-cut accettato = standard di scena; dec. 80
-  │   revocata per questa parte, resta per FX/BBM filtro)
+  ▼ KILL BANK (per lato): LR4 5 vie, GATE = SWITCH π SPDT di precisione
+  │   per via (serie + shunt GND da off, §8.10) + 2 invertitori unity/lato
+  │   (SUB/MID, polarità §3.1) + kill switch pannello (DEC. 88, 2026-09-30:
+  │   era VCA 218x con ramp 1 ms; hard-cut accettato = standard di scena;
+  │   dec. 80 revocata per questa parte, resta per FX/BBM filtro)
   │   SUB ──[gate K1]──┐
   │   KICK ─[gate K2]──┤
   │   MID ──[gate K3]──┤   (banca complementare: somma piatta §3)
@@ -190,21 +191,37 @@ dentro la finestra di fusione (~20 ms) — comportamento normale di un
 crossover ripido; il DSP acustico a valle fa il suo allineamento. Comunque
 dato da confermare a orecchio (questione 67, ascolto M4L).
 
-**Gate di kill [REV 2026-09-30 → decisione 88]**: **SWITCH analogico di
-precisione** per via per lato, in serie al percorso di banda (Ron ~33 Ω
-classe, IC famiglia selettore assign FX/LINE-PHONO), pilotato dagli switch
-fisici di pannello esistenti — l'audio NON passa dai contatti di pannello
-(usura/crackle evitati, gesto invariato). Hard-cut: il click è accettato
-(misure §8.5: transiente 3,64 V hard vs 1,39 V con ramp 1 ms; standard di
-scena: Jah Tubbys/JB cut-out, Mostec relè — docs/05). Kill = apertura:
-**silenzio della via** (gate, non sottrazione: nessuna cancellazione di
-fase; via killata = l'altoparlante tace; EQ creativo = gesto sul materiale
-vivo). Residuo off-state = off-isolation capacitiva dello switch
-(~−60…−70 dB a 20 kHz attesi — DA QUANTIFICARE nel redesign; il VCA era
-−90…−100 dB dopo trim). [Design precedente v0.2: 1 VCA THAT 218x per via
-per lato = 10 chip con ramp 1 ms VALIDATA §8.5 — SUPERATO dalla dec. 88 per
-rumore: i floor −98 dBV dei 6 VCA nel percorso rendevano irraggiungibile il
-target sheet §3; dec. 80 revocata per il kill, resta per FX/BBM filtro.]
+**Gate di kill [REV 2026-09-30 pomeriggio → decisione 88, design CHIUSO
+§8.10]**: **switch analogico di precisione in configurazione π SPDT** per
+via per lato: polo sul nodo d'ingresso summer, serie verso l'uscita di
+banda, shunt a GND da off (kill = serie aperta + nodo ancorato a GND via
+Ron). IC classe **ADG1434** (quad SPDT iCMOS, Ron ≤ 4,7-5 Ω, ±4,5…±16,5 V,
+break-before-make, logica IN 3 V senza VL) — famiglia unica con assign FX e
+LINE/PHONO come da dec. 88; 10 SPDT/modulo = 3 quad IC [PROVVISORIO —
+regola 3: datasheet ufficiale da verificare, second source ADG1634L/
+ADG1334, reperibilità nel task dedicato]. **Rail ±15 V dedicato** (il
+modulo op-amp sta a ±18 V > max IC): nota per il design PSU (q20).
+Pilotaggio dagli switch fisici di pannello esistenti (+5 V logici via 10k,
+pull-down 100k lato modulo) — l'audio NON passa dai contatti di pannello
+(usura/crackle evitati, gesto invariato). Kill = apertura: **silenzio
+della via** (gate, non sottrazione: nessuna cancellazione di fase; via
+killata = l'altoparlante tace; EQ creativo = gesto sul materiale vivo).
+Residuo off-state MISURATO (§8.10): **π SPDT −95 dB @20 kHz** (Coff 30p;
+−89 anche con 60p) = meglio del VCA (−90…−100 dopo trim) e sotto il floor
+del modulo (−83,2 dBu): la stima −60…−70 del mattino era ottimista per la
+sola serie (SPST serie semplice BOCCIATO: −22…−52 dB @20 kHz). Hard-cut:
+il click è accettato (dec. 88; §8.10: passo = segnale istantaneo, 2,18 V
+al summer / ~4,4 V out post-makeup al picco — stesso meccanismo del VCA
+hard §8.5; taglio allo zero-crossing ±0,35 mV; standard di scena:
+Jah Tubbys/JB cut-out, Mostec relè — docs/05). **Polarità**: lo switch in
+serie non inverte → la correzione di segno delle bande DISPARI di AP2
+(SUB, MID — §3.1) passa a **2 invertitori unity per lato** (R 2k 0,1%
+matched; +1 quad/modulo; banca allineata intatta — flatness preservata
+−0,004…−0,011 dB, §8.10; rumore +~0,3 dB stimato → riverifica in voce
+71A). [Design precedente v0.2: 1 VCA THAT 218x per via per lato = 10 chip
+con ramp 1 ms VALIDATA §8.5 — SUPERATO dalla dec. 88 per rumore: i floor
+−98 dBV dei 6 VCA nel percorso rendevano irraggiungibile il target sheet
+§3; dec. 80 revocata per il kill, resta per FX/BBM filtro.]
 
 **Verifica simulata** (`sim/five-way/bank-lr4.cir`, gate ideali): [RISULTATI §8]
 
@@ -348,11 +365,15 @@ N-channel classe Linear Systems LSK589/IFN5457, oppure singoli MMBF5457/
 assume 173 µA/V² uniforme; in acquisto si binna per Idss e si regola C
 (C ±20% sposta la finestra Vcm senza toccare la law).
 
-**Silicon v0.2.1**: banca 14 quad + EQ **17,5 quad** (7 sez./cella × 10) +
-gate/buffer/make-up ≈ **~33-35 quad + 10 dual JFET + 2 THAT 218x (solo drive: gate a switch, dec. 88) + 10 switch analogici di precisione (famiglia assign FX)** —
+**Silicon v0.2.1**: banca 14 quad + invertitori polarità gate 1 quad
+(2 sez./lato su SUB e MID, §8.10) + EQ **17,5 quad** (7 sez./cella × 10) +
+gate/buffer/make-up ≈ **~34-36 quad + 10 dual JFET + 2 THAT 218x (solo
+drive: gate a switch, dec. 88) + 10 SPDT classe ADG1434 = 3 quad switch
+(π serie+shunt, famiglia unica con assign FX/LINE-PHONO; rail ±15 V)** —
 LM13700 RIMOSSI dalle celle (restano eventualmente nel filtro, questione 70
 lato filtro). Delta costo vs v0.2: ~+5 quad (+8-12 €) +10 dual JFET
-(+15-30 €) −10 LM13700 (−10-15 €) ≈ **+15-25 €** [PROVVISORIO].
+(+15-30 €) +3 switch IC (+12-18 €) −10 LM13700 (−10-15 €) −10 VCA gate
+(−25-40 €) ≈ **−5…+5 €** [PROVVISORIO].
 
 ## 5. Drive e meter (questione 10 — v0.3 VALIDATA: design post-referenze, 2026-09-29)
 
@@ -793,17 +814,50 @@ A-wtd** (out modulo, ingressi terminati, gain nominali, drive θ0 — margine
 post-makeup): sotto il floor −104 dBV × G2 × makeup non si scende senza
 toccare la law (dec. 82). Benchmark di scena in `docs/05-benchmark-preamp-scena-2026-09-30.md` (9 costruttori: unico numero Ligwa −80 dB; 0 VCA nel
 percorso; −90 dBuA era più severo di qualsiasi spec di categoria). Follow-up
-ingegneristici del gate switch: scelta IC dalla famiglia assign FX, misura
-off-isolation (capacitiva, ~−60…−70 dB a 20 kHz attesi), pilotaggio dagli
-switch di pannello esistenti, verifica click in tran (dati ramp §8.5 come
-riferimento storico).
+ingegneristici del gate switch: FATTI 2026-09-30 (§8.10) — IC π SPDT classe
+ADG1434, off-isolation −95 dB @20 kHz misurata (la stima −60…−70 era
+ottimista per la sola serie), pilotaggio pannello specificato, click
+quantificato in tran.
+
+### 8.10 Redesign gate a switch — π SPDT + polarità (`gate-sw-iso.cir`, `gate-sw-click.cir`, `bank-sw-polarity.cir`, `RISULTATI-gate-switch.md`, 2026-09-30)
+
+Implementazione ingegneristica della decisione 88. Risultati chiave
+(dettaglio e tabelle in `RISULTATI-gate-switch.md`):
+
+1. **Topologia π SPDT** (serie + shunt a GND da off) necessaria: la sola
+   serie su carico 10k darebbe −22…−52 dB @20 kHz (Coff 2-60 pF) — sotto
+   la stima del doc; il π misurato **−89…−119 dB @20 kHz** anche con Coff
+   pessimistica. All-kill ≤ −85,5 dB su 5 Hz-60 kHz: sotto il floor del
+   modulo (−83,2 dBu) = via killata inudibile.
+2. **Polarità**: 2 invertitori unity/lato su SUB e MID (regola §3.1 delle
+   bande DISPARI di AP2 — NON KICK/HIGH come nelle B-source del netlist
+   v0.1 non allineato: errore trovato in simulazione, nulla −38 dB a
+   3,5 kHz). Flatness con switch+invertitori: −0,004…−0,011 dB su
+   5 Hz-60 kHz (§8.2 preservata, requisito ±0,1 dB con margine 15×).
+   Residui kill invariati vs `bank-aligned.cir` (dominano le code LR4).
+3. **Click hard-cut** = gradino del segnale istantaneo (2,18 V al summer
+   con kill al picco a +6 dBu in; ~4,4 V out post-makeup; §8.5 VCA hard:
+   3,64 V a +10 dBu = coerente scalato). Zero-crossing: ±0,35 mV. Nessun
+   overshoot (shunt ancora il nodo); charge injection reale (−20…−50 pC)
+   sub-dominante → banco.
+4. **IC**: classe ADG1434 (quad SPDT iCMOS, Ron ≤4,7 Ω, ±4,5…±16,5 V →
+   rail ±15 V dedicato: ±18 del modulo oltre il max; BBM; IN 3 V senza
+   VL). 3 IC/modulo. [PROVVISORIO — datasheet Rev. E da verificare,
+   protezioni ESD/over-voltage da valutare in layout (thread EngineerZone),
+   second source ADG1634L/ADG1334.]
+5. **Perdita d'inserzione** −0,039 dB uniforme → assorbita dal make-up.
+6. **Rumore**: +2 sezioni op-amp/lato nella banca → +~0,3 dB stimato sul
+   contributo banca: `module-noise-v03.cir` da integrare con gli
+   invertitori nella campagna voce 71A.
 
 ## 9. Questioni toccate
 
 - **8** (matematica filter bank): RISPOSTA v0.2 — banca ALLINEATA IN FASE:
   somma piatta ESATTA dimostrata in math (Σ = prodotto dei 4 allpass, |Σ| = 1,
   errore 1e-15) e validata in simulazione (−0,0002…−0,008 dB su 5 Hz–60 kHz,
-  §8.2); kill invariato (all-kill = silenzio assoluto). Lo schema funziona con
+  §8.2; −0,004…−0,011 dB con gate π SPDT + invertitori SUB/MID, §8.10);
+  kill invariato (all-kill = silenzio assoluto [v0.2 VCA ideale; dec. 88
+  switch: ≤ −85,5 dB = sotto il floor del modulo, §8.10]). Lo schema funziona con
   qualunque frequenze di crossover: resta aperta solo la scelta musicale
   (questione 67 — dato nuovo: spaziature più larghe = kill più profondi,
   ~6 dB per mezza ottava) e le frequenze dell'impianto di Filippo.
@@ -864,7 +918,11 @@ riferimento storico).
    −77,3/−73,0 dBu — target −90 FALLITO → **DECISIONE 88 (Filippo)**: kill a
    switch (10 VCA via), drive tiene 218x con I/V 10k, fix servo/banca;
    catena v0.3-switch misurata −83,2 dBu A-wtd θ0 → **target nuovo ≤ −80
-   A-wtd RATIFICATO**. Follow-up: redesign gate a switch (IC famiglia FX,
-   off-isolation, pilotaggio pannello) + ritaratura sheet §3 canale/FX/master
-   dopo budget mancanti (voce 71A).
+   A-wtd RATIFICATO**. Follow-up redesign gate a switch: **FATTO
+   2026-09-30 (§8.10)** — π SPDT classe ADG1434, off-isolation −95 dB
+   @20 kHz, invertitori SUB/MID, click quantificato, flatness preservata.
+   RESTANO: verifica datasheet ufficiale + protezioni ESD in layout,
+   misura click/charge injection a banco, `module-noise-v03.cir` +
+   invertitori (voce 71A), ritaratura sheet §3 canale/FX/master dopo
+   budget mancanti (voce 71A).
 7. Meter pickup e ballistica 10 Hz (con CDJ §7 item 6).
