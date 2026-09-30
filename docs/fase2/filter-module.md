@@ -6,7 +6,7 @@
 > decisione 80); il mux di modo resta dopo la questione 63; (b) LM13700
 > REALE: modello transistor-level condiviso `sim/lib/lm13700.inc` (calibrato
 > datasheet TI SNOSBW2F), law/Q/offset/rumore del core CONFERMATI (fc ≤1,5%,
-> Q 0,70-0,71, stati DC 4-5 mV bounded, rumore −107,8…−134,8 dBu PASS);
+> Q 0,70-0,71, stati DC 4-5 mV bounded, rumore −107,8…−134,8 dBu PASS — SUPERATO dal rerun 71A: `sim/filtro/RISULTATI-filtro-noise-71A.md`, target ≤−80 A-wtd dec. 89, core nudo al limite a fc max col die reale → input q70);
 > FINDING STRUTTURALE: tetto di stato 52 mV a f0 (Iout max ≈ Iabc) → il core
 > nudo a 0 dBu è un compressore morbido (~1% THD, collasso a +10 dBu) e lo
 > scaling+make-up non soddisfa THD e rumore insieme → **questione 70**
@@ -330,7 +330,7 @@ distribuzione mirror + tracking (51).
    BLOCCATO su 63 (single-path vs serie).
 3. [FATTO 2026-09-28] Modello LM13700 reale (`sim/lib/lm13700.inc`,
    RISULTATI §1-§3): offset (stati DC 4-5 mV bounded su tutta la sweep,
-   nessun trim), rumore a Iabc 114 n…397 µ (−134,8…−107,8 dBu integrati:
+   nessun trim), rumore a Iabc 114 n…397 µ (−134,8…−107,8 dBu integrati — INVALIDATI quirk INTEG → rerun 71A: −126,0/−103,7/−90,3 dBu unwt ideali, die reale −84…−76 a fc max, dec. 89:
    PASS ≥17,8 dB anche con die 5× peggiore), swing/THD → FINDING: tetto di
    stato 52 mV a f0 → core nudo = compressore morbido ~1% a 0 dBu (opzione
    carattere) ma collasso a +10 dBu; scaling+make-up = trade-off perdente

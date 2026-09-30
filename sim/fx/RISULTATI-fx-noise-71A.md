@@ -67,5 +67,5 @@ spento) il bus reale sta sotto −102 dBu circa (solo summing+op-amp).
 ## Nota sui file
 
 `dbg-bus-noise.*` in questa cartella = residui di debug di una run
-interrotta (git-ignorati, candidati al cleanup voce 14 handoff — non
+interrotta (git-ignorati, candidati al cleanup (regola globale: chiedere a Filippo) — non
 cancellati senza conferma, regola repo).

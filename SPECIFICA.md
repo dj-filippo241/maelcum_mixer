@@ -1,6 +1,6 @@
 # SPECIFICA — MAELCUM MIXER (mixer dub modulare analogico, esemplare unico)
 
-> **v0.1 (2026-09-18, rev. 2026-09-28/30: decisioni 76-88 + esiti simulazioni e sessione decisioni)** — Compilata da: decisioni 1-88 (`docs/01-decisioni-bloccate.md`),
+> **v0.1 (2026-09-18, rev. 2026-09-28/30: decisioni 76-89 + esiti simulazioni e sessione decisioni)** — Compilata da: decisioni 1-89 (`docs/01-decisioni-bloccate.md`),
 > status doc ChatGPT rev2 (`docs/export-chatgpt/`, corpus chiuso — decisione 58),
 > gain-staging sheet (`docs/fase1/gain-staging-sheet.md`), revisione critica (`docs/03`).
 > Livello: REQUISITI. Il dettaglio circuitale vive nei design doc di `docs/fase1/` e `docs/fase2/`.
@@ -151,7 +151,7 @@ Design circuitale: `docs/fase1/master-out.md` **v0.3 (2026-09-29: stadio finale 
 
 ## 14. Rumore e banda — target
 
-- [PROVVISORIO] Allocazione per stadio (sheet §3): canale ≤−92 dBu [DA RITARARE 71A] · bus FX ≤−88 [DA RITARARE 71A] · **5-way ≤−80 dBu A-wtd (dec. 88, 2026-09-30: misurato −83,2; out modulo, ingressi terminati, gain nominali, drive θ0)** · XLR master ≤−92 [DA RITARARE 71A] (sistema ≤−90 con margine) · isolamento control→audio ≥100 dB · phono: budget dedicato al design. Tutto da validare in simulazione+misura (il −90 dBu "globale" dei doc resta target, non garanzia — correzione 13 review).
+- [PROVVISORIO] Allocazione per stadio (sheet §3): canale ≤−80 dBu A-wtd (dec. 89, misurato −90,3) · bus FX send ≤−88 A-wtd (dec. 89, misurato −100,8) · filtro ≤−80 A-wtd (dec. 89: core nudo al limite a fc max col die reale → input q70) · **5-way ≤−80 dBu A-wtd (dec. 88, 2026-09-30: misurato −83,2; out modulo, ingressi terminati, gain nominali, drive θ0)** · stadio XLR master ≤−92 (misurato −119,2 VALIDO; sistema ≤−78 A-wtd, dec. 89, condizioni docs/06 §2) · isolamento control→audio ≥100 dB · phono: budget dedicato al design. Tutto da validare in simulazione+misura (il −90 dBu "globale" dei doc resta target, non garanzia — correzione 13 review).
 - [BLOCCATO] Banda: §1 (8 Hz–35 kHz; 10 Hz ±1 dB infrasub).
 
 ## 15. Interfaccia meccanica/elettrica

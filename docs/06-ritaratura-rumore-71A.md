@@ -1,4 +1,4 @@
-# 06 — Ritaratura rumore sheet §3 (voce 71A) — PROPOSTA per ratifica
+# 06 — Ritaratura rumore sheet §3 (voce 71A) — RATIFICATA (decisione 89)
 
 Data: 2026-09-30. Stato: **RATIFICATA → decisione 89** (target canale −80 senza fix,
 filtro −80 con input q70, FX send −88 confermato, sistema −78; esito in §6). Origine: decisione 88 ha ratificato
@@ -16,7 +16,7 @@ FX e sistema, invalidati dal quirk INTEG di LTspice (§8.9 five-way).
 | Filtro core OTA nudo (a) | buffer LP, fc max 37 kHz | **−90,3** | −91,4 | ≤ −90 (send 0 dBu) | sim ideale AL LIMITE; die reale −84…−76 = FAIL 6-14 dB (`sim/filtro/RISULTATI-filtro-noise-71A.md`) |
 | Filtro a fc basse (10 Hz-1 kHz) | idem | −126…−103,7 | −139…−117 | — | PASS largo (spettro 1/f) |
 | FX bus (send, jack L) | contributori terminati, pad 0 dB, carico 10k | −98,9 dBu | **−100,8 dBu** | ≤ −88 | PASS 12,8 dB (`sim/fx/RISULTATI-fx-noise-71A.md`); dominante: 3 VCA reroute ~60% (ipotesi conservativa floor −98 dBV sempre) |
-| Master out (stadio) | XLR | −119,2 (VALIDO, integrazione già manuale) | — | ≤ −92 | PASS 19 dB; non è lui il limite |
+| Master out (stadio) | XLR | −119,2 (VALIDO, integrazione già manuale) | — | ≤ −92 | PASS (27 dB su −92; il '19 dB' storico era contro il vecchio target interno −100); non è lui il limite |
 
 ## 2. Sintesi di sistema (calcolo di potenza, condizioni dichiarate)
 
@@ -41,7 +41,7 @@ unweighted su un EQ; SN relativa ~84 dB. Un sistema completo a −78 dBu
 A-wtd (≈ −76 unweighted, SN ~76-78 dB su nominale 0 dBu) sta nella
 fascia alta documentata della categoria, con VCA e drive in percorso.
 
-## 3. Proposta di ritaratura sheet §3 (da ratificare)
+## 3. Proposta di ritaratura sheet §3 [SUPERATA dall'esito ratificato → §5: dec. 89 = canale −80 SENZA fix, filtro −80]
 
 | Riga sheet | Target attuale | PROPOSTA | Nota |
 |---|---|---|---|
@@ -67,7 +67,7 @@ redesign; il rerun consolidato (Rvn corretto + invertitori gate §8.10 +
 eventuale I/V) va fatto nella coda 71A. Regola: il valore Rvn va derivato
 dal dBV del datasheet (R = en²/4kT), non copiato tra configurazioni.
 
-## 6. ESITO RATIFICA (2026-09-30 sera → decisione 89, docs/01)
+## 5. ESITO RATIFICA (2026-09-30 sera → decisione 89, docs/01)
 
 - Canale CDJ: **≤ −80 dBu A-wtd**, NESSUNA fix (le opzioni (a)/(b) §3 sono
   respinte: pot 10k restano, voce 40 invariata). Misurato −90,3 = 10,3 dB.
@@ -77,14 +77,15 @@ dal dBV del datasheet (R = en²/4kT), non copiato tra configurazioni.
 - Sistema XLR: **≤ −78 dBu A-wtd** alle condizioni §2. Stadio master ≤ −92.
 - 5-way: invariato ≤ −80 (dec. 88).
 
-## 5. Coda operativa dopo ratifica
+## 6. Coda operativa dopo ratifica
 
-1. Aggiornare sheet §3 con i target ratificati (punto di misura e pesatura
-   dichiarati per ogni riga, criterio dec. 88).
-2. Fix canale (a)/(b) se ratificate → nuovo run di conferma.
+1. [FATTO 2026-09-30] Sheet §3 aggiornata con i target ratificati (punto di
+   misura e pesatura dichiarati, criterio dec. 88).
+2. [RESPINTO da dec. 89] Fix canale (a)/(b): nessuna fix (target −80,
+   misurato −90,3 = PASS 10,3 dB).
 3. Rerun consolidato module-noise-v03 (Rvn + invertitori §8.10).
 4. Rumore del filtro: entra nell'ascolto q70 come dato (non decide da solo).
 5. Budget canale di RITORNO FX (vero contributo FX al sistema): coda 71A.
 6. Budget summer DJ bus/master: al design di sistema (task 7) o a banco.
-7. Cleanup residui run interrotta: sim/fx/dbg-bus-noise.* (voce 14: chiedere
-   prima di cancellare).
+7. Cleanup residui run interrotta: sim/fx/dbg-bus-noise.* (regola globale: chiedere a Filippo prima di
+   cancellare).

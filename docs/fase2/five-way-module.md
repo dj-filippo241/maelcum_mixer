@@ -535,9 +535,9 @@ A banco: trim bilanciamento pair solo se il servo esce dall'autorità (±14,5 V)
 
 | Voce | Qtà | Note |
 |---|---|---|
-| Quad op-amp low-noise (classe OPA1654/1612) | ~33-35 | banca 14 (v0.2 allineata in fase: 16 SK + 12 allpass), EQ 17,5 (7 sezioni/cella × 10, §4.2 v0.2.1), gate/buffer/make-up |
+| Quad op-amp low-noise (classe OPA1654/1612) | ~34-36 | banca 14 (v0.2 allineata in fase: 16 SK + 12 allpass), EQ 17,5 (7 sezioni/cella × 10, §4.2 v0.2.1), invertitori polarità gate 1 (§8.10), gate/buffer/make-up |
 | Dual JFET N matched (classe LSK589/MMBF5457 selezionato) | 10 | celle parametriche v0.2.1: VCR bootstrappato, 2 per cella (§4.2) [reperibilità da verificare]; LM13700 RIMOSSI dalle celle (questione 70) |
-| THAT 2180/2181 per gate kill → **RIMOSSI (dec. 88): 10 switch analogici di precisione** | 0 VCA gate / 10 switch | gate = switch hard-cut famiglia assign FX (Ron ~33 Ω classe); il drive tiene 2× 218x (§5.5); 2162 dual resta scartato (±16 V, THD 0,05%) |
+| THAT 2180/2181 per gate kill → **RIMOSSI (dec. 88): 10 SPDT π classe ADG1434 = 3 IC** | 0 VCA gate / 10 SPDT | gate = π SPDT hard-cut Ron ≤4,7 Ω, famiglia assign FX/LINE-PHONO (§8.10); il drive tiene 2× 218x (§5.5); 2162 dual resta scartato (±16 V, THD 0,05%) |
 | THAT 2180/2181 (SINGLE) | 2 | gain drive stadio 1 (v0.3: solo 218x, law nativa dB — voce 37) |
 | JFET J310-like + PNP 2N3906-like | 2+4 | drive v0.3 §5.5: nastro CS 1/lato + diff pair fuzz 2/lato |
 | OPA1612 dual (recovery) + dual classe OPA2134 (servo, dec. 88; draft TL062) | 1+2 | recovery condiviso L/R; 1 dual per lato per il servo (§5.5) |
@@ -552,7 +552,7 @@ A banco: trim bilanciamento pair solo se il servo esce dall'autorità (±14,5 V)
 **Funzione KILL: VALIDATA.** Ogni via killata scende nella sua banda con le
 code LR4 (KILL SUB: −76 dB @10 Hz; KILL KICK: −24 dB @200; KILL MID: −21
 @700; KILL HIGH: −15 @2,5k; KILL SUPER: −51 @15k, −68 @25k) e le altre vie
-restano intatte; ALL-KILL = −inf (silenzio assoluto by design [SUPERATO dec. 88: switch hard-cut, all-kill = off-isolation ~−60…−70 dB da quantificare]: il gate VCA
+restano intatte; ALL-KILL = −inf (silenzio assoluto by design [SUPERATO dec. 88: switch hard-cut, all-kill ≤−85,5 dB misurato: off-isolation π SPDT −95 dB @20 kHz, §8.10]: il gate VCA
 non ha i limiti di fase delle celle sottrattive — a differenza dell'EQ di
 canale, qui il kill È muto).
 
@@ -595,7 +595,7 @@ al centesimo di dB:
 | KILL MID | −16,4 dB (min @~650) | −21 @700 | vedi nota sotto |
 | KILL HIGH | −14,0 dB (min @~2k) | −15 @2,5k | vedi nota sotto |
 | KILL SUPER | −50,5 @15k / −68,2 @25k | −51 / −68 | invariato |
-| ALL-KILL | −inf (silenzio assoluto) [v0.2 VCA; dec. 88: switch, off-isolation da quantificare] | −inf | gate VCA [→ switch, dec. 88] |
+| ALL-KILL | −inf (silenzio assoluto) [v0.2 VCA; dec. 88: π SPDT — MISURATO §8.10: all-kill ≤−85,5 dB su 5 Hz-60 kHz, −95 dB @20 kHz] | −inf | gate VCA [→ switch, dec. 88] |
 
 Nota sui kill interni "meno profondi": i numeri v0.1 erano gonfiati dalla
 cancellazione di fase (le bande residue si sommavano fuori fase e scavavano
@@ -923,6 +923,5 @@ Implementazione ingegneristica della decisione 88. Risultati chiave
    @20 kHz, invertitori SUB/MID, click quantificato, flatness preservata.
    RESTANO: verifica datasheet ufficiale + protezioni ESD in layout,
    misura click/charge injection a banco, `module-noise-v03.cir` +
-   invertitori (voce 71A), ritaratura sheet §3 canale/FX/master dopo
-   budget mancanti (voce 71A).
+   invertitori (coda 71A). Ritaratura sheet §3: FATTA (dec. 89, docs/06).
 7. Meter pickup e ballistica 10 Hz (con CDJ §7 item 6).

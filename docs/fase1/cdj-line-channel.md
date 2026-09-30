@@ -116,7 +116,7 @@ Proprietà misurate (LTspice, macromodelli — dettagli e griglie in eq-serie-v0
    HIGH debole) → il fader resta il muto vero; auto-mute = questione 59 (numeri
    definitivi registrati).
 5. Curva dub (LOW+HIGH su, medi giù): +5,6 / −45 / −46 / +5,5 dB — estetica target.
-6. Rumore: [REV 2026-09-30: −110,7 INVALIDATO dal quirk INTEG LTspice — EQ reale −89,2 dBu (den 190 nV/√Hz piatta): il target canale ≤−92 è superato dalla sola EQ → ritaratura sistema = voce 71].
+6. Rumore: [REV 2026-09-30: −110,7 INVALIDATO dal quirk INTEG LTspice — EQ reale −89,2 dBu (den 190 nV/√Hz piatta): il target canale ≤−92 è superato dalla sola EQ → ritaratura sistema = voce 71] [RISOLTO → dec. 89: canale ≤−80 A-wtd, budget completo −90,3 = PASS 10,3 dB senza fix].
 7. Livelli: picco interno 7,6 V a +16 dBu all-boost (riferimento −6 dB); estremo
    +18 dBu = saturazione d'uscita intenzionale, niente clipping a metà catena.
 8. Tracking stereo: pot doppi ≤1% → L−R ≤0,16 dB (PASS ≤0,25); 2% → 0,32 (limite,
