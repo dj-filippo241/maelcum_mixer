@@ -1,7 +1,7 @@
 # 06 — Ritaratura rumore sheet §3 (voce 71A) — PROPOSTA per ratifica
 
-Data: 2026-09-30. Stato: BOZZA in attesa del budget FX bus (run in corso)
-e della ratifica di Filippo (regola 2: i target di rumore vincolano il
+Data: 2026-09-30. Stato: COMPLETA nei numeri (canale + filtro + FX send +
+5-way + master), in attesa della ratifica di Filippo (regola 2: i target di rumore vincolano il
 risultato musicale → decisione sua). Origine: decisione 88 ha ratificato
 il target 5-way (≤ −80 dBu A-wtd) e ha lasciato aperti i target di canale,
 FX e sistema, invalidati dal quirk INTEG di LTspice (§8.9 five-way).
@@ -16,7 +16,7 @@ FX e sistema, invalidati dal quirk INTEG di LTspice (§8.9 five-way).
 | 5-way modulo | out modulo (dec. 88) | −81,0 | **−83,2** (−85,5 stimato col fix Rvn, §4) | ≤ −80 A-wtd RATIFICATO | PASS 3,2 dB (5,5 col fix) |
 | Filtro core OTA nudo (a) | buffer LP, fc max 37 kHz | **−90,3** | −91,4 | ≤ −90 (send 0 dBu) | sim ideale AL LIMITE; die reale −84…−76 = FAIL 6-14 dB (`sim/filtro/RISULTATI-filtro-noise-71A.md`) |
 | Filtro a fc basse (10 Hz-1 kHz) | idem | −126…−103,7 | −139…−117 | — | PASS largo (spettro 1/f) |
-| FX bus | [IN ATTESA RUN] | — | — | ≤ −88 | — |
+| FX bus (send, jack L) | contributori terminati, pad 0 dB, carico 10k | −98,9 dBu | **−100,8 dBu** | ≤ −88 | PASS 12,8 dB (`sim/fx/RISULTATI-fx-noise-71A.md`); dominante: 3 VCA reroute ~60% (ipotesi conservativa floor −98 dBV sempre) |
 | Master out (stadio) | XLR | −119,2 (VALIDO, integrazione già manuale) | — | ≤ −92 | PASS 19 dB; non è lui il limite |
 
 ## 2. Sintesi di sistema (calcolo di potenza, condizioni dichiarate)
@@ -26,7 +26,11 @@ Condizioni: 4 canali CDJ terminati e attivi, DJ bus, 5-way in catena,
 4× canale (−90,3 → −84,3 di somma) ⊕ 5-way (−83,2) ⊕ 4× FX bus
 ([−88 → −82] in attesa) ⊕ master (−119,2 trascurabile):
 
-**Sistema stimato ≈ −78 dBu A-wtd** (−76…−78 a seconda del FX bus).
+**Sistema stimato ≈ −78…−79 dBu A-wtd**. Nota: il contributo FX al sistema
+passa dal canale di RITORNO (buffer JFET hi-Z + GAIN VCA + EQ2 + servo +
+fader → MASTER SUM), mai simulato — il bus send misurato (−100,8) è il
+punto più pulito della catena. Stima provvisoria del ritorno: classe
+−88…−92 (VCA+EQ2 dominanti) → budget reale del ritorno = coda 71A.
 
 Assunzioni dichiarate: rumore dei summer (DJ bus, master sum) trascurabile
 (resistenze basse, mai simulato — coda 71A/banco); nessun contributo da
@@ -43,7 +47,7 @@ fascia alta documentata della categoria, con VCA e drive in percorso.
 | Riga sheet | Target attuale | PROPOSTA | Nota |
 |---|---|---|---|
 | Out driver di canale | ≤ −92 A-wtd | **≤ −90 A-wtd** + fix (a) e/o (b) sotto | misurato −90,3: −90 è onesto solo CON le fix; in alternativa deroga ≤ −88 senza fix |
-| Bus FX | ≤ −88 | [IN ATTESA RUN] | — |
+| Bus FX (send) | ≤ −88 | **≤ −88 confermato** (PASS 12,8 dB misurato; opzione: stringere a −95 senza fix) | il ritorno FX va al master: budget dedicato in coda |
 | Filtro (send 0 dBu) | ≤ −90 | **≤ −90 confermato MA con vincolo topologico**: la scelta musicale (a) OTA nudo NON lo rispetta a fc max col die reale (−84…−76) | se (a): riga filtro ≤ −76 a fc max (deroga esplicita) oppure (c-B) VCA nel loop che riporta il rumore in target (input nuovo per q70 — l'ascolto resta sovrano) |
 | 5-way | ≤ −80 A-wtd (dec. 88) | invariato | margine reale ~5,5 dB col fix Rvn (§4) |
 | XLR master / sistema | ≤ −92 / ≤ −90 | **sistema ≤ −78 dBu A-wtd** alle condizioni dichiarate §2 | −92 era irrealistico post-quirk: il master è dominato dal monte |
@@ -71,4 +75,7 @@ dal dBV del datasheet (R = en²/4kT), non copiato tra configurazioni.
 2. Fix canale (a)/(b) se ratificate → nuovo run di conferma.
 3. Rerun consolidato module-noise-v03 (Rvn + invertitori §8.10).
 4. Rumore del filtro: entra nell'ascolto q70 come dato (non decide da solo).
-5. Budget summer DJ bus/master: al design di sistema (task 7) o a banco.
+5. Budget canale di RITORNO FX (vero contributo FX al sistema): coda 71A.
+6. Budget summer DJ bus/master: al design di sistema (task 7) o a banco.
+7. Cleanup residui run interrotta: sim/fx/dbg-bus-noise.* (voce 14: chiedere
+   prima di cancellare).

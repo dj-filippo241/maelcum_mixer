@@ -1,0 +1,75 @@
+* ============================================================
+* BUS FX — PRIMO BUDGET RUMORE (voce 71A, 2026-09-30)
+* Punto di misura: JACK SEND di un bus (sez. L; R identica), pad 0 dB,
+* carico 10k [ASSUNZIONE: ingresso pedale/rack tipico]. Riferimento
+* secondario: vbus = uscita summing.
+* Condizione sheet §3 "contributori terminati": i 6 send di canale
+* (4 DJ + mic + generic — fx-module §2) sono terminati a GND via i loro
+* 10k di summing (nessun rumore esterno iniettato). Contributori INTERNI
+* del modulo inclusi: rete di summing (9×10k + Rf 10k, §3 fx-module),
+* 3 VCA di reroute della matrice (§7: per bus convergono i 3 ritorni
+* diversi dal proprio), op-amp di bus (OPA1612 class, §3), pad driver +
+* driver pedale (OPA1612, §4), R serie 100 + pad.
+* ASSUNZIONI [PROVVISORIO, da ratifica dove musicale]:
+* - VCA reroute inclusi SEMPRE al floor datasheet −98 dBV (89 nV/√Hz,
+*   Rvn 476k) indipendentemente dalla posizione del pot (conservativo:
+*   il datasheet non dà il rumore vs gain; a reroute chiuso il floor
+*   reale è inferiore). Connessione: Rout 20k + 10k di summing = peso
+*   1/3 sul bus (interfaccia matrice→bus non ancora a doc).
+* - EQ2 e DC servo NON nel percorso bus (vivono lato canale/ritorno:
+*   il loro rumore appartiene ai rispettivi budget).
+* - TVS esclusa (capacitiva, non rumorosa in banda).
+* - Bus stereo = 2 sezioni identiche indipendenti; il "controlled mono
+*   sum" L+R (send mono, §2) somma potenze non correlate: +3 dB al jack
+*   mono (notato nei RISULTATI, non simulato qui).
+* METODO (§8.9 five-way, quirk LTspice 26.0.2): MAI .meas INTEG —
+* densità a 10 punti 20-20k + trapezoidale python + A-wtd post.
+* ============================================================
+.include ../lib/opamp-audio.inc
+*
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 vin1 0 DC 0 AC 1
+*
+* --- 6 ingressi send di canale terminati (10k ciascuno) ---
+Rch1 vin1 ns 10k
+Rch2 0 ns 10k
+Rch3 0 ns 10k
+Rch4 0 ns 10k
+Rch5 0 ns 10k
+Rch6 0 ns 10k
+*
+* --- 3 VCA di reroute (floor −98 dBV → Rvn 476k, E lineare 4 nodi) ---
+Rvn1 vn1 0 476k
+Erv1 vrv1 0 vn1 0 1
+Rrv1 vrv1 ns 30k
+Rvn2 vn2 0 476k
+Erv2 vrv2 0 vn2 0 1
+Rrv2 vrv2 ns 30k
+Rvn3 vn3 0 476k
+Erv3 vrv3 0 vn3 0 1
+Rrv3 vrv3 ns 30k
+*
+* --- Summing virtual-earth (Rf 10k, OPA1612 class) ---
+Rf ns vbus 10k
+Xsum 0 ns vbus vcc vee OP1612
+*
+* --- Pad driver + driver pedale (buffer OPA1612), pad 0 dB, R 100, jack ---
+Xpd vbus pd_o pd_o vcc vee OP1612
+Xdrv pd_o drv_o drv_o vcc vee OP1612
+Rser drv_o prot 47
+Rprot prot jack 100
+Rload jack 0 10k
+*
+.noise V(jack) V1 dec 200 20 20k
+.meas noise nd20 FIND V(onoise) AT 20
+.meas noise nd50 FIND V(onoise) AT 50
+.meas noise nd100 FIND V(onoise) AT 100
+.meas noise nd200 FIND V(onoise) AT 200
+.meas noise nd500 FIND V(onoise) AT 500
+.meas noise nd1k FIND V(onoise) AT 1k
+.meas noise nd2k FIND V(onoise) AT 2k
+.meas noise nd5k FIND V(onoise) AT 5k
+.meas noise nd10k FIND V(onoise) AT 10k
+.meas noise nd20k FIND V(onoise) AT 20k
+.end

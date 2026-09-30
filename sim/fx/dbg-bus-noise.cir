@@ -1,0 +1,11 @@
+* Debug: summer 1 ingresso terminato + Rf, OP1612 — atteso √2×129 = 182 nV/√Hz
+.include ../lib/opamp-audio.inc
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+Vs1 s1 0 DC 0 AC 1
+R1 s1 ns 10k
+Rf ns out_s 10k
+Xsum 0 ns out_s vcc vee OP1612
+.noise V(out_s) Vs1 dec 20 20 20k
+.meas noise n1k FIND V(onoise) AT 1k
+.end
