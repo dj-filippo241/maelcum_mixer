@@ -179,7 +179,7 @@ tracking ≤0,5 dB con selezione/trim; buffer OPA1612 ≤50 Ω → DJ BUS (injec
 **Misurato v0.3 beta-3** (`sim/eq-serie/cascade-b3-noise.cir`, cascata EQ al detent,
 20 Hz–20 kHz, macro reali OPA1654/OPA1612 da `sim/lib/opamp-audio.inc`):
 **−110,7 dBu** integrato [REV 2026-09-30 INVALIDATO: reale −89,2 dBu — quirk INTEG, voce 71] → margine 18,7 dB sul target (la macro "uniforme" di beta-2
-era già calibrata vicina alla OPA1654 reale: numero CONFERMATO, non solo stimato). [REV 2026-09-30: il margine non esiste — reale −89,2 dBu vs target −92: MANCATO → voce 71A]
+era già calibrata vicina alla OPA1654 reale: numero CONFERMATO, non solo stimato). [REV 2026-09-30: il margine non esiste — reale −89,2 dBu vs target −92: MANCATO → voce 71A; RISOLTO 2026-09-30 sera → decisione 89: target canale RITARATO a ≤ −80 dBu A-wtd, budget completo misurato −90,3 A-wtd (EQ 82% + GAIN VCA 18%) = PASS 10,3 dB SENZA fix — `sim/cdj/RISULTATI-channel-noise-71A.md`]
 Regole confermate: pot 10 kΩ sulle celle (voce 48), summer a 49,9 kΩ (non 100 k),
 bracci shelf ≤31 kΩ; OPA1612 solo su nodi a bassa Z (regola in libreria: bipolare,
 sorgenti <100 Ω). Restano da aggiungere: VCA di gain (a monte, già nel budget del

@@ -1,8 +1,7 @@
 # 06 — Ritaratura rumore sheet §3 (voce 71A) — PROPOSTA per ratifica
 
-Data: 2026-09-30. Stato: COMPLETA nei numeri (canale + filtro + FX send +
-5-way + master), in attesa della ratifica di Filippo (regola 2: i target di rumore vincolano il
-risultato musicale → decisione sua). Origine: decisione 88 ha ratificato
+Data: 2026-09-30. Stato: **RATIFICATA → decisione 89** (target canale −80 senza fix,
+filtro −80 con input q70, FX send −88 confermato, sistema −78; esito in §6). Origine: decisione 88 ha ratificato
 il target 5-way (≤ −80 dBu A-wtd) e ha lasciato aperti i target di canale,
 FX e sistema, invalidati dal quirk INTEG di LTspice (§8.9 five-way).
 
@@ -67,6 +66,16 @@ Fix ingegneristiche canale (nessun impatto musicale):
 redesign; il rerun consolidato (Rvn corretto + invertitori gate §8.10 +
 eventuale I/V) va fatto nella coda 71A. Regola: il valore Rvn va derivato
 dal dBV del datasheet (R = en²/4kT), non copiato tra configurazioni.
+
+## 6. ESITO RATIFICA (2026-09-30 sera → decisione 89, docs/01)
+
+- Canale CDJ: **≤ −80 dBu A-wtd**, NESSUNA fix (le opzioni (a)/(b) §3 sono
+  respinte: pot 10k restano, voce 40 invariata). Misurato −90,3 = 10,3 dB.
+- Filtro: **≤ −80 dBu A-wtd**; core nudo (a) al limite nel worst case die
+  a fc max (−76…−84): dato d'input per l'ascolto q70, non un veto.
+- FX bus send: **≤ −88 confermato** (misurato −100,8).
+- Sistema XLR: **≤ −78 dBu A-wtd** alle condizioni §2. Stadio master ≤ −92.
+- 5-way: invariato ≤ −80 (dec. 88).
 
 ## 5. Coda operativa dopo ratifica
 

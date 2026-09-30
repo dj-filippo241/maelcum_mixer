@@ -88,10 +88,11 @@ vero esiste solo all'uscita XLR, dove lo stadio discreto lavora su ±24 V.
 
 | Punto di misura (ingressi terminati, gain nominali) | Target residuo A-wtd |
 |---|---|
-| Out driver di canale | ≤ −92 dBu |
-| Bus FX (contributori terminati) | ≤ −88 dBu |
+| Out driver di canale | **≤ −80 dBu A-wtd** (dec. 89, 2026-09-30: out driver, ingressi terminati, gain nominali; misurato −90,3 = margine 10,3 dB, nessuna fix) |
+| Bus FX send (contributori terminati) | **≤ −88 dBu A-wtd** (dec. 89 conferma: misurato −98,9/−100,8 = margine 12,8 dB; ritorno FX = coda 71A) |
+| Filtro (send 0 dBu, out core) | **≤ −80 dBu A-wtd** (dec. 89: core nudo (a) ideale −91,4 PASS, die reale −84…−76 a fc max = al limite → input per l'ascolto q70; (c-B) in target) |
 | Out 5-way | **≤ −80 dBu A-wtd** (dec. 88, 2026-09-30: out modulo, ingressi terminati, gain nominali, drive θ0; misurato −83,2, margine 3,2 dB; il rumore segue la law del drive: +3,6 dB a θ50 con +7 dB di segnale) |
-| XLR MASTER (fader unity) | ≤ −92 dBu → sistema ≤ −90 dBu con margine |
+| XLR MASTER (fader unity) | stadio ≤ −92 (misurato −119,2 VALIDO); **sistema ≤ −78 dBu A-wtd** (dec. 89, condizioni dichiarate docs/06 §2) |
 | Isolamento control→audio | ≥ 100 dB (verso corretto: il controllo resta 100 dB sotto l'audio) |
 | Phono | budget dedicato al design Rev A/B (input-referred, test inverse-RIAA) |
 
@@ -112,6 +113,9 @@ benchmark su 9 costruttori della scena (`docs/05-benchmark-preamp-scena-
 master — dopo la simulazione dei budget mancanti. Dettagli: five-way §8.9 + `sim/five-way/RISULTATI-module-noise-v021.md`.
 Impatto sistema: il 5-way domina il rumore della catena master → anche
 XLR MASTER ≤−92 va ritarato sulla voce 71A (budget canale/FX/master).
+**RITARATURA FATTA (decisione 89, 2026-09-30)**: canale ≤ −80, FX send
+≤ −88 confermato, filtro ≤ −80 (nuova riga), sistema ≤ −78 — budget e
+sintesi in `docs/06-ritaratura-rumore-71A.md`.
 
 ## 4. Questioni chiuse da questo sheet
 
