@@ -356,3 +356,45 @@ sim/run_ltspice.sh sim/master-out/compB-noise.cir    # rumore residuo
 sim/run_ltspice.sh sim/master-out/compB-short.cir    # corto
 sim/run_ltspice.sh sim/master-out/compB-servo.cir    # servo DC + power-on
 ```
+
+## v0.3 + dec. 93 — Test 13: INVILUPPO STATICI [M] (2026-10-01)
+
+File: `compB-swing3-env.cir` (swing Test 7b con `.step param vstat LIST
+23.6 26.5 29.2`, amp 22 Vp) + `compB-short-env.cir` (corto Test 11 agli
+estremi 23.6/29.2 V, amp 22 Vp abuso). Motivazione: la dec. 93 ha
+trasformato gli statici [M] da punto fisso 23,7 V a inviluppo
+**±23,6…29,2 V su rete ±10%** (W3 2×20 V); verifica che requisito
+≥+24 dBu e sopravvivenza al corto valgano agli estremi.
+
+Swing (capability):
+
+| Statici | +picco | −picco | dBu | Esito |
+|---|---|---|---|---|
+| 23,6 V (rete −10%, worst) | +20,57 V | −20,05 V | +25,5 / +25,2 | **PASS ≥+24, margine 1,2-1,5 dB** |
+| 26,5 V (nominale) | +22,00 | −22,00 | ≥+26,3 — limitata dall'input (amp 22 Vp): capability reale più alta | PASS |
+| 29,2 V (rete +10%) | +22,00 | −22,00 | ≥+26,3 — limitata dall'input | PASS |
+
+Coerenza: il punto 23,6 V riproduce il Test 7b verificato (±20,4-20,9 V a
+statici 23,7) scalato di −0,3 V.
+
+Dissipazioni pass (Q7/Q8) a pieno swing: medie 0,93 → 1,19 W e picchi
+2,18-2,36 W lungo l'inviluppo → dentro il sizing v0.3 (0,75 W idle /
+1,0 W programma / 2,7 W picco, rame ≥4 cm²); a rete alta +19% medio.
+
+Corto verso massa (abuso 22 Vp, sostenuto):
+
+| Statici | iQ1 pk | Q1 avg | Q1 pk | Q2 avg | Vout residuo |
+|---|---|---|---|---|---|
+| 23,6 V | 105,6 mA | 1,00 W | 2,11 W | 0,72 W | 0,122 V |
+| 29,2 V | 106,3 mA | 1,28 W | 2,72 W | 0,92 W | 0,124 V |
+
+Meccanismo CONFERMATO: il limite bootstrap è indipendente dagli statici
+(106 mA a entrambi gli estremi); a rete alta la dissipazione scala con gli
+statici (+28% Q1 avg) → 1,28 W medi resta dentro il dimensionamento
+"worst di programma" (rame ≥4 cm²); rail bootstrap collassati a ±5,6…5,9 V
+durante il corto, come atteso.
+
+CONCLUSIONE: **inviluppo dec. 93 PASS in simulazione a entrambi gli
+estremi** — requisito ≥+24 dBu con margine ≥1,2 dB a qualsiasi rete;
+corto sostenuto sopravvive a rete alta dentro il sizing esistente.
+Resta a banco: THD a +24 dBu a statici alti (il Test 9 era a 23,7 V).

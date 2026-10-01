@@ -10,7 +10,7 @@
 
 | Dominio | Generazione | Cosa alimenta | Capability sine (conservativa, carico medio) |
 |---|---|---|---|
-| ±26 V raw [M] (W3 dedicato, dec. 93) | PSU principale, ferrite + bulk locale nel modulo master; statici ±23,6…29,2 V su rete ±10% | SOLO stadio HV d'uscita master | worst (rete −10%, statici 23,7): +25,4…+25,6 dBu VERIFICATO; rete nominale: ~+27 dBu |
+| ±26 V raw [M] (W3 dedicato, dec. 93) | PSU principale, ferrite + bulk locale nel modulo master; statici ±23,6…29,2 V su rete ±10% | SOLO stadio HV d'uscita master | worst (rete −10%, statici 23,6): +25,2…+25,5 dBu VERIFICATO in sim (Test 13); rete nominale/alta: ≥+26,3 dBu |
 | ±18 V audio | LM317/LM337 a 19,2 V + cap-moltiplicatore **dal raw ±27 V** (W1, dec. 93) | percorso canale, filtro, 5-way, summing FX e master, master level VCA (sezione audio), front out, generic | ~+23 dBu |
 | ±15 V ultra-low-noise | pre-reg LM317/337 ±16,5 V **dal raw ±22 V** (W2) → LT3045/LT3094 → ±15,0 V (decisioni 54/93: LT3045 Vin max 20 V, Vout max 15 V) | front-end phono, primo stadio mic, generatori e distribuzione CV, metering, CUE/cuffia, OTA filtro | ~+20 dBu |
 | ±15 V switch/logica | 78L15/79L15 diretti dal raw ±22 V (dec. 90c/93) | switch π SPDT kill/assign/LINE-PHONO (ADG14xx-class), logica | — |

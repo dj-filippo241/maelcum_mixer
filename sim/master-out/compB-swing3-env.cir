@@ -1,0 +1,107 @@
+* INVILUPPO STATICI DEC. 93 (2026-10-01): statici [M] 23,6-29,2 V su rete +-10%.
+* Scopo: capability >=+24 dBu agli estremi + dissipazione Q1 su corto a rete alta.
+* ============================================================
+* MASTER OUT v0.3 — Test 7b: bias stringhe con JFET CCS (simmetria + handoff)
+* FINDING Test 7 (compB-swing2, Iq reale 40 mA): swing crolla a
+* +19,3/-17,9 V (+24,9/+24,3 dBu, asimmetrico). Causa: agli estremi
+* le stringhe si spengono e la Ib dei pass deve passare nelle R di
+* bias 4,7k → caduta Ib·R + Vbe ≈ 1,5-2,5 V sui rail locali.
+* FIX (via gia' candidata in Test 6): CCS JFET autosbiasato al posto di
+* Rbu/Rbl. Il CCS impone ~4,5 mA costanti: a stringa spenta tutta
+* la corrente finisce nella base del pass → saturazione dura →
+* rail locale ≈ rail statico − Vce_sat (handoff a bassa Z).
+* JFET: BF245B-like (Idss ~4 mA, Vp −1,4) + Rs 47 Ω di autobias.
+* Spread Idss 2-4 mA accettabile: il CCS serve solo come sorgente
+* di bias, Δ varia ±0,3 V (verifica misure vplus/vminus).
+* DOMANDE: (a) swing simmetrico ≥ ±20,5 V? (b) quanto vale Δ ora?
+* (c) dissipazione pass nel worst case (conferma ~1,6-2 W)?
+* Modelli [PROVVISORIO — regola 3].
+* ============================================================
+
+.inc opamac-isup-t.inc
+
+.model MJE340 NPN(IS=1e-13 BF=150 VAF=150 IKF=0.5 BR=5 CJC=4p CJE=15p TF=2n TR=20n RB=5 RC=1 RE=0.1 Vceo=300 Icrating=500m mfg=ON)
+.model MJE350 PNP(IS=1e-13 BF=100 VAF=120 IKF=0.4 BR=3 CJC=4p CJE=15p TF=5n TR=50n RB=5 RC=1.5 RE=0.15 Vceo=300 Icrating=500m mfg=ON)
+.model QMULT NPN(IS=1e-14 BF=200 VAF=100 CJC=8p CJE=25p TF=400p)
+.model DIO D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p Tt=4n)
+.model NJF245 NJF(Beta=4m Vto=-1.4 Lambda=10m Cgs=10p Cgd=4p Is=10f)
+
+Vp24 vp24 0 DC {vstat}
+Vm24 vm24 0 DC {-vstat}
+V1 in 0 SINE(0 {amp} 1k)
+
+* ---------- Bootstrap SUPERIORE: CCS JFET ----------
+* J1: drain +24, source → Rs → bu; gate su bu (Vgs = −Id·Rs)
+Vq7s vp24 q7c DC 0
+J1 q7c j1s bu NJF245
+Rj1 j1s bu 47
+Q7 q7c bu vplus MJE340
+D1 bu s1 DIO
+D2 s1 s2 DIO
+D3 s2 s3 DIO
+D4 s3 s4 DIO
+D5 s4 s5 DIO
+D6 s5 s6 DIO
+D7 s6 s7 DIO
+D15 s7 s8 DIO
+D16 s8 out DIO
+
+* ---------- Bootstrap INFERIORE: CCS JFET ----------
+* J2: drain nb2, source → Rs → −24; gate su −24 (sink ~4,5 mA)
+Vq8s q8c vm24 DC 0
+J2 nb2 j2s q8c NJF245
+Rj2 j2s q8c 47
+Q8 q8c nb2 vminus MJE350
+D8 out t1 DIO
+D9 t1 t2 DIO
+D10 t2 t3 DIO
+D11 t3 t4 DIO
+D12 t4 t5 DIO
+D13 t5 t6 DIO
+D14 t6 t7 DIO
+D17 t7 t8 DIO
+D18 t8 nb2 DIO
+
+* ---------- Composito v0.2 (rail = bootstrap) ----------
+X1 in out drv vplus vminus OPAMAC
+Q3 drv mid b2 QMULT
+Ra drv mid 2.2k
+Rbm mid b2 1k
+Q1 vp24 drv e1 MJE340
+Q2 vm24 b2 e2 MJE350
+Re1 e1 out 33
+Re2 e2 out 33
+* NOTA v0.3c (misurato, THD): Cboot 1u+100n rail↔OUT PROVATI E RIMOSSI:
+* interagendo col kink degli specchi di assorbimento (cambio ramo a ogni
+* attraversamento della corrente di carico) producevano glitch 0,3-0,4 V
+* una volta per periodo → THD 5,9-38 % (comb). Il picco closed-loop MHz
+* (fuori banda, innocuo: g8hz-35k piatto) si lascia com'era in v0.2
+* (+3,3 dB @50 MHz senza carico). A banco: eventuale decoupling rail
+* da provare SOLO con valori piccoli (100n) e misura THD prima/dopo.
+
+
+RL out 0 10k
+
+.options noopiter
+.tran 0 12m 0 1u
+.param amp=22
+
+.meas tran vpk_max MAX V(out) FROM 6m TO 12m
+.meas tran vpk_min MIN V(out) FROM 6m TO 12m
+.meas tran vp_min MIN V(vplus) FROM 6m TO 12m
+.meas tran vp_max MAX V(vplus) FROM 6m TO 12m
+.meas tran vm_min MIN V(vminus) FROM 6m TO 12m
+.meas tran vm_max MAX V(vminus) FROM 6m TO 12m
+.meas tran pq7_pk MAX V(q7c,vplus)*I(Vq7s) FROM 6m TO 12m
+.meas tran pq7_avg AVG V(q7c,vplus)*I(Vq7s) FROM 6m TO 12m
+.meas tran pq8_pk MAX V(vminus,q8c)*I(Vq8s) FROM 6m TO 12m
+.meas tran pq8_avg AVG V(vminus,q8c)*I(Vq8s) FROM 6m TO 12m
+.meas tran iq7_pk MAX I(Vq7s) FROM 6m TO 12m
+.meas tran iq8_pk MAX I(Vq8s) FROM 6m TO 12m
+* Δ effettivo ai due estremi (verifica tracking/simmetria)
+.meas tran d_up MAX V(vplus,out) FROM 6m TO 12m
+.meas tran d_up_min MIN V(vplus,out) FROM 6m TO 12m
+.meas tran d_dn_max MAX V(out,vminus) FROM 6m TO 12m
+.meas tran d_dn_min MIN V(out,vminus) FROM 6m TO 12m
+.step param vstat LIST 23.6 26.5 29.2
+.end

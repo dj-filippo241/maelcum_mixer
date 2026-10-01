@@ -56,11 +56,13 @@ secondari, fusibile termico integrato, secondari [PROVVISORIO]:
 - Rete bassa (−10%) verificata su TUTTI i raw (dec. 93): ±27 min ~22,5 V
   (LM317→19,2 chiede ≥21,7: margine 0,8-1,6 V); ±22 min ~19,7 V
   (pre-reg→16,5 chiede ≥18,5: margine 1,2 V; 78L15→15 chiede ≥17,5:
-  margine 2,2 V); [M] statici min ~23,6 V = punto VERIFICATO capability
-  master (+25,4…+25,6 dBu PASS a rete −10%); +10 min ~8,5 V (7805/LM2940
+  margine 2,2 V); [M] statici min ~23,6 V: capability +25,2…+25,5 dBu
+  PASS a rete −10% (VERIFICATO in sim — Test 13, master-out
+  RISULTATI-composite); +10 min ~8,5 V (7805/LM2940
   chiede ≥7: margine 1,5 V). Rete alta (+10%): statici [M] ~29,2 V —
-  dissipazione Q1 su corto +24% (1,0→~1,25 W medi, sempre dentro rame
-  ≥4 cm²), capability master ~+27…+28 dBu (level plan worst +22 dentro).
+  dissipazione Q1 su corto sostenuto +28% (1,00→1,28 W medi, limite
+  106 mA invariato, sempre dentro rame ≥4 cm²), capability master
+  ≥+26,3 dBu (level plan worst +22 dentro).
 - Regolatori locali ±18 tarati a **19,2 V pre-cap-moltiplicatore**: il
   follower (Rb 47 + Cb 10m, drop ~1,2 V) porta il modulo a ~18,0 V e
   moltiplica la reiezione al ripple (sim §9a).

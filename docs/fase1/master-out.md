@@ -301,7 +301,7 @@ originaria della questione 60. Il composito resta ESATTAMENTE la v0.2 (diamond c
 feedback unity), ma i rail dell'op-amp non sono più ±18 V fissi: due pass serie (NPN verso
 l'alto, PNP verso il basso) generano rail locali che seguono l'uscita a distanza fissa
 (Δ ≈ 3-5 V, stringa LED/zener come riferimento, bias ≈ Iq 40 mA + margine). Al tetto
-dello swing i pass saturano dolcemente sui rail statici ±23,7 V (handoff senza gradini; REV dec. 93: con W3 2×20 V gli statici [M] diventano ±23,6…29,2 V su rete ±10% — ±23,7 V è il WORST CASE a rete −10%, capability ±20,4-20,9 V = +25,4…+25,6 dBu PASS in ogni condizione di rete; a rete nominale statici ~26,5 V → capability ~+27 dBu, level plan worst +22 dBu dentro, Q1 su corto ~1,1 W medi sempre nel rame ≥4 cm²):
+dello swing i pass saturano dolcemente sui rail statici ±23,7 V (handoff senza gradini; REV dec. 93: con W3 2×20 V gli statici [M] diventano ±23,6…29,2 V su rete ±10% — worst case a rete −10% VERIFICATO IN SIM (Test 13, RISULTATI-composite): capability +20,57/−20,05 V = +25,2…+25,5 dBu PASS con margine ≥1,2 dB a qualsiasi rete; a rete nominale capability ≥+26,3 dBu, level plan worst +22 dBu dentro; corto sostenuto a rete alta: limite 106 mA invariato, Q1 1,28 W medi sempre nel rame ≥4 cm²):
 l'op-amp guadagna esattamente i volt che gli mancavano, il follower arriva a ±21…21,5 V
 = **+25,7…+25,9 dBu** (conversione dBu corretta il 2026-09-29; requisito ≥+24 rispettato, ~1,7 dB di margine; ATTESO SUPERATO lo stesso giorno: senza Iq reale — capability definitiva ±20,4-20,9 V = +25,4…+25,6 dBu nei punti 1-5 qui sotto; il level plan del
 modulo worst +22 dBu resta dentro con 3 dB).
