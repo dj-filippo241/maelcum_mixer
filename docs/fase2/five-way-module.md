@@ -12,7 +12,7 @@
 > lezioni di 7 iterazioni in §5.4; D6 (rumore) FATTO 2026-09-30 (§8.9: −85,7 dBu
 > drive, VCA dominante → target −90 irraggiungibile) → **DECISIONE 88: kill a
 > SWITCH analogici (10 VCA rimossi dai gate), drive tiene il 218x, target
-> nuovo ≤ −80 dBu A-wtd — misurato con switch+fix: −83,2 A-wtd θ0** (§8.9);
+> nuovo ≤ −80 dBu A-wtd — misurato con switch+fix: −83,2 A-wtd θ0** (§8.9; rerun v031 2026-10-01: −83,9, margine 3,9 dB — §8.10 item 6);
 > D5 pendente.
 
 > **CELLE v0.2.1 (2026-09-28, §4.2)**: topologia degli integratori cambiata
@@ -875,7 +875,7 @@ totale −82,3/−83,9 A-wtd θ0, margine 3,9 dB su −80 —
   musicale §5.3 CONFERMATA da Filippo (2026-09-30, dec. 87 — regola 2);
   taper/knee fini → ascolto M4L (dec. 78). D6 rumore FATTO 2026-09-30
   (§8.9) → DECISIONE 88: kill a switch, 10 VCA rimossi, target −80 dBu A-wtd
-  (misurato −83,2 con fix); pendente: D5 risonanza (dopo q70).
+  (misurato −83,2 con fix; rerun v031 2026-10-01: −83,9, margine 3,9 — §8.10 item 6); pendente: D5 risonanza (dopo q70).
 - **24** (layout comandi): gain di banda = 5 pot rotativi (decisione 85);
   l'elettronica fornisce: 5 kill switch + 5 pot rotativi gain + 5 pot position
   + 5 switch width + drive pot + (meter). Comandi phono → voce 40.

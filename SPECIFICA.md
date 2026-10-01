@@ -151,7 +151,7 @@ Design circuitale: `docs/fase1/master-out.md` **v0.3 (2026-09-29: stadio finale 
 
 ## 14. Rumore e banda — target
 
-- [PROVVISORIO] Allocazione per stadio (sheet §3): canale ≤−80 dBu A-wtd (dec. 89, misurato −90,3) · bus FX send ≤−88 A-wtd (dec. 89, misurato −100,8) · filtro ≤−80 A-wtd (dec. 89: core nudo al limite a fc max col die reale → input q70) · **5-way ≤−80 dBu A-wtd (dec. 88, 2026-09-30: misurato −83,2; out modulo, ingressi terminati, gain nominali, drive θ0)** · stadio XLR master ≤−92 (misurato −119,2 VALIDO; sistema ≤−78 A-wtd, dec. 89, condizioni docs/06 §2) · isolamento control→audio ≥100 dB · phono: budget dedicato al design. Tutto da validare in simulazione+misura (il −90 dBu "globale" dei doc resta target, non garanzia — correzione 13 review).
+- [PROVVISORIO] Allocazione per stadio (sheet §3): canale ≤−80 dBu A-wtd (dec. 89, misurato −90,3) · bus FX send ≤−88 A-wtd (dec. 89, misurato −100,8) · filtro ≤−80 A-wtd (dec. 89: core nudo al limite a fc max col die reale → input q70) · **5-way ≤−80 dBu A-wtd (dec. 88, 2026-09-30: misurato −83,2 v03 / −83,9 v031 (2026-10-01); out modulo, ingressi terminati, gain nominali, drive θ0)** · stadio XLR master ≤−92 (misurato −119,2 VALIDO; sistema ≤−78 A-wtd, dec. 89, condizioni docs/06 §2; VERIFICATO −80,5 = PASS 2,5 dB, docs/06 §7) · isolamento control→audio ≥100 dB · phono: budget dedicato al design. Tutto da validare in simulazione+misura (il −90 dBu "globale" dei doc resta target, non garanzia — correzione 13 review).
 - [BLOCCATO] Banda: §1 (8 Hz–35 kHz; 10 Hz ±1 dB infrasub).
 
 ## 15. Interfaccia meccanica/elettrica
