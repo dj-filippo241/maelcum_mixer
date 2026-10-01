@@ -48,6 +48,7 @@ maelcum_mixer/
     ├── fase2/
     │   ├── filter-module.md                ← design modulo filtro (v0.2 + v0.3-WIP: BBM validata, LM13700 reale, q70)
     │   └── five-way-module.md              ← design 5-way dub preamp (v0.2 + CELLE v0.2.1 + DRIVE v0.3: law esatta, griglia §5.3 CONFERMATA dec. 87, module-noise §8.9 → dec. 88/89: target −80 A-wtd PASS, gate kill π SPDT §8.10)
+    ├── fase3/                              ← DESIGN DI SISTEMA (00-piano + sistema-psu/grounding/backplane/metering; S5 CUE pending)
     ├── proto-max/
     │   └── piano.md                        ← piano prototipo Max for Live (dec. 78, fasi P0-P4 — IN PAUSA: prima il design)
     └── (radice) sim/                       ← analisi e simulazioni: lib/ (that2181.inc + opamp-audio.inc + lm13700.inc condivise), eq_analysis.py (math superata), cdj-eq/ (+RISULTATI-eq.md, storico), eq-serie/ (celle serie beta-3), cdj/ (VCA law/headroom + DJ bus + phono-riaa-* + phono-sub100*/phono-noise-fix REV 2026-09-30), meter/ (peak detector + RISULTATI-peak-det.md), filtro/ (converter+risonanza+mirror+bbm-ramp+vcr-jfet+RISULTATI-ota-real), fx/ (loop+summing+reroute+TVS/DC servo/EQ2), five-way/ (banca+parametriche+gate+rumore+cell-v021-*+RISULTATI-cell-clean+drive-* v0.3: law/tape/fuzz/chain8 + drive-noise D6 + module-noise-v021/v03 (dec. 88 switch+fix) + RISULTATI-module-noise-v021), master-out/ (comp-* v0.2, compG-* storici VAS bocciato, compB-* v0.3 bootstrap, opamac-isup{,-t}.inc, RISULTATI-composite), run_ltspice.sh (wrapper CLI)
