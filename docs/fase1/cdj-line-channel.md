@@ -135,17 +135,24 @@ EQ2 di FX send/return (questione 65): stessa famiglia di celle (2 bande: shelf L
 Punto locked: post-EQ, pre-filter, pre-fader. Buffer dedicato → switch CUE di canale →
 CUE bus. Nessuna elaborazione.
 
-### 3.5 [E] FX send
-EQ 2 bande (**nota 2026-09-24**: il v0.2 diceva "celle a contribuzione semplificate,
-stesse math della §3.3" — quelle math sono smentite dalla simulazione (fase dei filtri
-shelf, §3.3) e la decisione 76 passa alla topologia in serie: EQ2 da allineare in EQ
-v0.3, questione 65) con law dedicate [BLOCCATO dai doc]: LOW "tiene i bassi per quasi tutta
-la corsa, li toglie rapido solo al taglio estremo"; HIGH "taglia subito in partenza, poi
-graduale". Level −∞..0. Assign multipli simultanei S1-S4: precision analogue switch
-(candidati [PROVVISORIO]: famiglia ADG14xx/DG4xx low-RON low-charge-injection), uno per
-destinazione, pilotati dagli switch del pannello con break-before-make + ramp 1 ms
-(stesso metodo del selettore filtro — famiglia unica, decisione 80). Iniezione bufferizzata
-sui bus FX (mai collegamento passivo diretto: decisione "buffered signal injection").
+### 3.5 [E] FX send [REV 2026-10-01 → decisione 91a: interfaccia al micro-modulo FX-SEND]
+
+La sezione send (EQ2 + level + switch assign) NON è più a bordo del
+canale: vive nel **micro-modulo FX-SEND** (uno identico per canale,
+`docs/fase1/fx-send-module.md`). Al canale resta l'interfaccia:
+- **SEND TAP**: punto locked invariato (post-EQ, pre-filter, pre-fader)
+  → buffer out ≤50 Ω → backplane (slot 3 CDJ) → IN del micro-modulo
+  (linea corta, convenzione backplane §4);
+- **BOTTONI ASSIGN**: i 4 bottoni S1-S4 restano sul pannello del canale
+  (gesto invariato) → harness diretto al connettore frontale del
+  micro-modulo (linee logiche +5 V con ramp ~1 ms, audio MAI dai
+  contatti — schema kill dec. 88);
+- Comportamenti LOCKED (EQ2 bande/law, level −∞…0, assign multipli e
+  simultanei, BBM + ramp 1 ms dec. 80, iniezione bufferizzata) restano
+  BLOCCATI in SPECIFICA: si sono solo spostati di scatola.
+[Storico v0.3: EQ2 a bordo canale con celle serie scalate (questione 65),
+law dedicate, assign con precision switch — design traslato nel
+micro-modulo senza modifiche elettriche di comportamento.]
 
 ### 3.6 [F] Interfaccia filtro (modulo esterno)
 Send/return stereo via backplane + 2 bit di modo (HPF/OFF/LPF) sulla sezione control.

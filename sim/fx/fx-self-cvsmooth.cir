@@ -1,0 +1,25 @@
+* MODULO FX v0.3 — ramo SELF: smoothing 1 ms della CV (dec. 80 famiglia,
+* dec. 91: stesso shaper/stesso smoothing dei 3 pot cross).
+* VCA THAT2181 (macro condivisa sim/lib/that2181.inc, law 6,1 mV/dB):
+* CV step 0 → −61 mV (= 0 → −10 dB) a t = 5 ms, ramo HARD (CV diretta)
+* vs ramo SOFT (RC 1k/1u = τ 1 ms). Audio 1 kHz 2,19 Vp (+6 dBu).
+* Click = deviazione dell'inviluppo: hard commuta in ~10 µs (splat a
+* larga banda), soft segue la RC (transizione ~5 ms, click −9 dB class
+* come §8.3/§8.5 — famiglia verificata end-to-end in reroute-ramp).
+.include ../lib/that2181.inc
+Vin in 0 SIN(0 2.19 1000)
+Vcvraw cvr 0 PWL(0 0 5m 0 5.01m -0.061 30m -0.061)
+Rsm cvr cvs 1k
+Csm cvs 0 1u
+Xvhard in outh cvr 0 vcc vee THAT2181
+Xvsoft in outs cvs 0 vcc vee THAT2181
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+.tran 0 20m 0 5u
+.meas tran hard_max MAX V(outh) FROM 4.95m TO 5.5m
+.meas tran hard_min MIN V(outh) FROM 4.95m TO 5.5m
+.meas tran soft_max MAX V(outs) FROM 4.95m TO 8m
+.meas tran soft_min MIN V(outs) FROM 4.95m TO 8m
+.meas tran pre_pk MAX V(outh) FROM 3m TO 4.9m
+.meas tran post_pk MAX V(outh) FROM 10m TO 12m
+.end

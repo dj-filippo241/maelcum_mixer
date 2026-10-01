@@ -1,5 +1,16 @@
-# FASE 1 — Modulo FX: design v0.2 (2026-09-28)
+# FASE 1 — Modulo FX: design v0.3-WIP (2026-10-01)
 
+> **v0.3-WIP (2026-10-01, decisione 91)**: (a) la sezione send di canale
+> (EQ2 + level + assign) ESCE dal canale CDJ e vive nel micro-modulo
+> FX-SEND ×4 (`docs/fase1/fx-send-module.md`): questo modulo riceve le
+> iniezioni dai micro-moduli (net multidrop per bus, come il DJ bus);
+> (b) SELF-FEEDBACK = quarto pot per ritorno: matrice 12× → **16× THAT
+> 218x** (3 cross + 1 self per bus); il divieto v0.2 "self-route escluso
+> fisicamente" è REVOCATO da dec. 91 (scelta di Filippo). Bounded-by-design
+> CONFERMATO sul ramo self (§8.5, `sim/fx/fx-loop-self.cir`); dry loop senza
+> pedale = clamp ±16,5 V, disciplina K4 (dec. 84). Chip modulo: 16 → 20;
+> mixer: ~28-30 (lotto clone voce 37 → ~44-52 pz [PROVVISORIO]).
+>
 > **v0.2 (2026-09-27/28)**: law a tratti del reroute VERIFICATA end-to-end
 > col macro THAT 218x condiviso (§8.3); DC servo dei ritorni VALIDATO, EQ2
 > valori scalati VALIDATA, TVS/banda 40 kHz verificata con correzione del
@@ -33,9 +44,10 @@
 
 ```
                         MODULO FX (v0.2)
- dai canali/mic/generic (backplane): send L/R per sorgente, gia' con
- EQ2+level+assign (lato canale, CDJ §3.5) — il modulo riceve gli assign
- gia' commutati sui 4 bus.
+ dai micro-moduli FX-SEND ×4 (dec. 91a: EQ2+level+assign vivono li',
+ `fx-send-module.md`) + mic/generic: un NET MULTIDROP per bus (S1-S4),
+ ogni sorgente inietta col proprio 10k lato sorgente sul virtual-earth
+ del bus (stessa convenzione del DJ bus; backplane §4).
 
  BUS 1..4 (×4 sezioni identiche):
    ingressi multipli → SUMMING virtual-earth → pad driver → DRIVER pedale
@@ -46,9 +58,11 @@
      (pickup) → nodo REROUTE (pre-fader!) → FADER (linked) → buffer →
      backplane MASTER SUM
 
- MATRICE FEEDBACK (per ritorno, stereo):
-   nodo REROUTE → 3 × VCA di reroute (law a tratti SPEC) → bus 1..4 MENO
-   il proprio (self-route ESCLUSO FISICAMENTE dal PCB/connessioni)
+ MATRICE FEEDBACK (per ritorno, stereo) [REV dec. 91b]:
+   nodo REROUTE → 4 × VCA di reroute (3 cross + 1 SELF; law a tratti SPEC,
+   stessa famiglia) → bus 1..4 INCLUSO il proprio (il divieto v0.2
+   "self-route escluso fisicamente" è REVOCATO: il self re-inietta sul
+   summing del proprio bus, stesso nodo dei cross)
 
  CONTROLLO:
    pot reroute → CV buffer → mappa a tratti (shaper, stessa famiglia del
@@ -158,26 +172,33 @@ Stessa famiglia delle celle serie EQ v0.3 (decisione 76/77):
 
 ## 7. Matrice di feedback (questione 14 — design v0.1)
 
-- **Topologia**: per ogni ritorno (4), 3 VCA di reroute (verso gli altri
-  3 bus) × 2 canali = 6 sezioni VCA per ritorno = 24 sezioni = **12× THAT
-  2181** [PROVVISORIO — voce 37 per la reperibilità]. Solo attenuazione
-  (gain ≤ 0 dB) come da SPEC. Self-route: escluso fisicamente (nessuna
-  pista/connessione dal reroute del ritorno N al bus N) ✓ requisito.
+- **Topologia [REV dec. 91b]**: per ogni ritorno (4), **4 VCA di reroute
+  (3 cross verso gli altri bus + 1 SELF verso il proprio bus)** × 2 canali
+  = 8 sezioni VCA per ritorno = 32 sezioni = **16× THAT 2181**
+  [PROVVISORIO — voce 37 per la reperibilità]. Solo attenuazione (gain
+  ≤ 0 dB) come da SPEC. Il self si inietta sullo STESSO nodo summing del
+  proprio bus (virtual-earth): punto unico d'ingresso, isolamento tra
+  destinazioni invariato, nessun percorso speciale sul PCB (il divieto
+  v0.2 è revocato: la pista self ORA esiste). Perché lì: il nodo REROUTE
+  (pre-fader, §5) è l'unico punto che vede il ritorno prima del master —
+  il self passa dal fader del ritorno come i cross (gesto coerente: chiudo
+  il fader e il feedback sparisce tutto).
 - **Law a tratti** (SPEC, tabella in §1): shaper CV a diodi/resistori —
   stessa famiglia dello shaper del filtro (filter-module §4): 6 breakpoint,
   trimmer a banco. Il tratto 95-100% (−1…0 dB) è il controllo finissimo
   vicino all'apertura: è la zona musicale critica del dub feedback.
   **VERIFICATA end-to-end (§8.3)**: 13 punti di griglia esatti a 1e-8 dB
   attraverso shaper → smoothing → THAT 218x (macro `sim/lib/that2181.inc`).
-  12 shaper identici (uno per controllo reroute): rete diodi/resistori,
-  replica su PCB, costo trascurabile.
+  **16 shaper identici** (uno per controllo reroute, 12 cross + 4 self —
+  dec. 91b: il self usa la STESSA law, confermato §8.5): rete
+  diodi/resistori, replica su PCB, costo trascurabile.
 - **Smoothing 1-5 ms** (SPEC): RC + buffer sulla CV del VCA (1 ms =
   click-free senza impastare il gesto — verificato coi numeri in §8.3:
   click −9,6 dB vs catena non smorzata, chiusura ~5 ms; 5 ms = click sotto
   il programma ma chiusura ~25 ms).
-- **Stabilità del loop / bounded by design** (§8, simulato): il loop
-  ritorno→reroute→bus→pedale→ritorno ha guadagno d'anello g_loop =
-  g_reroute · g_pedale_path. SPEC: niente limiter → il bounding è dato
+- **Stabilità del loop / bounded by design** (§8, simulato; §8.5 per il
+  self): il loop ritorno→reroute→bus→pedale→ritorno ha guadagno d'anello
+  g_loop = g_reroute · g_pedale_path. SPEC: niente limiter → il bounding è dato
   dalla **saturazione del pedale stesso** (ogni pedale reale satura) +
   dalla struttura gain: regola di design v0.1 [PROVVISORIO]: a reroute
   100% (0 dB) e pad nominale, g_loop = ~0…+3 dB (unity o poco sopra):
@@ -286,14 +307,29 @@ libreria): griglia 6 modi — detent ±0,005 dB (20 Hz–35 kHz); kill LOW
 boost HIGH +5,1…+5,7 @20-35k; both-kill = somma dei due. Scaling confermato:
 LOW C 56 nF (Rp 31k invariato), HIGH R 5,23k/2,5k (Ch 10 nF invariato).
 
+### 8.5 v0.3 — Self-feedback (dec. 91b): bounded-by-design CONFERMATO (`fx-loop-self.cir`, `fx-loop-self-dry.cir`, `fx-self-cvsmooth.cir` + `RISULTATI-fx-self.md`, 2026-10-01)
+
+Con pedale (tanh ±12 V): g_loop 0,8 → decade; 1,0 → sostiene; 1,2 →
+±7,90 V = +20,2 dBu; 2,0 → ±11,49 V = +23,4 dBu — **identico al cross
+(§8.1), mai ai rail (clamp ±16,5 V)**: il bounding viene dal pedale,
+"niente limiter" rispettato anche sul self. Dry loop (patch send→return
+senza pedale): g 3,0 e 10,0 → **runaway contenuto solo dai clamp ±16,5 V**
+= caso K4 (dec. 84/91: disciplina operatore, recuperabile chiudendo il
+pot; nota d'uso: dry loop legittimo solo con self sotto unity).
+Smoothing CV ramo self: RC 1k/1µ (τ 1 ms) → transizione inviluppo ~5 ms
+vs ~10 µs hard, law −10 dB esatta (0,6925 V da 2,19 V) — stessa famiglia
+dei cross (§8.3/§8.5 five-way: click −9 dB class). Limite del modello
+(zero ritardo → latch di polarità) documentato in §8.1: vale anche qui.
+
 ## 9. BOM di massima v0.1 [molto PROVVISORIA]
 
 | Voce | Qtà | Note |
 |---|---|---|
-| THAT 2180/2181 (SINGLE VCA — datasheet 2026-09-27: "dual" = porti di controllo, non canali) | 12 reroute + 4 gain ritorno = 16 chip | voce 37 (reperibilità/prezzo: ~24-26 chip in tutto il mixer post-dec. 88 (era ~34-36)) |
+| THAT 2180/2181 (SINGLE VCA — datasheet 2026-09-27: "dual" = porti di controllo, non canali) | 16 reroute (12 cross + 4 self, dec. 91) + 4 gain ritorno = 20 chip | voce 37 (reperibilità/prezzo: ~28-30 chip in tutto il mixer post-dec. 91 (era ~24-26 post-dec. 88, ~34-36 pre); lotto clone → ~44-52 pz [PROVVISORIO]) |
 | Quad op-amp (bus driver, buffer, summing, EQ2 ritorni, servo DC) | ~10-12 | classe OPA1654/1612 mista |
 | JFET buffer ritorno (o op-amp JFET-input) | 8 | hi-Z ≥1 MΩ |
-| Shaper law reroute (diodi/R/trimmer) | 8 canali CV | famiglia shaper filtro |
+| Shaper law reroute (diodi/R/trimmer) | 16 canali CV (12 cross + 4 self) | famiglia shaper filtro |
+| Micro-moduli FX-SEND (dec. 91a) | 4 | BOM propria in `fx-send-module.md` §5 (~25-35 €/cad) |
 | Switch/jack/pad/DIP, TVS low-cap, R 0,1% | — | pad send selezionabile |
 | Stima costo | ~150-200 € | dominato dai VCA; esemplare unico, qualità > costi (SPEC §1) |
 
@@ -302,9 +338,10 @@ LOW C 56 nF (Rp 31k invariato), HIGH R 5,23k/2,5k (Ch 10 nF invariato).
 - **13** (interfaccia pedali): proposta v0.1 completa (§4) — pad −20/−10/0,
   DC servo, TVS low-cap; DA CONFERMARE con Filippo (selettore sensitivity
   del §5 cambia il pannello: sua scelta).
-- **14** (matrice feedback): stabilità e bounded-by-design SIMULATI (§8);
+- **14** (matrice feedback): stabilità e bounded-by-design SIMULATI (§8)
+  e CONFERMATI sul ramo self (§8.5, dec. 91b: 16× VCA, dry loop = K4);
   rumore di loop quantificato; isolamento ok. Restano: circuito concreto
-  degli shaper (v0.2) e verifica con pedali reali (prototipo).
+  degli shaper (ora 16) e verifica con pedali reali (prototipo).
 - **55** (transienti): CHIUSA 2026-09-28 — decisione 80: BBM + ramp 1 ms,
   famiglia unica per tutte le commutazioni CV del mixer.
 - **65** (EQ2): allineata alla famiglia serie v0.3; la questione 68 (kill
