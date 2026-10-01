@@ -17,7 +17,7 @@ OPA1654 ~1,8 mA/canale (7,2/quad) · OPA1612 ~2 mA/canale · THAT 2181
 |---|---|---|---|---|
 | ±18 V audio (raw ~27 V, reg. locale) | 4× CDJ (~65 mA/canale), 5-way (~300 mA), FX (~180 mA), filtro (~110 mA), riserve mic/generic (~50) | **~0,9 A per ramo** | ~1,0 A | Iq op-amp dominante e costante; picchi di segnale su carichi ≥600 Ω = decine di mA |
 | ±24/25 V master HV ([M]) | stadio HV composite ×2 (Iq 40 mA/canale, sizing pass 0,75/1,0/2,7 W — master-out v0.3) + LDO locali ±18/±15/+5 | ~130 mA | ~170 mA (600 Ω a picco) | avvolgimento dedicato |
-| ±15/16 V LN/OTA (raw ~22 V, LT3045/94 locali) | filtro: 16 LM13700 (~65-100 mA; riserva (c-B) +16×2181 = +90), phono ×4 (~70), mic (~20), CV gen/dist (~40), **metering ~125** (detector ~25 + follower albero riferimenti ~100, dati S4 `sistema-metering.md` §alimentazione, OP1612-class), CUE (idle ~30, picco ~90: 1 Vrms/32 Ω ×2 uscite) | ~280 mA | **~450 mA** | LT3045/94 max 500 mA: il picco va DISTRIBUITO su regolatori locali per dominio (l'albero riferimenti meter ha la sua coppia LT3045/94 dedicata — nessun singolo regolatore vede 450 mA); (c-B) di q70 → +90 mA già nella riserva |
+| ±15/16 V LN/OTA (raw ~22 V, LT3045/94 locali) | filtro: 16 LM13700 (~65-100 mA; riserva (c-B) +16×2181 = +90), phono ×4 (~70), mic (~20), CV gen/dist (~40), **metering ~125** (detector ~25 + follower albero riferimenti ~100, dati S4 `sistema-metering.md` §5/§9, OP1612-class), CUE (idle ~30, picco ~90: 1 Vrms/32 Ω ×2 uscite) | ~280 mA | **~450 mA** | LT3045/94 max 500 mA: il picco va DISTRIBUITO su regolatori locali per dominio (l'albero riferimenti meter ha la sua coppia LT3045/94 dedicata — nessun singolo regolatore vede 450 mA); (c-B) di q70 → +90 mA già nella riserva |
 | ±15 V switch/logica | ~30 ADG1434-class (µA) + logica selettori/relay driver | <30 mA | 50 mA | 78L15/79L15 locali dal raw LN (o secondario dedicato se il banco mostra accoppiamento) |
 | +5 V control | LED barre 6 zone: **~103 segmenti** (dato S4): worst 5 mA/segmento = ~0,5 A, tipico 2 mA = ~0,2 A; LM3915 V+ ×~10 (~80 mA), relay mute ×3 (~50 mA cad, eccitati in ON = failsafe: diseccitati = mute), logica supervisor/selettori (~50 mA) | ~0,5 A | **~0,9 A** (tutti i segmenti accesi + relay) | alimentato da W4 via 7805 |
 
@@ -114,7 +114,7 @@ Opzioni (la scelta tocca territory dec. 82/87 validato = parola a Filippo):
   in locale.
 Raccomandazione ingegneria: **(A) ora, (B) come fallback documentato se il
 banco mostra wobble** — i numeri validati (dec. 82/87) non si toccano senza
-misura contraria. [APERTO-F: ratifica]
+misura contraria. [CHIUSA 2026-10-01 → DECISIONE 92: opzione (A) 6,1 mV/dB + routing curato + test hum→wobble a banco; 61 = fallback documentato]
 
 Rail/filtraggio CV: il dominio CV vive sul ±15 LN (sheet §1: "generatori e
 distribuzione CV") con LT3045 + RC dedicato per gruppo di pot + stella CV
@@ -166,11 +166,11 @@ di modo comune oltre il filtro inlet.
 - Design PSU v0.1 completo su architettura dec. 90; valori [PROVVISORIO].
 - Sim chiave PASS: rail 18,00 V/~7 µVpp stimati al modulo; protezione
   1,6 A + mute supervisor verificati in tran; CV hum quantificato (§6).
-- APERTO-F: opzione CV 6,1/61/ibrido (§6) — ratifica Filippo.
+- CHIUSA → dec. 92: CV 6,1 mV/dB + routing curato + test banco (61 = fallback).
 - Da banco: termografia chassis, test hum→wobble CV, hold-up/mute timing.
 - Da S2: conferma bonding/stella; da S3: pinout raw e sezioni rame.
 - Mic/generic non disegnati: riserva 50 mA nel budget (aggiornare quando
   esistono).
 - Integrazione S4 metering (2026-10-01): +5 V LED 103 segmenti (worst 0,9 A
   totali) e +100 mA LN per l'albero riferimenti inseriti nel budget —
-  fonte `sistema-metering.md` §alimentazione.
+  fonte `sistema-metering.md` §5/§9.
