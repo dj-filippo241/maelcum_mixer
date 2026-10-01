@@ -109,7 +109,8 @@ switch/logiche (kill, mode bit, LED) moduli i riferimenti audio.
    nel punto di entrata; il secondario del toroidale NON ha Y-cap verso
    AGND (isolamento pulito); il bond AGND-chassis resta unico (§2).
 2. Ferrite + bulk locale all'ingresso rail di ogni modulo (già a sheet
-   §1): bead sui ±24 V in ingresso + 100-470 µ bulk + 100 n per op-amp.
+   §1 REV dec. 93): bead sui raw in ingresso (±27 audio / ±22 LN /
+   ±26 [M] master) + 100-470 µ bulk + 100 n per op-amp.
 3. Il toroidale è l'unica sorgente magnetica grossa: orientato lontano
    dalla sezione phono e dal modulo canale 1, montato su gomma, con
    schermo a campana metallico collegato al chassis [PROVVISORIO —

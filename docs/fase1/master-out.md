@@ -49,7 +49,7 @@
    (OPA1612, ±18 V)              (±18 V)                        │
         │                            │                          │
   [G] STADIO USCITA HV x2     [B4] BOOTH MUTE            [C4] USCITA REC
-   (discreto, ±24 V,                 │                          │
+   (discreto, [M] ±26 V,             │                          │
     composite con [F])         [B5] USCITA BOOTH           (TRS/mini-jack
         │                            │                    [APERTO-F])
   [H] MUTE + PROTEZIONE        (XLR o TRS [APERTO-F])            │
@@ -59,9 +59,10 @@
   [L] MUTE CONTROLLER (analogico: supervisore rail + timer) ─────┘
       comanda [H], [B4], [C3]
 
-  [M] PSU LOCALE: ±24 V main in → ±24 V filtrato (stadio HV),
+  [M] PSU LOCALE: raw ±26 V [M] in (W3 dedicato backplane, dec. 93)
+      → statici ±23,6…29,2 V filtrati (stadio HV),
       ±18 V LDO (front/VCA/booth), ±15 V ultra-low-noise
-      (summing/meter/sum), +5 V control (LED/logica mute)
+      (summing/meter/sum), +5 V control (bus backplane, LED/logica mute)
 ```
 
 Ogni ramo ha il suo buffer: il vincolo [BLOCCATO] "mai un buffer unico splittato" è rispettato alla lettera — [A], [B], [C] sono tre ingressi distinti dello stesso bus.
@@ -114,11 +115,11 @@ Nessun integrato commerciale in catalogo comodo garantisce +24 dBu sustained (se
 ```
 OPA1612 (errore/input, ±18 V)
    +
-stadio diamond discreto in class AB (±24 V, dentro il feedback globale dell'OPA1612)
+stadio diamond discreto in class AB (su statici [M] ±26 V nominali, dec. 93 — dentro il feedback globale dell'OPA1612)
 ```
 - Il diamond buffer (coppia complementare NPN/PNP, es. MJE340/MJE350 o BD139/BD140 [PROVVISORIO], bias class AB ~10-15 mA con diodi/LED + moltiplicatore Vbe, resistenze di emettitore 10-100 Ω)
 - Nel feedback globale: THD dominata dall'OPA1612 (< 0,001% realistico), Z_out in anello < 1 Ω → soddisfa "< 50 Ω ideale" con due ordini di grandezza di margine
-- Swing atteso su ±24 V: ~±21 V = **+25 dBu sine sustained** → requisito +24 dBu con margine ~1 dB [PROVVISORIO, da misurare]
+- Swing atteso su statici [M]: ~±21 V = **+25 dBu sine sustained** [MISURATO v0.3: ±20,4-20,9 V = +25,4…+25,6 dBu VERIFICATO; dec. 93: worst case a rete −10% = statici ±23,7 V, requisito ≥+24 dBu PASS in ogni condizione di rete]
 
 **Bilanciamento**: driver attivo a uscita incrociata (hot = segnale, cold = −segnale):
 - hot: composito non-inverting unity
@@ -183,7 +184,7 @@ feedback, C_hold 1 µF, attacco < 1 ms) → 2× LM3915 in cascata (bar mode)
 ### 3.7 [L] Mute controller (power-on/power-off)
 
 Tutto analogico, niente MCU (coerenza col progetto):
-- Supervisore: partitore sui ±24 V → comparatore con isteresi → "rails OK"
+- Supervisore: partitore sui raw dedicati (REV dec. 93: finestre per avvolgimento — ±27 <20 V, ±22 <17 V, [M] <21 V, +10 pre-reg <7 V; S1 §4 v0.2) → comparatore con isteresi → "rails OK"
 - Power-on: timer RC (~1,5-2 s) poi eccita i relay — il bang di accensione non arriva mai ai connettori
 - Power-off: l'energia immagazzinata nei bulk cap del modulo alimenta il controller ancora per ~50-100 ms tramite diodo di hold-up; al calo dei rail il relay apre in < 10 ms — il pop di spegnimento resta dentro
 - Stesso segnale pilota [H], [B4], [C3] (relay indipendenti per ogni uscita: un guasto non le ammutolisce tutte... anzi sì le ammutolisce, ma è il comportamento sicuro)
@@ -192,10 +193,10 @@ Tutto analogico, niente MCU (coerenza col progetto):
 
 | Rail | Da | Per | Regolatore candidato [PROVVISORIO] | Corrente stimata |
 |---|---|---|---|---|
-| ±24 V filtrato | main | stadio HV uscita [G] | ferrite + bulk locale (1000 µF + 100 nF) | ~40 mA picco per canale |
-| ±18 V | main | [F] front, VCA level, booth driver | LM317/LM337 o LDO equivalenti (dropout ~3 V ok) | ~60-80 mA |
-| ±15 V ultra-low-noise | ±18 | summing [A2], meter [E], REC [C] | LT3045/LT3094 (0,8 µVrms) — o 78L15/79L15 nella variante economica | ~40-60 mA |
-| +5 V control | main o +12 control bus | LED, logica mute, comparator | LDO locale 78L05 | ~100 mA (LED dipendenti) |
+| statici ±23,6…29,2 V [M] (REV dec. 93: era «±24 V filtrato»; worst rete −10% = ±23,7 del design verificato) | raw ±26 V [M] (W3 dedicato) | stadio HV uscita [G] | ferrite + bulk locale (1000 µF + 100 nF) | ~40 mA picco per canale |
+| ±18 V | raw [M] | [F] front, VCA level, booth driver | LM317/LM337 (dropout ok: statico min 23,6 > 18+3) | ~60-80 mA |
+| ±15 V ultra-low-noise | ±18 | summing [A2], meter [E], REC [C] | LT3045/LT3094 DIRETTI dal ±18 (Vin max 20 V — fatto datasheet dec. 93: il pre-reg ±16,5 serve solo dai raw ±22; 0,8 µVrms) | ~40-60 mA |
+| +5 V control | bus backplane (regolato nella PSU, dec. 93) | LED, logica mute, comparator | bead + bulk locale | ~100 mA (LED dipendenti) |
 
 Budget termico modulo: ~8-12 W dissipati → nessun problema con le alette dei TO-220/LDO in SMD/through-hole su PCB normale. [PROVVISORIO, da ricalcolare a componenti scelti]
 
@@ -210,7 +211,7 @@ Budget termico modulo: ~8-12 W dissipati → nessun problema con le alette dei T
 | In/Out VCA master [D] a unity | 0 dBu | +16 dBu | — | ±18 V |
 | Uscita VCA a +6 dB | +6 dBu | +22 dBu | ~+24 dBu | ±18 V |
 | Ingresso stadio HV [G] | 0 dBu | +22 dBu | — | ±18 V |
-| Uscita XLR | 0 dBu | dipende dal master level | **+25 dBu** | ±24 V |
+| Uscita XLR | 0 dBu | dipende dal master level | **+25 dBu** | statici [M] |
 | Booth max | 0 dBu | +16 dBu | +20 dBu | ±18 V |
 | REC out | −10 dBV | ~+8 dBV (raro) | — | ±15 V |
 
@@ -299,7 +300,7 @@ originaria della questione 60. Il composito resta ESATTAMENTE la v0.2 (diamond c
 feedback unity), ma i rail dell'op-amp non sono più ±18 V fissi: due pass serie (NPN verso
 l'alto, PNP verso il basso) generano rail locali che seguono l'uscita a distanza fissa
 (Δ ≈ 3-5 V, stringa LED/zener come riferimento, bias ≈ Iq 40 mA + margine). Al tetto
-dello swing i pass saturano dolcemente sui rail statici ±23,7 V (handoff senza gradini):
+dello swing i pass saturano dolcemente sui rail statici ±23,7 V (handoff senza gradini; REV dec. 93: con W3 2×20 V gli statici [M] diventano ±23,6…29,2 V su rete ±10% — ±23,7 V è il WORST CASE a rete −10%, capability ±20,4-20,9 V = +25,4…+25,6 dBu PASS in ogni condizione di rete; a rete nominale statici ~26,5 V → capability ~+27 dBu, level plan worst +22 dBu dentro, Q1 su corto ~1,1 W medi sempre nel rame ≥4 cm²):
 l'op-amp guadagna esattamente i volt che gli mancavano, il follower arriva a ±21…21,5 V
 = **+25,7…+25,9 dBu** (conversione dBu corretta il 2026-09-29; requisito ≥+24 rispettato, ~1,7 dB di margine; ATTESO SUPERATO lo stesso giorno: senza Iq reale — capability definitiva ±20,4-20,9 V = +25,4…+25,6 dBu nei punti 1-5 qui sotto; il level plan del
 modulo worst +22 dBu resta dentro con 3 dB).

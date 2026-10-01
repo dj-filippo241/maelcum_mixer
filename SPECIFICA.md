@@ -1,6 +1,6 @@
 # SPECIFICA — MAELCUM MIXER (mixer dub modulare analogico, esemplare unico)
 
-> **v0.1 (2026-09-18, rev. 2026-09-28/01-10: decisioni 76-92 + esiti simulazioni e sessione decisioni)** — Compilata da: decisioni 1-92 (`docs/01-decisioni-bloccate.md`),
+> **v0.1 (2026-09-18, rev. 2026-09-28/01-10: decisioni 76-93 + esiti simulazioni e sessione decisioni)** — Compilata da: decisioni 1-93 (`docs/01-decisioni-bloccate.md`),
 > status doc ChatGPT rev2 (`docs/export-chatgpt/`, corpus chiuso — decisione 58),
 > gain-staging sheet (`docs/fase1/gain-staging-sheet.md`), revisione critica (`docs/03`).
 > Livello: REQUISITI. Il dettaglio circuitale vive nei design doc di `docs/fase1/` e `docs/fase2/`.
@@ -14,7 +14,7 @@
 - [BLOCCATO] Percorso audio 100% analogico. Nessun ADC/DAC/DSP interno. Il DSP esterno resta responsabile di crossover di sistema, protezione altoparlanti, EQ di sistema, delay, gestione finali.
 - [BLOCCATO] Stereo L/R ovunque; no pan; nessun controllo L/R separato; controlli linked; mono-compatibile.
 - [BLOCCATO] Livelli: nominale 0 dBu (0,775 Vrms); programma caldo ~+10 dBu; estremo interno ~+18 dBu; capability d'uscita pulita ≥ +24 dBu (solo stadio finale master). Referenza autorevole: gain-staging sheet.
-- [BLOCCATO] Domini di alimentazione: ±24 V main (SOLO stadio HV uscita master) · ±18 V audio di percorso · ±15 V ultra-low-noise (phono, mic, CV, metering, CUE) · +5 V control. Il ±24 V non alimenta mai un op-amp.
+- [BLOCCATO, REV decisione 93 2026-10-01] Domini di alimentazione: **raw ±27 V audio · raw ±22 V LN/OTA · raw ±26 V [M] (SOLO stadio HV uscita master)** distribuiti sul backplane + **+5 V control** (regolato nel modulo PSU). Generazione LOCALE per modulo: ±18 V audio di percorso (LM317/337 dal raw ±27) · ±15 V ultra-low-noise (phono, mic, CV, metering, CUE: pre-reg ±16,5 V + LT3045/LT3094 dal raw ±22, dec. 54) · ±15 V switch/kill/assign (78L15/79L15 dal raw ±22, dec. 90c). Nessun raw alimenta mai un op-amp; il raw [M] alimenta solo lo stadio discreto HV master. (Il dominio «±24 V main unico» del consolidamento 2026-09-18 è SUPERATO: attuazione della dec. 90(c) — secondari dedicati audio/OTA/switch-logica.)
 - [BLOCCATO] Banda complessiva: −3 dB a ≤8 Hz … 35 kHz con filtri OFF; requisito infrasub: 10 Hz entro ±1 dB; nessun accoppiamento AC con corner >5 Hz nel percorso principale (DC servo).
 - [BLOCCATO] Nessun compressore/limiter/AGC. Protezione elettrica ≠ dinamica audio: protezioni DC/corto/ESD/RF e mute power-on/off obbligatorie.
 - [BLOCCATO] Nonlinearità intenzionali solo in: overdrive del filtro, drive del 5-way. Setting estremi permessi, elettricamente non distruttivi, saturazione morbida e recuperabile.
@@ -53,10 +53,10 @@
                           │ MATRICE FEEDBACK: 4 reroute/ritorno (3 cross + 1 self, dec. 91), VCA │
                           ▼                                                             ▼
                           MODULO MASTER: SUMMING → LEVEL(VCA −∞..0..+6) → METER         │
-                            → HV ±24V → XLR MASTER · BOOTH (pre-level) → XLR            │
+                            → HV±26[M] → XLR MASTER · BOOTH (pre-level) → XLR           │
                             · REC (0 dBu fissi) ────────────────────────────────────────┘
  CUE BUS ══► MODULO CUE: somma cue → mix CUE/MASTER → amp cuffia → 2 uscite
- BACKPLANE: bus audio + bus controllo (CV/logiche) + potenza (±24, +5) + ground separati
+ BACKPLANE: bus audio + bus controllo (CV/logiche) + potenza (raw ±27/±22/±26[M], +5) + ground separati
 ```
 
 - [BLOCCATO] FX returns, mic e generic mono NON passano dal 5-way (solo il DJ BUS sì).
@@ -67,7 +67,7 @@
 Moduli [BLOCCATO dai doc §33, consolidamento [PROVVISORIO]]: DJ CH1-4 · FILTRO · 5-WAY · FX (bus/pedali/ritorni/matrice; i doc elencano 4 moduli FX RETURN separati — accorpamento in un modulo FX da ratificare in fase di layout) · MIC · GENERIC MONO (1..n) · MASTER · CUE/CUFFIE · PSU · utility/future.
 
 - [BLOCCATO] Bus audio: DJ L/R, FX1-4 L/R, 5-WAY L/R, MASTER L/R, CUE L/R, filter send/return per canale.
-- [BLOCCATO] Bus potenza sul backplane: ±24 V, +5 V control, analogue 0 V, control ground, chassis/shield. [C-PROVVISORIO, miglioria rispetto ai doc] I rail ±18 V audio e ±15 V low-noise si generano LOCALMENTE in ogni modulo (non distribuiti sul backplane): ogni modulo isola il proprio rumore.
+- [BLOCCATO, REV decisione 93 2026-10-01] Bus potenza sul backplane: **raw ±27 V audio, raw ±22 V LN/OTA, raw ±26 V [M] HV (popolato solo dal master), +5 V control** (regolato nella PSU), analogue 0 V, control ground, chassis/shield. Tabella avvolgimenti/correnti: `docs/fase3/sistema-psu.md` v0.2 §2; pinout riga a: `docs/fase3/sistema-backplane.md` v0.2 §3. [BLOCCATO] I rail ±18 V audio e ±15 V low-noise si generano LOCALMENTE in ogni modulo (non distribuiti sul backplane): ogni modulo isola il proprio rumore — ciascuno dal SUO raw dedicato (±18: LM317/337 da ±27; ±15,0 V: pre-reg ±16,5 + LT3045/LT3094 da ±22).
 - [BLOCCATO] Separazione fisica audio/controllo/potenza/ground sul backplane; schermature; nessun bus floating; ogni modulo ha uno stato inattivo definito; connettori robusti card-edge/board-to-board con keying.
 - [APERTO] Pinout, famiglia connettori, impedenze di bus, comportamento a modulo rimosso (questioni 22/38).
 
@@ -124,7 +124,7 @@ Catena [BLOCCATO]: RCA stereo → protezione → front-end (LINE; PHONO MM v0.1 
 
 Design circuitale: `docs/fase1/master-out.md` **v0.3 (2026-09-29: stadio finale BOOTSTRAP verificato — suite completa Test 7-12 in `sim/master-out/RISULTATI-composite.md`)**; resto del modulo = v0.2 + addendum REC.
 
-- [BLOCCATO] SUMMING nel modulo master (contributori: 5-WAY, 4 FX returns, MIC, GENERIC) → MASTER LEVEL VCA −∞→0(detent)→+6 dB, stereo-linked tracking ≤0,25 dB (VCA a singola CV) → METER (post-level, il più preciso) → front ±18 V → stadio HV composito ±24 V con alimentazioni OPA1612 in BOOTSTRAP sull'uscita (decisioni 83→86: il VAS discreto a guadagno è bocciato dalla simulazione; follower e stabilità v0.2 invariati) — **v0.3 VALIDATA 2026-09-29 con Iq reale 40 mA**: swing ±20,4-20,9 V = +25,4…+25,6 dBu (requisito ≥+24 PASS, margine 1,4-1,6 dB; follower nudo: +23,2), THD a +24 dBu 0,00012 %@1 kHz / 0,0042 %@35 kHz (PASS <0,005), rumore −119 dBu, banda 8 Hz-35 kHz ±0,008 dB, corto auto-limitato 106 mA (Q1 1,0 W medi = worst di programma), servo DC 30 µV (fc 0,048 Hz); pass bootstrap ≈1 W medi → rame ≥4 cm² o alettina → XLR bilanciati attivi (Z out <50 Ω, ≥+24 dBu clean, no trasformatore, no colorazione).
+- [BLOCCATO] SUMMING nel modulo master (contributori: 5-WAY, 4 FX returns, MIC, GENERIC) → MASTER LEVEL VCA −∞→0(detent)→+6 dB, stereo-linked tracking ≤0,25 dB (VCA a singola CV) → METER (post-level, il più preciso) → front ±18 V → stadio HV composito [M] (raw ±26 V dedicato, statici ±23,6…29,2 V su rete ±10% — REV dec. 93: il punto verificato ±23,7 V è il worst case a rete −10%, requisito ≥+24 dBu PASS in ogni condizione di rete) con alimentazioni OPA1612 in BOOTSTRAP sull'uscita (decisioni 83→86: il VAS discreto a guadagno è bocciato dalla simulazione; follower e stabilità v0.2 invariati) — **v0.3 VALIDATA 2026-09-29 con Iq reale 40 mA**: swing ±20,4-20,9 V = +25,4…+25,6 dBu (requisito ≥+24 PASS, margine 1,4-1,6 dB; follower nudo: +23,2), THD a +24 dBu 0,00012 %@1 kHz / 0,0042 %@35 kHz (PASS <0,005), rumore −119 dBu, banda 8 Hz-35 kHz ±0,008 dB, corto auto-limitato 106 mA (Q1 1,0 W medi = worst di programma), servo DC 30 µV (fc 0,048 Hz); pass bootstrap ≈1 W medi → rame ≥4 cm² o alettina → XLR bilanciati attivi (Z out <50 Ω, ≥+24 dBu clean, no trasformatore, no colorazione).
 - [BLOCCATO] BOOTH: presa pre-level, −∞→0, linked, buffer dedicato, XLR.
 - [BLOCCATO] REC: presa pre-tutto, 0 dBu fissi, buffer dedicato, pad solder-only 0/−10/−20 dB.
 - [BLOCCATO] Protezioni: corto/DC/RF/transienti al connettore; mute power-on (~1,5-2 s) e power-off (<10-20 ms) con relay + controller analogico; DC servo (niente cap in serie al segnale).
@@ -145,7 +145,7 @@ Design circuitale: `docs/fase1/master-out.md` **v0.3 (2026-09-29: stadio finale 
 
 [REV dec. 90c/92 2026-10-01: PSU toroidale unico ~120 VA multi-avvolgimento + regolazione locale, fanless, protezione corto 3 strati — design in `docs/fase3/sistema-psu.md`; CV VCA resta 6,1 mV/dB + routing curato + test banco (dec. 92; 61 = fallback). Riconciliazione rail raw sul backplane con §3: APERTA (review 01/10)]
 
-- [BLOCCATO] Lineare con toroidale + regolazione locale (decisione 45); domini §1; backplane porta ±24 V e +5 V; ±18/±15 LN locali per modulo (miglioria §3).
+- [BLOCCATO] Lineare con toroidale + regolazione locale (decisioni 45/90c); domini §1; backplane porta raw ±27/±22/±26[M] e +5 V regolato nella PSU (REV decisione 93: tabella in `docs/fase3/sistema-psu.md` v0.2); ±18/±15 LN locali per modulo (miglioria §3).
 - [BLOCCATO] Mute power-on/off; sequencing; protezione per ramo di modulo; budget correnti/termico [APERTO — da calcolo a moduli definiti].
 - [BLOCCATO] Rail low-noise LT3045/LT3094 per summing/CV/metering (decisione 54).
 

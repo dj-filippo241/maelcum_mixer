@@ -50,9 +50,9 @@ massa viaggia sul backplane) → stesso esecutore; S4/S5 indipendenti
 
 ## Stato
 
-- [x] S1 PSU (v0.1, commit cc3cce5; CV → dec. 92)
-- [x] S2 Grounding (commit f5e78ed)
-- [x] S3 Backplane (commit 999fca7 con classe FX-SEND)
+- [x] S1 PSU (v0.1 commit cc3cce5 → **v0.2 dec. 93**: rail ratificati; CV → dec. 92)
+- [x] S2 Grounding (commit f5e78ed; §6 REV dec. 93: bead sui raw dedicati)
+- [x] S3 Backplane (commit 999fca7 con classe FX-SEND → **v0.2 dec. 93**: pinout riga a + correnti per raw)
 - [x] S4 Metering (commit f5e78ed)
-- [ ] S5 CUE (primo task prossima sessione)
-- [~] Integrazione + review: review 2026-10-01 → 1 BLOCCANTE (rail raw/correnti S1↔S3↔SPECIFICA §3 + headroom LT3045: pre-reg 78L15?) = task 0 prossima sessione; IMPORTANTE/MINORI fixati (c746cbc + fixup)
+- [ ] S5 CUE (primo task prossimo — usa i rail dec. 93: ±22 LN per ampli cuffia/riferimenti, +5 logiche)
+- [x] Integrazione + review: BLOCCANTE (rail raw/correnti S1↔S3↔SPECIFICA §3 + headroom LT3045) **CHIUSO 2026-10-01 → DECISIONE 93**: set unico raw ±27/±22/±26[M]/+5; LT3045 Vin max 20 V (il «15 V» dell'handoff era l'uscita max) → LN due stadi ±16,5→±15,0 esatti, 78L15 bocciato; W3 ridimensionato 2×20 V (statici master worst = punto verificato ±23,7 V); +5 V worst 1,0 A / dimensionamento 1,25 A. IMPORTANTE/MINORI già fixati (c746cbc + fixup)

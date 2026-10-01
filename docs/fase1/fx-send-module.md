@@ -96,8 +96,9 @@ l'audio, OPA1612 per i buffer in [PROVVISORIO]) + 2 quad SPDT.
 | 5 | S4_OUT L/R (→ net bus 4) | out |
 | 6-10 | spare | — |
 
-Riga a: ±24 V raw → ±18 V audio locale (LM317/337 + cap-moltiplicatore,
-sheet §1), ±15 V switch locale (LDO, dec. 88/90), +5 V control, AGND
+Riga a (dec. 93): raw ±27 V → ±18 V audio locale (LM317/337 +
+cap-moltiplicatore, sheet §1), raw ±22 V → ±15 V switch locale
+(78L15/79L15, dec. 88/90), +5 V control, AGND
 radiale, CTRL_GND, CHASSIS. Riga c: GLOBAL_MUTE in ascolto (i buffer
 d'iniezione mutano all'accensione se il supervisore lo chiede —
 coerente col mastering §3.7; [PROVVISORIO: valutare se il send deve
@@ -113,7 +114,7 @@ Front connector (harness pannello): 3 pot doppi (LOW, HIGH, LEVEL =
 | OPA1654 quad | 3 | EQ2 HIGH + iniezione (audio low-noise) |
 | OPA1612 dual | 1 | buffer in |
 | ADG1434-class quad SPDT | 2 | assign π (famiglia kill/dec. 90c) |
-| LDO ±15 V switch (78L15/79L15 o LDO low-noise) | 2 | da ±24 raw locali |
+| LDO ±15 V switch (78L15/79L15 o LDO low-noise) | 2 | da raw ±22 V LN locale (dec. 93) |
 | LM317/LM337 + passivi cap-moltiplicatore | 2 | ±18 V audio |
 | Pot doppi 10k custom taper (LOW/HIGH/LEVEL) | 3 | voce 40/85 |
 | Reti RC celle (0,1% shelf, C0G/PP), R iniezione 10k, RC soft-switch | — | |

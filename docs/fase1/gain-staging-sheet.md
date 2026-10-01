@@ -6,17 +6,20 @@
 > bilanciamento. I valori [P] sono provvisori finché la simulazione non li conferma.
 > Riferimenti: 0 dBu = 0,775 Vrms; +24 dBu = 12,28 Vrms = 17,4 Vpk.
 
-## 1. Mappa dei domini di alimentazione [C — proposta ingegneristica]
+## 1. Mappa dei domini di alimentazione [C — proposta ingegneristica; REV decisione 93 2026-10-01: raw dedicati per dominio]
 
 | Dominio | Generazione | Cosa alimenta | Capability sine (conservativa, carico medio) |
 |---|---|---|---|
-| ±24 V raw | PSU principale, ferrite + bulk locale | SOLO stadio HV d'uscita master | ~+25 dBu |
-| ±18 V audio | LM317/LM337 + post-filtro RC/cap-moltiplicator | percorso canale, filtro, 5-way, summing FX e master, master level VCA (sezione audio), front out, generic | ~+23 dBu |
-| ±15 V ultra-low-noise | LT3045/LT3094 (decisione 54) | front-end phono, primo stadio mic, generatori e distribuzione CV, metering, CUE/cuffia | ~+20 dBu |
-| +5 V control | LDO da rail controllo | LED, logiche selettori, relay mute | — |
+| ±26 V raw [M] (W3 dedicato, dec. 93) | PSU principale, ferrite + bulk locale nel modulo master; statici ±23,6…29,2 V su rete ±10% | SOLO stadio HV d'uscita master | worst (rete −10%, statici 23,7): +25,4…+25,6 dBu VERIFICATO; rete nominale: ~+27 dBu |
+| ±18 V audio | LM317/LM337 a 19,2 V + cap-moltiplicatore **dal raw ±27 V** (W1, dec. 93) | percorso canale, filtro, 5-way, summing FX e master, master level VCA (sezione audio), front out, generic | ~+23 dBu |
+| ±15 V ultra-low-noise | pre-reg LM317/337 ±16,5 V **dal raw ±22 V** (W2) → LT3045/LT3094 → ±15,0 V (decisioni 54/93: LT3045 Vin max 20 V, Vout max 15 V) | front-end phono, primo stadio mic, generatori e distribuzione CV, metering, CUE/cuffia, OTA filtro | ~+20 dBu |
+| ±15 V switch/logica | 78L15/79L15 diretti dal raw ±22 V (dec. 90c/93) | switch π SPDT kill/assign/LINE-PHONO (ADG14xx-class), logica | — |
+| +5 V control | 7805/LM2940-class **nel modulo PSU** da W4 (dec. 93: sul backplane viaggia il +5 V regolato) | LED, logiche selettori, relay mute | — |
 
-Regola: il ±24 V non entra mai in un op-amp (correzione 1 della review). Il +24 dBu
-vero esiste solo all'uscita XLR, dove lo stadio discreto lavora su ±24 V.
+Regola: nessun raw entra mai in un op-amp (correzione 1 della review; dec. 93:
+±27/±22 passano solo dai regolatori locali, ±26 [M] solo dallo stadio discreto).
+Il +24 dBu vero esiste solo all'uscita XLR, dove lo stadio discreto lavora
+sugli statici [M].
 
 ## 2. Catena principale — livelli per nodo
 
@@ -73,7 +76,7 @@ vero esiste solo all'uscita XLR, dove lo stadio discreto lavora su ±24 V.
 | MASTER SUM (5-way + 4 FX ret + mic + generic) | 0 dBu | +16…+18 dBu | ±18 V | margine ≥5 dB |
 | MASTER LEVEL VCA (−∞…0…+6) | 0 dBu | +16 dBu tipico; +6 su worst +18 = saturazione morbida intenzionale | ±18 V | **risolve questione 31**: uso normale ampio margine; l'estremo +6 su programma già estremo è user error e satura morbido (THAT 218x, verifica in sim) |
 | Meter pickup (post-level) | — | scala −42…+18 dBu, 20 segm × 3 dB | — | decisione 53 |
-| Front ±18 V → HV ±24 V (composite) | 0 dBu | +24 dBu | ±24 V out | XLR capability ~+25 dBu ✓ requisito |
+| Front ±18 V → HV [M] (composite) | 0 dBu | +24 dBu | statici [M] out | XLR capability +25,4…+25,6 dBu VERIFICATA (dec. 86; dec. 93: worst rete −10% = statici ±23,7 V, PASS) ✓ requisito |
 | BOOTH (pre-level, −∞…0) | 0 dBu | +18 dBu | ±18 V | XLR |
 | REC (pre-tutto, unity) | **0 dBu fissi** | segue il sum | ±18 V | decisione 63; pad solder 0/−10/−20 per registratori sensibili |
 
