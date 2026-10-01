@@ -1,0 +1,72 @@
+* ============================================================
+* METERING (S4, dec. 90) — SOGLIE LM3915 IN CASCATA (20 segmenti)
+* Macromodello comportamentale LM3915 (datasheet equations dichiarate):
+* segmento k acceso ⇔ Vin ≥ Vrefhi × 10^(−3k/20), k=0..9; chip B con
+* Vrefhi_B = Vrefhi_A × 10^(−30/20) = 0,31623 → 20 segmenti continui
+* +24…−33 dBu (3 dB/step, FS = 5,000 V ↔ +24 dBu assoluti).
+* Albero riferimenti CONDIVISO (calibrazione identica tra canali by
+* construction, q54): partitore 2:1 da +15 V LN → VrefA 5,000 V;
+* sottopartitore −30 dB → VrefB 1,581 V. R 0,1% → errore ratio ≤0,14%
+* = ±0,012 dB (≪ budget ±0,5 dB; l'accuratezza del chip domina,
+* calibrazione a banco con tone a livelli noti — §3.6 master-out).
+* Sweep DC: verifica che le 20 soglie cadano a −3k dB ±0,5 dB.
+* ============================================================
+.param kB={0.3162278}
+.include ../lib/opamp-audio.inc
+V15 v15 0 DC 15
+V15n v15n 0 DC -15
+* Albero riferimenti BUFFERATO (il partitore nudo si carica: vrefA 4,07 V
+* invece di 5,00 — trovato in sim; nel design ogni nodo ref ha il follower)
+Rt1 v15 ra0 10k
+Rt2 ra0 0 5k
+Xba ra0 vrefA vrefA v15 v15n OP1612
+Rt3 vrefA rb0 10k
+Rt4 rb0 0 {10k*kB/(1-kB)}
+Xbb rb0 vrefB vrefB v15 v15n OP1612
+Vin in 0 DC 0
+* --- chip A (FS 5 V = +24 dBu) ---
+Bla0 la0 0 V={if(V(in)>=V(vrefA)*1,1,0)}
+Bla1 la1 0 V={if(V(in)>=V(vrefA)*0.70795,1,0)}
+Bla2 la2 0 V={if(V(in)>=V(vrefA)*0.50119,1,0)}
+Bla3 la3 0 V={if(V(in)>=V(vrefA)*0.35481,1,0)}
+Bla4 la4 0 V={if(V(in)>=V(vrefA)*0.25119,1,0)}
+Bla5 la5 0 V={if(V(in)>=V(vrefA)*0.17783,1,0)}
+Bla6 la6 0 V={if(V(in)>=V(vrefA)*0.12589,1,0)}
+Bla7 la7 0 V={if(V(in)>=V(vrefA)*0.08913,1,0)}
+Bla8 la8 0 V={if(V(in)>=V(vrefA)*0.06310,1,0)}
+Bla9 la9 0 V={if(V(in)>=V(vrefA)*0.04467,1,0)}
+* --- chip B (FS 1,581 V = −6 dBu) ---
+Blb0 lb0 0 V={if(V(in)>=V(vrefB)*1,1,0)}
+Blb1 lb1 0 V={if(V(in)>=V(vrefB)*0.70795,1,0)}
+Blb2 lb2 0 V={if(V(in)>=V(vrefB)*0.50119,1,0)}
+Blb3 lb3 0 V={if(V(in)>=V(vrefB)*0.35481,1,0)}
+Blb4 lb4 0 V={if(V(in)>=V(vrefB)*0.25119,1,0)}
+Blb5 lb5 0 V={if(V(in)>=V(vrefB)*0.17783,1,0)}
+Blb6 lb6 0 V={if(V(in)>=V(vrefB)*0.12589,1,0)}
+Blb7 lb7 0 V={if(V(in)>=V(vrefB)*0.08913,1,0)}
+Blb8 lb8 0 V={if(V(in)>=V(vrefB)*0.06310,1,0)}
+Blb9 lb9 0 V={if(V(in)>=V(vrefB)*0.04467,1,0)}
+.dc Vin 0 5.2 0.0005
+.meas dc thA0 WHEN V(la0)=0.5
+.meas dc thA1 WHEN V(la1)=0.5
+.meas dc thA2 WHEN V(la2)=0.5
+.meas dc thA3 WHEN V(la3)=0.5
+.meas dc thA4 WHEN V(la4)=0.5
+.meas dc thA5 WHEN V(la5)=0.5
+.meas dc thA6 WHEN V(la6)=0.5
+.meas dc thA7 WHEN V(la7)=0.5
+.meas dc thA8 WHEN V(la8)=0.5
+.meas dc thA9 WHEN V(la9)=0.5
+.meas dc thB0 WHEN V(lb0)=0.5
+.meas dc thB1 WHEN V(lb1)=0.5
+.meas dc thB2 WHEN V(lb2)=0.5
+.meas dc thB3 WHEN V(lb3)=0.5
+.meas dc thB4 WHEN V(lb4)=0.5
+.meas dc thB5 WHEN V(lb5)=0.5
+.meas dc thB6 WHEN V(lb6)=0.5
+.meas dc thB7 WHEN V(lb7)=0.5
+.meas dc thB8 WHEN V(lb8)=0.5
+.meas dc thB9 WHEN V(lb9)=0.5
+.meas dc vrefA_dc FIND V(vrefA) AT 2.6
+.meas dc vrefB_dc FIND V(vrefB) AT 2.6
+.end

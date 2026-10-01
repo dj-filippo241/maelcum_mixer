@@ -1,0 +1,40 @@
+* ============================================================
+* METERING (S4, dec. 81/90) — DETECTOR RI-TARATO release 0,3 s
+* Scala assoluta: FS +24 dBu → hold 5,00 V (g_in = 5/17,37 = 0,2879
+* sul tap; qui l'ingresso e' gia' scalato). Dominio ±15 V LN (SPEC §1).
+* Topologia VALIDATA sim/meter/peak-det-lf.cir (superdiodo OPDET +
+* clamp anti-windup −1,5 V + Rcomp/Ccomp da hfclip): cambia SOLO
+* Rrel = 3Meg (τ = 3Meg × 100n = 0,3 s, dec. 81; trim banco 2M+3,3M
+* = 0,2…0,53 s).
+* Misure: (1) attacco: burst 1 kHz +24 dBu scalato (5 Vp) — hold al 99%
+* entro 1 ms (SPEC §11 "attacco <1 ms"); (2) droop: decay puro dopo il
+* burst, 100 ms tra le letture = ciclo 10 Hz → atteso −2,9 dB (dec. 81:
+* informazione musicale, non difetto); (3) hold picco esatto.
+* ============================================================
+.include ../lib/opamp-audio.inc
+.subckt OPDET inp inn out vp vm
+E1 xx 0 value={3.16e6*(V(inp)-V(inn))}
+R1 xx p1 3955
+C1 p1 0 1.59u
+E2 out 0 value={limit(V(p1),-1.5,V(vp)-1.5)}
+.ends OPDET
+.model D1N4148 D(Is=2.53n Rs=0.568 N=1.752 Cjo=4p M=0.4 Tt=20n Iave=200m Vpk=100)
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+V1 raw 0 SINE(0 5 1k)
+Bin in 0 V={if(time<3m,V(raw),0)}
+Xi in bi bi vcc vee OP1612
+Xop bi hold dout vcc vee OPDET
+Rcomp dout d1a 1k
+D1 d1a hold D1N4148
+Ccomp dout hold 47p
+Chold hold 0 100n
+Rrel hold 0 3Meg
+Xbuf hold hout hout vcc vee OP1612
+.tran 0 250m 0 5u
+.meas tran att_ms WHEN V(hout)=4.95 RISE=1
+.meas tran vhold_pk MAX V(hout)
+.meas tran v010 FIND V(hout) AT 0.1
+.meas tran v020 FIND V(hout) AT 0.2
+.meas tran droop_dB PARAM 20*log10(v020/v010)
+.end

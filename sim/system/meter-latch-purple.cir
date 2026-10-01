@@ -1,0 +1,48 @@
+* ============================================================
+* METERING (S4, dec. 90) — LATCH PURPLE a soglia +23 dBu ASSOLUTA
+* Meccanismo VALIDATO sim/meter/peak-det-latch.cir (flag 442 ms
+* retriggerabile): qui la soglia e' +23 dBu assoluti = hold 4,4528 V
+* (scala FS 5 V ↔ +24 dBu) e il detector gira a τ 0,3 s (Rrel 3Meg).
+* Caso 1: burst +24 dBu (hold 5,0 V) 2 ms → flag: durata sopra 2,5 V
+*   (attesa ~380-450 ms: la τ release 0,3 s accorcia vs 442 del test
+*   storico a τ 3 s perche' l'hold attraversa la soglia prima — finestra
+*   SPEC 300-500 ms rispettata).
+* Caso 2: retrigger — secondo burst a 500 ms (dopo la caduta del primo
+* flag) → nuova finestra ~380-450 ms (flag_dur2).
+* ============================================================
+.include ../lib/opamp-audio.inc
+.subckt OPDET inp inn out vp vm
+E1 xx 0 value={3.16e6*(V(inp)-V(inn))}
+R1 xx p1 3955
+C1 p1 0 1.59u
+E2 out 0 value={limit(V(p1),-1.5,V(vp)-1.5)}
+.ends OPDET
+.model D1N4148 D(Is=2.53n Rs=0.568 N=1.752 Cjo=4p M=0.4 Tt=20n Iave=200m Vpk=100)
+.param vth=4.4528
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+V1 raw 0 SINE(0 5 1k)
+Bin in 0 V={if(time<2m,V(raw),if(time>500m,if(time<502m,V(raw),0),0))}
+Xi in bi bi vcc vee OP1612
+Xop bi hold dout vcc vee OPDET
+Rcomp dout d1a 1k
+D1 d1a hold D1N4148
+Ccomp dout hold 47p
+Chold hold 0 100n
+Rrel hold 0 3Meg
+Xbuf hold hout hout vcc vee OP1612
+* --- latch purple (struttura peak-det-latch, soglia scalata) ---
+Bcmp cmp 0 V={if(V(hold)>vth,5,0)}
+Rchg cmp d2a 1k
+D2 d2a led D1N4148
+Rled led 0 7Meg
+Cled led 0 100n
+Xled led ledout ledout vcc vee OP1612
+.tran 0 1200m 0 20u
+.meas tran holdpk MAX V(hout)
+.meas tran ledpk MAX V(led)
+.meas tran flag_off WHEN V(led)=2.5 FALL=1
+.meas tran flag_dur PARAM flag_off-0.002
+.meas tran flag_off2 WHEN V(led)=2.5 FALL=2
+.meas tran flag_dur2 PARAM flag_off2-0.502
+.end
