@@ -31,12 +31,12 @@
 
 | Requisito | Valore | Fonte |
 |---|---|---|
-| Bus | 4 (FX1-4); sorgenti: canali DJ, mic, generic mono, ritorni FX; cross-routing permesso; self-route FXn→FXn **proibito fisicamente** | SPEC §7 |
+| Bus | 4 (FX1-4); sorgenti: canali DJ, mic, generic mono, ritorni FX; cross-routing permesso; self-route FXn→FXn **[REV dec. 91b 2026-10-01: AMMESSO = 4° pot self-feedback per bus, bounded-by-design (§8.5); dry loop senza pedale = caso K4]** | SPEC §7 REV |
 | Summing bus | attivo virtual-earth, ~0 dBu nom, dominio ±18 V; 10k/10k [PROVVISORIO]; ~12 contributori stereo; worst correlato +21,6 dBu entro capability con saturazione morbida | SPEC §7, sheet §2 |
 | Interfaccia pedali | bus → driver high-headroom → pad selezionabile (prototipo −20 dB) → protezione → pedale → protezione/DC-control → ritorno hi-Z ≥1 MΩ; tolleranza ritorno −20…+18 dBu; banda ~5 Hz–40 kHz; mono pedal = controlled mono sum (mai hard-short L/R); stereo = L/R indipendenti | SPEC §7 |
 | Ritorni | stereo-capable (mono centrato); gain −∞→0→+20 dB; EQ2 (LOW ~100-150, HIGH ~4-6 kHz, −∞→0→+6, broad, no risonanza/saturazione); meter dopo gain+EQ prima del fader (detector rapido, clip latch 300-500 ms); fader stereo linked | SPEC §7 |
 | Regola livelli | livello_in × gain ≤ +23 dBu (K4) | sheet §2 |
-| Reroute/feedback | ogni ritorno → 3 destinazioni (gli altri bus), no self; level −∞→0 dB con law a tratti: 0-20%: −∞…−40; 20-45%: −40…−20; 45-70%: −20…−10; 70-85%: −10…−4; 85-95%: −4…−1; 95-100%: −1…0 dB; tecnologia VCA/attenuatore (solo attenuazione); catena controllo: pot → CV buffer → mappa non lineare → smoothing 1 ms (decisione 80) → VCA; **niente limiter** | SPEC §7 |
+| Reroute/feedback | ogni ritorno → 4 destinazioni (3 cross + 1 self, dec. 91b); level −∞→0 dB con law a tratti: 0-20%: −∞…−40; 20-45%: −40…−20; 45-70%: −20…−10; 70-85%: −10…−4; 85-95%: −4…−1; 95-100%: −1…0 dB; tecnologia VCA/attenuatore (solo attenuazione); catena controllo: pot → CV buffer → mappa non lineare → smoothing 1 ms (decisione 80) → VCA; **niente limiter** | SPEC §7 |
 | Comportamento live | fader del ritorno = udibilità verso MASTER, NON tocca il loop interno (reroute pre-fader): fader giù, il feedback continua; loop unity = oscillazione autosostenuta **bounded by design** | SPEC §7 |
 | Transienti | assign e switching: break-before-make + ramp 1 ms (decisione 80, famiglia unica per tutte le commutazioni CV) | CDJ §3.5 |
 

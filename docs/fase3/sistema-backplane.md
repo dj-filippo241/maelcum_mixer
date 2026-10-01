@@ -117,12 +117,12 @@ elettricamente corte (λ = km). Bilanciato solo verso l'esterno
 | CDJ ×4 | ±80/±150 mA cad. | ~20 mA | op-amp ~24 sezioni + 1-3 VCA |
 | 5-WAY | ±250/±350 mA | ~20 mA | ~35 quad + 2 VCA + 3 switch IC (µA) |
 | FILTRO | ±120/±200 mA | ~20 mA | 8 core OTA (Iabc!) + ~20 quad |
-| FX | ±150/±250 mA | ~20 mA | ~16 VCA 218x + op-amp |
+| FX | ±180/±300 mA [PROVV] | ~20 mA | 20 VCA 218x (16 matrice + 4 ritorno gain, dec. 91b) + op-amp |
 | MASTER | ±150/±250 mA | ~30 mA | HV stage Iq 40 mA×2 + summing/meter |
 | CUE | ±80/±200 mA | ~20 mA | ampli cuffia 30 mA picco su 32 Ω |
 | MIC/GEN | ±30/±50 mA cad. | ~10 mA | preamp + EQ2 |
 | FX-SEND ×4 (dec. 91) | ±40/±60 mA cad. | ~10 mA | ~18 sezioni op-amp + 2 switch IC (µA) + LDO ±15 |
-| LED/metering (tutti) | — | 200/700 mA | barre a zone dec. 90: ~12 segm × 6 zone × 10 mA worst |
+| LED/metering (tutti) | — | 200/500 mA | dato S4 reale: ~103 segmenti (master 2×20 + zone 10×~6), 2 mA typ / 5 mA worst = 0,5 A (S1: +5 V 0,9 A picco incl. logica) |
 | **Totale backplane** | **~±1,3 A tip / ±2,0 A max** [REV dec. 91: +4 FX-SEND] | **~0,45/1,25 A** | dimensionamento PSU in S1 con margine ≥50% |
 
 ## 7. Keying, meccanica, riparabilità

@@ -1,6 +1,6 @@
 # SPECIFICA — MAELCUM MIXER (mixer dub modulare analogico, esemplare unico)
 
-> **v0.1 (2026-09-18, rev. 2026-09-28/01-10: decisioni 76-91 + esiti simulazioni e sessione decisioni)** — Compilata da: decisioni 1-91 (`docs/01-decisioni-bloccate.md`),
+> **v0.1 (2026-09-18, rev. 2026-09-28/01-10: decisioni 76-92 + esiti simulazioni e sessione decisioni)** — Compilata da: decisioni 1-92 (`docs/01-decisioni-bloccate.md`),
 > status doc ChatGPT rev2 (`docs/export-chatgpt/`, corpus chiuso — decisione 58),
 > gain-staging sheet (`docs/fase1/gain-staging-sheet.md`), revisione critica (`docs/03`).
 > Livello: REQUISITI. Il dettaglio circuitale vive nei design doc di `docs/fase1/` e `docs/fase2/`.
@@ -113,7 +113,7 @@ Catena [BLOCCATO]: RCA stereo → protezione → front-end (LINE; PHONO MM v0.1 
 - [BLOCCATO] Ritorni: stereo-capable (mono centrato); gain −∞→0→+20 dB; EQ 2 bande (LOW ~100-150 Hz, HIGH ~4-6 kHz, −∞→0→+6, broad, no risonanza/saturazione); meter dopo gain+EQ, prima del fader (detector rapido, clip latch ~300-500 ms); fader stereo linked; REGOLA: livello_in × gain ≤ +23 dBu (sheet §2) — rispetto affidato alla disciplina dell'operatore, nessun selettore di sensitivity né limite interno (decisione 84).
 - [BLOCCATO — REV decisione 91b, 2026-10-01: destinazioni 4 = 3 cross + self, stessa law per il quarto pot] Rerouting/feedback: ogni ritorno ha 4 destinazioni (gli altri 3 bus + se stesso); level −∞→0 dB con law a tratti (0-20%: −∞…−40; 20-45%: −40…−20; 45-70%: −20…−10; 70-85%: −10…−4; 85-95%: −4…−1; 95-100%: −1…0 dB) = controllo finissimo vicino all'apertura; tecnologia VCA/attenuatore (solo attenuazione); catena controllo: pot → CV buffer → mappa non lineare → smoothing 1-5 ms → VCA; niente limiter.
 - [BLOCCATO] Comportamento live: fader del ritorno = udibilità verso MASTER, NON tocca il loop interno (reroute pre-fader): fader giù, il feedback continua; controlli usabili mentre si mixa; loop unity = oscillazione autosostenuta bounded by design.
-- [APERTO → PROPOSTA v0.2 2026-09-27/28] VCA esatto, switch esatti, valori resistori bus, protezione (questioni 13/14/37/52): design v0.2 in `docs/fase1/fx-module.md` — THAT 2180/2181 SINGOLI ×16 (voce 37: ~24-26 chip in tutto il mixer post-dec. 88, era ~34-36 — "dual" del nome = porti di controllo, datasheet 2026-09-27), bus 10k [PROVVISORIO], protezione R+TVS low-cap (banda 40 kHz VERIFICATA §8.4: il polo lo fa la Z sorgente, TVS ≤5 pF buona pratica), DC servo sui ritorni VALIDATO (§8.4, corner libero 0,05-0,5 Hz); law a tratti del reroute VERIFICATA end-to-end (§8.3, smoothing 1 ms raccomandato); stabilità del loop di feedback SIMULATA ("bounded by design" = saturazione del pedale, mai ai rail; margine g_loop ≤ +3 dB). Aperto: sensitivity ritorni (questione 69).
+- [APERTO → PROPOSTA v0.2 2026-09-27/28] VCA esatto, switch esatti, valori resistori bus, protezione (questioni 13/14/37/52): design v0.3-WIP in `docs/fase1/fx-module.md` + micro-moduli FX-SEND (dec. 91a, `fx-send-module.md`) — THAT 2180/2181 SINGOLI ×20 nel modulo FX (matrice 16× con self-FB dec. 91b + ritorni) (voce 37: ~28-30 chip in tutto il mixer post-dec. 91, era ~24-26 post-dec. 88 / ~34-36 — "dual" del nome = porti di controllo, datasheet 2026-09-27), bus 10k [PROVVISORIO], protezione R+TVS low-cap (banda 40 kHz VERIFICATA §8.4: il polo lo fa la Z sorgente, TVS ≤5 pF buona pratica), DC servo sui ritorni VALIDATO (§8.4, corner libero 0,05-0,5 Hz); law a tratti del reroute VERIFICATA end-to-end (§8.3, smoothing 1 ms raccomandato); stabilità del loop di feedback SIMULATA ("bounded by design" = saturazione del pedale, mai ai rail; margine g_loop ≤ +3 dB). Aperto: sensitivity ritorni (questione 69).
 
 ## 8. Mic e generic mono — requisiti
 
@@ -135,11 +135,15 @@ Design circuitale: `docs/fase1/master-out.md` **v0.3 (2026-09-29: stadio finale 
 
 ## 11. Metering — requisiti
 
+[REV dec. 90a 2026-10-01: barre LED a zone; soglie verde ≤+6 / ambra +6…+18 / rosso +18…+24 / purple latch ≥+23 dBu; master 2×20 segmenti, zone 10; detector release ~0,3 s (dec. 81), latch 479 ms — design in `docs/fase3/sistema-metering.md`; la proposta master-out §3.6 per il purple master è SUPERATA/doppio criterio → voce 40]
+
 - [BLOCCATO] Semantica colori universale: BLUE=poco · GREEN=safe · YELLOW=loud · AMBER=hard · RED=extreme · PURPLE=clipping reale (clip detector dedicato, latch ~300-500 ms).
 - [BLOCCATO] Posizioni: DJ (post-filter/drive, pre-fader; identica calibrazione) · 5-way (post-drive, pre-master-sum) · MASTER (post-level; il più preciso: scala log 20 segmenti ×3 dB/canale, LM3915 in cascata, attacco <1 ms, release ~0,3 s ballistica viva stile Pioneer DJM — decisioni 53/81, costante da affinare a banco 0,2-0,5 s) · FX returns (post-gain/EQ, pre-fader) · mic/generic warning-only. Niente meter per booth/rec/cuffie/send.
 - [PROVVISORIO] Soglie numeriche delle zone (proposta master-out §3.6) — da validare a banco; a 10 Hz leggibilità a zone con ballistica viva (decisione 81, che revisiona la parte metering della decisione 65).
 
 ## 12. Alimentazione — requisiti
+
+[REV dec. 90c/92 2026-10-01: PSU toroidale unico ~120 VA multi-avvolgimento + regolazione locale, fanless, protezione corto 3 strati — design in `docs/fase3/sistema-psu.md`; CV VCA resta 6,1 mV/dB + routing curato + test banco (dec. 92; 61 = fallback). Riconciliazione rail raw sul backplane con §3: APERTA (review 01/10)]
 
 - [BLOCCATO] Lineare con toroidale + regolazione locale (decisione 45); domini §1; backplane porta ±24 V e +5 V; ±18/±15 LN locali per modulo (miglioria §3).
 - [BLOCCATO] Mute power-on/off; sequencing; protezione per ramo di modulo; budget correnti/termico [APERTO — da calcolo a moduli definiti].

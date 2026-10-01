@@ -31,7 +31,7 @@
 - EQ frequenze [PROVVISORIO — review con Filippo aperta]: 70 Hz Q~0,7 (shelf) /
   250 Hz Q~0,8 (bell) / 1 kHz Q~0,9 (bell) / 5 kHz Q~0,7 (shelf)
 - CUE [BLOCCATO]: post-EQ, pre-filter, pre-fader
-- FX SEND [BLOCCATO]: pre-fader, pre-filter; EQ2 (LOW ~120 Hz, HIGH ~4,5 kHz, −∞..0..+6);
+- FX SEND [BLOCCATO]: pre-fader, pre-filter; EQ2 (LOW ~120 Hz, HIGH ~4,5 kHz, −∞..0..+6) [REV dec. 91a: EQ2+level+switch assign vivono nel MICRO-MODULO FX-SEND (`docs/fase1/fx-send-module.md`); al canale restano send tap bufferizzato ≤50 Ω e bottoni pannello via linee logiche; comportamenti locked invariati];
   level −∞..0; assign MULTIPLI simultanei S1-S4 con precision analogue switch
 - Filtro [BLOCCATO]: switch 3 vie HPF/OFF/LPF sul canale; audio via send/return al modulo
   filtro; break-before-make + ramp 1-5 ms (nel modulo filtro)
@@ -48,7 +48,7 @@
                                           ┌───────────────────────────────┼──────────────────┐
                                           │                               │                  │
                                    [D] CUE SEND                    [E] FX SEND          [F] FILTER I/F
-                                    (buffer → CUE bus)         (EQ2 → level → assign     (send/return al
+                                    (buffer → CUE bus)         (EQ2 → level → assign [micro-modulo FX-SEND, dec. 91a]     (send/return al
                                                                 multipli S1-S4 → bus)     modulo filtro;
                                           │                        │                      switch 3 vie)
                                           ▼                        ▼                          │
@@ -201,7 +201,7 @@ GAIN — macro THAT 218x pronto in `sim/lib/that2181.inc`) e out driver.
 | THAT 2181 (VCA gain; + eventuali VCA di banda se tracking 53 sceglie VCA) | 1-3 | ~6-18 € |
 | Reti RC celle (0,1% bracci shelf, C0G/PP campane e HP2) | — | ~10-15 € |
 | LM3915 ×2 + clip detector | 3 | ~3 € |
-| Switch analogici assign FX | 4 | ~6-10 € |
+| Switch analogici assign FX | 0 sul canale (→ 8 π SPDT ×4 nel micro-modulo FX-SEND, dec. 91a) | — |
 | Regolatori locali (LM317/337 + LT3045/3094) + passivi | — | ~12-15 € |
 | **Totale stimato per canale stereo** | | **~80-110 €** (v0.2: 70-95; delta = buffer/make-up + reti. Fuori tabella: 4 pot doppi taper custom dell'EQ → voce 40) |
 
