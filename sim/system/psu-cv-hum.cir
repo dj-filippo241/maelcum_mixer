@@ -1,0 +1,27 @@
+* ============================================================
+* S1 PSU (q20) — RUMORE CV: 6,1 mV/dB (attuale) vs 61 mV/dB (raccom.
+* THAT, nota dec. 88c). Worst case pratico: 1 mV di hum 50 Hz accoppiato
+* sulla linea CV da pannello (pickup, non rumore intrinseco: quello è
+* µV-class e trascurabile in entrambi i casi — vedi doc §6).
+* Misura: modulazione di gain del 218x (inviluppo audio 1 kHz) tra due
+* finestre a fase hum opposta (10 ms = mezzo periodo 50 Hz).
+* ATTESO analitico: 1 mV / 6,1 mV = ±0,164 dB → A1/A2 = 0,33 dB;
+* con scala ×10 (61 mV/dB): 0,033 dB.
+* METODO: tran (nessun INTEG). Macro 218x derivata da sim/lib/that2181.inc
+* con law scalabile (0.122*s V/decade; s=1 → 6,1 mV/dB, s=10 → 61).
+* ============================================================
+.step param s LIST 1 10
+Vin ain 0 SIN(0 0.775 1000)
+.subckt VCA2181S in out ecp ecm
+Bg1 nout0 0 V={V(in)*limit(10**((V(ecp)-V(ecm))/(0.122*s)),1e-5,100)}
+Rpol nout0 out 1k
+Cpol out 0 8p
+.ends VCA2181S
+* CV: 0 dB nominali (Vcv=0) + 1 mV hum 50 Hz in serie
+Vcv cvdc 0 DC 0
+Vhum cvh cvdc SIN(0 1m 50)
+X1 ain aout cvh 0 VCA2181S
+.tran 0 70m 0 5u
+.meas tran a1 MAX V(aout) FROM 24m TO 26m
+.meas tran a2 MAX V(aout) FROM 34m TO 36m
+.end

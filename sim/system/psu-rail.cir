@@ -1,0 +1,39 @@
+* ============================================================
+* S1 PSU (q20, dec. 90) — RAIL ±18 V AUDIO: ripple 100 Hz
+* Catena rappresentativa: raw (toroidale 20 Vrms rect: 27,5 V DC +
+* 2,5 Vpp ripple 100 Hz) → LM317-comportamentale a 19,2 V → cap-
+* moltiplicator (Rb 47 + Cb 10m + follower, drop ~1,2 V) → v18 ≈ 18,0 V
+* → carico 0,85 A (21,2 ohm).
+* Domanda: quanto ripple arriva ai moduli? I rail ±18 alimentano
+* op-amp con PSRR 80-100 dB in banda: target ripple < 1 mVpp.
+* METODO: tran (nessun INTEG). Valori [PROVVISORIO — regola 3].
+* ============================================================
+Vraw raw 0 DC 27.5
+Vrip rraw raw SIN(0 1.25 100)
+* --- LM317 comportamentale: V(out)-V(adj) = 1,25 V, error amp + pass ---
+.subckt REG317 in out adj
+Eerr en 0 value={100k*(1.25-(V(out)-V(adj)))}
+Rb en qb 1k
+Qpass in qb out QPASS
+.model QPASS NPN(Bf=100 Is=1e-14 Vaf=50)
+.ends REG317
+Xreg rraw vreg adj REG317
+R1 vreg adj 120
+R2 adj 0 1.72k
+Cadj adj 0 10u
+Cout vreg 0 100u
+* --- cap-moltiplicator (post-filtro sheet §1): base su RC, follower ---
+Rb2 bnode vreg 47
+Cb bnode 0 10000u
+Q1 vreg bnode v18 BJT1
+.model BJT1 NPN(Bf=100 Is=1e-13 Vaf=50)
+* --- carico 0,85 A ---
+Rload v18 0 21.2
+Cload v18 0 1000u
+*
+.tran 0 400m 0 50u
+.meas tran ripple_pp PP V(v18) FROM 350m TO 400m
+.meas tran ripple_reg_pp PP V(vreg) FROM 350m TO 400m
+.meas tran v18_dc AVG V(v18) FROM 350m TO 400m
+.meas tran i_load AVG I(Rload) FROM 350m TO 400m
+.end

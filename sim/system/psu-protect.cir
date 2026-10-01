@@ -1,0 +1,53 @@
+* ============================================================
+* S1 PSU (q20, dec. 90) — PROTEZIONE ABUSO CORTO PROLUNGATO
+* Caso master-out v0.3: corto uscita auto-limitato dal bootstrap a
+* 106 mA, Q1 1,0 W medi = worst di programma → l'abuso prolungato
+* NON è un sovraccarico di rail (106 mA extra stanno nel budget):
+* la protezione è (a) dimensionamento (già fatto: ≥4 cm² rame),
+* (b) limitazione del regolatore per CORTI FRANCHI nel modulo,
+* (c) supervisor di rail → mute (master-out [L]) se il rail crolla.
+* Questa sim dimostra (b)+(c): LM317 con current limit ~1,6 A
+* (Rs 0,4 + clamp) e finestra supervisor a 16 V.
+* Profilo carico: 0,85 A normali → t=0,5 s corto franco (sink 3 A).
+* METODO: tran (nessun INTEG). Valori [PROVVISORIO — regola 3].
+* ============================================================
+Vraw raw 0 DC 27.5
+* --- LM317 + current limit ---
+.subckt REG317L in out adj
+Rs in inc 0.4
+* limit comportamentale: min(termine regolazione, termine corrente su Rs)
+* → I_lim ≈ 0,65/0,4 = 1,625 A; en limitato a [0,60] (niente saturazione
+* negativa: il clamp a BJT latchava il pass con error amp ideale)
+Eerr en 0 value={limit(min(100k*(1.25-(V(out)-V(adj))),100k*(0.65-(V(in)-V(inc)))),0,60)}
+Rb en qb 1k
+Qpass inc qb out QPASS
+.model QPASS NPN(Bf=100 Is=1e-14 Vaf=50)
+.ends REG317L
+Xreg raw vreg adj REG317L
+R1 vreg adj 120
+R2 adj 0 1.72k
+Cadj adj 0 10u
+Cout vreg 0 470u
+Rb2 bnode vreg 47
+Cb bnode 0 4700u
+Q1 vreg bnode v18 BJT1
+.model BJT1 NPN(Bf=100 Is=1e-13 Vaf=50)
+* --- carico: normale 21,2 ohm (0,85 A) + corto franco 0,5 ohm da t=0,5 s ---
+Rload v18 0 21.2
+Cload v18 0 1000u
+SwF v18 fnode ctlF 0 SWMOD
+Rf fnode 0 0.5
+VctlF ctlF 0 PWL(0 0 0.5 0 0.501 5 2 5)
+.model SWMOD SW(Ron=1m Roff=1G Vt=2.5)
+* --- supervisor: finestra 16 V (comparatore comportamentale) ---
+Esens flag 0 value={limit((V(v18)-16)*100,0,5)}
+Rflag flag 0 10k
+*
+.tran 0 1.2 0 100u
+.meas tran v_before AVG V(v18) FROM 0.3 TO 0.45
+.meas tran v_fault AVG V(v18) FROM 0.7 TO 1.1
+.meas tran i_fault AVG I(Rf) FROM 0.7 TO 1.1
+.meas tran i_reg_fault AVG -I(Vraw) FROM 0.7 TO 1.1
+.meas tran flag_fault AVG V(flag) FROM 0.7 TO 1.1
+.meas tran v_reg_fault AVG V(vreg) FROM 0.7 TO 1.1
+.end
