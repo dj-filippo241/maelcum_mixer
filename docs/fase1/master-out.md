@@ -188,6 +188,7 @@ Tutto analogico, niente MCU (coerenza col progetto):
 - Power-on: timer RC (~1,5-2 s) poi eccita i relay — il bang di accensione non arriva mai ai connettori
 - Power-off: l'energia immagazzinata nei bulk cap del modulo alimenta il controller ancora per ~50-100 ms tramite diodo di hold-up; al calo dei rail il relay apre in < 10 ms — il pop di spegnimento resta dentro
 - Stesso segnale pilota [H], [B4], [C3] (relay indipendenti per ogni uscita: un guasto non le ammutolisce tutte... anzi sì le ammutolisce, ma è il comportamento sicuro)
+- GLOBAL_MUTE (dec. 94(b) 2026-10-01): [L] pilota anche la linea c9 del backplane (S3 §5) → i relay di uscita dei moduli in ascolto + i buffer d'iniezione dei 4 FX-SEND mutano durante le transizioni power e su guasto rail (nessuna eccitazione della matrice self-FB; CUE durante il mute = design S5)
 
 ### 3.8 [M] PSU locale del modulo
 

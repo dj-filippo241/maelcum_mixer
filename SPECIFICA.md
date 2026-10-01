@@ -69,7 +69,8 @@ Moduli [BLOCCATO dai doc §33, consolidamento [PROVVISORIO]]: DJ CH1-4 · FILTRO
 - [BLOCCATO] Bus audio: DJ L/R, FX1-4 L/R, 5-WAY L/R, MASTER L/R, CUE L/R, filter send/return per canale.
 - [BLOCCATO, REV decisione 93 2026-10-01] Bus potenza sul backplane: **raw ±27 V audio, raw ±22 V LN/OTA, raw ±26 V [M] HV (popolato solo dal master), +5 V control** (regolato nella PSU), analogue 0 V, control ground, chassis/shield. Tabella avvolgimenti/correnti: `docs/fase3/sistema-psu.md` v0.2 §2; pinout riga a: `docs/fase3/sistema-backplane.md` v0.2 §3. [BLOCCATO] I rail ±18 V audio e ±15 V low-noise si generano LOCALMENTE in ogni modulo (non distribuiti sul backplane): ogni modulo isola il proprio rumore — ciascuno dal SUO raw dedicato (±18: LM317/337 da ±27; ±15,0 V: pre-reg ±16,5 + LT3045/LT3094 da ±22).
 - [BLOCCATO] Separazione fisica audio/controllo/potenza/ground sul backplane; schermature; nessun bus floating; ogni modulo ha uno stato inattivo definito; connettori robusti card-edge/board-to-board con keying.
-- [APERTO] Pinout, famiglia connettori, impedenze di bus, comportamento a modulo rimosso (questioni 22/38).
+- [BLOCCATO decisione 94(a) 2026-10-01] Standard elettrico I/O tra moduli: single-ended 0 dBu, bilanciato solo verso l'esterno (XLR master/mic). MASTER SUM: 7 contributori stereo (5-way, 4 ritorni FX, mic, generic), summing nel modulo master (§10).
+- [PROVVISORIO → design S3 v0.2] Pinout e famiglia connettori (DIN 41612 tipo C — q29 meccanica), impedenze di bus, comportamento a modulo rimosso: disegnati in `docs/fase3/sistema-backplane.md` (dec. 93/94). Resto della questione 22: reperibilità connettori.
 
 ## 4. Canale DJ (modulo ×4, stereo identici)
 

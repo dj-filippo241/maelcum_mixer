@@ -101,8 +101,9 @@ cap-moltiplicatore, sheet §1), raw ±22 V → ±15 V switch locale
 (78L15/79L15, dec. 88/90), +5 V control, AGND
 radiale, CTRL_GND, CHASSIS. Riga c: GLOBAL_MUTE in ascolto (i buffer
 d'iniezione mutano all'accensione se il supervisore lo chiede —
-coerente col mastering §3.7; [PROVVISORIO: valutare se il send deve
-mutare col mute globale o restare vivo per i pedali]).
+coerente con master-out §3.7; [DECISO 2026-10-01 → dec. 94(b): il send
+MUTA col mute globale — catena FX silenziosa nelle transizioni power,
+nessun fischio self-FB al rilascio]).
 
 Front connector (harness pannello): 3 pot doppi (LOW, HIGH, LEVEL =
 9 pin + schermi) + 4 linee bottoni + CTRL_GND. Layout pannello = voce 40.

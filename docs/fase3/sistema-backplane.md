@@ -120,7 +120,7 @@ elettricamente corte (λ = km). Bilanciato solo verso l'esterno
 | Pos | Segnale | Note |
 |---|---|---|
 | c1-c8 | FILT_MODE CH1-4 [1:0] | 8 bit: 2 per canale (HPF/OFF/LPF), dal pannello canale al modulo filtro; livelli 0/+5 V, serie 10k, pull-down 100k lato filtro (stessa disciplina del pilotaggio kill §8.10 five-way); filtro con bit assente = OFF (bypass secco) |
-| c9 | GLOBAL_MUTE | dal controller mute del master (supervisore rail + timer, master-out §3.7): i relay di uscita dei moduli che ne hanno uno lo ascoltano |
+| c9 | GLOBAL_MUTE | dal controller mute del master (supervisore rail + timer, master-out §3.7): lo ascoltano i relay di uscita dei moduli che ne hanno uno + i buffer d'iniezione dei 4 FX-SEND (dec. 94(b): i send mutano col mute globale — nessuna eccitazione della matrice self-FB nelle transizioni) |
 | c10-c13 | CV_BUS 0-5 V ×4 | convenzione d'interfaccia [BLOCCATO]: CV remoti (es. filter freq shared, utility); generazione nel dominio ±15 V LN (sheet §1) |
 | c14-c15 | LED_DIM / SVC | dimming LED comune (PWM lento dal PSU) + linea di servizio spare |
 | c16, c20, c24, c28 | CTRL_GND | ritorni intercalati: ogni gruppo di segnali ha il suo ritorno adiacente |
@@ -155,7 +155,8 @@ ramo e dei fusibili di ramo (S1 §4).
    codifica/guide in posizioni diverse → ogni classe ha la SUA codifica
    (CDJ, FILTRO, …): l'inserimento errato è meccanicamente impossibile.
    In aggiunta: etichetta classe sul telaio + colore della maniglia
-   estrattore per classe [PROVVISORIO — ergonomia = sessione hardware].
+   estrattore per classe [principio RATIFICATO dec. 94(c); palette e
+   hardware = voce 40 — sessione hardware].
 2. **Meccanica proposta**: backplane orizzontale sul fondo del telaio;
    moduli verticali, appesi al pannello frontale (viti + rondelle
    dentate per continuità chassis), connettore maschio angolo retto che
@@ -189,7 +190,7 @@ ramo e dei fusibili di ramo (S1 §4).
 - Ogni connettore: condensatori di bypass 100 n tra pin potenza e AGND
   lato backplane + 10 µ bulk per slot di modulo.
 
-## 9. Chiusure proposte per q38 (da ratifica se toccano l'uso)
+## 9. Chiusure per q38 — RATIFICATE 2026-10-01 → decisione 94(a)
 
 1. Standard elettrico I/O backplane: **single-ended 0 dBu tra moduli,
    bilanciato solo verso l'esterno** (la proposta provvisoria dell'export
