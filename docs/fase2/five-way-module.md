@@ -197,9 +197,13 @@ via per lato: polo sul nodo d'ingresso summer, serie verso l'uscita di
 banda, shunt a GND da off (kill = serie aperta + nodo ancorato a GND via
 Ron). IC classe **ADG1434** (quad SPDT iCMOS, Ron ≤ 4,7-5 Ω, ±4,5…±16,5 V,
 break-before-make, logica IN 3 V senza VL) — famiglia unica con assign FX e
-LINE/PHONO come da dec. 88; 10 SPDT/modulo = 3 quad IC [PROVVISORIO —
-regola 3: datasheet ufficiale da verificare, second source ADG1634L/
-ADG1334, reperibilità nel task dedicato]. **Rail ±15 V dedicato** (il
+LINE/PHONO come da dec. 88; 10 SPDT/modulo = 3 quad IC [DATASHEET Rev. E
+VERIFICATO 2026-10-01 → `docs/fase1/adg1434-datasheet-verify.md`: Ron
+4,7 Ω = max @25 °C (typ 4,0; 5,7 @85 °C — caveat banco), range ±4,5…±16,5
+confermato (dec. 90c), pin VL assente = IN a soglie fisse, TSSOP-20 YRUZ
+senza EN preferito, ACTIVE stock ~2.000 pz; second source: NESSUNA drop-in
+(ADG1634L muore a ±15 V, ADG1334 Ron 130/200 Ω) → strategia = lotto +
+scorte all'acquisto post-M4L]. **Rail ±15 V dedicato** (il
 modulo op-amp sta a ±18 V > max IC): nota per il design PSU (q20).
 Pilotaggio dagli switch fisici di pannello esistenti (+5 V logici via 10k,
 pull-down 100k lato modulo) — l'audio NON passa dai contatti di pannello

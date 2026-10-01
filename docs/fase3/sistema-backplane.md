@@ -170,8 +170,10 @@ ramo e dei fusibili di ramo (S1 §4).
    somma già validati così, `sim/cdj/djbus-*`); un modulo PRESENTE MA
    SPENTO può essere alimentato di rimando dai pin audio (diodi ESD
    degli op-amp): la serie ≥470 Ω-10k su ogni linea limita la corrente
-   <1 mA = sicuro; regola di servizio: mai alimentare segnali esterni
-   col mixer spento.
+   <1 mA — sotto il limite clamp 30 mA degli switch ADG1434 ma FUORI
+   SPECIFICA (non sono power-off protected:
+   `docs/fase1/adg1434-datasheet-verify.md` §2); regola di servizio
+   OBBLIGATORIA: mai alimentare segnali esterni col mixer spento.
 4. **Backplane fase 1** (prototipo validazione: CDJ + FX + master + PSU
    base, SPECIFICA §fase): stessa famiglia connettori, 4 slot + 2 spare,
    anche millefori con barra AGND in rame (§8 grounding); il pinout è

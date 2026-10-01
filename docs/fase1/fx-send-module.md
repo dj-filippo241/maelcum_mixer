@@ -114,7 +114,7 @@ Front connector (harness pannello): 3 pot doppi (LOW, HIGH, LEVEL =
 |---|---|---|
 | OPA1654 quad | 3 | EQ2 HIGH + iniezione (audio low-noise) |
 | OPA1612 dual | 1 | buffer in |
-| ADG1434-class quad SPDT | 2 | assign π (famiglia kill/dec. 90c) |
+| ADG1434 quad SPDT (TSSOP-20 YRUZ, senza EN) | 2 | assign π (famiglia kill/dec. 90c); datasheet Rev. E VERIFICATO 2026-10-01 → `docs/fase1/adg1434-datasheet-verify.md` |
 | LDO ±15 V switch (78L15/79L15 o LDO low-noise) | 2 | da raw ±22 V LN locale (dec. 93) |
 | LM317/LM337 + passivi cap-moltiplicatore | 2 | ±18 V audio |
 | Pot doppi 10k custom taper (LOW/HIGH/LEVEL) | 3 | voce 40/85 |
