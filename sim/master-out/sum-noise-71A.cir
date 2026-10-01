@@ -1,0 +1,57 @@
+* ============================================================
+* MASTER SUMMING + MASTER LEVEL VCA — BUDGET RUMORE (coda 71A,
+* 2026-10-01): rete a monte dello stadio finale composite (che è
+* GIÀ misurato −119,2 dBu, Test 10 compB-noise.cir: non si tocca).
+* Struttura da master-out.md §3.1/§3.2:
+* - [A2] summing inverting OPA1612: 8 ingressi per canale R_in 20k,
+*   Rf 20k (unity), Cf 10p; ingressi non usati terminati a massa con
+*   20k (il resistore resta, ingresso a 0 V). Contributori ATTIVI con
+*   segnale nullo = uscite op-amp a Z bassa (0 V): la terminazione per
+*   il noise budget e' il solo R_in 20k verso il virtual earth (la Rs
+*   20k aggiuntiva della prima stesura era errore di lettura del doc:
+*   vale solo per gli ingressi NON usati; qui tutti e 8 i rami sono
+*   0 V → R_in 20k → ns, che è il caso peggiore di rumore).
+* - [D] MASTER LEVEL: THAT 218x a unity (0 dB, detent): floor datasheet
+*   −98 dBV 20-20k (Rout 20k, senza I/V) → Rvn 476k (88,9 nV/√Hz),
+*   iniezione E lineare 4 nodi (quirk: value={} non-gnd non propaga).
+*   Il VCA pilota Rsrc 1k del composite (carico incluso).
+* Punto di misura: vsum (solo summing; run separata con .noise V(vml)
+* ha dato summing+VCA: log ml* conservato nei risultati).
+* METODO §8.9: MAI INTEG; densità 10 punti 20 Hz-20 kHz + trapezoidale
+* python + A-wtd post. Macro OP1612 reale (Rn 73).
+* ============================================================
+.include ../lib/opamp-audio.inc
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+* --- 8 ingressi summing, tutti terminati (sorgente formale su in1) ---
+V1 0 s1 AC 1
+Rin1 s1 ns 20k
+Rin2 0 ns 20k
+Rin3 0 ns 20k
+Rin4 0 ns 20k
+Rin5 0 ns 20k
+Rin6 0 ns 20k
+Rin7 0 ns 20k
+Rin8 0 ns 20k
+* --- Summing amp unity + Cf ---
+Rf ns vsum 20k
+Cf ns vsum 10p
+Xsum 0 ns vsum vcc vee OP1612
+* --- Master level VCA 218x @ unity: segnale 1× + floor datasheet ---
+Evc vca_s vsum 0 0 1
+Rvn vn 0 476k
+Evn vml vca_s vn 0 1
+* --- Carico: Rsrc 1k del composite (stadio finale, già misurato) ---
+Rsrc vml 0 1k
+.noise V(vsum) V1 dec 200 20 20k
+.meas noise sm20 FIND V(onoise) AT 20
+.meas noise sm50 FIND V(onoise) AT 50
+.meas noise sm100 FIND V(onoise) AT 100
+.meas noise sm200 FIND V(onoise) AT 200
+.meas noise sm500 FIND V(onoise) AT 500
+.meas noise sm1k FIND V(onoise) AT 1k
+.meas noise sm2k FIND V(onoise) AT 2k
+.meas noise sm5k FIND V(onoise) AT 5k
+.meas noise sm10k FIND V(onoise) AT 10k
+.meas noise sm20k FIND V(onoise) AT 20k
+.end

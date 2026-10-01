@@ -49,9 +49,9 @@ v03 modella il rumore del VCA drive con Rvn **240k** (= 63 nV/√Hz =
 −101 dBV integrato) ma il commento dice "47 nV/√Hz" (= 133k = −104 dBV,
 la configurazione I/V 10k del drive). 240k sovrastima il rumore del drive
 di ~2,6 dB; essendo il drive dominante (87% di potenza), il totale modulo
-−83,2 dBu A-wtd è **pessimista di ~2,3 dB** (reale stimato ≈ −85,5):
+−83,2 dBu A-wtd è pessimista (entità reale: −0,77 dB, non −2,3 [CORREZIONE 2026-10-01 dal rerun v031: la quota drive con gli switch è ~22-32%, non l'87% del v021 a 6 VCA]):
 direzione conservativa, nessun redesign; da correggere/riconfermare nella
-campagna 71A (margine 5-way sul target −80 sale da 3,2 a ~5,5 dB).
+campagna 71A ([FATTO: `module-noise-v031.cir` −82,3/−83,9 A-wtd θ0 → margine 3,9 dB, non ~5,5]).
 Qui per il GAIN si è usato il valore esatto 476k = −98 dBV (senza I/V).
 
 ## Stato

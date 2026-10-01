@@ -1,0 +1,44 @@
+* ============================================================
+* DJ BUS — BUDGET RUMORE (coda 71A, 2026-10-01): rete di summing
+* 4 canali, MAI simulata prima. Struttura segnale = djbus-level.cir
+* (out driver 47 Ω → R 10k per canale → virtual earth OP1612, Rf 10k,
+* vout = −Σ unity per ingresso).
+* Punto di misura: vout (uscita DJ bus), contributori TERMINATI: ogni
+* canale = out driver 47 Ω verso GND, nessuna sorgente (condizione
+* "ingressi terminati" sheet §3).
+* Verifica l'assunzione docs/06 §2: "rumore dei summer trascurabile".
+* METODO §8.9: MAI .meas INTEG (quirk LTspice 26.0.2); densità 10
+* punti 20 Hz-20 kHz + trapezoidale python + A-wtd post. Op-amp reale:
+* macro OP1612 da opamp-audio.inc (Rn 73 = 1,1 nV/√Hz).
+* V1 AC 1 = sorgente formale per .noise (in cortocircuito per il
+* calcolo rumore: la terminazione resta 47 Ω).
+* ============================================================
+.include ../lib/opamp-audio.inc
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+* --- Ch1 (con sorgente formale .noise) ---
+Rd1 0 d1s 47
+V1 d1s d1 AC 1
+R1 d1 ns 10k
+* --- Ch2-4 terminati ---
+Rd2 0 d2 47
+R2 d2 ns 10k
+Rd3 0 d3 47
+R3 d3 ns 10k
+Rd4 0 d4 47
+R4 d4 ns 10k
+* --- Summer invertente unity ---
+Rf ns vout 10k
+Xsum 0 ns vout vcc vee OP1612
+.noise V(vout) V1 dec 200 20 20k
+.meas noise nd20 FIND V(onoise) AT 20
+.meas noise nd50 FIND V(onoise) AT 50
+.meas noise nd100 FIND V(onoise) AT 100
+.meas noise nd200 FIND V(onoise) AT 200
+.meas noise nd500 FIND V(onoise) AT 500
+.meas noise nd1k FIND V(onoise) AT 1k
+.meas noise nd2k FIND V(onoise) AT 2k
+.meas noise nd5k FIND V(onoise) AT 5k
+.meas noise nd10k FIND V(onoise) AT 10k
+.meas noise nd20k FIND V(onoise) AT 20k
+.end

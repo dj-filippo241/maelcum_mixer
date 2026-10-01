@@ -1,0 +1,117 @@
+* ============================================================
+* CANALE DI RITORNO FX — BUDGET RUMORE (coda 71A, 2026-10-01)
+* Primo budget del ritorno: mai simulato (il send: −100,8 dBu A-wtd in
+* RISULTATI-fx-noise-71A.md). Catena da fx-module.md §2/§5 + topologie
+* validate: protezione R 100 + TVS 5p (§4/§8.4) → R bias 1 MΩ JFET-input
+* (§4) → buffer gain-2 classe OP1642 con nodo FB + DC servo (fx-dc-servo.cir
+* VALIDATO §8.4: Rsi 1M/Ci 15n, Rinj 1M, fc 0,053 Hz) → I/V 10k/5k = stadio
+* d'ingresso VCA (gain −0,5; globale jack→vca = −1) → GAIN VCA THAT 2181
+* al detent 0 dB → EQ2 celle serie scalate al detent (fx-eq2.cir VALIDATO
+* §8.4) → METER pickup (carico 100k [ASSUNZIONE]) → nodo REROUTE pre-fader
+* (3 VCA verso altri bus: ingresso hi-Z, nessun contributo a QUESTA uscita
+* [ASSUNZIONE — la macro VCAM sensa tensione; il 2181 reale carica: da
+* verificare]) → FADER unity (pot 10k, wiper 1k [PROVVISORIO voce 40]) →
+* buffer out ≤50 Ω → iniezione MASTER SUM (carico 10k dichiarato; la rete
+* di summing del master sta nel budget master, non qui).
+* PUNTO DI MISURA: vret = uscita buffer del ritorno (jack return terminato
+* su sorgente rack ~100 Ω, gain/level nominali, VCA detent 0 dB).
+* Rumore VCA 218x: −98 dBV a 0 dB gain (20-20k unwt, senza I/V d'uscita:
+* il VCA qui lavora in tensione verso EQ2 hi-Z) → Rvn 476k = 89 nV/√Hz,
+* iniezione E lineare 4 nodi (quirk: le value={} non propagano rumore —
+* il VCAM comportamentale è sostituito da copia E lineare + iniezione).
+* R BIAS: sweep 1M (come doc §4) / 220k / 100k → quantifica il dominante
+* atteso e la fix (il termico di 1 MΩ = 129 nV/√Hz all'ingresso hi-Z).
+* METODO §8.9: MAI .meas INTEG; densità 10 punti + trapezoidale python +
+* A-wtd IEC 61672 post.
+* ============================================================
+.include ../lib/opamp-audio.inc
+.step param rb LIST 1e6 220e3 100e3
+.param err=0
+.param xl=0.5
+.param thh=0.5
+*
+* Macro buffer JFET-input classe OP1642 (da fx-dc-servo.cir: Rn 1571 = 5,1 nV)
+.subckt OP1642 inp inn out vp vm
+Rn inp inx 1571
+E1 xx 0 value={1e6*(V(inx)-V(inn))}
+R1 xx p1 1k
+C1 p1 0 2n
+E2 out 0 value={limit(V(p1),V(vm)+1.5,V(vp)-1.5)}
+.ends OP1642
+*
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 jacks 0 DC 0 AC 1
+*
+* --- Jack return terminato (sorgente rack ~100 ohm) + protezione §4 ---
+Rsrc jacks jack 100
+Rprot jack np 100
+Ctvs np 0 5p
+Rbias np 0 {rb}
+*
+* --- Buffer gain-2 + DC servo (fx-dc-servo.cir VALIDATO, Vos escluso) ---
+Xbuf np nfb bout vcc vee OP1642
+Rf2 bout nfb 10k
+Rg nfb 0 10k
+Rsi vca sint 1Meg
+Ci sint vint 15n
+Xsi 0 sint vint vcc vee OP1612
+Rinj vint nfb 1Meg
+* --- I/V 10k/5k = stadio d'ingresso VCA (gain −0,5) ---
+Rin bout ns 10k
+Rfiv ns vca 5k
+Xiv 0 ns vca vcc vee OP1612
+*
+* --- GAIN VCA 2181 @ detent 0 dB: copia lineare + rumore datasheet ---
+Esig vcas vca 0 0 1
+Rvnr vnr 0 476k
+Evn2 vcao vcas vnr 0 1
+*
+* --- EQ2 celle serie scalate al detent (fx-eq2.cir VALIDATO §8.4) ---
+Xib vcao v_pre v_pre vcc vee OP1612
+* LOW shelf ~120 Hz
+RinL v_pre naL 1k
+RzaL naL nbL {31k*xl*(1+err/2)+1m}
+CzaL naL nbL 56n
+XopL 0 nbL v_lo vcc vee OP1654
+RfL nbL ncL 1k
+RzbL ncL v_lo {31k*(1-xl)*(1-err/2)+1m}
+CzbL ncL v_lo 56n
+* HIGH sottrattiva ~4,5 kHz
+Ch1 v_lo nha 10n
+Ch2 nha nhb 10n
+Rh1 nha vhp 5.23k
+Rh2 nhb 0 2.5k
+X1h nhb vhp vhp vcc vee OP1654
+Rh3 vhp nvh 10k
+Rh4 nvh vhn {10k*(1+err/2)}
+X2h 0 nvh vhn vcc vee OP1654
+Rp1h vhn wph {10k*thh+1m}
+Rp2h vhp wph {10k*(1-thh)+1m}
+Rah v_lo nsh 49.9k
+Rbh wph nsh 49.9k
+Rfh nsh v_hi 49.9k
+X3h 0 nsh v_hi vcc vee OP1654
+*
+* --- METER pickup + REROUTE (carichi hi-Z) ---
+Rmet v_hi 0 100k
+*
+* --- FADER unity + buffer out + iniezione MASTER SUM ---
+Rtrack v_hi 0 10k
+Rwip v_hi fado 1k
+Xob fado fadb fadb vcc vee OP1612
+Rout fadb vret 47
+Rload vret 0 10k
+*
+.noise V(vret) V1 dec 200 20 20k
+.meas noise nd20 FIND V(onoise) AT 20
+.meas noise nd50 FIND V(onoise) AT 50
+.meas noise nd100 FIND V(onoise) AT 100
+.meas noise nd200 FIND V(onoise) AT 200
+.meas noise nd500 FIND V(onoise) AT 500
+.meas noise nd1k FIND V(onoise) AT 1k
+.meas noise nd2k FIND V(onoise) AT 2k
+.meas noise nd5k FIND V(onoise) AT 5k
+.meas noise nd10k FIND V(onoise) AT 10k
+.meas noise nd20k FIND V(onoise) AT 20k
+.end

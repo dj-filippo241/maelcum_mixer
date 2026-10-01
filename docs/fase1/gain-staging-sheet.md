@@ -111,7 +111,8 @@ Target 5-way RISOLTO: **≤ −80 dBu A-wtd ratificato (decisione 88)** dopo
 benchmark su 9 costruttori della scena (`docs/05-benchmark-preamp-scena-
 2026-09-30.md`). Restano **DA RITARARE (voce 71A)**: canale, bus FX, XLR
 master — dopo la simulazione dei budget mancanti [→ FATTA 2026-09-30:
-decisione 89, righe §3 aggiornate + docs/06]. Dettagli: five-way §8.9 + `sim/five-way/RISULTATI-module-noise-v021.md`.
+decisione 89, righe §3 aggiornate + docs/06; sistema VERIFICATO
+2026-10-01: −80,5 dBu A-wtd = PASS 2,5 dB (docs/06 §7)]. Dettagli: five-way §8.9 + `sim/five-way/RISULTATI-module-noise-v021.md`.
 Impatto sistema: il 5-way domina il rumore della catena master → anche
 XLR MASTER ≤−92 va ritarato sulla voce 71A (budget canale/FX/master) [FATTO: dec. 89 → stadio ≤−92 confermato, sistema ≤−78 A-wtd].
 **RITARATURA FATTA (decisione 89, 2026-09-30)**: canale ≤ −80, FX send

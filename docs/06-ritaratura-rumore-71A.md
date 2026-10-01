@@ -12,7 +12,7 @@ FX e sistema, invalidati dal quirk INTEG di LTspice (§8.9 five-way).
 | Canale CDJ completo | out driver, carico 10k, gain nominali, ingressi terminati | −88,4 dBu | **−90,3 dBu** | ≤ −92 A-wtd | FAIL 1,7 dB (`sim/cdj/RISULTATI-channel-noise-71A.md`) |
 | EQ β3 (sola) | uscita EQ | −89,2 dBu | — | — | 82% della potenza di canale |
 | GAIN VCA 218x (solo) | — | −98 dBV datasheet | — | — | 18% della potenza di canale |
-| 5-way modulo | out modulo (dec. 88) | −81,0 | **−83,2** (−85,5 stimato col fix Rvn, §4) | ≤ −80 A-wtd RATIFICATO | PASS 3,2 dB (5,5 col fix) |
+| 5-way modulo | out modulo (dec. 88) | −81,0 v03 / −82,3 v031 | **−83,2** v03 / **−83,9** v031 (rerun consolidato 2026-10-01) | ≤ −80 A-wtd RATIFICATO | PASS 3,9 dB misurato (v031) |
 | Filtro core OTA nudo (a) | buffer LP, fc max 37 kHz | **−90,3** | −91,4 | ≤ −90 (send 0 dBu) | sim ideale AL LIMITE; die reale −84…−76 = FAIL 6-14 dB (`sim/filtro/RISULTATI-filtro-noise-71A.md`) |
 | Filtro a fc basse (10 Hz-1 kHz) | idem | −126…−103,7 | −139…−117 | — | PASS largo (spettro 1/f) |
 | FX bus (send, jack L) | contributori terminati, pad 0 dB, carico 10k | −98,9 dBu | **−100,8 dBu** | ≤ −88 | PASS 12,8 dB (`sim/fx/RISULTATI-fx-noise-71A.md`); dominante: 3 VCA reroute ~60% (ipotesi conservativa floor −98 dBV sempre) |
@@ -25,7 +25,7 @@ Condizioni: 4 canali CDJ terminati e attivi, DJ bus, 5-way in catena,
 4× canale (−90,3 → −84,3 di somma) ⊕ 5-way (−83,2) ⊕ 4× FX bus
 ([−88 → −82] in attesa) ⊕ master (−119,2 trascurabile):
 
-**Sistema stimato ≈ −78…−79 dBu A-wtd**. Nota: il contributo FX al sistema
+**Sistema stimato ≈ −78…−79 dBu A-wtd** [VERIFICATO 2026-10-01 coi budget reali: **−80,5 dBu A-wtd = PASS 2,5 dB**, §7]. Nota: il contributo FX al sistema
 passa dal canale di RITORNO (buffer JFET hi-Z + GAIN VCA + EQ2 + servo +
 fader → MASTER SUM), mai simulato — il bus send misurato (−100,8) è il
 punto più pulito della catena. Stima provvisoria del ritorno: classe
@@ -48,7 +48,7 @@ fascia alta documentata della categoria, con VCA e drive in percorso.
 | Out driver di canale | ≤ −92 A-wtd | **≤ −90 A-wtd** + fix (a) e/o (b) sotto | misurato −90,3: −90 è onesto solo CON le fix; in alternativa deroga ≤ −88 senza fix |
 | Bus FX (send) | ≤ −88 | **≤ −88 confermato** (PASS 12,8 dB misurato; opzione: stringere a −95 senza fix) | il ritorno FX va al master: budget dedicato in coda |
 | Filtro (send 0 dBu) | ≤ −90 | **≤ −90 confermato MA con vincolo topologico**: la scelta musicale (a) OTA nudo NON lo rispetta a fc max col die reale (−84…−76) | se (a): riga filtro ≤ −76 a fc max (deroga esplicita) oppure (c-B) VCA nel loop che riporta il rumore in target (input nuovo per q70 — l'ascolto resta sovrano) |
-| 5-way | ≤ −80 A-wtd (dec. 88) | invariato | margine reale ~5,5 dB col fix Rvn (§4) |
+| 5-way | ≤ −80 A-wtd (dec. 88) | invariato | margine misurato v031: **3,9 dB** (−83,9 A-wtd; la stima ~5,5 era sbagliata, §4) |
 | XLR master / sistema | ≤ −92 / ≤ −90 | **sistema ≤ −78 dBu A-wtd** alle condizioni dichiarate §2 | −92 era irrealistico post-quirk: il master è dominato dal monte |
 
 Fix ingegneristiche canale (nessun impatto musicale):
@@ -62,7 +62,7 @@ Fix ingegneristiche canale (nessun impatto musicale):
 
 `module-noise-v03.cir` usava Rvn 240k (−101 dBV) col commento "47 nV"
 (= 133k = −104 dBV): il drive era sovrastimato ~2,6 dB → il −83,2 del
-5-way è conservativo di ~2,3 dB (reale ≈ −85,5). Direzione sicura, nessun
+5-way è conservativo di ~2,3 dB (reale ≈ −85,5 [STIMA SBAGLIATA → rerun v031 2026-10-01: −83,9 A-wtd, margine 3,9 dB — il fix Rvn sposta il totale di −0,77 dB, non −2,3: la quota drive con gli switch è ~22-32%, non l'87% del v021 a 6 VCA]). Direzione sicura, nessun
 redesign; il rerun consolidato (Rvn corretto + invertitori gate §8.10 +
 eventuale I/V) va fatto nella coda 71A. Regola: il valore Rvn va derivato
 dal dBV del datasheet (R = en²/4kT), non copiato tra configurazioni.
@@ -83,9 +83,21 @@ dal dBV del datasheet (R = en²/4kT), non copiato tra configurazioni.
    misura e pesatura dichiarati, criterio dec. 88).
 2. [RESPINTO da dec. 89] Fix canale (a)/(b): nessuna fix (target −80,
    misurato −90,3 = PASS 10,3 dB).
-3. Rerun consolidato module-noise-v03 (Rvn + invertitori §8.10).
+3. [FATTO 2026-10-01] Rerun consolidato `module-noise-v031.cir`: −82,3/−83,9 A-wtd θ0 (θ50 −77,9/−79,4), margine 3,9 dB; invertitori +0,02 dB, switch π +0,01 (stima +0,3 cautelativa).
 4. Rumore del filtro: entra nell'ascolto q70 come dato (non decide da solo).
-5. Budget canale di RITORNO FX (vero contributo FX al sistema): coda 71A.
-6. Budget summer DJ bus/master: al design di sistema (task 7) o a banco.
+5. [FATTO 2026-10-01] Budget ritorno FX: −94,5/−96,4 A-wtd per ritorno (GAIN VCA 75%); 4 ritorni al master sum = −90,4 (`sim/fx/RISULTATI-fx-return-noise-71A.md`).
+6. [FATTO 2026-10-01] Summer: DJ bus −105,6/−107,5 A-wtd; master summing −100,0/−101,9; summing+level VCA −94,4/−96,3 → trascurabili (+0,02/+0,06 dB al sistema): assunzione §2 CONFERMATA.
 7. Cleanup residui run interrotta: sim/fx/dbg-bus-noise.* (regola globale: chiedere a Filippo prima di
    cancellare).
+
+## 7. CHIUSURA CODA 71A (2026-10-01) — sistema verificato
+
+Budget mancanti completati: ritorno FX (−96,4 A-wtd ×4 = −90,4), summer
+DJ bus (−107,5) e master summing+level VCA (−96,3) = trascurabili, rerun
+5-way v031 (−83,9 A-wtd θ0, margine 3,9 dB — la stima "reale −85,5" è
+corretta: il fix Rvn sposta −0,77 dB, quota drive ~22-32% con gli switch).
+
+**Sistema ricalcolato (potenze, condizioni §2)**: 4 canali −84,3 ⊕ 5-way
+−83,9 ⊕ 4 ritorni −90,4 ⊕ summer (−107,5/−96,3) ⊕ stadio master −119,2 =
+**−80,5 dBu A-wtd → PASS 2,5 dB sul target ≤ −78 (dec. 89 confermata)**.
+Dominanti: 5-way 45%, 4 canali 42%, ritorni FX 10%. Voce 71A: coda CHIUSA.

@@ -846,9 +846,11 @@ Implementazione ingegneristica della decisione 88. Risultati chiave
    protezioni ESD/over-voltage da valutare in layout (thread EngineerZone),
    second source ADG1634L/ADG1334.]
 5. **Perdita d'inserzione** −0,039 dB uniforme → assorbita dal make-up.
-6. **Rumore**: +2 sezioni op-amp/lato nella banca → +~0,3 dB stimato sul
-   contributo banca: `module-noise-v03.cir` da integrare con gli
-   invertitori nella campagna voce 71A.
+6. **Rumore**: +2 sezioni op-amp/lato nella banca → [VERIFICATO 2026-10-01:
+rerun `module-noise-v031.cir` con invertitori + switch π + Rvn 133k =
+invertitori +0,02 dB, switch π +0,01 (la stima +0,3 era cautelativa);
+totale −82,3/−83,9 A-wtd θ0, margine 3,9 dB su −80 —
+`RISULTATI-module-noise-v031.md`].
 
 ## 9. Questioni toccate
 
