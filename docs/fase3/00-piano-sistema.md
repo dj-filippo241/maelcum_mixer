@@ -50,9 +50,9 @@ massa viaggia sul backplane) → stesso esecutore; S4/S5 indipendenti
 
 ## Stato
 
-- [ ] S1 PSU
-- [ ] S2 Grounding
-- [ ] S3 Backplane
-- [ ] S4 Metering
-- [ ] S5 CUE
-- [ ] Integrazione + review
+- [x] S1 PSU (v0.1, commit cc3cce5; CV → dec. 92)
+- [x] S2 Grounding (commit f5e78ed)
+- [x] S3 Backplane (commit 999fca7 con classe FX-SEND)
+- [x] S4 Metering (commit f5e78ed)
+- [ ] S5 CUE (primo task prossima sessione)
+- [~] Integrazione + review: review 2026-10-01 → 1 BLOCCANTE (rail raw/correnti S1↔S3↔SPECIFICA §3 + headroom LT3045: pre-reg 78L15?) = task 0 prossima sessione; IMPORTANTE/MINORI fixati (c746cbc + fixup)
