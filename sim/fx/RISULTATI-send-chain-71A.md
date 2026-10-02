@@ -64,6 +64,9 @@ target); in ambiente quieto è fruscio udibile quando un FX è assegnato.
    accettato come carattere del caso d'uso (disciplina operatore: level
    send quanto serve). Costo zero, onesto, coerente con K4.
 
-Stato: FINDING APERTO → decisione di Filippo (deroga vs fix 1 vs banco).
+Stato: CHIUSO da DECISIONE 95 (2026-10-02): DEROGA D'USO ratificata
+(target −78 a send non assegnati; con FX in uso floor −73…−66,6 dBu
+A-wtd accettato; leve di fix documentate ma non attuate).
 Voce 71A: la coda «send chain a canali vivi» passa da [PROVVISORIO] a
-MISURATA con questo doc; la decisione sul floor resta aperta.
+MISURATA con questo doc; il floor con assign ON è chiuso da dec. 95
+(deroga d'uso).

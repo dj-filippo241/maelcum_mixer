@@ -109,4 +109,6 @@ send chain vivo (`sim/fx/send-chain-noise.cir`,
 (la stima −95 di fx-send-module §6 era conservativa), ma il floor
 indipendente dal level porta il SISTEMA a ~−73 dBu A-wtd con send
 assegnati (−66,6 con 4 send a level 0 dB) contro target −78: FINDING
-APERTO, deroga d'uso vs fix cella HIGH = decisione di Filippo.
+CHIUSO da DECISIONE 95 (2026-10-02): DEROGA D'USO ratificata da Filippo
+(target −78 vale a send non assegnati; con FX in uso floor −73…−66,6
+accettato come carattere del caso d'uso, disciplina level send K4).
