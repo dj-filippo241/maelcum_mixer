@@ -1,0 +1,67 @@
+* ============================================================
+* GATE KILL A SWITCH (redesign dec. 88) — CLICK HARD-CUT IN TRAN
+* Worst case come §8.5 storico (gate VCA): kill al PICCO del segnale.
+* Livello: max sheet 5-way IN = +6 dBu = 1.55 Vrms = 2.19 Vp (banca
+* unity in banda: il gate vede lo stesso livello).
+* Tre rami (stesso ingresso, stessa catena summer 10k/10k invertente):
+*   vA: PI-SPDT, kill al picco (t=250 us) — BBM 100 ns serie→shunt
+*   vC: PI-SPDT, kill al passaggio per lo zero (t=1 ms) — minimo
+*   vE: SERIE-SPST senza shunt, kill al picco (confronto topologia)
+* Lettura: il click = passo di tensione al nodo summer; a valle il
+* make-up +6 dB (×2) lo porta in uscita modulo. Riferimenti §8.5:
+* VCA hard-cut 3.64 V / ramp 1 ms 1.39 V (sonda HP 1,6 kHz, +10 dBu).
+* Charge injection ADG14xx family: −20…−50 pC (datasheet ADG1411) →
+* nel nodo ~10k||(Coff) il gradino di segnale domina di 2-3 ordini.
+* ============================================================
+V1 src 0 SIN(0 2.19 1000)
+Rsrc src src_o 10
+.model SWKILL SW(Ron=5.7 Roff=1G Vt=2.5)
+.subckt OPAMP inp inn out vp vm
+E1 xx 0 value={1000*(V(inp)-V(inn))}
+R1 xx p1 1k
+C1 p1 0 159p
+E2 out 0 value={limit(V(p1),V(vm)+1.5,V(vp)-1.5)}
+.ends OPAMP
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+* --- PI-SPDT kill al picco ---
+SwA src_o nA ctlA 0 SWKILL
+CoffA src_o nA 30p
+VgA ctlA 0 PWL(0 5 249.9u 5 250u 0 4m 0)
+SwB nA 0 ctlB 0 SWKILL
+CoffB nA 0 30p
+VgB ctlB 0 PWL(0 0 250.05u 0 250.15u 5 4m 5)
+RsA nA nsA 10k
+RfA nsA vA 10k
+XopA 0 nsA vA vcc vee OPAMP
+* --- PI-SPDT kill allo zero ---
+SwC src_o nC ctlC 0 SWKILL
+CoffC src_o nC 30p
+VgC ctlC 0 PWL(0 5 999.9u 5 1000u 0 4m 0)
+SwD nC 0 ctlD 0 SWKILL
+CoffD nC 0 30p
+VgD ctlD 0 PWL(0 0 1000.05u 0 1000.15u 5 4m 5)
+RsC nC nsC 10k
+RfC nsC vC 10k
+XopC 0 nsC vC vcc vee OPAMP
+* --- SERIE-SPST kill al picco (senza shunt) ---
+SwE src_o nE ctlE 0 SWKILL
+CoffE src_o nE 30p
+VgE ctlE 0 PWL(0 5 249.9u 5 250u 0 4m 0)
+RsE nE nsE 10k
+RfE nsE vE 10k
+XopE 0 nsE vE vcc vee OPAMP
+.tran 0 4m 0 10n
+.meas tran vA_t0   FIND V(vA) AT 249.9u
+.meas tran vA_t1   FIND V(vA) AT 400u
+.meas tran vA_max  MAX V(vA) FROM 250u TO 400u
+.meas tran vA_min  MIN V(vA) FROM 250u TO 400u
+.meas tran vC_t0   FIND V(vC) AT 999.9u
+.meas tran vC_t1   FIND V(vC) AT 1200u
+.meas tran vC_max  MAX V(vC) FROM 1000u TO 1100u
+.meas tran vC_min  MIN V(vC) FROM 1000u TO 1100u
+.meas tran vE_t0   FIND V(vE) AT 249.9u
+.meas tran vE_t1   FIND V(vE) AT 400u
+.meas tran vE_max  MAX V(vE) FROM 250u TO 400u
+.meas tran vE_min  MIN V(vE) FROM 250u TO 400u
+.end

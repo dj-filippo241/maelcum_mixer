@@ -122,3 +122,12 @@ SUB/MID + pilotaggio + numeri off-isolation/click/piattezza). Restano:
 verifica datasheet ufficiale ADG1434, protezioni ESD/over-voltage in
 layout, misura click/charge injection a banco, riverifica rumore con
 invertitori (voce 71A). BOM §7 aggiornata [PROVVISORIO].
+
+## Addendum 2026-10-02 — Ron a 85 °C (5,7 Ω vs 4,7)
+
+Rerun di `gate-sw-iso.cir` e `gate-sw-click.cir` con `SW(Ron=5.7)`
+(`*-hot.cir`): off-isolation invariata (Δ ~1e-6 dB: domina Coff),
+inserzione ON −0,0388 → −0,0396 dB (Δ 0,0009 dB), click invariati
+(domina la ramp RC del soft-switch). THD da modulazione Ron analitica
+~0,002-0,004% a 85 °C. Esito: nessuna azione di design; chiude il
+caveat temperatura di `adg1434-datasheet-verify.md` §5.3.

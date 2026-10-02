@@ -71,8 +71,15 @@ fault-protected ADG54xxF (Ron più alta, verifica a parte).
 2. **Terminologia "VL"**: il pin VL non esiste — nei doc la linea "+5 V con
    10k+100n" resta corretta, ma va intesa come pilotaggio diretto degli IN
    (soglie fisse GND-referenced).
-3. **Ron su temperatura**: se le misure a banco mostrano flatness/insertion
-   loss peggiori del previsto a caldo, la causa nota è Ron 5,7 Ω @85 °C
+3. **Ron su temperatura — CHIUSO IN SIM 2026-10-02** (`sim/five-way/gate-sw-iso-hot.cir` +
+   `gate-sw-click-hot.cir`, Ron 5,7 Ω = max @85 °C): off-isolation invariata
+   (Δ ~1e-6 dB, domina Coff), inserzione ON −0,0388 → −0,0396 dB (Δ 0,0009 dB,
+   un decimo della tolleranza delle coppie 0,1%), click invariati (domina la
+   ramp RC). THD da modulazione Ron: analitica ~0,002-0,004% a 85 °C
+   (ΔRon ±0,4 Ω su percorso 10k), sotto il budget rumore dei moduli.
+   **Nessuna azione di design**: il caveat temperatura è chiuso; a banco
+   resta solo la conferma di routine. Causa nota se un giorno si vedesse
+   di peggio: Ron 5,7 Ω @85 °C
    (le sim a 4,7 Ω sono il worst a 25 °C).
 4. **ESD in assemblaggio**: rating HBM non pubblicato e contraddittorio →
    trattare come part sensibile (braccialetto, nessuna Deruga a secco).
