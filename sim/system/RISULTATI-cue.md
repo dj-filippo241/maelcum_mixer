@@ -8,36 +8,46 @@ integrale trapezoidale di en² in python, MAI `.meas INTEG` (quirk 1 di
 RISULTATI-module-noise-v021). A-weight: tabella IEC 61672 interpolata sui
 12 punti (normalizzata 0 dB a 1 kHz).
 
-## Test 1 — ampli cuffia (cue-hp-load)
+## Test 1 — ampli cuffia (cue-hp-load) — REV 2026-10-02 sera: PRIMA VERSIONE INVALIDATA
+
+**Storia (leggere prima dei numeri)**: la prima stesura di questa sezione
+(giri del pomeriggio) era generata da un netlist col Vbe-multiplier
+scritto `Qm pb nb bm`: in LTspice i pin dei BJT sono **C-B-E**, quindi
+quel collegamento era C-E-B = multiplier SPENTO; il bias cadeva su una
+stringa resistiva parassita → idle ~150 mA, che MASCHERAVA il crossover
+e faceva leggere THD 0,009-0,055 %. Corretto il pinout (`Qm pb bm nb`),
+i numeri veri sono questi e la rete di bias/limitatori è **APERTA**
+(task sistema-cue-banco):
 
 Catena: OP1612 unity (feedback su OUTA) + diamond MJE340/350, bias
-Vbe-multiplier con stringa pilotata da CCS JFET (Idss ~8-10 mA), idle
-~20 mA su Re 4,7 Ω, limitatori Vbe sui Re (~140 mA), Rserie 10 Ω verso
-il jack, rail ±18 V. Livello = sorgente diretta (level pot al massimo).
+Vbe-multiplier con trimmer [PROVV] + CCS JFET Idss ~8-10 mA, Re 4,7 Ω
+doppi, limitatori Vbe sui Re, Rserie 10 Ω, rail ±18 V.
 
-| Carico | Vjack pk @1 Vrms in (atteso) | THD @1 Vrms | Vjack pk @12 Vp in | THD @12 Vp | I Rser pk |
-|---|---|---|---|---|---|
-| corto 0,01 Ω | 1,4 mV (clamp) | — | 1,8 mV | — | 141 / 179 mA |
-| 16 Ω (2×32 par) | 0,870 (0,870) | 0,0091 % | 2,76 V (clamp) | — | 54 / 172 mA |
-| 25,8 Ω (32+250 par) | 1,019 (1,019) | 0,0117 % | 4,08 V (clamp) | — | 39 / 158 mA |
-| 32 Ω | 1,077 (1,078) | 0,0163 % | 4,50 V (clamp I) | — | 34 / 141 mA |
-| 250 Ω | 1,360 (1,359) | 0,0549 % | 7,73 V (clip soft) | 29,6 % | 5,4 / 31 mA |
+| Carico | Vjack pk @1,414 in | THD @1 Vrms | Vjack pk @12 Vp | I Rser pk @12 |
+|---|---|---|---|---|
+| corto 0,01 Ω | 1,4 mV | 1,96 % (clamp) | 11,8 mV | 1,18 A (!) |
+| 16 Ω | 0,870 | 4,80 % | 7,39 V | 462 mA (!) |
+| 25,8 Ω | 1,019 | 6,06 % | 8,65 V | 335 mA |
+| 32 Ω | 1,077 | 6,74 % | 9,15 V | 286 mA |
+| 250 Ω | 2,176 (!) | 13,48 % | 11,54 V | 46 mA |
 
-- Livello: partitore Rser/(Rser+RL) ESATTO su tutti i carichi (1 Vrms in
-  → 0,762 Vrms su 32 Ω = requisito sheet ~1 Vrms con level ~90 %).
-- THD a 1 Vrms ≤ 0,055 % su tutti i carichi: PASS (target < 0,1 %).
-- Headroom: clip soft a 7,73 Vp jack su 250 Ω = +20,5 dBu (+14,8 dB sopra
-  1 Vrms); su 32 Ω il tetto è il limitatore a 4,50 Vp = 141 mA (+12,4 dB
-  sopra 1 Vrms). Programma reale (+20 dBu di picco MON, level max): dentro
-  entrambi i tetti.
-- Corto franco al jack: clamp 141 mA (knee morbido a ~179 mA su
-  overdrive estremo). Dissipazione MJE a corto sostenuto: 141 mA × ~15 V
-  ≈ 2,1 W → TO-126 su rame ≥ 4 cm² (pattern master-out); abuso prolungato
-  = dominio termico/PSU, filosofia dec. 88/90.
-- Corrente rail: pavimento idle+stringa ~30 mA per ramo; picco programma
-  (2 jack × 32 Ω × 1 Vrms, L+R simultanei) ~136 mA + pavimento ≈ 170 mA
-  per ramo; doppio corto = 340 mA (guasto, non programma). Numeri per la
-  riga correnti CUE in sistema-backplane §6.
+Sintomi che dicono «rete di bias/limitatori malata», non «diamond
+sbagliato»: (a) guadagno 1,53 su 250 Ω a livello basso (anello che non
+chiude a corrente minima) ma unity esatto sui carichi bassi; (b)
+limitatori che NON limitano a 462 mA (dovevano intervenire a ~140);
+(c) idle misurato contraddittorio tra I(Vam) sul Re (~75 mA DC) e
+pavimento di I(Vp) (~10 mA); (d) THD di crossover 5-13 % a 1 Vrms =
+idle reale troppo basso o bias che non traccia. Il diamond nudo
+(debug del pomeriggio: senza limitatori, Re 4,7, CCS) dava 0,066 %: la
+colpa è nella rete attorno, non nel diamond.
+
+**Stato: APERTO** — prossima sessione: ridisegnare bias+limitatori
+(candidati: senso corrente con R dedicato e transistors con base
+resistor; oppure limiter separati sul ramo di carico fuori dal nodo
+emitter; oppure bias a stringa diodi+trimmer stile master-out §3.3 con
+CCS), rerun Test 1 finché THD ≤0,1 % @1 Vrms su 16-250 Ω e clamp a
+~140 mA verificato. I numeri di livello (partitore Rser) e il rumore
+(Test 4) NON dipendono dal bias e restano validi.
 
 ## Test 2 — law blend (cue-blend)
 
@@ -108,3 +118,10 @@ macro, documentato in opamp-audio.inc).
 4. **run_ltspice.sh fallisce sui .step a valore singolo** (warning
    «only one step» → exit diverso da 0): per run singoli fissare i
    valori nel netlist, non nella lista .step.
+5. **PIN DEI BJT IN LTSPICE = C-B-E, sempre**: il Vbe-multiplier scritto
+   `Qm pb nb bm` era C-E-B = multiplier spento → idle parassita ~150 mA
+   che MASCHERA il crossover e fa passare un Test 1 falso (THD 0,009-
+   0,055 % invece di 5-13 %). Regola: dopo ogni wiring di BJT, leggere
+   il punto di lavoro dei nodi di bias PRIMA di credere a una THD
+   buona; una THD buona con idle incoerente è un red flag, non un
+   risultato.

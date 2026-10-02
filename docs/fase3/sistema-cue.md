@@ -87,9 +87,12 @@ ritorno DC è garantito dal driver d'uscita [N] del master. Polarità: +1
 ## 5. [C][D][E][F] Blend, level, ampli cuffia, uscite
 
 **Blend [C]**: pot doppio gang 10k LINEARE, estremi pilotati da sorgenti
-a bassa Z (uscite di [A] e [B]): law lineare in tensione ESATTA e
-isolamento agli estremi ≈ −116 dB reali (−138 dB in sim con Zo macro = 0;
-stima da Zo closed-loop OP1612 a 20 kHz, RISULTATI-cue Test 2). Centro =
+a bassa Z (uscite di [A] e [B]): law lineare in tensione ESATTA
+(RISULTATI-cue Test 2). Isolamento agli estremi CHIUSO ANALITICO
+2026-10-02 (banco = conferma): Zo closed-loop OP1612 a 20 kHz =
+Zo_ol/(1+T) ≈ 60 Ω/4000 ≈ 15 mΩ (Zo_ol ≈ 60 Ω assunto per la famiglia
+bipolare TI, T = GBW/f = 4000) → leak = 15 mΩ/10 k = **−116 dB**; il
+−138 dB della sim (macro Zo = 0) è il limite inferiore. Centro =
 50/50 con −6 dB per parte [BLOCCATO confermato in sim]; detent centrale
 sul pot = hardware, voce 40. A centro, carico visto da ciascuna sorgente ≈ 10k:
 trascurabile per OP1612.
@@ -98,7 +101,11 @@ trascurabile per OP1612.
 silenzio vero (−∞). Wiper → ingresso non invertente di [E]; ritorno DC
 del bias (2 pA) attraverso la pista: nessun pop.
 
-**Ampli cuffia [E]**: OP1612 in guadagno +1 (feedback preso su OUTA,
+**Ampli cuffia [E]**: gain **+1 CHIUSO PER CALCOLO** 2026-10-02 (banco =
+sanity): a level max il jack arriva al limitatore (4,5 Vp su 32 Ω =
+3,4 Vrms = 361 mW = +25,6 dBm; su 250 Ω 5,45 Vrms = +20,7 dBm): anche
+con cuffia poco sensibile (84 dB SPL/mW) sono 110/105 dB SPL, abbondanti
+per la scena; +2 dB sarebbe solo headroom di manopola. OP1612 in guadagno +1 (feedback preso su OUTA,
 pre-Rserie) + diamond class-AB MJE340/350; bias = Vbe-multiplier con
 trimmer [PROVV] (idle ~20 mA) e stringa pilotata da CCS JFET Idss ~8 mA
 (lezione sim: col resistore al rail la stringa muore a uscita alta);
@@ -111,8 +118,16 @@ cuffia NON sta sul rail LN — i picchi di corrente del carico (fino a
 170 mA per ramo in programma, 340 mA in doppio corto) non devono
 modulare il rail ultra-low-noise; i blocchi di segnale [A]-[D] restano
 su ±15,0 LN. «Alimentazione isolata» [BLOCCATO SPEC §10] = regolazione
-locale dedicata, soddisfatta. THD a 1 Vrms ≤ 0,055 % su 32-250 Ω;
-headroom +12,4…+14,8 dB sopra 1 Vrms (RISULTATI-cue Test 1).
+locale dedicata, soddisfatta. **STATO BIAS/LIMITATORI: APERTO**
+(REV 2026-10-02 sera): col pinout BJT corretto (C-B-E — la prima
+stesura dei netlist aveva il multiplier C-E-B = spento, idle parassita
+~150 mA che mascherava il crossover) il Test 1 rigenerato dà THD
+4,8-13,5 % @1 Vrms, guadagno anomalo 1,53 su 250 Ω a basso livello e
+limitatori che non limitano (462 mA a 16 Ω): la rete bias+limitatori va
+ridisegnata e riverificata (task sistema-cue-banco, prossima sessione;
+dettagli e dati in `sim/system/RISULTATI-cue.md` Test 1 REV). Livello,
+partitore Rserie e rumore (Test 4) NON dipendono dal bias e restano
+validi.
 
 **Uscite [F]**: per canale, l'uscita ampli si sdoppia su 2 jack stereo
 con Rserie 10 Ω 2 W per ramo-jack (8 resistenze nel modulo): la Rserie
@@ -146,7 +161,17 @@ guasto master). Restano da togliere i transienti PROPRI del modulo cue:
 Tutto analogico, niente MCU (coerenza col progetto). Consumo +5 V: 2
 relay DPDT eccitati in normale esercizio ≈ 56 mA + controller ~2 mA
 (budget +5 V dec. 93: worst 1,0 A → 1,06 A, dentro il dimensionamento
-1,25 A).
+1,25 A). **Spec relay per classe** (parte concreta alla reperibilità
+post-M4L, congelata): bobina 5 V, DPDT, contatti ≥ 2 A, bobina ≤ 30 mA,
+contatti dorati; famiglia esempi Omron G6K-2 / Panasonic TQ2 / Fujitsu
+JS2. **Click relay CHIUSO ANALITICO**: a power-on i relay chiudono a
+timer scaduto con ampli stabile — alla chiusura il solo gradino è l'offset
+DC (Vos × gain ≈ 1 mV in cuffia = 31 µW su 32 Ω: inudibile); a power-off
+aprono in <10 ms con programma forse presente: bounce sotto segnale =
+tick udibile allo spegnimento, stesso carattere di master-out §3.7
+(pattern casa accettato); se a banco desse fastidio: sequenza locale
+«muta il blend 10 ms prima dei relay» (una cella RC in più sul
+controller).
 
 ## 7. Polarità e fase tra i due percorsi del blend
 
@@ -174,7 +199,7 @@ comb filtering udibile sulle bande dove il ritardo 5-way dà sfasamento
 | Rail locale | Da | Per | Corrente (idle / picco) |
 |---|---|---|---|
 | ±15,0 LN | pre-reg ±16,5 + LT3045/94 dal raw ±22 | [A][B][C][D], riferimenti | ~23 / 25 mA |
-| ±18 audio | LM317/337 dal raw ±27 + bulk locale | [E] | ~30 / 170 mA programma; 340 mA doppio corto (guasto) |
+| ±18 audio | LM317/337 dal raw ±27 + bulk locale | [E] | ~15 / 170 mA programma (pavimento ~10 mA col bias corretto); corto DA RIVERIFICARE dopo il redesign bias (il clamp misurato NON interviene: 462 mA) |
 | +5 V | bus backplane (regolato in PSU, dec. 93) | [G] relay + controller | ~58 / 60 mA |
 
 La riga correnti CUE di `sistema-backplane.md` §6 ([PROVV fino a S5]:
@@ -215,10 +240,14 @@ Risultati e lezioni di metodo in `sim/system/RISULTATI-cue.md`.
 
 ## 12. Aperti (non bloccano il design)
 
-- Idle diamond e trimmer multiplier: valore a banco [PROVV].
-- Relay: parte concreta (5 V, DPDT, contatti ≥ 1 A) a reperibilità/voce 40.
+- **Rete bias+limitatori dell'ampli cuffia da ridisegnare** (Test 1 REV
+  02/10 sera: THD 5-13 % @1 Vrms, clamp assente, guadagno anomalo su
+  250 Ω): primo item della prossima sessione; trimmer, idle e corso di
+  regolazione si definiscono DOPO il redesign (i vecchi numeri «idle
+  ~20 mA» erano teorici, mai verificati).
+- Relay: parte concreta dentro la spec per classe qui sopra, alla
+  reperibilità post-M4L (congelata).
 - Jack/posizione/detent/level range: sessione hardware (voce 40, Filippo).
-- Gain +1 vs +2 dB dell'ampli: conferma a banco con cuffie reali.
-- Isolamento blend a 20 kHz col chip reale (Zo closed-loop): banco.
-- Click dei relay all'eccitazione: udibile solo in transizione power
-  (cuffia muta in quel momento by design): niente da fare.
+- Conferme a banco residue (sanity, non decisioni): gain +1 con cuffie
+  reali, isolamento blend a 20 kHz col chip reale (stima −116 dB),
+  eventuale tick di power-off.
