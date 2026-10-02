@@ -101,3 +101,12 @@ corretta: il fix Rvn sposta −0,77 dB, quota drive ~22-32% con gli switch).
 −83,9 ⊕ 4 ritorni −90,4 ⊕ summer (−107,5/−96,3) ⊕ stadio master −119,2 =
 **−80,5 dBu A-wtd → PASS 2,5 dB sul target ≤ −78 (dec. 89 confermata)**.
 Dominanti: 5-way 45%, 4 canali 42%, ritorni FX 10%. Voce 71A: coda CHIUSA.
+
+**ADDENDUM 2026-10-02 (send chain a canali vivi)**: il −80,5 vale con gli
+assign FX NON attivi (ritorni simulati col bus terminato). Misurato il
+send chain vivo (`sim/fx/send-chain-noise.cir`,
+`sim/fx/RISULTATI-send-chain-71A.md`): −98,5 dBu A-wtd per canale al jack
+(la stima −95 di fx-send-module §6 era conservativa), ma il floor
+indipendente dal level porta il SISTEMA a ~−73 dBu A-wtd con send
+assegnati (−66,6 con 4 send a level 0 dB) contro target −78: FINDING
+APERTO, deroga d'uso vs fix cella HIGH = decisione di Filippo.

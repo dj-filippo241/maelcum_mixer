@@ -132,12 +132,15 @@ separabilità, accettato da dec. 91.
 La sezione send NON tocca il percorso principale del canale (il budget
 canale −90,3 dBu A-wtd resta valido: il tap è un'uscita bufferizzata in
 parallelo). Il rumore del micro-modulo viaggia solo verso i bus FX:
-EQ2+level+buffer ≈ classe EQ β3 ridotta (2 celle vs 4) ≈ −95 dBu per
-canale stimato [PROVVISORIO — da misurare nella campagna di verifica:
-il budget FX send −100,8 dBu (RISULTATI-fx-noise-71A) assumeva
-contributori TERMINATI: a canali vivi il send chain contribuisce; la
-somma di 4 send vivi + bus resta comunque ≥15 dB sotto il sistema
-−80,5 dBu A-wtd → nessuna ritaratura attesa].
+EQ2+level+buffer: MISURATO 2026-10-02
+(`sim/fx/send-chain-noise.cir` + `RISULTATI-send-chain-71A.md`):
+**−98,5 dBu A-wtd per canale** al jack send con level al massimo (la
+stima −95 era conservativa di 3,5 dB); dominatore = trio 49,9k della
+cella HIGH sottrattiva (~49 nV/√Hz). FINDING APERTO: il floor
+indipendente dal level (buffer iniezione + coppia 10k di iniezione,
+19,3 nV/√Hz) porta il SISTEMA a ~−73 dBu A-wtd appena un assign è ON
+(−66,6 con 4 send a level max) contro target −78: deroga d'uso vs fix
+cella = decisione di Filippo registrata in RISULTATI-send-chain-71A.
 
 ## 7. Simulazioni
 

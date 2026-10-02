@@ -1,0 +1,93 @@
+* ============================================================
+* 71A coda — rumore SEND CHAIN FX a canali vivi (send-chain-noise)
+* Task handoff 2026-10-02: verificare/riffinare la stima −95 dBu per
+* canale di fx-send-module §6 [PROVVISORIO].
+* Catena reale del micro-modulo FX-SEND (fx-send-module §2), un
+* canale, al detent (EQ2 flat) e level al massimo (0 dB = worst):
+*   tap di canale (buffer out <=50 ohm) -> buffer IN OP1612 ->
+*   EQ2: cella LOW shelf 120 Hz (OP1654) + cella HIGH sottrattiva
+*   4,5 kHz (3x OP1654, valori da fx-eq2.cir scalati) ->
+*   LEVEL pot 10k log al massimo (wiper in cima: track 10k a gnd) ->
+*   assign ON (serie Ron 4,7; shunt aperto; pi SPDT ADG1434-class) ->
+*   buffer di iniezione OP1654 + R 10k lato sorgente ->
+*   net multidrop del bus FX -> summing virtual-earth del modulo FX
+*   (Rf 10k) -> uscita bus.
+* Gli altri contributori del bus sono TERMINATI coi loro switch
+* aperti (stub 10k flottanti: non iniettano rumore).
+* Metodo casa: densita' a 12 punti (.meas FIND V(onoise) AT f),
+* integrale trapezoidale di en^2 in python, A-weight IEC sui punti,
+* MAI .meas INTEG. Due letture: V(inj) (uscita buffer iniezione,
+* pre-R 10k) e V(vbus) (uscita summing bus, 1 canale vivo).
+* ============================================================
+.include ../lib/opamp-audio.inc
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+
+* ---------- tap di canale: driver bufferizzato <=50 ohm ----------
+V1 vin 0 0
+Rsrc vin tap 47
+
+* ---------- buffer IN ----------
+Xib tap v_pre v_pre vcc vee OP1612
+
+* ---------- EQ2 LOW shelf ~120 Hz (detent xl=0,5) ----------
+RinL v_pre naL 1k
+RzaL naL nbL 15.5k
+CzaL naL nbL 56n
+XopL 0 nbL v_lo vcc vee OP1654
+RfL nbL ncL 1k
+RzbL ncL v_lo 15.5k
+CzbL ncL v_lo 56n
+
+* ---------- EQ2 HIGH sottrattiva ~4,5 kHz (detent thh=0,5) ----------
+Ch1 v_lo nha 10n
+Ch2 nha nhb 10n
+Rh1 nha vhp 5.23k
+Rh2 nhb 0 2.5k
+X1h nhb vhp vhp vcc vee OP1654
+Rh3 vhp nvh 10k
+Rh4 nvh vhn 10k
+X2h 0 nvh vhn vcc vee OP1654
+Rp1h vhn wph 5k
+Rp2h vhp wph 5k
+Rah v_lo nsh 49.9k
+Rbh wph nsh 49.9k
+Rfh nsh v_hi 49.9k
+X3h 0 nsh v_hi vcc vee OP1654
+
+* ---------- LEVEL pot 10k log al massimo ----------
+Rlvl w v_hi 0.001
+Rlvltrack w 0 10k
+
+* ---------- assign ON: serie Ron 4,7 (shunt aperto) ----------
+Ron w sw 4.7
+
+* ---------- buffer di iniezione + R 10k lato sorgente ----------
+Xinj sw inj inj vcc vee OP1654
+Rinj inj net1 10k
+
+* ---------- net multidrop: altri contributori TERMINATI ----------
+Rstub1 net1 open1 10k
+Rstub2 net1 open2 10k
+Rstub3 net1 open3 10k
+Rstub4 net1 open4 10k
+
+* ---------- summing virtual-earth del modulo FX ----------
+Rf net1 vbus 10k
+Xsum 0 net1 vbus vcc vee OP1612
+
+.op
+.noise V(vbus) V1 dec 20 10 100k
+.meas noise b10 FIND V(onoise) AT 10
+.meas noise b20 FIND V(onoise) AT 20
+.meas noise b50 FIND V(onoise) AT 50
+.meas noise b100 FIND V(onoise) AT 100
+.meas noise b200 FIND V(onoise) AT 200
+.meas noise b500 FIND V(onoise) AT 500
+.meas noise b1k FIND V(onoise) AT 1000
+.meas noise b2k FIND V(onoise) AT 2000
+.meas noise b5k FIND V(onoise) AT 5000
+.meas noise b10k FIND V(onoise) AT 10000
+.meas noise b15k FIND V(onoise) AT 15000
+.meas noise b20k FIND V(onoise) AT 20000
+.end
