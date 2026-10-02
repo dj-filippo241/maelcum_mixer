@@ -347,3 +347,22 @@ CHIUSA punto per punto:
 Restano per banco/prototipo (dichiarati): modello TI ufficiale (THD/rumore del chip
 reale), ripple/PSRR con PSU vero, corto sostenuto termico su rame, scelta LED vs
 1N4148, trim law 2181 (q53), eventuale smorzamento picco MHz (Zobel già al connettore).
+
+## ADDENDUM 2026-10-02 — [N] MON buffer verso CUE (design S5)
+
+S5 (`docs/fase3/sistema-cue.md` §4): la componente MASTER del blend
+cuffia si prende **post-summing [A2], pre-master-level [D]** (scelta di
+Filippo 2026-10-02 confrontando DJM-900NXS2 — master cue pre master
+level — e Xone:92 — monitor sul bus LR MIX post-master): stesso nodo di
+programma di REC e BOOTH; la manopola master resta un gesto performativo
+libero e il programma vero si ascolta dal booth. Nuovo blocco **[N]**:
+buffer dedicato OP1612 unity NON invertente dall'uscita di [A2], uscita
+≤ 50 Ω verso lo slot 8 del backplane (MON out L/R → slot 5 del modulo
+CUE). Regola «mai un buffer unico splittato» rispettata: [N] è il quarto
+buffer distinto sul nodo somma. Nel modulo cue il ricevitore MON è un
+follower direct senza R serie (una 100k inietterebbe 40,7 nV/√Hz): il
+ritorno DC del bias è garantito da [N]. Polarità relativa cue/MON
+VERIFICATA in sim (`sim/system/RISULTATI-cue.md` Test 3): [A2] inverte,
+[N] non inverte, cue summer inverte → al centro del blend le due
+componenti sommano a livello pieno (un anello invertito per errore
+cancellerebbe a −104 dB).

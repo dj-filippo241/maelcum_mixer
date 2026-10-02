@@ -1,0 +1,70 @@
+* ============================================================
+* S5 CUE — Test 1: ampli cuffia su carichi reali (cue-hp-load)
+* Riferimento: design S5 v0.1 (sistema-cue.md §5)
+* Topologia: OP1612 non-invertente gain +1 (feedback preso su OUTA,
+* pre-Rserie) + diamond class-AB MJE340/350 con Vbe-multiplier
+* (trimmer [PROVV]) biasato da CCS JFET Idss ~8 mA + Re 4,7 ohm
+* doppi (stabilita' termica E senso corrente) + limitatori Vbe su Re
+* (classe 138 mA) + Rserie 10 ohm verso il jack (isolamento tra
+* uscite + stabilita' su carico capacitivo). Rail: +-18 V audio
+* locali (LM317/337 dal raw +-27, dec. S5: lo stadio di potenza
+* cuffia NON sta sul rail LN).
+* Carichi .step: 32 / 250 / 2x32 par (16) / 32+250 par (25,8) /
+* corto franco (0,01). Ampiezza: 1,414 Vp (1 Vrms = requisito sheet)
+* e 12 Vp (headroom / comportamento al limite).
+* Semplificazioni: mono (L/R identici), niente relay (analitico),
+* livello al massimo (level pot bypassato = worst case guadagno).
+* ============================================================
+.inc ../lib/opamp-audio.inc
+
+* ---------- modelli discreti (pattern compB-swing.cir) ----------
+.model MJE340 NPN(IS=1e-13 BF=150 VAF=150 IKF=0.5 BR=5 CJC=4p CJE=15p TF=2n TR=20n RB=5 RC=1 RE=0.1 Vceo=300 Icrating=500m mfg=ON)
+.model MJE350 PNP(IS=1e-13 BF=100 VAF=120 IKF=0.4 BR=3 CJC=4p CJE=15p TF=5n TR=20n RB=5 RC=1.5 RE=0.15 Vceo=300 Icrating=500m mfg=ON)
+.model QSM NPN(IS=1e-14 BF=250 CJC=4p CJE=8p TF=10n)
+
+* ---------- alimentazioni ----------
+Vp vp 0 18
+Vm vm 0 -18
+
+* ---------- ingresso (level pot al massimo = sorgente diretta) ----------
+V1 in 0 sine 0 {VA} 1k
+
+* ---------- OP1612 + diamond ----------
+XU1 in fbu uo vp vm OP1612
+* Vbe multiplier: Vmult = Vbe*(1+Ra/Rb) ~ 1,46 V -> idle ~20 mA su Re 4,7
+* Stringa di bias pilotata da CCS JFET (CRD, Idss ~8 mA) e NON da
+* resistore al rail: col resistore la corrente di stringa crollava a
+* uscita alta (18-12,7)/2k2 = 2,4 mA -> crossover = THD 5-57% misurata
+Qm pb nb bm QSM
+Rdrv uo bm 0.001
+Ra pb bm 1240
+Rb bm nb 1000
+J1 vp pb pb JCRD
+J2 nb vm vm JCRD
+.model JCRD NJF(VTO=-2.0 BETA=2.0m LAMBDA=0.02)
+Q1 vp pb en MJE340
+Q2 vm nb ep MJE350
+Ren en outa 4.7
+Rep ep outa 4.7
+* limitatori di corrente sui Re (0,65 V / 4,7 = 138 mA)
+Qln pb en outa QSM3
+Qlp nb ep outa QSM2
+.model QSM2 PNP(IS=1e-14 BF=100)
+.model QSM3 NPN(IS=1e-14 BF=100)
+* feedback unity diretto da OUTA (pre-Rserie: stabilita' su carico
+* capacitivo; la Rserie resta fuori anello = Zout 10 ohm al jack)
+Rfb1 fbu outa 0.001
+* ---------- uscita: Rserie + jack + carico ----------
+Rser outa jack 10
+Rload jack 0 {RL}
+
+* ---------- analisi ----------
+.step param RL list 32 250 16 25.8 0.01
+.step param VA list 1.414 12
+.op
+.tran 0 12m 4m 5u
+.four 1k 9 8 V(jack)
+.meas tran voutpk MAX V(jack)
+.meas tran isuppk MAX I(Vp)
+.meas tran iserpk MAX I(Rser)
+.end

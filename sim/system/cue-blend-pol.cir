@@ -1,0 +1,43 @@
+* ============================================================
+* S5 CUE — Test 3: polarita' relativa cue vs MON al centro blend
+* (cue-blend-pol)
+* Lo stesso programma arriva al summer cue come S e al buffer MON
+* come -S (il summing master [A2] inverte; il buffer MON e'
+* non-invertente per design). Se le polarita' relative sono giuste,
+* al centro (X=0,5) le due componenti SOMMANO (uscita = S, cioe'
+* 0 dB rispetto al singolo percorso a -6 dB ciascuna... in fase:
+* -6+-6 in fase = 0 dB). Se un anello e' invertito per errore, al
+* centro si CANCELLANO (notch profondo).
+* POL = -1 rappresenta il caso di design ([A2] invertente a monte);
+* POL = +1 e' il controllo (deve cancellare).
+* Frequenza unica 1k; .four 1k; finestra 20 ms = 20 cicli interi.
+* ============================================================
+.inc ../lib/opamp-audio.inc
+
+* ---------- cue summer (-1) ----------
+Vcue cuein 0 sine 0 0.775 1k
+Rin cuein sinn 10k
+Rf sinn sout 10k
+XU1 gnd sinn sout vp vm OP1612
+* ---------- MON: sorgente gia' al segno che arriva da [A2] ----------
+Vmon monin 0 sine 0 {POL*0.775} 1k
+XU2 monin monn mout vp vm OP1612
+Rfb2 monn mout 0.001
+* ---------- pot blend 10k ----------
+Ra sout w {max(X*10k,0.001)}
+Rb mout w {max((1-X)*10k,0.001)}
+* ---------- level max + buffer + uscita ----------
+XU3 w u3n u3o vp vm OP1612
+Rfb3 u3n u3o 0.001
+Rser u3o jack 10
+Rload jack 0 32
+
+Vp vp 0 18
+Vm vm 0 -18
+
+.step param POL list -1 1
+.step param X list 0.5 0.25 0.75
+.op
+.tran 0 40m 20m 5u
+.four 1k 9 20 V(jack)
+.end

@@ -1,0 +1,47 @@
+* ============================================================
+* S5 CUE — Test 2: law del blend CUE<->Master + isolamento estremi
+* (cue-blend)
+* Catena: cue summer (Rin 10k sorgente / Rf 10k, -1) -> estremo A del
+* pot blend; MON follower (direct, senza R serie: lezione rumore) ->
+* estremo B; wiper -> level pot al massimo -> HP amp (qui buffer
+* unity semplificato: il Test 1 copre lo stadio di potenza) -> Rserie
+* 10 -> jack 32 ohm.
+* Due frequenze separate (1k cue, 1,5k MON: cicli interi nella
+* finestra .four) per leggere i due guadagni: .four 1k e .four 1.5k.
+* X = posizione blend: 1 = tutto CUE, 0 = tutto MASTER (SPEC: CCW
+* cue / CW master). Attesi: X=1 -> cue 0 dB, MON = isolamento;
+* X=0,5 -> entrambi -6 dB (50/50 [BLOCCATO]); X=0 -> cue = isolamento.
+* Isolamento reale limitato dalla Zo closed-loop del chip (macro
+* Zo=0 -> numero ottimistico): stima analitica nel doc.
+* ============================================================
+.inc ../lib/opamp-audio.inc
+
+* ---------- cue summer (-1) ----------
+Vcue cuein 0 sine 0 0.775 1k
+Rin cuein sinn 10k
+Rf sinn sout 10k
+XU1 gnd sinn sout vp vm OP1612
+* ---------- MON follower (direct) ----------
+Vmon monin 0 sine 0 0.775 1.5k
+XU2 monin monn mout vp vm OP1612
+Rfb2 monn mout 0.001
+* ---------- pot blend 10k (X=1 tutto cue) ----------
+Ra sout w {max(X*10k,0.001)}
+Rb mout w {max((1-X)*10k,0.001)}
+* ---------- level al massimo + HP buffer + uscita ----------
+XU3 w u3n u3o vp vm OP1612
+Rfb3 u3n u3o 0.001
+Rser u3o jack 10
+Rload jack 0 32
+
+Vp vp 0 18
+Vm vm 0 -18
+
+.step param X list 0 0.25 0.5 0.75 1
+.op
+.tran 0 40m 20m 5u
+* Ncycles interi per entrambe le frequenze nella finestra (20 ms):
+* 1k -> 20 cicli, 1,5k -> 30 cicli (senza: leakage tra i bin)
+.four 1k 9 20 V(jack)
+.four 1.5k 9 30 V(jack)
+.end

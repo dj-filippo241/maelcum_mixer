@@ -54,5 +54,5 @@ massa viaggia sul backplane) → stesso esecutore; S4/S5 indipendenti
 - [x] S2 Grounding (commit f5e78ed; §6 REV dec. 93: bead sui raw dedicati)
 - [x] S3 Backplane (commit 999fca7 con classe FX-SEND → **v0.2 dec. 93**: pinout riga a + correnti per raw)
 - [x] S4 Metering (commit f5e78ed)
-- [ ] S5 CUE (primo task prossimo — usa i rail dec. 93: ±22 LN per ampli cuffia/riferimenti, +5 logiche)
+- [x] S5 CUE (**DESIGN FATTO 2026-10-02** → `sistema-cue.md` v0.1 + `sim/system/cue-*.cir`: summing 4 cue a massa virtuale; MON post-[A2] pre-level (stile DJM-900NXS2, scelta Filippo); blend/level passivi con centro −6/−6 e polarità VERIFICATI in sim; ampli cuffia OP1612+diamond su ±18 locali (THD ≤0,055 % @1 Vrms, clamp corto 141 mA); rumore −114,8 dBu A-wtd PASS 24,8 dB; CUE indipendente da c9 con protezione power locale (scelta Filippo). **Design di sistema COMPLETO: proporre a Filippo la ripresa M4L (dec. 78)**)
 - [x] Integrazione + review: BLOCCANTE (rail raw/correnti S1↔S3↔SPECIFICA §3 + headroom LT3045) **CHIUSO 2026-10-01 → DECISIONE 93**: set unico raw ±27/±22/±26[M]/+5; LT3045 Vin max 20 V (il «15 V» dell'handoff era l'uscita max) → LN due stadi ±16,5→±15,0 esatti, 78L15 bocciato; W3 ridimensionato 2×20 V (statici master worst = punto verificato ±23,7 V); +5 V worst 1,0 A / dimensionamento 1,25 A. IMPORTANTE/MINORI già fixati (c746cbc + fixup)

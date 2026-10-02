@@ -133,6 +133,7 @@ Design circuitale: `docs/fase1/master-out.md` **v0.3 (2026-09-29: stadio finale 
 ## 10. CUE / cuffie — requisiti
 
 - [BLOCCATO] CUE solo sui canali DJ (post-EQ/pre-filter/pre-fader); più CUE attivi sommati; 2 uscite cuffia, level condiviso, amp dedicato high-current con alimentazione/ground isolati; mix CUE/MASTER: CCW=cue, centro=50/50, CW=master (stesso mix su entrambe le uscite); niente CUE per FX/mic/generic; niente meter cuffia.
+- [DESIGN FATTO 2026-10-02 → `docs/fase3/sistema-cue.md` v0.1 (S5, ultimo workstream fase 3): requisiti invariati; tap MON = post-summing master pre-level (scelta di Filippo 2026-10-02, comportamento DJM-900NXS2); CUE indipendente da GLOBAL_MUTE con protezione power locale (scelta di Filippo, chiude la materia dec. 94b); numeri verificati in sim: THD ≤0,055 % @1 Vrms su 32-250 Ω, headroom +12,4…+14,8 dB, clamp corto 141 mA, rumore −114,8 dBu A-wtd (PASS 24,8 dB su −90). Design di sistema COMPLETO.]
 
 ## 11. Metering — requisiti
 

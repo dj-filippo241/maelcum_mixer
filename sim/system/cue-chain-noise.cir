@@ -1,0 +1,75 @@
+* ============================================================
+* S5 CUE — Test 4: rumore catena completa al jack cuffia
+* (cue-chain-noise)
+* Catena reale: 1 cue attivo (Rin 10k lato sorgente) + 3 stub 10k
+* flottanti (switch aperti: non contribuiscono) -> summer Rf 10k ->
+* blend X=0,5 (5k+5k) -> MON follower DIRECT (senza R serie: una
+* 100k in serie inietterebbe 40 nV/rHz; il requisito >=100k sul net
+* e' soddisfatto dall'impedenza d'ingresso del follower, pA) ->
+* level al massimo -> HP amp completo (diamond + Re + Rser 10) ->
+* jack 32 ohm.
+* Metodo della casa (RISULTATI-module-noise-v021): densita' con
+* .meas noise FIND V(onoise) AT f a 12 punti, integrazione
+* trapezoidale di en^2 in python, MAI .meas INTEG. A-weight
+* applicato in python sulle densita'.
+* Target S5: <= -90 dBu A-wtd al jack con level al massimo
+* (= ~22 dB SPL su cuffia 100 dB/mW: inudibile).
+* ============================================================
+.inc ../lib/opamp-audio.inc
+.model MJE340 NPN(IS=1e-13 BF=150 VAF=150 IKF=0.5 BR=5 CJC=4p CJE=15p TF=2n TR=20n RB=5 RC=1 RE=0.1 Vceo=300 Icrating=500m mfg=ON)
+.model MJE350 PNP(IS=1e-13 BF=100 VAF=120 IKF=0.4 BR=3 CJC=4p CJE=15p TF=5n TR=20n RB=5 RC=1.5 RE=0.15 Vceo=300 Icrating=500m mfg=ON)
+.model QSM NPN(IS=1e-14 BF=250 CJC=4p CJE=8p TF=10n)
+.model QSM2 PNP(IS=1e-14 BF=100)
+.model QSM3 NPN(IS=1e-14 BF=100)
+
+Vp vp 0 18
+Vm vm 0 -18
+
+* ---------- cue summer: 1 attivo + 3 stub aperti ----------
+V1 cuein 0 0
+Rin cuein sinn 10k
+Rstub1 sinn open1 10k
+Rstub2 sinn open2 10k
+Rstub3 sinn open3 10k
+Rf sinn sout 10k
+XU1 gnd sinn sout vp vm OP1612
+* ---------- MON follower direct, sorgente terminata ----------
+XU2 gnd monn mout vp vm OP1612
+Rfb2 monn mout 0.001
+* ---------- blend X=0,5 ----------
+Ra sout w 5k
+Rb mout w 5k
+* ---------- level max + HP amp completo ----------
+XU3 w u3n uo vp vm OP1612
+Qm pb nb bm QSM
+Rdrv uo bm 0.001
+Ra2 pb bm 1240
+Rb2 bm nb 1000
+J1 vp pb pb JCRD
+J2 nb vm vm JCRD
+.model JCRD NJF(VTO=-2.0 BETA=2.0m LAMBDA=0.02)
+Q1 vp pb en MJE340
+Q2 vm nb ep MJE350
+Ren en outa 4.7
+Rep ep outa 4.7
+Qln pb en outa QSM3
+Qlp nb ep outa QSM2
+Rfb3b u3n outa 0.001
+Rser outa jack 10
+Rload jack 0 32
+
+.op
+.noise V(jack) V1 dec 20 10 100k
+.meas noise nd10 FIND V(onoise) AT 10
+.meas noise nd20 FIND V(onoise) AT 20
+.meas noise nd50 FIND V(onoise) AT 50
+.meas noise nd100 FIND V(onoise) AT 100
+.meas noise nd200 FIND V(onoise) AT 200
+.meas noise nd500 FIND V(onoise) AT 500
+.meas noise nd1k FIND V(onoise) AT 1000
+.meas noise nd2k FIND V(onoise) AT 2000
+.meas noise nd5k FIND V(onoise) AT 5000
+.meas noise nd10k FIND V(onoise) AT 10000
+.meas noise nd15k FIND V(onoise) AT 15000
+.meas noise nd20k FIND V(onoise) AT 20000
+.end

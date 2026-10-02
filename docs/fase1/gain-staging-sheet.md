@@ -87,6 +87,8 @@ sugli statici [M].
 | Mix CUE/MASTER (CCW=cue, centro=50/50, CW=master) | — | pot passivo + buffer |
 | Amp cuffia | ~1 Vrms su 32-250 Ω | 2 uscite, level condiviso, isolamento alimentazione |
 
+[DESIGN FATTO 2026-10-02 → `docs/fase3/sistema-cue.md` (S5): summing cue −1 su massa virtuale (0 dBu per cue attivo); MON follower direct dal buffer [N] del master (post-[A2] pre-level); blend pot lin 10k con centro −6/−6 e law ESATTA verificati in sim; level pot log; ampli cuffia OP1612+diamond su ±18 locali (THD ≤0,055 % @1 Vrms su 32-250 Ω, headroom +12,4…+14,8 dB, clamp corto 141 mA); 2 jack con Rser 10 Ω + relay di protezione locale; rumore al jack −114,8 dBu A-wtd (target −90: PASS 24,8 dB)]
+
 ## 3. Allocazione rumore (target [P] — validazione in simulazione, correzione 13 review)
 
 | Punto di misura (ingressi terminati, gain nominali) | Target residuo A-wtd |
