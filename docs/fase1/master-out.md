@@ -345,8 +345,13 @@ CHIUSA punto per punto:
    nessun ringing, errore a 8 Hz −0,0002 dB.
 
 Restano per banco/prototipo (dichiarati): modello TI ufficiale (THD/rumore del chip
-reale), ripple/PSRR con PSU vero, corto sostenuto termico su rame, scelta LED vs
-1N4148, trim law 2181 (q53), eventuale smorzamento picco MHz (Zobel già al connettore).
+reale), corto sostenuto termico su rame, scelta LED vs 1N4148, trim law 2181 (q53),
+margine di stabilità col cavo più lungo previsto (picco MHz: vedi sotto).
+**CHIUSI IN SIM 2026-10-02** (`sim/master-out/RISULTATI-composite.md` §Banco):
+THD a +24 dBu sull'inviluppo statici 23,6/26,5/29,2 V = sotto il pavimento numerico
+(il limite resta il chip reale); PSRR rail [M] −142,8 dB @100 Hz → ripple in uscita
+26 nVpp col ripple raw W3 di S1 (tema chiuso); Zobel/L-reti d'uscita BOCCIATI in sim
+(il picco worst +5,2 dB @10 nF resta quello di v0.3, fuori banda).
 
 ## ADDENDUM 2026-10-02 — [N] MON buffer verso CUE (design S5)
 

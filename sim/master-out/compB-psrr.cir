@@ -1,0 +1,73 @@
+* ============================================================
+* MASTER OUT banco — Test 15: PSRR dai rail statici [M] (ripple PSU)
+* (compB-psrr, task master-out-banco 2026-10-02)
+* S1 v0.2: ripple raw W3 ([M]) 0,36 Vpp a 0,17 A (100 Hz); il bulk
+* locale da 1000 uF + ferrite non attenua apprezzabilmente a 100 Hz:
+* gli statici vedono ~0,36 Vpp. Qui la reiezione del composito
+* bootstrap: sorgenti AC 1 V in serie ai due statici (caso peggiore
+* in fase), PSRR = mag(V(out)) con .ac.
+* ============================================================
+.inc opamac-isup-t.inc
+
+.model MJE340 NPN(IS=1e-13 BF=150 VAF=150 IKF=0.5 BR=5 CJC=4p CJE=15p TF=2n TR=20n RB=5 RC=1 RE=0.1 Vceo=300 Icrating=500m mfg=ON)
+.model MJE350 PNP(IS=1e-13 BF=100 VAF=120 IKF=0.4 BR=3 CJC=4p CJE=15p TF=5n TR=50n RB=5 RC=1.5 RE=0.15 Vceo=300 Icrating=500m mfg=ON)
+.model QMULT NPN(IS=1e-14 BF=200 VAF=100 CJC=8p CJE=25p TF=400p)
+.model DIO D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p Tt=4n)
+.model NJF245 NJF(Beta=4m Vto=-1.4 Lambda=10m Cgs=10p Cgd=4p Is=10f)
+
+Vsp sp 0 DC 26.5
+Vrp vp24 sp AC 1
+Vsm sm 0 DC -26.5
+Vrm vm24 sm AC 1
+V1 in 0 0
+
+* ---------- Bootstrap SUPERIORE: CCS JFET ----------
+* J1: drain +24, source → Rs → bu; gate su bu (Vgs = −Id·Rs)
+Vq7s vp24 q7c DC 0
+J1 q7c j1s bu NJF245
+Rj1 j1s bu 47
+Q7 q7c bu vplus MJE340
+D1 bu s1 DIO
+D2 s1 s2 DIO
+D3 s2 s3 DIO
+D4 s3 s4 DIO
+D5 s4 s5 DIO
+D6 s5 s6 DIO
+D7 s6 s7 DIO
+D15 s7 s8 DIO
+D16 s8 out DIO
+
+* ---------- Bootstrap INFERIORE: CCS JFET ----------
+* J2: drain nb2, source → Rs → −24; gate su −24 (sink ~4,5 mA)
+Vq8s q8c vm24 DC 0
+J2 nb2 j2s q8c NJF245
+Rj2 j2s q8c 47
+Q8 q8c nb2 vminus MJE350
+D8 out t1 DIO
+D9 t1 t2 DIO
+D10 t2 t3 DIO
+D11 t3 t4 DIO
+D12 t4 t5 DIO
+D13 t5 t6 DIO
+D14 t6 t7 DIO
+D17 t7 t8 DIO
+D18 t8 nb2 DIO
+
+* ---------- Composito v0.2 (rail = bootstrap) ----------
+X1 in out drv vplus vminus OPAMAC
+Q3 drv mid b2 QMULT
+Ra drv mid 2.2k
+Rbm mid b2 1k
+Q1 vp24 drv e1 MJE340
+Q2 vm24 b2 e2 MJE350
+Re1 e1 out 33
+Re2 e2 out 33
+RL out 0 600
+.options noopiter
+.ac dec 50 10 100k
+.meas ac p100 FIND mag(V(out)) AT 100
+.meas ac p120 FIND mag(V(out)) AT 120
+.meas ac p1k FIND mag(V(out)) AT 1000
+.meas ac p10k FIND mag(V(out)) AT 10000
+.meas ac p50k FIND mag(V(out)) AT 50000
+.end

@@ -398,3 +398,33 @@ CONCLUSIONE: **inviluppo dec. 93 PASS in simulazione a entrambi gli
 estremi** — requisito ≥+24 dBu con margine ≥1,2 dB a qualsiasi rete;
 corto sostenuto sopravvive a rete alta dentro il sizing esistente.
 Resta a banco: THD a +24 dBu a statici alti (il Test 9 era a 23,7 V).
+
+## Banco in sim 2026-10-02 (Test 14-16, task master-out-banco)
+
+Netlist: `compB-thd-env.cir`, `compB-psrr.cir`, `compB-zobel.cir`,
+`compB-cable.cir`.
+
+- **Test 14 — THD a +24 dBu sull'inviluppo statici (dec. 93)**: a
+  23,6 / 26,5 / 29,2 V la THD in sim è sotto il pavimento numerico
+  (< 1e-6 %): il composito+bootstrap è lineare in tutta la finestra;
+  il limite reale è il chip TI (0,00012 % @1 kHz misurato a statici
+  23,7 V nel Test 9) → a banco ci si aspetta invariato, non peggiore.
+  CHIUSO per la sim.
+- **Test 15 — PSRR dai rail statici [M]**: −142,8 dB @100 Hz, −141,8
+  @120, −125 @1k, −105 @10k, −91 @50k. Col ripple raw W3 di S1 v0.2
+  (0,36 Vpp a 0,17 A, il bulk locale da 1000 µF non attenua a 100 Hz):
+  ripple in uscita = 0,36 Vpp × 10^(−142,8/20) ≈ **26 nVpp** a 100 Hz
+  e ~10 µVpp a 50 kHz: irrilevante contro il rumore proprio (−119,2
+  dBu). Il bootstrap CM-centrato + composito chiude il tema ripple:
+  CHIUSO per la sim.
+- **Test 16/16b — cavo capacitivo e reti di smorzamento**: picco
+  closed-loop 100k-100M senza rete: +3,4 dB (1 pF), +9,1 dB (1 nF),
+  +5,0 dB (4,7 nF), +5,2 dB (10 nF); audio piatto ≤0,0024 dB. Zobel
+  10 Ω+100 n al connettore: migliora 1p/1n (+2,3/+3,0) ma PEGGIORA
+  4,7/10 nF (+6,8/+13,2). Rete L 4,7 µH + R 4,7 serie-parallelo:
+  peggiora ovunque (+10…+18 dB). **Esito: nessuna rete d'uscita nel
+  design (resta v0.3); worst case +5,2 dB fuori banda con cavo 10 nF
+  (~15 m schermato); a banco: margine di stabilità col cavo più lungo
+  previsto; Zobel eventuale SOLO se i cavi resteranno ≤1 nF (documentato
+  qui come valori ottimali in quel caso)**. CHIUSO per la sim, residuo
+  a banco dichiarato.

@@ -1,0 +1,73 @@
+* ============================================================
+* MASTER OUT banco — Test 16b: isolamento cavo capacitivo con
+* L+R serie-parallelo d'uscita (compB-cable, 2026-10-02)
+* Il Zobel 10+100n al connettore smorza 1p/1n ma peggiora 4,7/10 nF
+* (Test 16). Variante standard ampli: L 4,7 uH in serie al connettore
+* con R 4,7 in parallelo (rete fuori anello, dopo il pickoff feedback):
+* il cavo vede L alle alte, l'anello non vede il cavo.
+* ============================================================
+.inc opamac-isup-t.inc
+
+.model MJE340 NPN(IS=1e-13 BF=150 VAF=150 IKF=0.5 BR=5 CJC=4p CJE=15p TF=2n TR=20n RB=5 RC=1 RE=0.1 Vceo=300 Icrating=500m mfg=ON)
+.model MJE350 PNP(IS=1e-13 BF=100 VAF=120 IKF=0.4 BR=3 CJC=4p CJE=15p TF=5n TR=50n RB=5 RC=1.5 RE=0.15 Vceo=300 Icrating=500m mfg=ON)
+.model QMULT NPN(IS=1e-14 BF=200 VAF=100 CJC=8p CJE=25p TF=400p)
+.model DIO D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p Tt=4n)
+.model NJF245 NJF(Beta=4m Vto=-1.4 Lambda=10m Cgs=10p Cgd=4p Is=10f)
+
+Vp24 vp24 0 DC {vstat}
+Vm24 vm24 0 DC {-vstat}
+V1 in 0 AC 1
+
+* ---------- Bootstrap SUPERIORE: CCS JFET ----------
+* J1: drain +24, source → Rs → bu; gate su bu (Vgs = −Id·Rs)
+Vq7s vp24 q7c DC 0
+J1 q7c j1s bu NJF245
+Rj1 j1s bu 47
+Q7 q7c bu vplus MJE340
+D1 bu s1 DIO
+D2 s1 s2 DIO
+D3 s2 s3 DIO
+D4 s3 s4 DIO
+D5 s4 s5 DIO
+D6 s5 s6 DIO
+D7 s6 s7 DIO
+D15 s7 s8 DIO
+D16 s8 out DIO
+
+* ---------- Bootstrap INFERIORE: CCS JFET ----------
+* J2: drain nb2, source → Rs → −24; gate su −24 (sink ~4,5 mA)
+Vq8s q8c vm24 DC 0
+J2 nb2 j2s q8c NJF245
+Rj2 j2s q8c 47
+Q8 q8c nb2 vminus MJE350
+D8 out t1 DIO
+D9 t1 t2 DIO
+D10 t2 t3 DIO
+D11 t3 t4 DIO
+D12 t4 t5 DIO
+D13 t5 t6 DIO
+D14 t6 t7 DIO
+D17 t7 t8 DIO
+D18 t8 nb2 DIO
+
+* ---------- Composito v0.2 (rail = bootstrap) ----------
+X1 in out drv vplus vminus OPAMAC
+Q3 drv mid b2 QMULT
+Ra drv mid 2.2k
+Rbm mid b2 1k
+Q1 vp24 drv e1 MJE340
+Q2 vm24 b2 e2 MJE350
+Re1 e1 out 33
+Re2 e2 out 33
+.param vstat=26.5
+Lout out outx 4.7u
+Rdmp out outx 4.7
+RL outx 0 600
+Ccable outx 0 {cc}
+.options noopiter
+.ac dec 100 10 100Meg
+.meas ac gmax MAX mag(V(out)) FROM 100k TO 100Meg
+.meas ac gmaxx MAX mag(V(outx)) FROM 100k TO 100Meg
+.meas ac gaudio MAX mag(V(outx)) FROM 10 TO 35k
+.step param cc LIST 1n 4.7n 10n
+.end
