@@ -136,7 +136,7 @@ elettricamente corte (λ = km). Bilanciato solo verso l'esterno
 | FX | ±180/±300 mA [PROVV] | — | — | ~20 mA | 20 VCA 218x (16 matrice + 4 ritorno gain, dec. 91b) + op-amp |
 | FX-SEND ×4 (dec. 91) | ±40/±60 mA cad. | ~5/10 cad. (78L15 switch) | — | ~10 mA | ~18 sezioni op-amp + 2 switch IC (µA) |
 | MASTER | — (LDO ±18/±15 locali da [M]) | — | ±130/±170 | ~30 mA | HV stage Iq 40 mA×2 + summing/meter + LDO locali |
-| CUE | ~15/170 programma [REV S5 2026-10-02: stadio potenza cuffia su ±18 locali da ±27, NON su LN; corto DA RIVERIFICARE: clamp bias aperto, REV sera 02/10] | ~23/25 (summing/MON/blend/level su ±15 LN) | — | ~58/60 (2 relay DPDT eccitati + controller locale) | 1 Vrms/32 Ω ×2 uscite; design e numeri in `sistema-cue.md` §8 |
+| CUE | ~61 a riposo / ≤ ~340 col clamp su entrambi i canali [REV 2026-10-12, ampli cuffia v0.2: stadio su ±18 locali da ±27, NON su LN; clamp VERIFICATO 126-168 mA per canale] | ~23/25 (summing/MON/blend/level su ±15 LN) | — | ~58/60 (2 relay DPDT eccitati + controller locale) | 1 Vrms/32 Ω ×2 uscite; design e numeri in `sistema-cue.md` §8 |
 | MIC/GEN | ±10/±20 cad. | ±20/±30 cad. (preamp LN) | — | ~10 mA | preamp + EQ2 |
 | LED/metering (tutti) | — | ±100/±125 (albero riferimenti) | — | 200/500 mA | dato S4: ~103 segmenti (master 2×20 + zone 10×~6), 2 mA typ / 5 mA worst |
 | **Totale per raw** | **~±0,9-1,0 A tip** (somma dei max singoli ~1,5 A — nota sotto) | **~±0,28 A tip / ±0,45 A picco** (+switch µA-Iq) | **±0,13/±0,17 A** | **~0,55/1,0 A worst** (dimensionamento 1,25 A) | W1 1,2 A/lato · W2 0,6 A · W3 0,3 A · W4 1,2 A (S1 §2 v0.2) |

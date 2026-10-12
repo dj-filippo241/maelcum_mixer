@@ -87,7 +87,7 @@ sugli statici [M].
 | Mix CUE/MASTER (CCW=cue, centro=50/50, CW=master) | — | pot passivo + buffer |
 | Amp cuffia | ~1 Vrms su 32-250 Ω | 2 uscite, level condiviso, isolamento alimentazione |
 
-[DESIGN FATTO 2026-10-02 → `docs/fase3/sistema-cue.md` (S5): summing cue −1 su massa virtuale (0 dBu per cue attivo); MON follower direct dal buffer [N] del master (post-[A2] pre-level); blend pot lin 10k con centro −6/−6 e law ESATTA verificati in sim; level pot log; ampli cuffia OP1612+diamond su ±18 locali (THD ≤0,055 % @1 Vrms su 32-250 Ω, headroom +12,4…+14,8 dB, clamp corto 141 mA); 2 jack con Rser 10 Ω + relay di protezione locale; rumore al jack −114,8 dBu A-wtd (target −90: PASS 24,8 dB)]
+[DESIGN FATTO 2026-10-02 → `docs/fase3/sistema-cue.md` (S5): summing cue −1 su massa virtuale (0 dBu per cue attivo); MON follower direct dal buffer [N] del master (post-[A2] pre-level); blend pot lin 10k con centro −6/−6 e law ESATTA verificati in sim; level pot log; ampli cuffia OP1612+diamond su ±18 locali (v0.2); [REV 2026-10-12: i numeri «THD ≤0,055 %, clamp 141 mA» del primo Test 1 erano INVALIDI (netlist col Vbe-multiplier spento); ampli cuffia RIDISEGNATO v0.2 e CHIUSO in sim: THD @1 Vrms 0,005 % su 16 Ω / 0,0008 % su 32 Ω, clamp 126-168 mA, idle 20 mA, nessun picco ad anello chiuso — `sim/system/RISULTATI-cue.md` Test 1 e 5-8]; 2 jack con Rser 10 Ω + relay di protezione locale; rumore al jack −114,5 dBu A-wtd (target −90: PASS 24,5 dB)]
 
 ## 3. Allocazione rumore (target [P] — validazione in simulazione, correzione 13 review)
 

@@ -1,6 +1,6 @@
 # Sistema CUE / cuffie — S5 (voce q18)
 
-**v0.1 — 2026-10-02.** Ultimo workstream del piano fase 3
+**v0.2 — 2026-10-12** (v0.1 2026-10-02; v0.2 = ampli cuffia ridisegnato, §5). Ultimo workstream del piano fase 3
 (`00-piano-sistema.md`). Chiude il design di sistema: dopo questo doc il
 design elettrico del mixer è COMPLETO e si può proporre la ripresa del
 prototipo M4L (dec. 78). Simulazioni: `sim/system/cue-*.cir`, risultati
@@ -101,33 +101,40 @@ trascurabile per OP1612.
 silenzio vero (−∞). Wiper → ingresso non invertente di [E]; ritorno DC
 del bias (2 pA) attraverso la pista: nessun pop.
 
-**Ampli cuffia [E]**: gain **+1 CHIUSO PER CALCOLO** 2026-10-02 (banco =
-sanity): a level max il jack arriva al limitatore (4,5 Vp su 32 Ω =
-3,4 Vrms = 361 mW = +25,6 dBm; su 250 Ω 5,45 Vrms = +20,7 dBm): anche
-con cuffia poco sensibile (84 dB SPL/mW) sono 110/105 dB SPL, abbondanti
-per la scena; +2 dB sarebbe solo headroom di manopola. OP1612 in guadagno +1 (feedback preso su OUTA,
-pre-Rserie) + diamond class-AB MJE340/350; bias = Vbe-multiplier con
-trimmer [PROVV] (idle ~20 mA) e stringa pilotata da CCS JFET Idss ~8 mA
-(lezione sim: col resistore al rail la stringa muore a uscita alta);
-Re 4,7 Ω doppi per ramo (stabilità termica E senso corrente); limitatori
-Vbe sui Re a ~140 mA (corto franco al jack = clamp, dissipazione MJE a
-corto sostenuto 2,1 W → TO-126 su rame ≥ 4 cm², abuso prolungato =
-dominio termico come master-out v0.3). Rail **±18 V audio locali**
-(LM317/337 dal raw ±27 + bulk 1000 µF/100 nF): lo stadio di potenza
-cuffia NON sta sul rail LN — i picchi di corrente del carico (fino a
-170 mA per ramo in programma, 340 mA in doppio corto) non devono
-modulare il rail ultra-low-noise; i blocchi di segnale [A]-[D] restano
-su ±15,0 LN. «Alimentazione isolata» [BLOCCATO SPEC §10] = regolazione
-locale dedicata, soddisfatta. **STATO BIAS/LIMITATORI: APERTO**
-(REV 2026-10-02 sera): col pinout BJT corretto (C-B-E — la prima
-stesura dei netlist aveva il multiplier C-E-B = spento, idle parassita
-~150 mA che mascherava il crossover) il Test 1 rigenerato dà THD
-4,8-13,5 % @1 Vrms, guadagno anomalo 1,53 su 250 Ω a basso livello e
-limitatori che non limitano (462 mA a 16 Ω): la rete bias+limitatori va
-ridisegnata e riverificata (task sistema-cue-banco, prossima sessione;
-dettagli e dati in `sim/system/RISULTATI-cue.md` Test 1 REV). Livello,
-partitore Rserie e rumore (Test 4) NON dipendono dal bias e restano
-validi.
+**Ampli cuffia [E] — v0.2 (2026-10-12, CHIUSO in sim)**: gain **+1**
+(chiuso per calcolo 02/10; banco = sanity). Topologia: OP1612 con
+feedback DC Rf 470 Ω preso su OUTA (pre-Rserie) e compensazione Cf
+330 pF uscita→ingresso invertente (crossover dell'anello esterno
+~1 MHz); **Rdrv 1 kΩ** tra op-amp e rete di bias (isola l'op-amp e fissa
+la corrente che i limitatori devono vincere); **Vbe-multiplier vero tra
+le due basi** (Ra 1 k + trimmer 500 Ω, Rb 1 k, nominale 210 Ω = idle
+20 mA) con bypass 1 µF, pilotato da CCS JFET Idss ~8 mA sopra e sotto;
+base stopper 22 Ω; finali class-AB MJE340/350 con **Re 6,8 Ω** (uno per
+ramo: stabilità termica E senso corrente); limitatori Vbe sui Re con
+100 Ω in base. Numeri (RISULTATI-cue Test 1 e 5-8): THD @1 Vrms
+0,005 % su 16 Ω / 0,0008 % su 32 Ω / 0,0002 % su 250 Ω; clamp
+126-142 mA sui carichi reali, 168 mA in corto franco; idle 20,0 mA
+fermo entro ±0,03 mA tra 27 e 75 °C; nessun picco ad anello chiuso
+(−3 dB a 0,94-3,8 MHz sui carichi reali); quadra pulita fino a 2 nF al
+jack (22 nF: 13-17 % di sovraelongazione, smorzata in 1,6 µs).
+Livello massimo: clip di corrente a ~4,0 Vp su 32 Ω = 2,85 Vrms =
+254 mW = +24,0 dBm (su 250 Ω resta il limite di sorgente 5,45 Vrms =
++20,7 dBm; lo stadio regge 8,65 Vp puliti): con cuffia poco sensibile
+(84 dB SPL/mW) sono 108/105 dB SPL, abbondanti per la scena. A 20 kHz
+la THD sale a 0,015 % su 32 Ω e 0,105 % su 16 Ω (guadagno d'anello
+~50): accettato da Filippo (dec. 96: standard classe cuffie DJM,
+nessun requisito audiofilo), armoniche fuori banda. Dissipazione finali: 0,35 W a
+riposo, 0,65-0,93 W medi in limitazione con programma, ~3,0 W in corto
+DC sostenuto → TO-126 su rame ≥ 4 cm², abuso prolungato = dominio
+termico come master-out v0.3. **Vincolo di layout**: nessuna capacità
+su OUTA prima della Rserie (1 nF = 24 % di sovraelongazione). Rail
+**±18 V audio locali** (LM317/337 dal raw ±27 + bulk 1000 µF/100 nF):
+lo stadio di potenza cuffia NON sta sul rail LN; i blocchi di segnale
+[A]-[D] restano su ±15,0 LN. «Alimentazione isolata» [BLOCCATO SPEC
+§10] = regolazione locale dedicata, soddisfatta. Storia: la v0.1
+(op-amp sul nodo base del multiplier, nessuna compensazione) oscillava
+a burst RF ai passaggi per lo zero — il «THD 5-13 %» del 02/10 sera
+era quell'oscillazione, non crossover (RISULTATI-cue Test 1 REV 2).
 
 **Uscite [F]**: per canale, l'uscita ampli si sdoppia su 2 jack stereo
 con Rserie 10 Ω 2 W per ramo-jack (8 resistenze nel modulo): la Rserie
@@ -199,7 +206,7 @@ comb filtering udibile sulle bande dove il ritardo 5-way dà sfasamento
 | Rail locale | Da | Per | Corrente (idle / picco) |
 |---|---|---|---|
 | ±15,0 LN | pre-reg ±16,5 + LT3045/94 dal raw ±22 | [A][B][C][D], riferimenti | ~23 / 25 mA |
-| ±18 audio | LM317/337 dal raw ±27 + bulk locale | [E] | ~15 / 170 mA programma (pavimento ~10 mA col bias corretto); corto DA RIVERIFICARE dopo il redesign bias (il clamp misurato NON interviene: 462 mA) |
+| ±18 audio | LM317/337 dal raw ±27 + bulk locale | [E] | ~61 mA a riposo (2 canali × (20 idle + 10,6 CCS)) / ≤ ~340 mA col clamp su entrambi i canali (REV v0.2 2026-10-12: clamp verificato 126-168 mA per canale) |
 | +5 V | bus backplane (regolato in PSU, dec. 93) | [G] relay + controller | ~58 / 60 mA |
 
 La riga correnti CUE di `sistema-backplane.md` §6 ([PROVV fino a S5]:
@@ -211,9 +218,9 @@ backplane §5 per chi legge.
 
 ## 9. Rumore e crosstalk
 
-- Rumore al jack (level max, blend centro, 1 cue attivo): 8,50 nV/√Hz
-  piatto → **−114,8 dBu A-wtd** vs target −90: PASS 24,8 dB; in cuffia
-  32 Ω/100 dB/mW ≈ −2 dB SPL (RISULTATI-cue Test 4).
+- Rumore al jack (level max, blend centro, 1 cue attivo, ampli v0.2):
+  8,76 nV/√Hz piatto → **−114,5 dBu A-wtd** vs target −90: PASS 24,5 dB;
+  in cuffia 32 Ω/100 dB/mW ≈ −2 dB SPL (RISULTATI-cue Test 4 rerun).
 - Crosstalk cue→cue: massa virtuale + switch aperti lato CDJ (−95 dB
   @20 kHz classe ADG1434): by construction.
 - Crosstalk MON→cue agli estremi del blend: −116 dB stimati (Test 2).
@@ -223,28 +230,40 @@ backplane §5 per chi legge.
 
 ## 10. BOM di massima [molto PROVVISORIA — regola 3]
 
-3× OPA1612 (summer L/R, MON L/R, ampli L/R) · 4× MJE340 + 4× MJE350 ·
+3× OPA1612 (summer L/R, MON L/R, ampli L/R) · 2× MJE340 + 2× MJE350 (finali, v0.2) · 2× NPN piccolo segnale
+(multiplier) + 2× NPN + 2× PNP (limitatori) ·
 4× JFET CRD Idss ~8 mA (o LM334 trimmati) · 2× LT3045 + 2× LT3094 ·
 2× LM317 + 2× LM337 · 2× relay DPDT 5 V · pot doppio 10k lin con detent
-centrale ×1 + pot doppio 10k log ×1 (voce 40) · 8× R 10 Ω 2 W · 4× R 4,7 Ω
-· 2× jack stereo (voce 40) · trimmer multiplier ×2 · bulk/bypass locali.
+centrale ×1 + pot doppio 10k log ×1 (voce 40) · 8× R 10 Ω 2 W · 4× R 6,8 Ω
+· 2× jack stereo (voce 40) · trimmer multiplier 500 Ω ×2 · per canale
+Rf 470 Ω, Cf 330 pF, Rdrv 1 k, Cb 1 µF film, 2× 22 Ω, 2× 100 Ω ·
+bulk/bypass locali.
 Nel modulo master: +1 OPA1612 per il buffer [N] MON.
 
-## 11. Simulazioni eseguite (2026-10-02)
+## 11. Simulazioni eseguite (2026-10-02, ampli v0.2 il 2026-10-12)
 
 `sim/system/cue-hp-load.cir` (Test 1: carichi 16/25,8/32/250/corto ×
-1 Vrms/12 Vp: THD, clamp, headroom) · `cue-blend.cir` (Test 2: law e
+1 Vrms/12 Vp: THD, clamp, potenza) · `cue-blend.cir` (Test 2: law e
 isolamento, due toni) · `cue-blend-pol.cir` (Test 3: polarità al centro)
-· `cue-chain-noise.cir` (Test 4: rumore, metodo densità a 12 punti).
-Risultati e lezioni di metodo in `sim/system/RISULTATI-cue.md`.
+· `cue-chain-noise.cir` (Test 4: rumore, densità a 12 punti) ·
+`cue-hp-idle.cir` (Test 5: idle × trimmer × temperatura) ·
+`cue-hp-step.cir` (Test 6: quadra e carico capacitivo) · `cue-hp-ac.cir`
+(Test 7: risposta ad anello chiuso per punto di lavoro) ·
+`cue-hp-20k.cir` (Test 8: THD a 20 kHz). Risultati e lezioni di metodo
+in `sim/system/RISULTATI-cue.md`.
 
 ## 12. Aperti (non bloccano il design)
 
-- **Rete bias+limitatori dell'ampli cuffia da ridisegnare** (Test 1 REV
-  02/10 sera: THD 5-13 % @1 Vrms, clamp assente, guadagno anomalo su
-  250 Ω): primo item della prossima sessione; trimmer, idle e corso di
-  regolazione si definiscono DOPO il redesign (i vecchi numeri «idle
-  ~20 mA» erano teorici, mai verificati).
+- Rete bias+limitatori: **CHIUSA in sim con la v0.2 (2026-10-12)**.
+  Restano a banco: set del trimmer a 20 mA sul hardware reale,
+  stabilità col chip OPA1612 vero (la macro è a polo singolo senza
+  limite di corrente: i Test 6-7 vanno ripetuti con oscilloscopio),
+  tracking termico reale multiplier↔finali.
+- Budget rail: lo stadio v0.2 assorbe ~61 mA a riposo su ±27 (la stima
+  S5 v0.1 era ~15): verificare il margine del secondario W1 in
+  `sistema-psu.md` (non ricalcolato in questa sessione).
+- A-weight della campagna rumore: possibile pessimismo ~3 dB della
+  tabella della casa (RISULTATI-cue Test 4, nota di metodo).
 - Relay: parte concreta dentro la spec per classe qui sopra, alla
   reperibilità post-M4L (congelata).
 - Jack/posizione/detent/level range: sessione hardware (voce 40, Filippo).
