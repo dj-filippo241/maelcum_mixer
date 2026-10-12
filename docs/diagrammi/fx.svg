@@ -1,171 +1,114 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 900" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
   <defs>
-    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="#C05A1B"/>
-    </marker>
-    <marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="#8A4A9E"/>
-    </marker>
-    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="#2F6D8E"/>
-    </marker>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C05A1B"/></marker>
+    <marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8A4A9E"/></marker>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2F6D8E"/></marker>
   </defs>
-
   <rect width="1560" height="900" fill="#FBFAF7"/>
-
-  <text x="40" y="52" font-size="24" font-weight="700" fill="#141414">MODULO FX — 4 BUS + MATRICE FEEDBACK</text>
-  <text x="40" y="76" font-size="13" fill="#666">maelcum mixer — design v0.2 (2026-09-28): reroute law verificata §8.3, DC servo/EQ2/TVS §8.4 · sotto: UNA delle 4 sezioni identiche (BUS n)</text>
-  <rect x="1330" y="34" width="190" height="24" rx="12" fill="#D97706"/>
-  <text x="1425" y="50" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">aperte: 13/14/37/52/69</text>
-
-  <!-- ingressi -->
-  <rect x="40" y="150" width="180" height="90" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="130" y="178" font-size="13" font-weight="700" text-anchor="middle">DAL BACKPLANE</text>
-  <text x="130" y="196" font-size="10.5" fill="#444" text-anchor="middle">send L/R da canali/mic/generic</text>
-  <text x="130" y="212" font-size="10.5" fill="#444" text-anchor="middle">già con EQ2+level+assign</text>
-  <text x="130" y="228" font-size="10.5" fill="#444" text-anchor="middle">(lato canale, CDJ §3.5)</text>
-
-  <!-- SUMMING -->
-  <rect x="280" y="158" width="160" height="74" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="360" y="184" font-size="13" font-weight="700" text-anchor="middle">SUMMING BUS n</text>
-  <text x="360" y="202" font-size="10.5" fill="#444" text-anchor="middle">virtual-earth, R 10k [PROVV.]</text>
-  <text x="360" y="218" font-size="10.5" fill="#444" text-anchor="middle">worst 12×0 dBu: +21,5 dBu</text>
-  <text x="282" y="264" font-size="10" fill="#C05A1B">margine 7,3 V al clamp ±16,5</text>
-
-  <!-- PAD DRIVER + PAD -->
-  <rect x="500" y="158" width="170" height="74" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="585" y="184" font-size="13" font-weight="700" text-anchor="middle">DRIVER + PAD</text>
-  <text x="585" y="202" font-size="10.5" fill="#444" text-anchor="middle">buffer low-Z ≤ 50Ω (OPA1612)</text>
-  <text x="585" y="218" font-size="10.5" fill="#444" text-anchor="middle">pad −20 / −10 / 0 dB (DIP)</text>
-
-  <!-- PROTEZIONE -->
-  <rect x="730" y="158" width="150" height="74" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="805" y="184" font-size="13" font-weight="700" text-anchor="middle">PROTEZIONE</text>
-  <text x="805" y="202" font-size="10.5" fill="#444" text-anchor="middle">R serie 100Ω + TVS ≤ 5 pF</text>
-  <text x="805" y="218" font-size="10.5" fill="#444" text-anchor="middle">banda 40 kHz verificata §8.4</text>
-
-  <!-- JACK SEND -->
-  <rect x="940" y="158" width="150" height="74" rx="6" fill="#141414"/>
-  <text x="1015" y="188" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">JACK SEND n</text>
-  <text x="1015" y="206" font-size="10.5" fill="#bbb" text-anchor="middle">→ pedale (L/R)</text>
-  <text x="1015" y="222" font-size="10.5" fill="#bbb" text-anchor="middle">mono = controlled sum 2×10k</text>
-
-  <!-- PEDALE -->
-  <rect x="1150" y="158" width="130" height="74" rx="6" fill="#F4F2EC" stroke="#8A8A8A" stroke-width="1.5" stroke-dasharray="4 3"/>
-  <text x="1215" y="188" font-size="12" font-weight="700" fill="#555" text-anchor="middle">PEDALE</text>
-  <text x="1215" y="206" font-size="10.5" fill="#777" text-anchor="middle">esterno (−20…+18 dBu)</text>
-  <text x="1215" y="222" font-size="10.5" fill="#777" text-anchor="middle">saturazione = il limiter del loop</text>
-
-  <!-- JACK RETURN -->
-  <rect x="1340" y="158" width="150" height="74" rx="6" fill="#141414"/>
-  <text x="1415" y="188" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">JACK RETURN n</text>
-  <text x="1415" y="206" font-size="10.5" fill="#bbb" text-anchor="middle">← pedale (L/R, stereo-capable)</text>
-
-  <!-- ritorno: catena giù -->
-  <rect x="1300" y="290" width="190" height="86" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="1395" y="314" font-size="13" font-weight="700" text-anchor="middle">PROT + DC CONTROL</text>
-  <text x="1395" y="332" font-size="10.5" fill="#444" text-anchor="middle">DC servo integrato VALIDATO:</text>
-  <text x="1395" y="348" font-size="10.5" fill="#444" text-anchor="middle">corner 0,05-0,5 Hz, nulling 84 dB,</text>
-  <text x="1395" y="364" font-size="10.5" fill="#444" text-anchor="middle">settling 3,1 s (coperto dal mute)</text>
-
-  <rect x="1300" y="406" width="190" height="70" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="1395" y="430" font-size="13" font-weight="700" text-anchor="middle">BUFFER HI-Z</text>
-  <text x="1395" y="448" font-size="10.5" fill="#444" text-anchor="middle">JFET, Zin ≥ 1 MΩ (chitarra/rack)</text>
-  <text x="1395" y="464" font-size="10.5" fill="#444" text-anchor="middle">bias 1 MΩ confermato §8.4</text>
-
-  <rect x="1300" y="506" width="190" height="70" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="1395" y="530" font-size="13" font-weight="700" text-anchor="middle">GAIN VCA 218x</text>
-  <text x="1395" y="548" font-size="10.5" fill="#444" text-anchor="middle">−∞ → 0 → +20 dB</text>
-  <text x="1395" y="564" font-size="10.5" fill="#444" text-anchor="middle">regola K4: in × gain ≤ +23 dBu</text>
-
-  <rect x="1300" y="606" width="190" height="70" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="1395" y="630" font-size="13" font-weight="700" text-anchor="middle">EQ2 RITORNO</text>
-  <text x="1395" y="648" font-size="10.5" fill="#444" text-anchor="middle">celle serie v0.3 scalate VALIDATE:</text>
-  <text x="1395" y="664" font-size="10.5" fill="#444" text-anchor="middle">LOW ~120 Hz / HIGH ~4,5 kHz (q. 68)</text>
-
-  <rect x="1010" y="606" width="180" height="70" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="1100" y="630" font-size="13" font-weight="700" text-anchor="middle">METER pickup</text>
-  <text x="1100" y="648" font-size="10.5" fill="#444" text-anchor="middle">detector condiviso (CDJ §7 item 6):</text>
-  <text x="1100" y="664" font-size="10.5" fill="#444" text-anchor="middle">release ≥1 s · latch clip ~442 ms</text>
-
-  <rect x="760" y="606" width="180" height="70" rx="6" fill="#fff" stroke="#2F6D8E" stroke-width="2"/>
-  <text x="850" y="630" font-size="13" font-weight="700" text-anchor="middle" fill="#2F6D8E">NODO REROUTE</text>
-  <text x="850" y="648" font-size="10.5" fill="#444" text-anchor="middle">PRE-FADER [BLOCCATO]:</text>
-  <text x="850" y="664" font-size="10.5" fill="#444" text-anchor="middle">fader giù → il feedback continua</text>
-
-  <rect x="510" y="606" width="180" height="70" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="600" y="630" font-size="13" font-weight="700" text-anchor="middle">FADER ritorno</text>
-  <text x="600" y="648" font-size="10.5" fill="#444" text-anchor="middle">stereo linked → buffer</text>
-  <text x="600" y="664" font-size="10.5" fill="#444" text-anchor="middle">→ backplane MASTER SUM</text>
-
-  <!-- matrice feedback -->
-  <rect x="760" y="430" width="230" height="106" rx="6" fill="#F7F1F9" stroke="#8A4A9E" stroke-width="1.5"/>
-  <text x="875" y="456" font-size="13" font-weight="700" fill="#8A4A9E" text-anchor="middle">MATRICE FEEDBACK</text>
-  <text x="875" y="474" font-size="10.5" fill="#444" text-anchor="middle">3 × VCA 218x di reroute per ritorno</text>
-  <text x="875" y="490" font-size="10.5" fill="#444" text-anchor="middle">law a tratti SPEC — VERIFICATA end-to-end</text>
-  <text x="875" y="506" font-size="10.5" fill="#444" text-anchor="middle">(§8.3, errore ≤ 1e-8 dB) → bus 1..4 MENO il proprio</text>
-  <text x="875" y="522" font-size="10.5" fill="#8A4A9E" text-anchor="middle">self-route escluso FISICAMENTE dal PCB</text>
-
-  <!-- CV reroute -->
-  <rect x="420" y="430" width="250" height="100" rx="6" fill="#EEF3F6" stroke="#2F6D8E" stroke-width="1.2"/>
-  <text x="545" y="454" font-size="12" font-weight="700" fill="#2F6D8E" text-anchor="middle">CATENA CV REROUTE</text>
-  <text x="545" y="472" font-size="10.5" fill="#444" text-anchor="middle">pot → CV buffer → shaper a tratti</text>
-  <text x="545" y="488" font-size="10.5" fill="#444" text-anchor="middle">(famiglia law filtro, dec. 70) →</text>
-  <text x="545" y="504" font-size="10.5" fill="#444" text-anchor="middle">smoothing RC 1 ms [raccomandato] →</text>
-  <text x="545" y="520" font-size="10.5" fill="#444" text-anchor="middle">CV ai VCA (1 per coppia L/R)</text>
-
-  <!-- frecce audio send -->
-  <g stroke="#C05A1B" stroke-width="2.5" fill="none">
-    <path d="M 220 195 L 275 195" marker-end="url(#ar)"/>
-    <path d="M 440 195 L 495 195" marker-end="url(#ar)"/>
-    <path d="M 670 195 L 725 195" marker-end="url(#ar)"/>
-    <path d="M 880 195 L 935 195" marker-end="url(#ar)"/>
-    <path d="M 1090 195 L 1145 195" marker-end="url(#ar)"/>
-    <path d="M 1280 195 L 1335 195" marker-end="url(#ar)"/>
-    <!-- ritorno giù -->
-    <path d="M 1395 232 L 1395 285" marker-end="url(#ar)"/>
-    <path d="M 1395 376 L 1395 401" marker-end="url(#ar)"/>
-    <path d="M 1395 476 L 1395 501" marker-end="url(#ar)"/>
-    <path d="M 1395 576 L 1395 601" marker-end="url(#ar)"/>
-    <path d="M 1295 641 L 1195 641" marker-end="url(#ar)"/>
-    <path d="M 1005 641 L 945 641" marker-end="url(#ar)"/>
-    <path d="M 755 641 L 695 641" marker-end="url(#ar)"/>
-  </g>
-  <!-- feedback viola -->
-  <g stroke="#8A4A9E" stroke-width="2.5" fill="none">
-    <path d="M 850 601 L 850 535" marker-end="url(#arb)"/>
-    <path d="M 875 425 L 875 300 L 400 300 L 400 237" marker-end="url(#arb)"/>
-  </g>
-  <text x="640" y="292" font-size="10.5" fill="#8A4A9E">loop di feedback: verso i SUMMING degli altri 3 bus (unity = oscillazione autosostenuta, bounded by design ≤ +20,2 dBu)</text>
-  <!-- CV -->
-  <g stroke="#2F6D8E" stroke-width="1.5" stroke-dasharray="6 3" fill="none">
-    <path d="M 670 480 L 755 480" marker-end="url(#arw)"/>
-    <path d="M 990 480 L 1120 480 L 1120 541 L 1295 541" marker-end="url(#arw)"/>
-  </g>
-  <text x="1000" y="560" font-size="10" fill="#2F6D8E">CV smoothing 1 ms (click −9,6 dB vs brusco)</text>
-
-  <!-- uscita master sum -->
-  <path d="M 505 641 L 250 641 L 250 700" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
-  <rect x="140" y="705" width="230" height="46" rx="6" fill="#141414"/>
-  <text x="255" y="727" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">→ BACKPLANE MASTER SUM</text>
-  <text x="255" y="743" font-size="10" fill="#bbb" text-anchor="middle">(udibilità verso MASTER, loop intatto)</text>
-
-  <!-- PSU nota -->
-  <rect x="430" y="705" width="880" height="46" rx="6" fill="#F4F2EC" stroke="#8A8A8A" stroke-width="1"/>
-  <text x="450" y="724" font-size="11.5" fill="#444">±18 V audio (summing/driver/VCA) · ±15 V LN (CV/shaper/servo) · VCA 218x = SINGLE: 16 chip per questo modulo</text>
-  <text x="450" y="741" font-size="11.5" fill="#444">(voce 37: ~34-36 in tutto il mixer — grado/clone = decisione di Filippo). Shaper law: implementazione discreta da millefori.</text>
-
-  <!-- legenda -->
-  <g font-size="11" fill="#444">
-    <line x1="40" y1="790" x2="90" y2="790" stroke="#C05A1B" stroke-width="2.5"/>
-    <text x="98" y="794">audio</text>
-    <line x1="170" y1="790" x2="220" y2="790" stroke="#8A4A9E" stroke-width="2.5"/>
-    <text x="228" y="794">feedback (matrice reroute)</text>
-    <line x1="420" y1="790" x2="470" y2="790" stroke="#2F6D8E" stroke-width="1.5" stroke-dasharray="6 3"/>
-    <text x="478" y="794">controllo CV</text>
-    <rect x="580" y="782" width="46" height="16" rx="8" fill="#D97706"/>
-    <text x="638" y="794">questione aperta</text>
-  </g>
-
-  <text x="40" y="856" font-size="10.5" fill="#999">Fonte: docs/fase1/fx-module.md v0.2 (§2/§8.3/§8.4) + sim/fx/ + SPECIFICA §7 · livelli worst: summing +21,5 dBu, loop +20,2 dBu (mai ai rail) · 2026-09-28</text>
+  <text x="40" y="52" font-size="24" font-weight="700" fill="#141414">MODULO FX — 4 BUS + MATRICE FEEDBACK 16×</text>
+  <text x="40" y="76" font-size="13" fill="#666">maelcum mixer — design v0.3-WIP (dec. 91): self-feedback ammesso, send di canale nei micro-moduli FX-SEND · sotto: UNA delle 4 sezioni identiche (BUS n)</text>
+  <rect x="1366" y="34" width="154" height="24" rx="12" fill="#D97706"/>
+  <text x="1443" y="50" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">v0.3-WIP (dec. 91)</text>
+  <rect x="40" y="140" width="200" height="106" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="140" y="165.2" font-size="12" font-weight="700" fill="#141414" text-anchor="middle">DAI MICRO-MODULI FX-SEND</text>
+  <text x="140" y="181.2" font-size="10.5" fill="#444" text-anchor="middle">4 canali × assign S1-S4 (dec. 91a)</text>
+  <text x="140" y="197.2" font-size="10.5" fill="#444" text-anchor="middle">+ mic / generic</text>
+  <text x="140" y="213.2" font-size="10.5" fill="#444" text-anchor="middle">net multidrop per bus:</text>
+  <text x="140" y="229.2" font-size="10.5" fill="#444" text-anchor="middle">10k lato sorgente</text>
+  <rect x="285" y="150" width="180" height="86" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="375" y="181.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">SUMMING BUS n</text>
+  <text x="375" y="197.55" font-size="10.5" fill="#444" text-anchor="middle">virtual-earth</text>
+  <text x="375" y="213.55" font-size="10.5" fill="#444" text-anchor="middle">worst 12 × 0 dBu: +21,5 dBu</text>
+  <rect x="510" y="150" width="180" height="86" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="600" y="181.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">DRIVER + PAD</text>
+  <text x="600" y="197.55" font-size="10.5" fill="#444" text-anchor="middle">buffer low-Z ≤ 50 Ω (OPA1612)</text>
+  <text x="600" y="213.55" font-size="10.5" fill="#444" text-anchor="middle">pad −20 / −10 / 0 dB (DIP)</text>
+  <rect x="735" y="150" width="170" height="86" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="820" y="181.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">PROTEZIONE</text>
+  <text x="820" y="197.55" font-size="10.5" fill="#444" text-anchor="middle">R serie 100 Ω + TVS ≤ 5 pF</text>
+  <text x="820" y="213.55" font-size="10.5" fill="#444" text-anchor="middle">banda 40 kHz verificata §8.4</text>
+  <rect x="950" y="150" width="150" height="86" rx="6" fill="#141414" stroke="#141414" stroke-width="1.5"/>
+  <text x="1025" y="181.55" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">JACK SEND n</text>
+  <text x="1025" y="197.55" font-size="10.5" fill="#ddd" text-anchor="middle">→ pedale (L/R)</text>
+  <text x="1025" y="213.55" font-size="10.5" fill="#ddd" text-anchor="middle">mono = sum 2 × 10k</text>
+  <rect x="1145" y="150" width="110" height="86" rx="6" fill="#F3F2EE" stroke="#888" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="1200" y="181.55" font-size="13" font-weight="700" fill="#444" text-anchor="middle">PEDALE</text>
+  <text x="1200" y="197.55" font-size="10.5" fill="#555" text-anchor="middle">esterno</text>
+  <text x="1200" y="213.55" font-size="10.5" fill="#555" text-anchor="middle">−20…+18 dBu</text>
+  <rect x="1300" y="150" width="180" height="86" rx="6" fill="#141414" stroke="#141414" stroke-width="1.5"/>
+  <text x="1390" y="189.55" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">JACK RETURN n</text>
+  <text x="1390" y="205.55" font-size="10.5" fill="#ddd" text-anchor="middle">← pedale (L/R, stereo-capable)</text>
+  <path d="M 240 193 L 283 193" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 465 193 L 508 193" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 690 193 L 733 193" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 905 193 L 948 193" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 1100 193 L 1143 193" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 1255 193 L 1298 193" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <text x="389" y="254" font-size="10" fill="#C05A1B">margine 7,3 V al clamp ±16,5</text>
+  <rect x="1290" y="290" width="200" height="84" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="1390" y="320.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">PROT + DC CONTROL</text>
+  <text x="1390" y="336.55" font-size="10.5" fill="#444" text-anchor="middle">DC servo integrato VALIDATO</text>
+  <text x="1390" y="352.55" font-size="10.5" fill="#444" text-anchor="middle">corner 0,05-0,5 Hz, nulling 84 dB</text>
+  <rect x="1290" y="404" width="200" height="66" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="1390" y="433.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">BUFFER HI-Z</text>
+  <text x="1390" y="449.55" font-size="10.5" fill="#444" text-anchor="middle">JFET, Zin ≥ 1 MΩ (bias 1 MΩ §8.4)</text>
+  <rect x="1290" y="500" width="200" height="84" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="1390" y="530.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">GAIN VCA 218x</text>
+  <text x="1390" y="546.55" font-size="10.5" fill="#444" text-anchor="middle">−∞ → 0 → +20 dB</text>
+  <text x="1390" y="562.55" font-size="10.5" fill="#8A4A9E" text-anchor="middle">senza limite: K4 = operatore (dec. 84)</text>
+  <rect x="1290" y="614" width="200" height="70" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="1390" y="637.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">EQ2 RITORNO</text>
+  <text x="1390" y="653.55" font-size="10.5" fill="#444" text-anchor="middle">celle serie v0.3 VALIDATE</text>
+  <text x="1390" y="669.55" font-size="10.5" fill="#444" text-anchor="middle">LOW ~120 Hz / HIGH ~4,5 kHz</text>
+  <path d="M 1390 236 L 1390 288" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 1390 374 L 1390 402" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 1390 470 L 1390 498" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 1390 584 L 1390 612" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <rect x="1020" y="614" width="220" height="70" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="1130" y="637.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">METER pickup</text>
+  <text x="1130" y="653.55" font-size="10.5" fill="#444" text-anchor="middle">detector condiviso (CDJ §7)</text>
+  <text x="1130" y="669.55" font-size="10.5" fill="#444" text-anchor="middle">release ~0,3 s (dec. 81) · latch clip</text>
+  <rect x="770" y="614" width="200" height="70" rx="6" fill="#EEF3F6" stroke="#2F6D8E" stroke-width="1.2"/>
+  <text x="870" y="637.55" font-size="13" font-weight="700" fill="#2F6D8E" text-anchor="middle">NODO REROUTE</text>
+  <text x="870" y="653.55" font-size="10.5" fill="#444" text-anchor="middle">PRE-FADER [BLOCCATO]</text>
+  <text x="870" y="669.55" font-size="10.5" fill="#444" text-anchor="middle">fader giù → il feedback continua</text>
+  <rect x="520" y="614" width="200" height="70" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="620" y="637.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">FADER ritorno</text>
+  <text x="620" y="653.55" font-size="10.5" fill="#444" text-anchor="middle">stereo linked → buffer</text>
+  <text x="620" y="669.55" font-size="10.5" fill="#444" text-anchor="middle">→ backplane MASTER SUM</text>
+  <path d="M 1290 649 L 1242 649" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 1020 649 L 972 649" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 770 649 L 722 649" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <rect x="150" y="720" width="290" height="58" rx="6" fill="#141414" stroke="#141414" stroke-width="1.5"/>
+  <text x="295" y="745.55" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">→ BACKPLANE MASTER SUM</text>
+  <text x="295" y="761.55" font-size="10.5" fill="#ddd" text-anchor="middle">un ingresso per ritorno: MSUM2-5 (dec. 94a)</text>
+  <path d="M 520 649 L 295 649 L 295 718" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <rect x="690" y="390" width="360" height="140" rx="6" fill="#F6F1F8" stroke="#8A4A9E" stroke-width="1.5"/>
+  <text x="870" y="432.55" font-size="13" font-weight="700" fill="#8A4A9E" text-anchor="middle">MATRICE FEEDBACK 16× (dec. 91b)</text>
+  <text x="870" y="448.55" font-size="10.5" fill="#444" text-anchor="middle">4 × VCA 218x per ritorno: 3 cross + 1 SELF (quarto pot)</text>
+  <text x="870" y="464.55" font-size="10.5" fill="#444" text-anchor="middle">law a tratti SPEC verificata end-to-end (§8.3)</text>
+  <text x="870" y="480.55" font-size="10.5" fill="#8A4A9E" text-anchor="middle">self-route AMMESSO: il divieto v0.2 è revocato</text>
+  <text x="870" y="496.55" font-size="10.5" fill="#444" text-anchor="middle">bounded-by-design confermato sul ramo self (§8.5)</text>
+  <path d="M 870 614 L 870 532" stroke="#8A4A9E" stroke-width="2.2" fill="none" marker-end="url(#arb)"/>
+  <path d="M 870 390 L 870 300 L 375 300 L 375 238" stroke="#8A4A9E" stroke-width="2.2" fill="none" marker-end="url(#arb)"/>
+  <text x="389" y="292" font-size="10.5" fill="#8A4A9E">loop di feedback: verso i SUMMING dei 4 bus, INCLUSO il proprio — dry loop senza pedale = clamp ±16,5 V, disciplina K4</text>
+  <rect x="300" y="400" width="300" height="120" rx="6" fill="#EEF3F6" stroke="#2F6D8E" stroke-width="1.2"/>
+  <text x="450" y="432.55" font-size="13" font-weight="700" fill="#2F6D8E" text-anchor="middle">CATENA CV REROUTE</text>
+  <text x="450" y="448.55" font-size="10.5" fill="#444" text-anchor="middle">pot → CV buffer → shaper a tratti</text>
+  <text x="450" y="464.55" font-size="10.5" fill="#444" text-anchor="middle">(famiglia law filtro, dec. 70) →</text>
+  <text x="450" y="480.55" font-size="10.5" fill="#444" text-anchor="middle">smoothing 1 ms (dec. 80) →</text>
+  <text x="450" y="496.55" font-size="10.5" fill="#444" text-anchor="middle">CV 6,1 mV/dB ai VCA (dec. 92), 1 per coppia L/R</text>
+  <path d="M 600 460 L 688 460" stroke="#2F6D8E" stroke-width="1.5" fill="none" stroke-dasharray="6 4" marker-end="url(#arw)"/>
+  <rect x="520" y="720" width="970" height="58" rx="6" fill="#F3F2EE" stroke="#AAA" stroke-width="1"/>
+  <text x="538" y="741.85" font-size="11" fill="#444">±18 V audio (summing/driver/VCA) · ±15 V LN (CV/shaper/servo) · VCA 218x = SINGLE: 20 chip in questo modulo (16 reroute + 4 gain)</text>
+  <text x="538" y="758.35" font-size="11" fill="#444">mixer ~28-30 chip · rotta clone CoolAudio V2181L, acquisti dopo il prototipo M4L (voce 37) · mute dei send: GLOBAL_MUTE sui FX-SEND (dec. 94b)</text>
+  <path d="M 40 826 L 90 826" stroke="#C05A1B" stroke-width="2.5"/>
+  <text x="98" y="830" font-size="11.5" fill="#333">audio</text>
+  <path d="M 169 826 L 219 826" stroke="#8A4A9E" stroke-width="2.2"/>
+  <text x="227" y="830" font-size="11.5" fill="#333">feedback (matrice reroute)</text>
+  <path d="M 428 826 L 478 826" stroke="#2F6D8E" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="486" y="830" font-size="11.5" fill="#333">controllo CV</text>
+  <rect x="600" y="817" width="50" height="18" rx="4" fill="#F3F2EE" stroke="#888" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="658" y="830" font-size="11.5" fill="#333">esterno al mixer</text>
+  <text x="40" y="878" font-size="10.5" fill="#999">Fonte: docs/fase1/fx-module.md v0.3-WIP (§2/§7/§8.3-8.5) + fx-send-module.md + sim/fx/ · livelli worst: summing +21,5 dBu, loop +20,2 dBu (mai ai rail) · 2026-10-12</text>
 </svg>

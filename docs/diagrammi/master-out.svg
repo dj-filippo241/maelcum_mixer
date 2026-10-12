@@ -1,164 +1,146 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 880" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 940" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
   <defs>
-    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="#C05A1B"/>
-    </marker>
-    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="#2F6D8E"/>
-    </marker>
-    <marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="#8A8A8A"/>
-    </marker>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C05A1B"/></marker>
+    <marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8A4A9E"/></marker>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2F6D8E"/></marker>
   </defs>
-
-  <rect width="1560" height="880" fill="#FBFAF7"/>
-
+  <rect width="1560" height="940" fill="#FBFAF7"/>
   <text x="40" y="52" font-size="24" font-weight="700" fill="#141414">MODULO MASTER OUT</text>
-  <text x="40" y="76" font-size="13" fill="#666">maelcum mixer — design v0.2 + addendum REC (decisioni 49-55, 63) · tre rami indipendenti dallo stesso bus (mai un buffer unico splittato)</text>
-
-  <!-- ingresso -->
-  <rect x="40" y="130" width="200" height="76" rx="6" fill="#141414"/>
-  <text x="140" y="160" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">MASTER SUM BUS</text>
-  <text x="140" y="178" font-size="10.5" fill="#bbb" text-anchor="middle">dal backplane, stereo</text>
-  <text x="140" y="194" font-size="10.5" fill="#bbb" text-anchor="middle">0 dBu nom / +12…+20 worst</text>
-
-  <!-- RAMO A -->
-  <rect x="330" y="112" width="180" height="60" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="420" y="136" font-size="12.5" font-weight="700" text-anchor="middle">[A] IN BUFFER ×2</text>
-  <text x="420" y="154" font-size="10.5" fill="#444" text-anchor="middle">OPA1612, ±18 V</text>
-
-  <rect x="330" y="196" width="180" height="66" rx="6" fill="#fff" stroke="#8A8A8A" stroke-width="1.5" stroke-dasharray="5 3"/>
-  <text x="420" y="220" font-size="12.5" font-weight="700" text-anchor="middle">[A2] SUMMING ×2</text>
-  <text x="420" y="238" font-size="10.5" fill="#444" text-anchor="middle">opzionale (§3.1 — q. 38:</text>
-  <text x="420" y="252" font-size="10.5" fill="#444" text-anchor="middle">chi esegue la somma finale)</text>
-
-  <rect x="330" y="286" width="180" height="86" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="420" y="310" font-size="12.5" font-weight="700" text-anchor="middle">[D] MASTER LEVEL ×1</text>
-  <text x="420" y="328" font-size="10.5" fill="#444" text-anchor="middle">2× VCA THAT 218x (L/R), un CV</text>
-  <text x="420" y="344" font-size="10.5" fill="#444" text-anchor="middle">−∞ → 0 (detent ~75-80%) → +6 dB</text>
-  <text x="420" y="360" font-size="10.5" fill="#444" text-anchor="middle">CV: pot 10k → shaper → buffer</text>
-
-  <rect x="330" y="396" width="180" height="60" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="420" y="420" font-size="12.5" font-weight="700" text-anchor="middle">[E] METER PICKUP</text>
-  <text x="420" y="438" font-size="10.5" fill="#444" text-anchor="middle">peak L/R + clip detector (q. 19)</text>
-
-  <rect x="330" y="480" width="180" height="60" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="420" y="504" font-size="12.5" font-weight="700" text-anchor="middle">[F] OUT FRONT ×2</text>
-  <text x="420" y="522" font-size="10.5" fill="#444" text-anchor="middle">OPA1612, ±18 V</text>
-
-  <rect x="330" y="564" width="180" height="76" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="420" y="588" font-size="12.5" font-weight="700" text-anchor="middle">[G] STADIO HV ×2</text>
-  <text x="420" y="606" font-size="10.5" fill="#444" text-anchor="middle">discreto, [M] (unico punto</text>
-  <text x="420" y="620" font-size="10.5" fill="#444" text-anchor="middle">del mixer a +24 dBu reali)</text>
-
-  <rect x="330" y="664" width="180" height="56" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="420" y="686" font-size="12.5" font-weight="700" text-anchor="middle">[H] MUTE + PROTEZIONE</text>
-  <text x="420" y="704" font-size="10.5" fill="#444" text-anchor="middle">comandato da [L]</text>
-
-  <rect x="330" y="744" width="180" height="52" rx="6" fill="#141414"/>
-  <text x="420" y="766" font-size="12.5" font-weight="700" fill="#fff" text-anchor="middle">[I] XLR MASTER L/R</text>
-  <text x="420" y="784" font-size="10.5" fill="#bbb" text-anchor="middle">bilanciato, +24 dBu capable</text>
-
-  <!-- RAMO B (booth) -->
-  <rect x="640" y="112" width="180" height="60" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="730" y="136" font-size="12.5" font-weight="700" text-anchor="middle">[B] BOOTH BUFFER ×2</text>
-  <text x="730" y="154" font-size="10.5" fill="#444" text-anchor="middle">±18 V</text>
-
-  <rect x="640" y="196" width="180" height="66" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="730" y="220" font-size="12.5" font-weight="700" text-anchor="middle">[B2] BOOTH LEVEL</text>
-  <text x="730" y="238" font-size="10.5" fill="#444" text-anchor="middle">VCA 218x singoli (L/R)</text>
-  <text x="730" y="252" font-size="10.5" fill="#444" text-anchor="middle">−∞ → 0 dB, pot dedicato</text>
-
-  <rect x="640" y="286" width="180" height="60" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="730" y="310" font-size="12.5" font-weight="700" text-anchor="middle">[B3] BOOTH DRIVER ×2</text>
-  <text x="730" y="328" font-size="10.5" fill="#444" text-anchor="middle">±18 V</text>
-
-  <rect x="640" y="370" width="180" height="52" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="730" y="392" font-size="12.5" font-weight="700" text-anchor="middle">[B4] BOOTH MUTE</text>
-  <text x="730" y="408" font-size="10.5" fill="#444" text-anchor="middle">comandato da [L]</text>
-
-  <rect x="640" y="446" width="180" height="52" rx="6" fill="#141414"/>
-  <text x="730" y="468" font-size="12.5" font-weight="700" fill="#fff" text-anchor="middle">[B5] USCITA BOOTH</text>
-  <text x="730" y="486" font-size="10.5" fill="#bbb" text-anchor="middle">XLR o TRS [APERTO-F]</text>
-
-  <!-- RAMO C (rec) -->
-  <rect x="950" y="112" width="180" height="60" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="1040" y="136" font-size="12.5" font-weight="700" text-anchor="middle">[C] REC BUFFER ×2</text>
-  <text x="1040" y="154" font-size="10.5" fill="#444" text-anchor="middle">±18 V (decisione 63)</text>
-
-  <rect x="950" y="196" width="180" height="66" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="1040" y="220" font-size="12.5" font-weight="700" text-anchor="middle">[C2] ATTENUATORE</text>
-  <text x="1040" y="238" font-size="10.5" fill="#444" text-anchor="middle">fisso, partitore di precisione</text>
-  <text x="1040" y="252" font-size="10.5" fill="#444" text-anchor="middle">livello adatto allo Zoom</text>
-
-  <rect x="950" y="286" width="180" height="52" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="1040" y="308" font-size="12.5" font-weight="700" text-anchor="middle">[C3] REC MUTE</text>
-  <text x="1040" y="324" font-size="10.5" fill="#444" text-anchor="middle">comandato da [L]</text>
-
-  <rect x="950" y="362" width="180" height="52" rx="6" fill="#141414"/>
-  <text x="1040" y="384" font-size="12.5" font-weight="700" fill="#fff" text-anchor="middle">[C4] USCITA REC</text>
-  <text x="1040" y="402" font-size="10.5" fill="#bbb" text-anchor="middle">TRS/mini-jack [APERTO-F]</text>
-
-  <!-- MUTE CONTROLLER + PSU -->
-  <rect x="1230" y="286" width="290" height="86" rx="6" fill="#EEF3F6" stroke="#2F6D8E" stroke-width="1.5"/>
-  <text x="1375" y="310" font-size="12.5" font-weight="700" fill="#2F6D8E" text-anchor="middle">[L] MUTE CONTROLLER</text>
-  <text x="1375" y="328" font-size="10.5" fill="#444" text-anchor="middle">analogico: supervisore rail + timer</text>
-  <text x="1375" y="344" font-size="10.5" fill="#444" text-anchor="middle">comanda [H], [B4], [C3] — ordine:</text>
-  <text x="1375" y="360" font-size="10.5" fill="#444" text-anchor="middle">mute PRIMA dei rail (niente pop)</text>
-
-  <rect x="1230" y="400" width="290" height="130" rx="6" fill="#F4F2EC" stroke="#8A8A8A" stroke-width="1"/>
-  <text x="1375" y="424" font-size="12.5" font-weight="700" fill="#333" text-anchor="middle">[M] PSU LOCALE</text>
-  <text x="1250" y="446" font-size="10.5" fill="#444">±26 V [M] in → filtrato (stadio HV [G])</text>
-  <text x="1250" y="464" font-size="10.5" fill="#444">±18 V LDO (front / VCA / booth / rec)</text>
-  <text x="1250" y="482" font-size="10.5" fill="#444">±15 V ultra-low-noise LT3045/3094 (summing,</text>
-  <text x="1250" y="498" font-size="10.5" fill="#444">meter, CV — decisione 54)</text>
-  <text x="1250" y="516" font-size="10.5" fill="#444">+5 V control (LED, logiche mute)</text>
-
-  <!-- frecce audio -->
-  <g stroke="#C05A1B" stroke-width="2.5" fill="none">
-    <path d="M 240 152 L 325 142" marker-end="url(#ar)"/>
-    <path d="M 240 168 L 635 142" marker-end="url(#ar)"/>
-    <path d="M 240 184 L 945 142" marker-end="url(#ar)"/>
-    <path d="M 420 172 L 420 191" marker-end="url(#ar)"/>
-    <path d="M 420 262 L 420 281" marker-end="url(#ar)"/>
-    <path d="M 420 372 L 420 391" marker-end="url(#ar)"/>
-    <path d="M 420 456 L 420 475" marker-end="url(#ar)"/>
-    <path d="M 420 540 L 420 559" marker-end="url(#ar)"/>
-    <path d="M 420 640 L 420 659" marker-end="url(#ar)"/>
-    <path d="M 420 720 L 420 739" marker-end="url(#ar)"/>
-    <path d="M 730 172 L 730 191" marker-end="url(#ar)"/>
-    <path d="M 730 262 L 730 281" marker-end="url(#ar)"/>
-    <path d="M 730 346 L 730 365" marker-end="url(#ar)"/>
-    <path d="M 730 422 L 730 441" marker-end="url(#ar)"/>
-    <path d="M 1040 172 L 1040 191" marker-end="url(#ar)"/>
-    <path d="M 1040 262 L 1040 281" marker-end="url(#ar)"/>
-    <path d="M 1040 338 L 1040 357" marker-end="url(#ar)"/>
-  </g>
-  <!-- mute control -->
-  <g stroke="#2F6D8E" stroke-width="1.5" stroke-dasharray="6 3" fill="none">
-    <path d="M 1225 300 L 1135 300" marker-end="url(#arw)"/>
-    <path d="M 1225 322 L 1195 322 L 1195 350 L 730 350 L 730 365" marker-end="url(#arw)"/>
-    <path d="M 1225 350 L 1160 350 L 1160 692 L 515 692" marker-end="url(#arw)"/>
-  </g>
-  <text x="1150" y="316" font-size="10" fill="#2F6D8E">mute → [C3]</text>
-  <text x="960" y="344" font-size="10" fill="#2F6D8E">mute → [B4]</text>
-  <text x="800" y="686" font-size="10" fill="#2F6D8E">mute → [H]</text>
-
-  <!-- note livello -->
-  <text x="540" y="330" font-size="10" fill="#C05A1B">dominio ±18 V: +23 dBu max (K4)</text>
-  <text x="540" y="600" font-size="10" fill="#C05A1B">+24 dBu reali SOLO qui ([M] dec.93)</text>
-
-  <!-- legenda -->
-  <g font-size="11" fill="#444">
-    <line x1="40" y1="816" x2="90" y2="816" stroke="#C05A1B" stroke-width="2.5"/>
-    <text x="98" y="820">audio</text>
-    <line x1="170" y1="816" x2="220" y2="816" stroke="#2F6D8E" stroke-width="1.5" stroke-dasharray="6 3"/>
-    <text x="228" y="820">controllo / mute</text>
-    <rect x="360" y="808" width="52" height="16" rx="3" fill="#fff" stroke="#8A8A8A" stroke-width="1.5" stroke-dasharray="5 3"/>
-    <text x="424" y="820">blocco opzionale / provvisorio</text>
-    <rect x="660" y="808" width="46" height="16" rx="8" fill="#D97706"/>
-    <text x="718" y="820">[APERTO-F] = decisione di Filippo</text>
-  </g>
-
-  <text x="40" y="858" font-size="10.5" fill="#999">Fonte: docs/fase1/master-out.md v0.2 + ADDENDUM REC (dec. 63) · VCA singoli 218x (correzione datasheet 2026-09-27) · tracking stereo: trim di law / selezione coppie (q. 53) · 2026-09-28</text>
+  <text x="40" y="76" font-size="13" fill="#666">maelcum mixer — design v0.2 + stadio finale v0.3 DEFINITIVA (bootstrap, dec. 86) + summing (dec. 94a) + MON verso CUE · rami indipendenti dallo stesso nodo</text>
+  <rect x="1318" y="34" width="202" height="24" rx="12" fill="#1F7A4D"/>
+  <text x="1419" y="50" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">stadio finale v0.3 chiuso</text>
+  <rect x="40" y="120" width="215" height="150" rx="6" fill="#141414" stroke="#141414" stroke-width="1.5"/>
+  <text x="147.5" y="159.2" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">MASTER SUM: 7 CONTRIBUTORI</text>
+  <text x="147.5" y="175.2" font-size="10.5" fill="#ddd" text-anchor="middle">5-way (MSUM1)</text>
+  <text x="147.5" y="191.2" font-size="10.5" fill="#ddd" text-anchor="middle">ritorni FX 1-4 (MSUM2-5)</text>
+  <text x="147.5" y="207.2" font-size="10.5" fill="#ddd" text-anchor="middle">mic · generic</text>
+  <text x="147.5" y="223.2" font-size="10.5" fill="#ddd" text-anchor="middle">stereo, single-ended 0 dBu</text>
+  <text x="147.5" y="239.2" font-size="10.5" fill="#ddd" text-anchor="middle">(dec. 94a)</text>
+  <rect x="300" y="130" width="220" height="84" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="410" y="160.2" font-size="12" font-weight="700" fill="#141414" text-anchor="middle">[A]+[A2] MASTER SUMMING × 2</text>
+  <text x="410" y="176.2" font-size="10.5" fill="#444" text-anchor="middle">invertente su massa virtuale</text>
+  <text x="410" y="192.2" font-size="10.5" fill="#444" text-anchor="middle">OPA1612, unity, ±15 V LN</text>
+  <path d="M 255 172 L 298 172" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 410 214 L 410 238 L 1165 238" stroke="#C05A1B" stroke-width="2.5" fill="none"/>
+  <circle cx="410" cy="238" r="5" fill="#C05A1B"/>
+  <text x="540" y="230" font-size="10.5" fill="#777">nodo programma: post-summing, pre-master-level</text>
+  <rect x="300" y="262" width="220" height="92" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="410" y="288.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[D] MASTER LEVEL × 1</text>
+  <text x="410" y="304.55" font-size="10.5" fill="#444" text-anchor="middle">2 × VCA THAT 218x (L/R), un CV</text>
+  <text x="410" y="320.55" font-size="10.5" fill="#444" text-anchor="middle">−∞ → 0 (detent ~75-80 %) → +6 dB</text>
+  <text x="410" y="336.55" font-size="10.5" fill="#444" text-anchor="middle">CV: pot 10k → shaper → buffer</text>
+  <rect x="300" y="378" width="220" height="60" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="410" y="404.8" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[E] METER PICKUP</text>
+  <text x="410" y="420.3" font-size="10" fill="#444" text-anchor="middle">20 seg × 3 dB, release ~0,3 s, latch</text>
+  <rect x="300" y="462" width="220" height="60" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="410" y="488.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[F] OUT FRONT × 2</text>
+  <text x="410" y="504.55" font-size="10.5" fill="#444" text-anchor="middle">OPA1612, composito con [G]</text>
+  <rect x="300" y="546" width="220" height="124" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="410" y="581.2" font-size="12" font-weight="700" fill="#141414" text-anchor="middle">[G] STADIO HV BOOTSTRAP × 2</text>
+  <text x="410" y="596.7" font-size="10" fill="#8A4A9E" text-anchor="middle">rail OPA1612 flottanti OUT ± 5,3 V (d. 86)</text>
+  <text x="410" y="612.2" font-size="10" fill="#444" text-anchor="middle">stringa 9 × 1N4148 + pass MJE340/350</text>
+  <text x="410" y="627.7" font-size="10" fill="#444" text-anchor="middle">+25,4…+25,6 dBu · THD 0,00012 % a +24</text>
+  <text x="410" y="643.2" font-size="10" fill="#444" text-anchor="middle">corto 106 mA auto-limitato · servo DC 30 µV</text>
+  <rect x="300" y="694" width="220" height="60" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="410" y="720.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[H] MUTE + PROTEZIONE</text>
+  <text x="410" y="736.55" font-size="10.5" fill="#444" text-anchor="middle">relay, comandato da [L]</text>
+  <rect x="300" y="778" width="220" height="60" rx="6" fill="#141414" stroke="#141414" stroke-width="1.5"/>
+  <text x="410" y="804.55" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">[I] XLR MASTER L/R</text>
+  <text x="410" y="820.55" font-size="10.5" fill="#ddd" text-anchor="middle">bilanciato, +24 dBu capable</text>
+  <path d="M 410 238 L 410 260" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 410 354 L 410 376" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 410 438 L 410 460" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 410 522 L 410 544" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 410 670 L 410 692" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 410 754 L 410 776" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <text x="286" y="304" font-size="10" fill="#C05A1B" text-anchor="end">dominio ±18 V:</text>
+  <text x="286" y="318" font-size="10" fill="#C05A1B" text-anchor="end">+23 dBu max (K4)</text>
+  <text x="286" y="604" font-size="10" fill="#C05A1B" text-anchor="end">+24 dBu reali SOLO qui</text>
+  <text x="286" y="618" font-size="10" fill="#C05A1B" text-anchor="end">statici [M] (dec. 93)</text>
+  <rect x="560" y="262" width="210" height="60" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="665" y="288.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[B] BOOTH BUFFER × 2</text>
+  <text x="665" y="304.55" font-size="10.5" fill="#444" text-anchor="middle">±18 V</text>
+  <rect x="560" y="346" width="210" height="66" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="665" y="367.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[B2] BOOTH LEVEL</text>
+  <text x="665" y="383.55" font-size="10.5" fill="#444" text-anchor="middle">VCA 218x singoli (L/R)</text>
+  <text x="665" y="399.55" font-size="10.5" fill="#444" text-anchor="middle">−∞ → 0 dB, pot dedicato</text>
+  <rect x="560" y="436" width="210" height="60" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="665" y="462.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[B3] BOOTH DRIVER × 2</text>
+  <text x="665" y="478.55" font-size="10.5" fill="#444" text-anchor="middle">±18 V</text>
+  <rect x="560" y="520" width="210" height="60" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="665" y="546.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[B4] BOOTH MUTE</text>
+  <text x="665" y="562.55" font-size="10.5" fill="#444" text-anchor="middle">comandato da [L]</text>
+  <rect x="560" y="604" width="210" height="60" rx="6" fill="#141414" stroke="#141414" stroke-width="1.5"/>
+  <text x="665" y="630.8" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">[B5] USCITA BOOTH</text>
+  <text x="665" y="646.3" font-size="10" fill="#ddd" text-anchor="middle">XLR (risposta di Filippo 09-18)</text>
+  <path d="M 665 238 L 665 260" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 665 322 L 665 344" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 665 412 L 665 434" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 665 496 L 665 518" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 665 580 L 665 602" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <rect x="810" y="262" width="210" height="60" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="915" y="288.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[C] REC BUFFER × 2</text>
+  <text x="915" y="304.55" font-size="10.5" fill="#444" text-anchor="middle">±15 V LN (decisione 63)</text>
+  <rect x="810" y="346" width="210" height="66" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="915" y="367.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[C2] ATTENUATORE</text>
+  <text x="915" y="383.55" font-size="10.5" fill="#444" text-anchor="middle">fisso, partitore di precisione</text>
+  <text x="915" y="399.55" font-size="10.5" fill="#444" text-anchor="middle">livello adatto allo Zoom</text>
+  <rect x="810" y="436" width="210" height="60" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="915" y="462.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[C3] REC MUTE</text>
+  <text x="915" y="478.55" font-size="10.5" fill="#444" text-anchor="middle">comandato da [L]</text>
+  <rect x="810" y="520" width="210" height="60" rx="6" fill="#141414" stroke="#141414" stroke-width="1.5"/>
+  <text x="915" y="546.55" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">[C4] USCITA REC</text>
+  <text x="915" y="562.55" font-size="10.5" fill="#ddd" text-anchor="middle">TRS / mini-jack [APERTO-F]</text>
+  <path d="M 915 238 L 915 260" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 915 322 L 915 344" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 915 412 L 915 434" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 915 496 L 915 518" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <rect x="1060" y="262" width="210" height="84" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="1165" y="284.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[N] MON BUFFER × 2</text>
+  <text x="1165" y="300.55" font-size="10.5" fill="#8A4A9E" text-anchor="middle">nuovo (design S5, 2026-10-02)</text>
+  <text x="1165" y="316.55" font-size="10.5" fill="#444" text-anchor="middle">OPA1612 unity non invertente</text>
+  <text x="1165" y="332.55" font-size="10.5" fill="#444" text-anchor="middle">uscita ≤ 50 Ω</text>
+  <rect x="1060" y="370" width="210" height="70" rx="6" fill="#141414" stroke="#141414" stroke-width="1.5"/>
+  <text x="1165" y="394.05" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">→ BACKPLANE slot 8</text>
+  <text x="1165" y="409.55" font-size="10" fill="#ddd" text-anchor="middle">MON out L/R → modulo CUE</text>
+  <text x="1165" y="425.05" font-size="10" fill="#ddd" text-anchor="middle">non passa da [L]: cuffia sempre viva</text>
+  <path d="M 1165 238 L 1165 260" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 1165 346 L 1165 368" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <rect x="1310" y="470" width="215" height="110" rx="6" fill="#EEF3F6" stroke="#2F6D8E" stroke-width="1.2"/>
+  <text x="1417.5" y="505.95" font-size="12" font-weight="700" fill="#2F6D8E" text-anchor="middle">[L] MUTE CONTROLLER</text>
+  <text x="1417.5" y="521.45" font-size="10" fill="#444" text-anchor="middle">analogico: supervisore rail + timer</text>
+  <text x="1417.5" y="536.95" font-size="10" fill="#444" text-anchor="middle">power-on: attesa 1,5-2 s</text>
+  <text x="1417.5" y="552.45" font-size="10" fill="#444" text-anchor="middle">power-off: relay aperti in &lt; 10 ms</text>
+  <path d="M 1310 490 L 1022 490" stroke="#2F6D8E" stroke-width="1.5" fill="none" stroke-dasharray="6 4" marker-end="url(#arw)"/>
+  <text x="1040" y="484" font-size="10" fill="#2F6D8E">mute → [C3]</text>
+  <path d="M 1310 560 L 1290 560 L 1290 724 L 522 724" stroke="#2F6D8E" stroke-width="1.5" fill="none" stroke-dasharray="6 4" marker-end="url(#arw)"/>
+  <path d="M 790 724 L 790 550 L 772 550" stroke="#2F6D8E" stroke-width="1.5" fill="none" stroke-dasharray="6 4" marker-end="url(#arw)"/>
+  <text x="620" y="716" font-size="10" fill="#2F6D8E">mute → [H]</text>
+  <text x="798" y="640" font-size="10" fill="#2F6D8E">mute → [B4]</text>
+  <rect x="1310" y="612" width="215" height="70" rx="6" fill="#141414" stroke="#141414" stroke-width="1.5"/>
+  <text x="1417.5" y="635.7" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">GLOBAL_MUTE (c9)</text>
+  <text x="1417.5" y="651.2" font-size="10" fill="#E7B4F2" text-anchor="middle">linea backplane (dec. 94b)</text>
+  <text x="1417.5" y="666.7" font-size="10" fill="#ddd" text-anchor="middle">relay dei moduli + buffer FX-SEND</text>
+  <path d="M 1417.5 580 L 1417.5 610" stroke="#2F6D8E" stroke-width="1.5" fill="none" stroke-dasharray="6 4" marker-end="url(#arw)"/>
+  <rect x="1310" y="120" width="215" height="250" rx="6" fill="#F3F2EE" stroke="#AAA" stroke-width="1"/>
+  <text x="1328" y="169.55" font-size="13" font-weight="700" fill="#141414">[M] PSU LOCALE</text>
+  <text x="1328" y="185.55" font-size="10.5" fill="#444">raw ±26 V [M] in</text>
+  <text x="1328" y="201.55" font-size="10.5" fill="#444">(W3 dedicato, dec. 93)</text>
+  <text x="1328" y="217.55" font-size="10.5" fill="#444">→ statici ±23,6…29,2 V</text>
+  <text x="1328" y="233.55" font-size="10.5" fill="#444">   stadio HV [G]</text>
+  <text x="1328" y="249.55" font-size="10.5" fill="#444">→ ±18 V LM317/337</text>
+  <text x="1328" y="265.55" font-size="10.5" fill="#444">   front / VCA / booth</text>
+  <text x="1328" y="281.55" font-size="10.5" fill="#444">→ ±15 V LT3045/94</text>
+  <text x="1328" y="297.55" font-size="10.5" fill="#444">   summing, meter, REC</text>
+  <text x="1328" y="313.55" font-size="10.5" fill="#444">+5 V control dal bus</text>
+  <text x="1328" y="329.55" font-size="10.5" fill="#444">   LED, logica mute</text>
+  <path d="M 40 876 L 90 876" stroke="#C05A1B" stroke-width="2.5"/>
+  <text x="98" y="880" font-size="11.5" fill="#333">audio</text>
+  <path d="M 169 876 L 219 876" stroke="#2F6D8E" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="227" y="880" font-size="11.5" fill="#333">controllo / mute</text>
+  <rect x="366" y="868" width="46" height="16" rx="8" fill="#8A4A9E"/>
+  <text x="424" y="880" font-size="11.5" fill="#333">modifica rispetto al 2026-09-28</text>
+  <rect x="656" y="868" width="46" height="16" rx="8" fill="#141414"/>
+  <text x="714" y="880" font-size="11.5" fill="#333">connettore / backplane</text>
+  <text x="40" y="918" font-size="10.5" fill="#999">Fonte: docs/fase1/master-out.md v0.2 + ADDENDA (REC dec. 63, bootstrap dec. 83→86, [N] MON 2026-10-02) + sim/master-out/RISULTATI-composite.md Test 7-12 + decisioni 93/94 · 2026-10-12</text>
 </svg>

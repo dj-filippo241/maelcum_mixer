@@ -1,77 +1,119 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 980" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 1400" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
   <defs>
-    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="#C05A1B"/>
-    </marker>
-    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" fill="#2F6D8E"/>
-    </marker>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C05A1B"/></marker>
+    <marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8A4A9E"/></marker>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2F6D8E"/></marker>
   </defs>
-
-  <rect width="1560" height="980" fill="#FBFAF7"/>
-
+  <rect width="1560" height="1400" fill="#FBFAF7"/>
   <text x="40" y="52" font-size="24" font-weight="700" fill="#141414">MODULO 5-WAY — DUB PREAMP</text>
-  <text x="40" y="76" font-size="13" fill="#666">maelcum mixer — design v0.2 + CELLE v0.2.1 (2026-09-28, questione 70: JFET VCR) · ordine BLOCCATO: kill → EQ → drive → meter</text>
-  <rect x="1240" y="34" width="280" height="24" rx="12" fill="#1F7A4D"/>
-  <text x="1380" y="50" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">celle v0.2.1: design rilasciato</text>
-
-  <!-- catena principale (colonna sinistra) -->
-  <rect x="60" y="110" width="280" height="56" rx="6" fill="#141414"/>
-  <text x="200" y="134" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">DJ BUS L/R (dal backplane)</text>
-  <text x="200" y="152" font-size="10.5" fill="#bbb" text-anchor="middle">0 dBu nom · worst +12 dBu (4× correlati)</text>
-
-  <rect x="60" y="192" width="280" height="56" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="200" y="216" font-size="13" font-weight="700" text-anchor="middle">PAD −6 dB + BUFFER</text>
-  <text x="200" y="234" font-size="10.5" fill="#444" text-anchor="middle">riferimento interno −6 dBu (dec. 73)</text>
-
-  <!-- KILL BANK -->
-  <rect x="60" y="274" width="280" height="230" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="200" y="298" font-size="13" font-weight="700" text-anchor="middle">KILL BANK (per lato)</text>
-  <text x="200" y="316" font-size="10.5" fill="#444" text-anchor="middle">LR4 5 vie ALLINEATA IN FASE (v0.2):</text>
-  <text x="200" y="332" font-size="10.5" fill="#444" text-anchor="middle">somma piatta ESATTA −0,0002…−0,008 dB</text>
-  <text x="200" y="348" font-size="10.5" fill="#444" text-anchor="middle">spina HP condivisa + allpass (SUB 3, KICK 2, MID 1)</text>
-  <g font-size="11" fill="#333">
-    <text x="90" y="376">SUB ─── [gate K1]</text>
-    <text x="90" y="396">KICK ── [gate K2]</text>
-    <text x="90" y="416">MID ──── [gate K3]</text>
-    <text x="90" y="436">HIGH ─── [gate K4]</text>
-    <text x="90" y="456">SUPER ── [gate K5]</text>
-  </g>
-  <text x="200" y="482" font-size="10.5" fill="#444" text-anchor="middle">gate = VCA THAT 218x + ramp 1 ms</text>
-  <text x="200" y="496" font-size="10.5" fill="#444" text-anchor="middle">ALL-KILL = silenzio assoluto (floor −100 dB)</text>
-
-  <!-- EQ CREATIVO -->
-  <rect x="60" y="530" width="280" height="120" rx="6" fill="#fff" stroke="#1F7A4D" stroke-width="2"/>
-  <text x="200" y="554" font-size="13" font-weight="700" fill="#1F7A4D" text-anchor="middle">EQ CREATIVO — 5 CELLE v0.2.1</text>
-  <text x="200" y="572" font-size="10.5" fill="#444" text-anchor="middle">parametriche SVF in serie (dettaglio a destra)</text>
-  <text x="200" y="588" font-size="10.5" fill="#444" text-anchor="middle">gain −∞(notch)…0…+15/12/9 dB · Q 3/1/0,5</text>
-  <text x="200" y="604" font-size="10.5" fill="#444" text-anchor="middle">position 2,6 ottave/banda · le 5 bande EQ</text>
-  <text x="200" y="620" font-size="10.5" fill="#444" text-anchor="middle">NON sono le 5 vie (ogni cella spazza il range)</text>
-  <text x="200" y="640" font-size="10.5" fill="#666" text-anchor="middle">freq. centri ~90/350/1,2k/3,5k [PROVV. — q. 67]</text>
-
-  <!-- DRIVE -->
-  <rect x="60" y="676" width="280" height="66" rx="6" fill="#fff" stroke="#8A8A8A" stroke-width="1.5" stroke-dasharray="5 3"/>
-  <text x="200" y="700" font-size="13" font-weight="700" text-anchor="middle">DRIVE JFET 2 stadi</text>
-  <text x="200" y="718" font-size="10.5" fill="#444" text-anchor="middle">law dec. 24: CCW=0 → 50% ottimale +7 clean → sat.</text>
-  <text x="200" y="734" font-size="10.5" fill="#8A4A9E" text-anchor="middle">BLOCCATO su questione 61 (referenze di Filippo)</text>
-
-  <rect x="60" y="768" width="280" height="52" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="200" y="790" font-size="13" font-weight="700" text-anchor="middle">METER pickup</text>
-  <text x="200" y="808" font-size="10.5" fill="#444" text-anchor="middle">detector condiviso · ballistica 10 Hz (dec. 65)</text>
-
-  <rect x="60" y="846" width="280" height="52" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="200" y="866" font-size="13" font-weight="700" text-anchor="middle">MAKE-UP +6 dB + TRIM</text>
-  <text x="200" y="884" font-size="10.5" fill="#444" text-anchor="middle">→ MASTER SUM (backplane) · 0 dBu</text>
-
-  <g stroke="#C05A1B" stroke-width="2.5" fill="none">
-    <path d="M 200 166 L 200 187" marker-end="url(#ar)"/>
-    <path d="M 200 248 L 200 269" marker-end="url(#ar)"/>
-    <path d="M 200 504 L 200 525" marker-end="url(#ar)"/>
-    <path d="M 200 650 L 200 671" marker-end="url(#ar)"/>
-    <path d="M 200 742 L 200 763" marker-end="url(#ar)"/>
-    <path d="M 200 820 L 200 841" marker-end="url(#ar)"/>
-  </g>
-
+  <text x="40" y="76" font-size="13" fill="#666">maelcum mixer — design v0.3: kill a switch (dec. 88), drive validato (dec. 82/87), celle v0.2.1 · ordine BLOCCATO: kill → EQ → drive → meter</text>
+  <rect x="1311" y="34" width="209" height="24" rx="12" fill="#1F7A4D"/>
+  <text x="1415.5" y="50" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">drive v0.3 + kill a switch</text>
+  <rect x="40" y="100" width="340" height="60" rx="6" fill="#141414" stroke="#141414" stroke-width="1.5"/>
+  <text x="210" y="126.55" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">DJ BUS L/R (dal backplane)</text>
+  <text x="210" y="142.55" font-size="10.5" fill="#ddd" text-anchor="middle">0 dBu nom · worst +12 dBu (4 × correlati)</text>
+  <rect x="40" y="190" width="340" height="60" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="210" y="216.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">PAD −6 dB + BUFFER</text>
+  <text x="210" y="232.55" font-size="10.5" fill="#444" text-anchor="middle">riferimento interno −6 dBu (dec. 73)</text>
+  <rect x="40" y="280" width="340" height="300" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="210" y="330.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">KILL BANK (per lato)</text>
+  <text x="210" y="346.55" font-size="10.5" fill="#444" text-anchor="middle">LR4 5 vie ALLINEATA IN FASE:</text>
+  <text x="210" y="362.55" font-size="10.5" fill="#444" text-anchor="middle">somma piatta −0,004…−0,011 dB</text>
+  <text x="210" y="378.55" font-size="10.5" fill="#444" text-anchor="middle"></text>
+  <text x="210" y="394.55" font-size="10.5" fill="#444" text-anchor="middle">SUB ── inv ── [switch K1]</text>
+  <text x="210" y="410.55" font-size="10.5" fill="#444" text-anchor="middle">KICK ──────── [switch K2]</text>
+  <text x="210" y="426.55" font-size="10.5" fill="#444" text-anchor="middle">MID ── inv ── [switch K3]</text>
+  <text x="210" y="442.55" font-size="10.5" fill="#444" text-anchor="middle">HIGH ──────── [switch K4]</text>
+  <text x="210" y="458.55" font-size="10.5" fill="#444" text-anchor="middle">SUPER ─────── [switch K5]</text>
+  <text x="210" y="474.55" font-size="10.5" fill="#444" text-anchor="middle"></text>
+  <text x="210" y="490.55" font-size="10.5" fill="#8A4A9E" text-anchor="middle">gate = SWITCH π SPDT hard-cut (dec. 88)</text>
+  <text x="210" y="506.55" font-size="10.5" fill="#8A4A9E" text-anchor="middle">10 VCA 218x rimossi dai gate</text>
+  <text x="210" y="522.55" font-size="10.5" fill="#444" text-anchor="middle">2 invertitori unity (SUB/MID) per la polarità</text>
+  <text x="210" y="538.55" font-size="10.5" fill="#444" text-anchor="middle">ALL-KILL = silenzio assoluto</text>
+  <rect x="40" y="610" width="340" height="150" rx="6" fill="#F1F7F3" stroke="#1F7A4D" stroke-width="1.5"/>
+  <text x="210" y="650.8" font-size="13" font-weight="700" fill="#1F7A4D" text-anchor="middle">EQ CREATIVO — 5 CELLE v0.2.1</text>
+  <text x="210" y="666.3" font-size="10" fill="#444" text-anchor="middle">parametriche SVF in serie (dettaglio a destra)</text>
+  <text x="210" y="681.8" font-size="10" fill="#444" text-anchor="middle">gain −∞(notch)…0…+15/12/9 dB · Q 3/1/0,5</text>
+  <text x="210" y="697.3" font-size="10" fill="#444" text-anchor="middle">position 2,6 ottave/banda · gain: 5 pot rotativi (dec. 85)</text>
+  <text x="210" y="712.8" font-size="10" fill="#444" text-anchor="middle">le 5 bande EQ NON sono le 5 vie</text>
+  <text x="210" y="728.3" font-size="10" fill="#444" text-anchor="middle">freq. centri ~90/350/1,2k/3,5k [PROVV — q. 67]</text>
+  <rect x="40" y="790" width="340" height="130" rx="6" fill="#F1F7F3" stroke="#1F7A4D" stroke-width="1.5"/>
+  <text x="210" y="827.55" font-size="13" font-weight="700" fill="#1F7A4D" text-anchor="middle">DRIVE v0.3 VALIDATO</text>
+  <text x="210" y="843.55" font-size="10.5" fill="#444" text-anchor="middle">«prima nastro, ultimi 20 % fuzz» (dec. 82)</text>
+  <text x="210" y="859.55" font-size="10.5" fill="#444" text-anchor="middle">law 0 / +7 / +12 / +16 dB a θ 0/50/80/100 %</text>
+  <text x="210" y="875.55" font-size="10.5" fill="#444" text-anchor="middle">griglia §5.3 confermata da Filippo (dec. 87)</text>
+  <text x="210" y="891.55" font-size="10.5" fill="#444" text-anchor="middle">dettaglio in alto a destra</text>
+  <rect x="40" y="950" width="340" height="60" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="210" y="976.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">METER pickup</text>
+  <text x="210" y="992.55" font-size="10.5" fill="#444" text-anchor="middle">detector condiviso · release ~0,3 s (dec. 81)</text>
+  <rect x="40" y="1040" width="340" height="60" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="210" y="1066.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">MAKE-UP +6 dB + TRIM</text>
+  <text x="210" y="1082.55" font-size="10.5" fill="#444" text-anchor="middle">uscita 0 dBu nominale</text>
+  <rect x="40" y="1130" width="340" height="56" rx="6" fill="#141414" stroke="#141414" stroke-width="1.5"/>
+  <text x="210" y="1162.38" font-size="12.5" font-weight="700" fill="#fff" text-anchor="middle">→ MASTER SUM (MSUM1, backplane)</text>
+  <path d="M 210 160 L 210 188" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 210 250 L 210 278" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 210 580 L 210 608" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 210 760 L 210 788" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 210 920 L 210 948" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 210 1010 L 210 1038" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 210 1100 L 210 1128" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <rect x="420" y="100" width="1100" height="300" rx="10" fill="#fff" stroke="#1F7A4D" stroke-width="1.5"/>
+  <text x="450" y="134" font-size="16" font-weight="700" fill="#1F7A4D">ZOOM — DRIVE v0.3 (tutto DC-coupled, per lato)</text>
+  <text x="450" y="154" font-size="11.5" fill="#666">soglie fisse, gain variabile: la manopola spinge il segnale dentro due saturatori in cascata · polarità totale non invertente</text>
+  <rect x="450" y="180" width="230" height="112" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="565" y="209.2" font-size="12" font-weight="700" fill="#141414" text-anchor="middle">[1] VCA THAT 218x</text>
+  <text x="565" y="224.7" font-size="10" fill="#444" text-anchor="middle">gain pulito, law dB-lineare</text>
+  <text x="565" y="240.2" font-size="10" fill="#444" text-anchor="middle">θ 0/50/80/100 % =</text>
+  <text x="565" y="255.7" font-size="10" fill="#444" text-anchor="middle">−9,4 / −2,4 / +2,6 / +6,6 dB</text>
+  <text x="565" y="271.2" font-size="10" fill="#444" text-anchor="middle">a θ0 attenua PRIMA del saturatore</text>
+  <rect x="720" y="180" width="230" height="112" rx="6" fill="#FDF4EA" stroke="#D97706" stroke-width="1.2"/>
+  <text x="835" y="209.2" font-size="12" font-weight="700" fill="#C05A1B" text-anchor="middle">[2a] NASTRO</text>
+  <text x="835" y="224.7" font-size="10" fill="#444" text-anchor="middle">JFET common-source nudo</text>
+  <text x="835" y="240.2" font-size="10" fill="#444" text-anchor="middle">ginocchio morbido 0,7-1,0 Vp</text>
+  <text x="835" y="255.7" font-size="10" fill="#444" text-anchor="middle">asimmetrico: + comprime, − aperto</text>
+  <text x="835" y="271.2" font-size="10" fill="#444" text-anchor="middle">entra da θ ≈ 50-65 %</text>
+  <rect x="990" y="180" width="230" height="112" rx="6" fill="#FDF4EA" stroke="#D97706" stroke-width="1.2"/>
+  <text x="1105" y="209.2" font-size="12" font-weight="700" fill="#C05A1B" text-anchor="middle">[2b] FUZZ</text>
+  <text x="1105" y="224.7" font-size="10" fill="#444" text-anchor="middle">diff pair PNP single-ended</text>
+  <text x="1105" y="240.2" font-size="10" fill="#444" text-anchor="middle">clip duro asimmetrico ±1,9 V</text>
+  <text x="1105" y="255.7" font-size="10" fill="#444" text-anchor="middle">ceiling ±2,79 V (+11,9 dBu)</text>
+  <text x="1105" y="271.2" font-size="10" fill="#444" text-anchor="middle">entra da θ ≈ 80-100 %</text>
+  <rect x="1260" y="180" width="230" height="112" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="1375" y="209.2" font-size="12" font-weight="700" fill="#141414" text-anchor="middle">[3] RECOVERY + SERVO DC</text>
+  <text x="1375" y="224.7" font-size="10" fill="#444" text-anchor="middle">invertente 2k/2k (OPA1612)</text>
+  <text x="1375" y="240.2" font-size="10" fill="#444" text-anchor="middle">servo 2 op-amp classe OPA2134</text>
+  <text x="1375" y="255.7" font-size="10" fill="#444" text-anchor="middle">fc 0,31 Hz, residuo −65 µV</text>
+  <text x="1375" y="271.2" font-size="10" fill="#444" text-anchor="middle">→ meter → make-up</text>
+  <path d="M 680 236 L 718 236" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 950 236 L 988 236" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 1220 236 L 1258 236" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <rect x="450" y="322" width="500" height="56" rx="6" fill="#EEF3F6" stroke="#2F6D8E" stroke-width="1.2"/>
+  <text x="700" y="350.925" font-size="10.5" fill="#444" text-anchor="middle">pot DRIVE 0-5 V → shaper PWL 3 tratti → CV 6,1 mV/dB (dec. 92) → smoothing 1 ms (dec. 80)</text>
+  <path d="M 565 322 L 565 294" stroke="#2F6D8E" stroke-width="1.5" fill="none" stroke-dasharray="6 4" marker-end="url(#arw)"/>
+  <text x="980" y="346" font-size="10.5" fill="#666">Rumore drive: VCA dominante (I/V 10k, −104 dBV).</text>
+  <text x="980" y="362" font-size="10.5" fill="#8A4A9E">D5 (drive × risonanza filtro) resta aperto: dopo l'ascolto q. 70.</text>
+  <rect x="420" y="420" width="1100" height="190" rx="10" fill="#fff" stroke="#2F6D8E" stroke-width="1.5"/>
+  <text x="450" y="454" font-size="16" font-weight="700" fill="#2F6D8E">ZOOM — GATE DI KILL A SWITCH (dec. 88, §8.10)</text>
+  <rect x="450" y="478" width="200" height="104" rx="6" fill="#EEF3F6" stroke="#2F6D8E" stroke-width="1.2"/>
+  <text x="550" y="510.95" font-size="12" font-weight="700" fill="#2F6D8E" text-anchor="middle">KILL SWITCH pannello</text>
+  <text x="550" y="526.45" font-size="10" fill="#444" text-anchor="middle">5 interruttori, uno per via</text>
+  <text x="550" y="541.95" font-size="10" fill="#444" text-anchor="middle">+5 V via 10k (logica)</text>
+  <text x="550" y="557.45" font-size="10" fill="#444" text-anchor="middle">l'audio non passa dai contatti</text>
+  <rect x="710" y="478" width="250" height="104" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="835" y="503.2" font-size="12" font-weight="700" fill="#141414" text-anchor="middle">π SPDT classe ADG1434</text>
+  <text x="835" y="518.7" font-size="10" fill="#444" text-anchor="middle">serie + shunt a GND da off</text>
+  <text x="835" y="534.2" font-size="10" fill="#444" text-anchor="middle">Ron 4,7 Ω · rail ±15 V dedicato</text>
+  <text x="835" y="549.7" font-size="10" fill="#444" text-anchor="middle">off-isolation −95 dB a 20 kHz</text>
+  <text x="835" y="565.2" font-size="10" fill="#444" text-anchor="middle">(serie semplice bocciata: −22…−52)</text>
+  <path d="M 650 530 L 708 530" stroke="#2F6D8E" stroke-width="1.5" fill="none" stroke-dasharray="6 4" marker-end="url(#arw)"/>
+  <rect x="1010" y="478" width="480" height="104" rx="6" fill="#F3F2EE" stroke="#AAA" stroke-width="1"/>
+  <text x="1028" y="502.2" font-size="12" font-weight="700" fill="#141414">COSA CAMBIA ALL'ASCOLTO</text>
+  <text x="1028" y="518.2" font-size="10.5" fill="#444">Taglio netto, come nei preamp della scena dub (benchmark su 9 costruttori).</text>
+  <text x="1028" y="534.2" font-size="10.5" fill="#444">Il click di hard-cut (2,18 V al summer) è accettato: standard di scena.</text>
+  <text x="1028" y="550.2" font-size="10.5" fill="#444">In cambio: rumore modulo −83,9 dBu A-wtd a drive 0 (target ≤ −80: PASS 3,9 dB).</text>
+  <text x="1028" y="566.2" font-size="10.5" fill="#444">Con i VCA nei gate era −77,3 dBu: fallito di 10-15 dB sul vecchio target.</text>
+  <g transform="translate(0,520)">
   <!-- ZOOM CELLA v0.2.1 -->
   <rect x="420" y="110" width="1100" height="560" rx="10" fill="#fff" stroke="#1F7A4D" stroke-width="1.5"/>
   <text x="450" y="146" font-size="16" font-weight="700" fill="#1F7A4D">ZOOM — CELLA PARAMETRICA v0.2.1 (JFET VCR, questione 70)</text>
@@ -181,21 +223,17 @@
   </g>
   <text x="800" y="512" font-size="10" fill="#2F6D8E">Vcm2 (bootstrap) ai gate</text>
 
-  <!-- nota livelli -->
-  <rect x="420" y="700" width="1100" height="76" rx="6" fill="#F4F2EC" stroke="#8A8A8A" stroke-width="1"/>
-  <text x="440" y="724" font-size="11.5" fill="#444">Perché non gli OTA LM13700: tetto di stato strutturale 52 mV a f0 (Iout max ≈ Iabc) — la cella nuda a −6 dBu collassava (gain 1,1 vs 5,62, THD 3-6%).</text>
-  <text x="440" y="742" font-size="11.5" fill="#444">Il JFET VCR è un resistore controllato (solo termica): core a −12 dBu locale, THD 0,005% nominale / 0,125% worst (+10 dBu, Q3, +15 dB) — morbida, territorio drive §6.</text>
-  <text x="440" y="760" font-size="11.5" fill="#444">Rumore: −121,7 dBu/cella (worst boost) → modulo ~−101 contro target −90 (PASS 11 dB). Silicon: ~33-35 quad + 10 dual JFET + 12 THAT 218x (10 gate + 2 drive).</text>
 
-  <!-- legenda -->
-  <g font-size="11" fill="#444">
-    <line x1="60" y1="930" x2="110" y2="930" stroke="#C05A1B" stroke-width="2.5"/>
-    <text x="118" y="934">audio</text>
-    <line x1="380" y1="930" x2="430" y2="930" stroke="#2F6D8E" stroke-width="1.5" stroke-dasharray="6 3"/>
-    <text x="438" y="934">controllo (position/width — niente CV nel gain)</text>
-    <rect x="790" y="922" width="52" height="16" rx="3" fill="#fff" stroke="#8A8A8A" stroke-width="1.5" stroke-dasharray="5 3"/>
-    <text x="854" y="934">bloccato su referenze (q. 61) / provvisorio</text>
   </g>
-
-  <text x="40" y="964" font-size="10.5" fill="#999">Fonte: docs/fase2/five-way-module.md §2/§3.1/§4.2/§8.8 + sim/five-way/ (cell-v021-*.cir, RISULTATI-cell-clean.md) + gain-staging-sheet §3 (rumore −108,4 v0.2 / ~−101 v0.2.1) · 2026-09-28</text>
+  <rect x="420" y="1210" width="1100" height="84" rx="6" fill="#F3F2EE" stroke="#AAA" stroke-width="1"/>
+  <text x="438" y="1236.6" font-size="11" fill="#444">Perché non gli OTA LM13700 nelle celle: tetto di stato strutturale 52 mV a f0 → la cella nuda collassava (THD 3-6 %).</text>
+  <text x="438" y="1253.1" font-size="11" fill="#444">Il JFET VCR è un resistore controllato: core a −12 dBu locale, THD 0,005 % nominale / 0,125 % worst — morbida, territorio drive.</text>
+  <text x="438" y="1269.6" font-size="11" fill="#444">Silicio THAT 218x nel modulo: 2 (solo i drive). I vecchi numeri di rumore per cella (−121,7 dBu) sono invalidati dal quirk INTEG: vale il −83,9 del modulo.</text>
+  <path d="M 40 1330 L 90 1330" stroke="#C05A1B" stroke-width="2.5"/>
+  <text x="98" y="1334" font-size="11.5" fill="#333">audio</text>
+  <path d="M 169 1330 L 219 1330" stroke="#2F6D8E" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="227" y="1334" font-size="11.5" fill="#333">controllo (position/width/drive/kill)</text>
+  <rect x="496" y="1322" width="46" height="16" rx="8" fill="#8A4A9E"/>
+  <text x="554" y="1334" font-size="11.5" fill="#333">modifica rispetto al 2026-09-28</text>
+  <text x="40" y="1378" font-size="10.5" fill="#999">Fonte: docs/fase2/five-way-module.md (§2, §4.2, §5.2-5.3, §8.9-8.10) + sim/five-way/RISULTATI-gate-switch.md + RISULTATI-module-noise-v031.md + decisioni 82/85/87/88/89 · 2026-10-12</text>
 </svg>

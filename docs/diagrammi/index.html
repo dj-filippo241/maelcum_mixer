@@ -19,20 +19,24 @@
 <body>
 <header>
   <h1>maelcum mixer — diagrammi a blocchi dei moduli</h1>
-  <p class="sub">Generati dai design doc correnti (2026-09-28). SVG vettoriali: riapribili e modificabili in Illustrator / Figma / Inkscape. Rosso = audio, blu tratteggiato = controllo CV, viola = risonanza/feedback, ambra = questioni aperte.</p>
+  <p class="sub">Generati dai design doc correnti (2026-10-12, decisioni fino alla 96) con <code>genera_diagrammi.py</code>. SVG vettoriali: riapribili e modificabili in Illustrator / Figma / Inkscape. Rosso = audio, blu tratteggiato = controllo, viola = feedback e modifiche rispetto alla versione del 2026-09-28, ambra = questioni aperte.</p>
 </header>
 <nav>
   <a href="#canale">Canale CDJ/Line</a>
+  <a href="#fxsend">FX-Send</a>
   <a href="#fx">FX</a>
-  <a href="#master">Master Out</a>
   <a href="#fiveway">5-Way</a>
   <a href="#filtro">Filtro</a>
+  <a href="#master">Master Out</a>
+  <a href="#cue">Cue / Cuffie</a>
 </nav>
 
-<figure id="canale"><img src="canale-cdj.svg" alt="Diagramma modulo canale CDJ/Line"><figcaption>Canale CDJ/Line v0.3 — docs/fase1/cdj-line-channel.md (EQ serie beta-3)</figcaption></figure>
-<figure id="fx"><img src="fx.svg" alt="Diagramma modulo FX"><figcaption>FX v0.2 — docs/fase1/fx-module.md (una delle 4 sezioni bus + matrice feedback)</figcaption></figure>
-<figure id="master"><img src="master-out.svg" alt="Diagramma modulo master out"><figcaption>Master Out v0.2 + REC — docs/fase1/master-out.md</figcaption></figure>
-<figure id="fiveway"><img src="five-way.svg" alt="Diagramma modulo 5-way"><figcaption>5-Way dub preamp v0.2 + celle v0.2.1 — docs/fase2/five-way-module.md §2/§4.2</figcaption></figure>
-<figure id="filtro"><img src="filtro.svg" alt="Diagramma modulo filtro"><figcaption>Filtro globale v0.2/v0.3-WIP — docs/fase2/filter-module.md (questione 70: carattere vs pulito)</figcaption></figure>
+<figure id="canale"><img src="canale-cdj.svg" alt="Diagramma modulo canale CDJ/Line"><figcaption>Canale CDJ/Line v0.4 — docs/fase1/cdj-line-channel.md (phono MM incluso; send FX spostato nel micro-modulo, dec. 91a)</figcaption></figure>
+<figure id="fxsend"><img src="fx-send.svg" alt="Diagramma micro-modulo FX-SEND"><figcaption>Micro-modulo FX-SEND v0.1-WIP — docs/fase1/fx-send-module.md (nuovo: EQ2 + level + assign, uno per canale)</figcaption></figure>
+<figure id="fx"><img src="fx.svg" alt="Diagramma modulo FX"><figcaption>FX v0.3-WIP — docs/fase1/fx-module.md (una delle 4 sezioni bus + matrice feedback 16× con self-feedback, dec. 91b)</figcaption></figure>
+<figure id="fiveway"><img src="five-way.svg" alt="Diagramma modulo 5-way"><figcaption>5-Way dub preamp v0.3 — docs/fase2/five-way-module.md (kill a switch dec. 88, drive validato dec. 82/87, celle v0.2.1)</figcaption></figure>
+<figure id="filtro"><img src="filtro.svg" alt="Diagramma modulo filtro"><figcaption>Filtro globale v0.2/v0.3-WIP — docs/fase2/filter-module.md (questione 70 aperta: carattere vs pulito; rumore dec. 89)</figcaption></figure>
+<figure id="master"><img src="master-out.svg" alt="Diagramma modulo master out"><figcaption>Master Out v0.2 + stadio finale v0.3 — docs/fase1/master-out.md (bootstrap dec. 86, summing 7 contributori dec. 94a, buffer MON verso CUE)</figcaption></figure>
+<figure id="cue"><img src="cue.svg" alt="Diagramma modulo cue e cuffie"><figcaption>Cue / Cuffie S5 v0.2 — docs/fase3/sistema-cue.md (nuovo: ampli cuffia ridisegnato 2026-10-12, standard classe DJM dec. 96)</figcaption></figure>
 </body>
 </html>
