@@ -14,7 +14,7 @@ voce porta in testa il suo stato a oggi.
 | A2 | **CHIUSA → dec. 99 (overdrive diverso dal drive, meno aggressivo dello Sherman, curva che accelera a fine corsa).** ~~Overdrive del filtro~~: confermare o cambiare la law (stessa del drive 5-way come partenza) | filter-module §5bis | 12 |
 | A3 | **CHIUSA → dec. 99 (i saturatori si autoregolano, il boost pulito sparisce).** ~~Drive e overdrive: distorcere senza salire di volume~~ — (A) manopola di livello dopo il drive, (B) compensazione automatica, (C) più guadagno prima dei saturatori | voce 72 + griglia corretta | 72 |
 | A14 | **CHIUSA 2026-10-13 → dec. 99 (g, h, i): griglie confermate.** ~~Confermare le griglie nate dalla dec. 99~~: (a) drive 5-way GROWL + NASTRO (frequenza del GROWL DECISA: 350 Hz); (b) overdrive filtro: morso a fine corsa, law (tetto DECISO: +3 dB) | five-way §5bis.4, filter-module §5ter | 10, 12 |
-| A4 | Filtro: un solo percorso per canale (HPF oppure LPF) o HPF e LPF in serie (16 core invece di 8) | filter-module §8 | 63 |
+| A4 | **CHIUSA 2026-10-13 → DECISIONE 101 (un percorso per canale).** Filtro: un solo percorso per canale (HPF oppure LPF) o HPF e LPF in serie (16 core invece di 8) | filter-module §8 | 63 |
 | A5 | **CHIUSA 2026-10-13 → DECISIONE 100 (accettato come condizione d'uso).** **[MISURATO 2026-10-13 con l'overdrive v0.2 (filter-module §5ter): overdrive chiuso −78,5 = PASS; a metà −77,8; tutto aperto e in silenzio −74,8. La domanda si riduce a: accettare il soffio di un overdrive aperto senza musica?]** Rumore con i filtri inseriti: −75,3 dBu contro il target −78 (definito a filtri OFF). Accettare come condizione d'uso, come per le mandate (dec. 95)? | filter-module §5bis | nuova |
 | A6 | Tracking stereo dell'EQ: pot doppi selezionati (raccomandato) o un VCA per banda (+16 chip) | voce 53 | 53 |
 | A7 | EQ tutto chiuso non è silenzio (resta il fader): accettare o aggiungere l'auto-mute | voce 59 | 59 |
@@ -38,7 +38,7 @@ voce porta in testa il suo stato a oggi.
 
 ### C. Ingegneria che resta, ferma su A/B o sul banco
 
-- Dopo A4: mux di modo del filtro. Dopo B1: interazione risonanza-overdrive
+- Mux di modo del filtro: definito dalla dec. 101 (SPDT per canale sul CV, già nel design). Dopo B1: interazione risonanza-overdrive
   col modello OTA reale (D5).
 - **Da dec. 99 (2026-10-13)**: drive 5-way v0.4 (five-way §5bis) e
   overdrive filtro v0.2 (filter-module §5ter) SIMULATI, rumore MISURATO
@@ -167,7 +167,7 @@ Nuovi aperti:
 
 ## Nuovi aperti — modulo filtro + review di sessione (2026-09-24)
 
-63. **[NUOVA da `docs/fase2/filter-module.md` §8 — APERTO-F]** Interpretazione del mux CV del filtro: un solo percorso attivo per canale (HPF oppure LPF, coerente con lo switch a 3 vie — lettura naturale della decisione 67, assunta nel design v0.1) oppure sezioni HPF+LPF sempre attive in serie per canale (raddoppia i core: 16 invece di 8)? Cambia silicon, pannello e gesto musicale: con single-path un canale non può essere "hp-filtrato e lp-filtrato" insieme.
+63. **[CHIUSA 2026-10-13 → DECISIONE 101, origine F: un solo percorso per canale]** **[NUOVA da `docs/fase2/filter-module.md` §8]** Interpretazione del mux CV del filtro: un solo percorso attivo per canale (HPF oppure LPF, coerente con lo switch a 3 vie — lettura naturale della decisione 67, assunta nel design v0.1) oppure sezioni HPF+LPF sempre attive in serie per canale (raddoppia i core: 16 invece di 8)? Cambia silicon, pannello e gesto musicale: con single-path un canale non può essere "hp-filtrato e lp-filtrato" insieme.
 64. **[NUOVA da `docs/fase2/filter-module.md` §8 — APERTO-F]** Allineamento a 4 poli dei core filtro (2 sezioni 2-poli in cascata): Butterworth (piatto in banda, transiente preciso), Bessel (morbido sui transienti, fase lineare) o Linkwitz-Riley — è il carattere del filtro sulle sweep. Da scegliere con Filippo: curve a confronto + ascolti al prototipo.
 65. **[STATO 2026-10-13: CHIUSA: EQ2 = celle serie; la decisione 68 vale anche qui]** **[NUOVA da review di completezza 2026-09-24 — derivata da 62/76]** EQ 2 bande dell'FX SEND (CDJ v0.2 §3.5: "celle a contribuzione semplificate, stesse math della §3.3") e degli FX RETURN (SPECIFICA §7): ereditano il finding di fase che ha bocciato le celle dell'EQ principale (kill/bump irrealizzabili sulle bande shelf). Da verificare e allineare alla topologia serie dentro EQ v0.3; il requisito comportamentale (−∞→0→+6, law dedicate) è locked e immutato. **DESIGN FATTO (2026-09-25, `docs/fase1/fx-module.md` §6)**: EQ2 = celle serie v0.3 (LOW shelf complementare 120/100-150 Hz con kill −30; HIGH sottrattiva 4,5/4-6 kHz — la questione 68 si applica anche qui: una decisione unica copre canale, send e ritorni). Law dedicate = taper custom, tabelle in FX v0.2.
 66. **[CHIUSA 2026-09-24 → decisione 77]** Profondità del kill EQ per banda: Filippo sceglie **−30 dB** (Rp/R ≈ 31, opzione raccomandata). Il silenzio assoluto resta lavoro del fader. Numeri e griglie: `docs/fase1/eq-serie-v0.3.md` §2, `sim/eq-serie/`; testo in `docs/01-decisioni-bloccate.md` voce 77.
