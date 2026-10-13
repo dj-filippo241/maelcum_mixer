@@ -46,7 +46,8 @@ voce porta in testa il suo stato a oggi.
   Resta: ricalcolo del totale di sistema a filtri OFF, dispersione
   JFET, D5.
 - Law di frequenza del filtro: CHIUSA dalla dec. 102 (curva Xone:96 nel
-  90 % centrale). Resta: calcolo dei valori dello shaper su questa law.
+  90 % centrale). Valori dello shaper CALCOLATI e simulati
+  (sistema-shaper §3). Resta la pre-distorsione del converter, a banco.
 - Solo banco: THD e clip reali di mic/mono, colpo del VCA di gain,
   termico del master, EIN con sorgenti vere, RFI, charge injection degli
   switch, tarature dei meter.

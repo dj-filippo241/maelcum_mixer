@@ -147,7 +147,7 @@ le 11,8 ottave derivano del ~70% su 0-50 °C (misurato, §6).
     curva liscia monotona) si compensa nello shaper: vc* = vc_ideale − e(vc)/2,355
     (correzione ≤ 40 mV agli estremi) — la law risultante è esponenziale pura entro
     ~±1%.
-  - [CIRCUITO DELLA FAMIGLIA DEFINITO 2026-10-13 → `docs/fase3/sistema-shaper.md`: sommatore + rami diodo diretti e rovesciati; i valori per questa law si calcolano a law chiusa]
+  - [CIRCUITO E VALORI 2026-10-13 → `docs/fase3/sistema-shaper.md` §3: Rm 9,09k + ramo alto 20k/24,3k + ramo basso 11,3k/80,6k; law dec. 102 esatta dal 10 al 90 %, ginocchi entro −12 %…+8 % a 50 °C]
   - Circuito: generatore piecewise-lineare ATTIVO a tratti (2 sezioni op-amp per
     sezione CV: stadio a guadagno commutato da rami diodi-resistori in feedback +
     invertitore), riferimenti di piega da partitori sui rail ±15 V LN con trimmer

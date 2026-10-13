@@ -22,7 +22,7 @@ Dove sta nel mixer:
 | Drive 5-way | 1 | 0 / +7 / +9,5 / +12 / +14 / +16 dB (dec. 82/87) |
 | Drive filtro (HPF, LPF) | 2 | come il drive 5-way (filter-module §5bis) |
 | Position 5-way | 5 | frequenza esponenziale su 2,6 ottave |
-| Frequenza filtro (HPF, LPF) | 2 | lineare al centro, più ripida ai due estremi (dec. 70) |
+| Frequenza filtro (HPF, LPF) | 2 | curva Xone:96 nel 90 % centrale, più ripida negli ultimi 5 % (dec. 70/102) |
 
 ## 2. Circuito: un op-amp, pochi diodi
 
@@ -80,12 +80,37 @@ col fit ideale; con valori E96 fino a +2,2 % a 35 °C e +3,6 % a 50 °C
 principale lo riporta dentro. Il «±1,8 %» scritto in five-way §4.2 era
 la sola matematica della curva.
 
+**Frequenza del filtro** (`shaper-filtro-freq.cir` + `shaper_filtro_tab.py`,
+2026-10-13, law della decisione 102: curva Xone:96 nel 90 % centrale).
+Uscita lineare in ottave, 0,5 V/ottava. Ramo principale Rm 9,09k; ramo
+alto (diodo diretto, sopra il 95 %) Ra 20k / Rb 24,3k verso −5 V; ramo
+basso (diodo rovesciato, sotto il 5 %) Ra 11,3k / Rb 80,6k verso −5 V
+(nota: per avere la soglia a tensione positiva la Rb del ramo rovesciato
+va a −5 V, non a +5 V). Zero e fondo scala tarati al 25 % e al 75 %.
+
+| Manopola | Target | 20 °C | 35 °C | 50 °C |
+|---|---|---|---|---|
+| 0 % | 10 Hz | +4,1 % | −0,5 % | −4,9 % |
+| 2,5 % | 14,1 Hz | +0,4 % | −3,7 % | −7,7 % |
+| 5 % | 20 Hz | −5,6 % | −8,5 % | −11,7 % |
+| 10 % | 29,4 Hz | −0,1 % | −0,3 % | −0,8 % |
+| 25-75 % | 93 Hz-4,3 kHz | 0,0 % | 0,0 % | 0,0 % |
+| 90 % | 13,6 kHz | +0,2 % | +0,6 % | +1,4 % |
+| 95 % | 20 kHz | +3,0 % | +5,3 % | +8,3 % |
+| 97,5 % | 26,5 kHz | −1,9 % | +1,2 % | +4,8 % |
+| 100 % | 35 kHz | −5,2 % | −1,6 % | +2,2 % |
+
+Dal 10 al 90 % della corsa la curva è esatta e non si muove con la
+temperatura (sole resistenze). Ai due ginocchi (5 % e 95 %) il diodo
+arrotonda lo spigolo: errore fino a −12 % a caldo, cioè 17,7 Hz al posto
+di 20 Hz. Tolleranza di progetto ±5-10 % (dec. 74): fuori solo in quel
+punto, a 50 °C, in zona infrasonica. Accettato come partenza.
+
 ## 4. Cosa resta
 
-- Frequenza del filtro: la rete è la stessa (un ramo diretto e un ramo
-  rovesciato); i valori si calcolano con `shaper_fit.py` dalla tabella
-  θ→f quando la law è chiusa a banco con la pre-distorsione del
-  converter (dec. 70). Non simulata qui.
+- Frequenza del filtro: manca la pre-distorsione dell'errore del
+  converter (filter-module §4, correzione ≤ 40 mV agli estremi): si
+  somma a banco coi due trimmer.
 - Trimmer: uno di zero e uno di fondo scala per shaper dove la law è
   critica (reroute, drive); gli altri a resistenze fisse.
 - Verifica con diodi veri e op-amp vero (offset): banco.
