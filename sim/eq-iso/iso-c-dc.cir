@@ -1,0 +1,102 @@
+* ============================================================
+* EQ DI CANALE v0.4-beta2 — ISOLATOR 4 BANDE, SOMMA NON INVERTENTE
+* (polarita' diritta, integrazione nel canale: todo 41, 2026-10-13).
+* Base: iso-b-dc.cir (somma invertente). Incroci [PROVVISORI] 150/500/2500 Hz.
+* DC: segno e residuo della continua.
+* DC: continua in ingresso 0/20 mV, offset del servo 2 mV (massimo OPA2134). kcase 0 centro, 6 LOW al massimo.
+.include ../lib/opamp-audio.inc
+.param f1=150 f2=500 f3=2500
+.param Rp=10k Rend=10
+.subckt SKLP in out vcc vee PARAMS: fc=90 Cc=100n
+R1 in n1 {1/(2*pi*fc*sqrt(2)*Cc)}
+R2 n1 n2 {1/(2*pi*fc*sqrt(2)*Cc)}
+C1 n1 out {2*Cc}
+C2 n2 0 {Cc}
+Xop n2 out out vcc vee OP1654
+.ends SKLP
+.subckt SKHP in out vcc vee PARAMS: fc=90 Cc=10n
+C1 in n1 {Cc}
+C2 n1 n2 {Cc}
+R1 n1 out {1/(2*pi*fc*sqrt(2)*Cc)}
+R2 n2 0 {2/(2*pi*fc*sqrt(2)*Cc)}
+Xop n2 out out vcc vee OP1654
+.ends SKHP
+.subckt AP2 in out vcc vee PARAMS: f0=1200 C=10n
+R1 in n1 {1/(sqrt(2)*2*pi*f0*C)}
+R2 n1 0 {2/(sqrt(2)*2*pi*f0*C)}
+C1 n1 nm {2*C}
+Rf nm bp {1.5/(sqrt(2)*2*pi*f0*C)}
+C2 n1 bp {C}
+Xbp 0 nm bp vcc vee OP1654
+Ra in n 10k
+Rb bp n 5k
+Rg n out 10k
+Xsm 0 n out vcc vee OP1654
+.ends AP2
+* Manopola di banda: pot lineare Rp + buffer. th = posizione 0...1
+.subckt BPOT in out vcc vee PARAMS: th=0.5
+Rt in w {Rp*(1-th)+Rend}
+Rb w 0 {Rp*th+Rend}
+* contatto di fine corsa: a fondo corsa chiude il cursore a massa
+Rsw w 0 {if(th<0.001,0.05,1G)}
+Xb w out out vcc vee OP1654
+.ends BPOT
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 vin 0 DC 0 AC 1
+* --- Spina HP condivisa ---
+XH1 vin r1 vcc vee SKHP fc={f1} Cc=100n
+XH1b r1 r1b vcc vee SKHP fc={f1} Cc=100n
+XH2 r1b r2 vcc vee SKHP fc={f2} Cc=47n
+XH2b r2 r2b vcc vee SKHP fc={f2} Cc=47n
+XH3 r2b r3 vcc vee SKHP fc={f3} Cc=10n
+XH3b r3 r3b vcc vee SKHP fc={f3} Cc=10n
+* --- LOW: LP4(f1) + A2(f2) + A2(f3) ---
+XA1 vin la vcc vee SKLP fc={f1} Cc=100n
+XA2 la lb vcc vee SKLP fc={f1} Cc=100n
+XP1 lb lc vcc vee AP2 f0={f2} C=22n
+XP2 lc low_o vcc vee AP2 f0={f3} C=4.7n
+* --- LOW-MID: presa r1b -> LP4(f2) + A2(f3) + invertitore (1 allpass = segno -) ---
+XB1 r1b ma vcc vee SKLP fc={f2} Cc=47n
+XB2 ma mb vcc vee SKLP fc={f2} Cc=47n
+XP3 mb mc vcc vee AP2 f0={f3} C=4.7n
+Ri1 mc ni 2k
+Ri2 ni lm_o 2k
+Xinv 0 ni lm_o vcc vee OP1654
+* --- MID-HIGH: presa r2b -> LP4(f3) ---
+XC1 r2b ha vcc vee SKLP fc={f3} Cc=10n
+XC2 ha mh_o vcc vee SKLP fc={f3} Cc=10n
+* --- HIGH: presa r3b diretta ---
+* --- 4 manopole + somma NON invertente: mix passivo 4x2,49k + ramo servo (1/5) x guadagno 10 = 2 per banda ---
+XK1 low_o k1 vcc vee BPOT th={t1}
+XK2 lm_o k2 vcc vee BPOT th={t2}
+XK3 mh_o k3 vcc vee BPOT th={t3}
+XK4 r3b k4 vcc vee BPOT th={t4}
+Rs1 k1 sp 2.49k
+Rs2 k2 sp 2.49k
+Rs3 k3 sp 2.49k
+Rs4 k4 sp 2.49k
+Rs5 sv sp 2k
+Rsf ng out 1.8k
+Rsg ng 0 200
+* --- servo DC: integratore 1M/27n su out -> partitore 100k/499 -> 2k nel nodo di mix (piedino +)
+* guadagno servo->out 1,996 x 0,004965: fc = 0,058 Hz, corsa +-129 mV
+Rsvi out svi 1Meg
+Csvi svi svo 27n
+Rnsv svp svx 3863
+Esv svo 0 svx svi 1e6
+Vosv svp 0 DC {vosv}
+Rsva svo sv 100k
+Rsvb sv 0 499
+Xsum sp ng out vcc vee OP1612
+.param vosv=2m
+.param t1={table(kcase,0,0.5,1,0,2,0.5,3,0.5,4,0.5,5,0,6,1,7,0.5,8,0.5,9,0.5,10,1,11,0.25,12,0,13,0.5)}
+.param t2={table(kcase,0,0.5,1,0.5,2,0,3,0.5,4,0.5,5,0,6,0.5,7,1,8,0.5,9,0.5,10,1,11,0.25,12,0,13,0.5)}
+.param t3={table(kcase,0,0.5,1,0.5,2,0.5,3,0,4,0.5,5,0,6,0.5,7,0.5,8,1,9,0.5,10,1,11,0.25,12,0.5,13,0)}
+.param t4={table(kcase,0,0.5,1,0.5,2,0.5,3,0.5,4,0,5,0,6,0.5,7,0.5,8,0.5,9,1,10,1,11,0.25,12,0.5,13,0)}
+.step param kcase list 0 6
+.dc V1 0 20m 20m
+.meas dc y0 FIND V(out) AT 0
+.meas dc y20 FIND V(out) AT 20m
+.meas dc vi20 FIND V(svo) AT 20m
+.end

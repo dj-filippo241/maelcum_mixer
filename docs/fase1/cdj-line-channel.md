@@ -1,5 +1,9 @@
 # FASE 1 — Modulo CANALE CDJ/LINE: design circuitale v0.4 (2026-09-28)
 
+> **REV 2026-10-13 (decisione 105)**: l'EQ è l'ISOLATOR a 4 bande
+> (`eq-isolator-v0.4.md`), integrato nel canale: §3.3 nuova, §4, §5, §6,
+> §7 item 7. La vecchia §3.3 (EQ in serie) resta sotto come archivio.
+
 > **v0.4 (2026-09-28)**: aggiunge il front-end PHONO MM come variante
 > d'ingresso (decisione 56 realizzata): design completo in
 > `docs/fase1/phono-stage.md` v0.1 (decisione 79) — catena RIAA passiva
@@ -30,6 +34,8 @@
   → +6 dB; tracking stereo ≤0,25 dB; law lenta al centro e rapida agli estremi
 - EQ frequenze [PROVVISORIO — review con Filippo aperta]: 70 Hz Q~0,7 (shelf) /
   250 Hz Q~0,8 (bell) / 1 kHz Q~0,9 (bell) / 5 kHz Q~0,7 (shelf)
+  [SUPERATO dalla dec. 105: isolator con incroci 150 / 500 / 2500 Hz di
+  partenza, da sentire sul prototipo (docs/02 B7)]
 - CUE [BLOCCATO]: post-EQ, pre-filter, pre-fader
 - FX SEND [BLOCCATO]: pre-fader, pre-filter; EQ2 (LOW ~120 Hz, HIGH ~4,5 kHz, −∞..0..+6) [REV dec. 91a: EQ2+level+switch assign vivono nel MICRO-MODULO FX-SEND (`docs/fase1/fx-send-module.md`); al canale restano send tap bufferizzato ≤50 Ω e bottoni pannello via linee logiche; comportamenti locked invariati];
   level −∞..0; assign MULTIPLI simultanei S1-S4 con precision analogue switch
@@ -69,7 +75,7 @@
 ### 3.1 [A] Ingresso line + protezione
 Invariato dalla v0.1: RCA dorato isolato da chassis (rondella dedicata); R serie 100 Ω +
 TVS low-cap + bead; polo RC >100 kHz; buffer OPA1612 unity, Z_in ≥47 kΩ, dominio ±18 V.
-**[REV 2026-10-13, audit voce 58 — gain-staging sheet §6]** Aggiunto blocco della continua in ingresso: C film 2,2 µF + 100 kΩ verso massa (polo 0,72 Hz, −0,02 dB a 10 Hz; Z_in 100 kΩ). E sullo stadio di make-up dell'EQ (§3.3) un servo DC, cella dei ritorni FX (0,053 Hz): toglie gli offset di VCA ed EQ prima di CUE, send, filtro e fader. Prima il percorso line non aveva nessun blocco della continua fino al 5-way.
+**[REV 2026-10-13, audit voce 58 — gain-staging sheet §6]** Aggiunto blocco della continua in ingresso: C film 2,2 µF + 100 kΩ verso massa (polo 0,72 Hz, −0,02 dB a 10 Hz; Z_in 100 kΩ). E sullo stadio di make-up dell'EQ (§3.3) [dal 2026-10-13: sulla somma dell'isolator, 0,058 Hz] un servo DC, cella dei ritorni FX (0,053 Hz): toglie gli offset di VCA ed EQ prima di CUE, send, filtro e fader. Prima il percorso line non aveva nessun blocco della continua fino al 5-way.
 
 ### 3.1bis [A0] Ingresso PHONO e selettore (v0.4, rinvia a phono-stage.md)
 
@@ -93,9 +99,32 @@ margine; il tracking L/R richiede trim di law (2181) o selezione di coppia
 (2180) — voce 37. Alternativa economica da scartare solo se la sim dice che il VCA
 colora: pot doppio selezionato + trim (più lavoro di calibrazione, tracking a rischio).
 
-### 3.3 [C] EQ 4 bande — SERIE per banda, famiglia Baxandall (v0.3, decisioni 76/77)
+### 3.3 [C] EQ 4 bande — ISOLATOR (decisione 105, integrato 2026-10-13)
 
-> **[SUPERATO dalla DECISIONE 105, 2026-10-13]** L'EQ corrente è l'isolator a 4 bande: `eq-isolator-v0.4.md`. Questa sezione resta come archivio. Integrazione nel canale (polarità, servo DC, livelli) da fare.
+Design, misure e limiti: **`eq-isolator-v0.4.md`** (§3 topologia, §8
+completamento, §9 integrazione). Qui solo l'interfaccia col canale.
+
+- **Ingresso**: uscita del VCA di gain [B]. La banca non supera mai il
+  livello d'ingresso su nessun nodo interno.
+- **Uscita**: stadio di somma OPA1612, bassa impedenza, **polarità
+  diritta** (somma non invertente, eq-isolator §9). È il nodo di split:
+  da qui partono CUE [D], send tap [E], filter send [F] e fader [H].
+- **Guadagno**: 0 dB al detent (entro 0,004 dB), +6 dB con una banda a
+  fine corsa nella sua banda, +6 dB piatti con tutte a fine corsa.
+- **Silenzio**: contatto di fondo corsa per banda; quattro manopole
+  chiuse = −100 dB (canale muto senza fader).
+- **Continua**: servo DC sulla somma (polo 0,058 Hz, residuo ≤ 2 mV). È
+  il servo che §3.1 metteva sul make-up dell'EQ in serie.
+- **Manopole**: 4 pot doppi LINEARI 10 kΩ con detent al centro e
+  contatto di fondo corsa (voce 40). Niente taper custom.
+- **Silicio per canale stereo**: 12 quad OPA1654 + 1 dual OPA1612 + 1
+  dual per i servo.
+- Numeri musicali rinviati all'ascolto (docs/02 B7): incroci, boost,
+  law.
+
+### 3.3-ARCHIVIO EQ 4 bande — SERIE per banda, famiglia Baxandall (v0.3, decisioni 76/77)
+
+> **[SUPERATO dalla DECISIONE 105, 2026-10-13]** L'EQ corrente è l'isolator a 4 bande (§3.3 qui sopra). Questa sezione resta come archivio.
 
 > **v0.3 (2026-09-25)**: sostituisce integralmente le celle a contribuzione della
 > v0.2, bocciate dalla simulazione (fase dei filtri LOW/HIGH —
@@ -181,6 +210,7 @@ tracking ≤0,5 dB con selezione/trim; buffer OPA1612 ≤50 Ω → DJ BUS (injec
 | Ingresso RCA | 0 dBu | +8 dBu | — | ±18 V |
 | Post-GAIN | 0 dBu | +10 dBu | +18 dBu (user error: sorgente calda + gain max) | ±18 V |
 | Post-EQ | 0 dBu | +16 dBu | saturazione d'uscita intenzionale (worst all-boost misurato +7,5 dB; il rail ±16,5 V = +23,5 dBu fa da tetto). EQ con riferimento interno −6 dB: picchi interni ≤7,6 V a +16 dBu (`sim/eq-serie/cascade-b2-level.cir`) | ±18 V (+23) |
+| Post-EQ, isolator (dal 2026-10-13) | 0 dBu | +16 dBu | +6 dB piatti con tutte le bande al massimo (misurato +6,01); clip dell'EQ con circa +17,5 dBu in ingresso, come nell'EQ in serie. Nodi interni mai sopra l'ingresso: il riferimento interno −6 dB non serve più. Modo comune sulla somma: 1/10 dell'uscita | ±18 V |
 | Filter return | 0 dBu | +16…+20 (drive inserito) | saturazione voluta | ±18 V |
 | Post-FADER / out | 0 dBu | +16 dBu | — | ±18 V |
 
@@ -195,6 +225,14 @@ bracci shelf ≤31 kΩ; OPA1612 solo su nodi a bassa Z (regola in libreria: bipo
 sorgenti <100 Ω). Restano da aggiungere: VCA di gain (a monte, già nel budget del
 GAIN — macro THAT 218x pronto in `sim/lib/that2181.inc`) e out driver.
 
+**[REV 2026-10-13 — isolator, `sim/cdj/channel-noise-v04-iso.cir`]**
+Canale completo (blocco della continua, buffer, VCA di gain al detent,
+isolator, fader, out driver): **−94,6 dBu A-wtd** con le manopole EQ al
+centro (−92,9 piatto), −89,1 con tutte al massimo, −104,8 con tutte a
+zero. Target ≤ −80 (dec. 89): PASS 14,6 dB. Era −90,0 con l'EQ in
+serie. Ora il VCA di gain pesa più dell'EQ. Tabella di sistema:
+`docs/06` §10.
+
 ## 6. BOM di massima v0.3 (esclusi pot/fader/connettori/pannello)
 
 | Voce | Qtà approx | Costo |
@@ -207,6 +245,15 @@ GAIN — macro THAT 218x pronto in `sim/lib/that2181.inc`) e out driver.
 | Switch analogici assign FX | 0 sul canale (→ 8 π SPDT ×4 nel micro-modulo FX-SEND, dec. 91a) | — |
 | Regolatori locali (LM317/337 + LT3045/3094) + passivi | — | ~12-15 € |
 | **Totale stimato per canale stereo** | | **~80-110 €** (v0.2: 70-95; delta = buffer/make-up + reti. Fuori tabella: 4 pot doppi taper custom dell'EQ → voce 40) |
+
+**[REV 2026-10-13 — isolator]** Le prime due righe e la riga delle reti
+RC cambiano: OPA1654 quad ×12 (era 6), OPA1612 dual ×4 (somme EQ,
+buffer d'ingresso, buffer fader, out driver), 1 dual per i servo, reti
+della banca R 0,1 % / C 1 % C0G o film (~60 condensatori) + 3 trimmer
+d'incrocio per lato. EQ: ~130-160 € per canale contro 45-60 [STIMA di
+Claude, senza preventivi, eq-isolator §5]; canale intero ~165-210 €.
+Fuori tabella: 4 pot doppi lineari con detent e contatto di fondo corsa
+(voce 40).
 
 ## 7. Simulazioni — stato (aggiornamento 2026-09-27)
 
@@ -251,8 +298,16 @@ FATTE:
    beta-3); clip latch DIMOSTRATO: flag 442 ms retriggerabile (SPEC
    300-500 ✓).
 
+7. **Isolator integrato nel canale FATTO (2026-10-13)**: polarità
+   diritta con somma non invertente (`sim/eq-iso/iso-c-ac.cir`,
+   `iso-c-dc.cir`, `iso-c-noise.cir`), rumore di canale
+   (`sim/cdj/channel-noise-v04-iso.cir`): numeri in eq-isolator §9.
+
 RESTANTI:
 7. Variante cella HIGH crossfade-LP2: solo se la questione 68 la sceglie
+   [CADUTA con la dec. 105]
+8. Banco: THD e clip dell'isolator, click del contatto di fondo corsa,
+   segno reale dello stadio VCA di gain.
 
 ## 8. Questioni generate/aggiornate da questa v0.3 (stato 2026-09-27/28)
 

@@ -174,3 +174,40 @@ five-way/module-noise e -bank, param-cell-*, master-out/compB-noise.
   decisione 100.
 - Sistema a filtri OFF (−80,0): non rilanciato; atteso un piccolo
   guadagno dal 5-way.
+
+
+## 10. RICALCOLO 2026-10-13 sera (decisioni 99 e 105: 5-way v0.4 e canale con EQ isolator) — todo 38
+
+Blocchi cambiati rispetto al §8:
+
+| Blocco | A-wtd §8 | A-wtd ora | Netlist |
+|---|---|---|---|
+| Canale CDJ, EQ al centro | −90,0 | **−94,6** | `sim/cdj/channel-noise-v04-iso.cir` |
+| Canale CDJ, EQ tutte al massimo | — | −89,1 | idem |
+| EQ sola, al centro | −88,9 piatto (serie) | −97,3 (isolator) | `sim/eq-iso/iso-c-noise.cir` |
+| 5-way intero, drive chiuso | −83,2 | **−85,9** | `sim/five-way/module-noise-v04-servo.cir` |
+
+Invariati: 4 ritorni FX −90,3, summer DJ bus −107,3, summing master +
+level −96,2, stadio master −119,2.
+
+**Sistema a filtri OFF (potenze, condizioni §2)**: 4 canali −88,6 ⊕
+5-way −85,9 ⊕ 4 ritorni −90,3 ⊕ summer ⊕ master = **−82,9 dBu A-wtd →
+PASS 4,9 dB sul target ≤ −78** (era −80,0 / 2,0 dB). Quote: 5-way 50 %,
+4 canali 27 %, ritorni FX 18 %, summing master 5 %.
+
+Casi derivati (stesso calcolo):
+
+| Condizione | Prima | Ora |
+|---|---|---|
+| Filtri OFF, EQ al centro | −80,0 | **−82,9** |
+| Filtri OFF, tutte le EQ dei 4 canali al massimo | — | −80,6 |
+| 4 filtri inseriti, overdrive chiuso | −78,5 | −80,3 |
+| 4 filtri inseriti, overdrive a metà | −77,8 | −79,3 |
+| 4 filtri inseriti, overdrive tutto aperto | −74,8 | −75,5 |
+| Con 1 MIC a 30 dB + 3 MONO, mandate chiuse | −79,8 | circa −82,5 |
+| Con MIC a 45 dB | −78,4 | circa −80,2 |
+
+Nota: le tre righe «filtri inseriti» del §9 usavano ancora il 5-way a
+−83,2; qui usano −85,9. La dec. 100 (condizioni accettate) resta valida:
+i numeri migliorano. La dec. 95 (send FX assegnati) non è ricalcolata:
+la domina il floor dei send, non il canale.

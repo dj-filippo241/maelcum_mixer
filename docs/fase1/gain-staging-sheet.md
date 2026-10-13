@@ -117,7 +117,7 @@ benchmark su 9 costruttori della scena (`docs/05-benchmark-preamp-scena-
 2026-09-30.md`). Restano **DA RITARARE (voce 71A)**: canale, bus FX, XLR
 master — dopo la simulazione dei budget mancanti [→ FATTA 2026-09-30:
 decisione 89, righe §3 aggiornate + docs/06; sistema VERIFICATO
-2026-10-01: −80,5 dBu A-wtd = PASS 2,5 dB (docs/06 §7); RICALCOLO 2026-10-13 con la en degli op-amp: −80,0 = PASS 2,0 dB, tabella per blocco in docs/06 §8]. Dettagli: five-way §8.9 + `sim/five-way/RISULTATI-module-noise-v021.md`.
+2026-10-01: −80,5 dBu A-wtd = PASS 2,5 dB (docs/06 §7); RICALCOLO 2026-10-13 con la en degli op-amp: −80,0 = PASS 2,0 dB, tabella per blocco in docs/06 §8; RICALCOLO 2026-10-13 sera con 5-way v0.4 e canale con EQ isolator: **−82,9 = PASS 4,9 dB**, canale −94,6, docs/06 §10]. Dettagli: five-way §8.9 + `sim/five-way/RISULTATI-module-noise-v021.md`.
 Impatto sistema: il 5-way domina il rumore della catena master → anche
 XLR MASTER ≤−92 va ritarato sulla voce 71A (budget canale/FX/master) [FATTO: dec. 89 → stadio ≤−92 confermato, sistema ≤−78 A-wtd].
 **RITARATURA FATTA (decisione 89, 2026-09-30)**: canale ≤ −80, FX send
@@ -193,6 +193,8 @@ dBu A-wtd; overdrive −102,6…−98,9). Dettagli: filter-module §5ter
 2. Stadio di make-up dell'EQ (il nodo da cui partono CUE, send, filtro e
    fader): servo DC, la stessa cella validata per i ritorni FX (polo
    0,053 Hz, annullamento 84 dB). Un doppio op-amp per canale.
+   [Dal 2026-10-13 il nodo è la somma dell'isolator, non invertente:
+   servo sul nodo di mix, polo 0,058 Hz, residuo 2,0 mV, eq-isolator §9.]
 
 Con i fix il percorso line → XLR perde **0,03 dB a 10 Hz** e 0,10 dB a
 5 Hz: requisito PASS. Resta da banco: il colpo del VCA di gain quando si

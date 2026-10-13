@@ -44,15 +44,18 @@ voce porta in testa il suo stato a oggi.
 - **Da dec. 105 (2026-10-13)**: EQ isolator v0.4-beta SIMULATO
   (`docs/fase1/eq-isolator-v0.4.md` §8): contatto di fondo corsa (−100
   dB a manopole chiuse), servo DC, ritardo, headroom, tolleranze, rumore.
-  Resta: integrazione nel canale (polarità) e nel piano Max, ricalcolo
-  ufficiale del rumore, banco. Il muto di canale della dec. 104 è caduto.
+  FATTI il 2026-10-13 sera: integrazione nel canale (polarità diritta
+  con somma non invertente, eq-isolator §9) e ricalcolo ufficiale del
+  rumore (canale −94,6, sistema −82,9 dBu A-wtd, docs/06 §10). Resta:
+  piano Max (todo 1), banco (THD, click del contatto, segno dello stadio
+  VCA). Il muto di canale della dec. 104 è caduto.
 - Mux di modo del filtro: definito dalla dec. 101 (SPDT per canale sul CV, già nel design). Dopo B1: interazione risonanza-overdrive
   col modello OTA reale (D5).
 - **Da dec. 99 (2026-10-13)**: drive 5-way v0.4 (five-way §5bis) e
   overdrive filtro v0.2 (filter-module §5ter) SIMULATI, rumore MISURATO
   (modulo 5-way intero −85,9 A-wtd; overdrive a polarità diritta).
-  Resta: ricalcolo del totale di sistema a filtri OFF, dispersione
-  JFET, D5.
+  Ricalcolo del totale di sistema a filtri OFF: FATTO (−82,9, docs/06
+  §10). Resta: dispersione JFET, D5.
 - Law di frequenza del filtro: CHIUSA dalla dec. 102 (curva Xone:96 nel
   90 % centrale). Valori dello shaper CALCOLATI e simulati
   (sistema-shaper §3). Resta la pre-distorsione del converter, a banco.

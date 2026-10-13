@@ -1,6 +1,6 @@
 # EQ DI CANALE v0.4 — isolator a 4 bande (2026-10-13)
 
-> **Stato: v0.4-beta, SIMULATO (alpha + completamento §8, 2026-10-13).** Decisione 105 [F]: «rifai il 4 band EQ
+> **Stato: v0.4-beta2, SIMULATO e INTEGRATO NEL CANALE (alpha + completamento §8 + integrazione §9, 2026-10-13).** Decisione 105 [F]: «rifai il 4 band EQ
 > in modo che sia un isolator». Sostituisce l'EQ in serie v0.3 beta-3
 > (`eq-serie-v0.3.md`), che resta ARCHIVIATO come alternativa. Topologia
 > scelta e simulata; valori [PROVVISORI — regola 3]. Tre numeri musicali
@@ -48,6 +48,9 @@ ingresso ─┬─ LP4(f1) ─ A2(f2) ─ A2(f3) ──────────�
   a massa: silenzio.
 - La somma è invertente: l'uscita dell'EQ è INVERTITA. Da chiudere nella
   polarità del canale (`cdj-line-channel.md` §3.3).
+  **[SUPERATO 2026-10-13 → §9: la somma è diventata NON invertente,
+  l'uscita dell'EQ è a polarità diritta. Lo schema qui sopra resta
+  valido fino ai pot; cambia solo lo stadio di somma.]**
 
 Law della manopola (pot lineare, per costruzione): fondo corsa silenzio ·
 5 % −20 dB · 12 % −12 dB · 25 % −6 dB · 50 % 0 dB · 75 % +3,5 dB · 100 %
@@ -152,6 +155,10 @@ l'uscita è invertita) e nel piano Max; ricalcolo ufficiale del rumore di
 canale e di sistema (todo 38); pot doppio lineare con contatto di fondo
 corsa (voce 40).
 
+**[2026-10-13: integrazione nel canale e rumore di canale e di sistema
+FATTI → §9 e `docs/06` §10. Restano: THD e clip a banco, Monte Carlo
+fuori dal centro, piano Max (todo 1), pot (voce 40).]**
+
 ## 8. Completamento v0.4-beta (2026-10-13, `sim/eq-iso/iso-b-*.cir`)
 
 **Contatto di fondo corsa per banda.** Ogni pot ha un contatto che a
@@ -212,3 +219,84 @@ vanno tenuti uguali (voce 53).
 2×21 V 3,0 A lavora al 90-92 % e la tensione minima a rete −10 % resta
 23,8 V (ne servono 21,7). Il trasformatore passa da 200 a circa 225 VA
 (taglia commerciale: 225 o 250). **RATIFICATO da Filippo → DECISIONE 106.**
+
+## 9. Integrazione nel canale: polarità diritta (2026-10-13, `sim/eq-iso/iso-c-*.cir`)
+
+**Problema.** Con la somma invertente l'EQ usciva a polarità rovesciata.
+Dall'uscita dell'EQ partono CUE, send FX, filtro e fader: la polarità va
+raddrizzata lì, non più a valle. Rovesciata a valle, la cuffia (CUE) e
+il master dello stesso canale si cancellano nel blend.
+
+**Soluzione: somma NON invertente.** Nessun op-amp in più.
+
+```
+buffer LOW  ── 2,49k ─┐
+buffer LM   ── 2,49k ─┤
+buffer MH   ── 2,49k ─┼── nodo di mix ── piedino + ─┐
+buffer HIGH ── 2,49k ─┤                             OP1612 ── uscita
+servo ─ 100k ─┬─ 2k ──┘        piedino − ── 1,8k ───┘ (retroazione)
+             499                    └── 200 ── massa
+              └─ massa
+```
+
+Il nodo di mix fa la media dei cinque rami (1/5 per ramo); l'op-amp
+guadagna 10: ogni banda arriva in uscita con guadagno 2, come prima.
+Pot a metà = 0 dB, pot a fine corsa = +6 dB.
+
+Vie scartate: invertitore dopo la somma (+1 sezione per lato, +1 dual
+per canale); invertire le tre bande diritte prima della somma (+2
+sezioni per lato); invertire fader o out driver (lascia rovesciati CUE,
+send e filtro).
+
+**Servo DC.** Stessa cella (integratore invertente 1 MΩ / 27 nF,
+ingresso dal piedino +): qui il piedino + è il nodo di mix, e il servo
+è il quinto ramo. Partitore 100 kΩ / 499 Ω + 2 kΩ: polo 0,058 Hz, corsa
+±129 mV.
+
+**Misure** (`iso-c-ac.cir`, `iso-c-dc.cir`, `iso-c-noise.cir`; colonna di sinistra: `iso-b-*.cir`, col contatto di fondo corsa):
+
+| Grandezza | Somma invertente (§8) | Somma non invertente |
+|---|---|---|
+| Fase a 5 Hz (0° = diritta) | +173,3° | **−6,7°** |
+| Centro, 20 Hz-35 kHz | −0,004…0,000 dB | +0,000…+0,004 dB |
+| Tutte a zero | −100,0 dB | −100,0 dB |
+| LOW a zero, a 50 Hz | −38,3 dB | −38,3 dB |
+| HIGH a zero, a 8 kHz | −40,5 dB | −40,5 dB |
+| LOW-MID a zero, a 274 Hz | −16,0 dB | −16,0 dB |
+| MID-HIGH a zero, a 1,1 kHz | −22,4 dB | −22,4 dB |
+| Tutte al massimo | +6,01 dB | +6,01 dB |
+| Continua in uscita (20 mV in ingresso, offset servo 2 mV) | 2,0 mV | 2,0 mV |
+| Rumore al centro | −97,1 dBu A-wtd | **−97,3 dBu A-wtd** |
+| Rumore tutte al massimo | −92,2 | −92,3 |
+| Rumore tutte a zero | −103,6 | −104,8 |
+| Ritardo di gruppo a 30 Hz | 4,2 ms | 4,2 ms |
+
+Con 20 mV di continua in ingresso l'uscita del servo sta a −1,8 V
+(centro) e −3,8 V (LOW al massimo): lontana dai rail.
+
+**Costo della scelta.** L'op-amp di somma non lavora più a massa
+virtuale: i due piedini seguono il segnale, a 1/10 dell'uscita (−20 dB
+sull'ingresso al centro, −14 dB con tutte le bande al massimo: circa
+1,1 V di picco al clip). Per un OPA1612 è un modo comune piccolo;
+l'effetto sulla distorsione si verifica a banco (le macro sono lineari).
+
+**Silicio per canale DJ stereo**: invariato. 12 quad OPA1654 (banca,
+allpass, buffer dei pot) + 1 dual OPA1612 (le due somme) + 1 dual per i
+due servo (classe OPA2134, come nel modello).
+
+**Canale completo** (`sim/cdj/channel-noise-v04-iso.cir`: blocco della
+continua, buffer, VCA di gain, isolator, fader, out driver):
+
+| Manopole EQ | Out driver di canale | Target (dec. 89) |
+|---|---|---|
+| tutte al centro | **−94,6 dBu A-wtd** (−92,9 piatto) | ≤ −80: PASS 14,6 dB |
+| tutte al massimo | −89,1 dBu A-wtd | PASS 9,1 dB |
+| tutte a zero | −104,8 dBu A-wtd | — |
+
+Il canale con l'EQ in serie faceva −90,0. La stima «circa −94» del §8 è
+confermata. Sistema: `docs/06` §10.
+
+Valori [PROVVISORI — regola 3]. Polarità assoluta dello stadio VCA di
+gain (a monte dell'EQ, comune a tutte le prese): la macro è ideale e
+diritta; il segno reale del 218x col suo stadio d'uscita si verifica su
+datasheet e a banco. Non può creare cancellazioni dentro il canale.
