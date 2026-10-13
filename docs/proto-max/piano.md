@@ -1,5 +1,17 @@
 # Prototipo Max for Live — piano v0.1 (2026-09-24)
 
+> **AGGIORNAMENTO 2026-10-13 (decisioni 99-104) — da recepire nella proposta
+> di ripresa (todo #1); il testo sotto è ancora quello del 24/09.**
+> - Drive 5-way: non più «taper dec. 24» ma due manopole, GROWL (sotto
+>   350 Hz) e NASTRO, saturatori in parallelo al pulito, volume fermo
+>   (five-way §5bis).
+> - Overdrive filtro: tosatore simmetrico in parallelo, tetto ~+5,5 dBu,
+>   law θ^2,5 (filter-module §5ter).
+> - Filtro: un percorso per canale (dec. 101: la voce 63 è chiusa); law
+>   FREQ e RES = Xone:96 (dec. 102, tabella in filter-module §4).
+> - EQ di canale: in serie v0.3 beta-3 + muto a fine corsa con tutte e 4 le
+>   manopole a zero (dec. 104: la voce 59 è chiusa).
+
 > Decisione 78 [F]: prototipo musicale digitale del mixer completo PRIMA del
 > millefori. Ambiente: Ableton Live Suite (M4L incluso), controllo a mouse.
 > Questo piano è [PROVVISORIO] dove non cita decisioni bloccate.

@@ -1,6 +1,6 @@
 # SPECIFICA — MAELCUM MIXER (mixer dub modulare analogico, esemplare unico)
 
-> **v0.1 (2026-09-18, rev. 2026-09-28/01-10: decisioni 76-93 + esiti simulazioni e sessione decisioni)** — Compilata da: decisioni 1-93 (`docs/01-decisioni-bloccate.md`),
+> **v0.1 (2026-09-18, rev. 2026-09-28/01-10: decisioni 76-93; REV 2026-10-13: decisioni 97-104 recepite nei §4-6 come note in testa ai punti toccati + esiti simulazioni e sessione decisioni)** — Compilata da: decisioni 1-104 (`docs/01-decisioni-bloccate.md`; la 103 è revocata dalla 104),
 > status doc ChatGPT rev2 (`docs/export-chatgpt/`, corpus chiuso — decisione 58),
 > gain-staging sheet (`docs/fase1/gain-staging-sheet.md`), revisione critica (`docs/03`).
 > Livello: REQUISITI. Il dettaglio circuitale vive nei design doc di `docs/fase1/` e `docs/fase2/`.
@@ -171,7 +171,8 @@ Design circuitale: `docs/fase1/master-out.md` **v0.3 (2026-09-29: stadio finale 
 
 - [BLOCCATO] Il design del pannello è di Filippo; l'elettronica fornisce: consumi per modulo, pin count/famiglia connettori, correnti backplane, contatti di massa, schermature, accessi di servizio/test. Fader = slider, resto = pot rotativi; hardware manopole = sessione dedicata (questione 40). [APERTO] ingombri/telaio (questione 29).
 
-- [INGEGNERIA 2026-10-13 — design teorico completo] (1) Overdrive del filtro = cella drive del 5-way riusata con pad −6 dB e make-up +6 dB, 8 celle, mux del CV per sezione attiva (`docs/fase2/filter-module.md` §5bis); law [DA CONFERMARE-F]; con overdrive il canale filtro è −83,1 dBu A-wtd (core a) e il sistema con 4 filtri inseriti −75,3 (target −78 definito a filtri OFF) [DA DECIDERE-F]. (2) Shaper a tratti = 1 op-amp + rami diodo, verificato tra 20 e 50 °C (`docs/fase3/sistema-shaper.md`). (3) Audit infrasub: aggiunti blocco della continua all'ingresso line (0,72 Hz) e servo sul make-up EQ; percorso −0,03 dB a 10 Hz (gain-staging sheet §6). (4) Griglia del drive 5-way CORRETTA (livelli 3 dB più alti di quanto etichettato): dec. 87 da riconfermare (five-way §5.3bis). (5) Inventario comandi: `docs/fase3/sistema-comandi.md`. Lista delle decisioni che restano a Filippo: `docs/02-questioni-aperte.md`, in testa.
+- [CONDIZIONI D'USO DEL TARGET DI RUMORE] Il target di sistema ≤ −78 dBu A-wtd vale a send FX non assegnati (dec. 95: con FX in uso il floor −73…−66,6 è accettato, disciplina del level) e a overdrive del filtro chiuso (dec. 100: a 4 filtri inseriti −78,5 a overdrive chiuso, −74,8 tutto aperto in silenzio, accettato). Standard cuffie = classe Pioneer DJM (dec. 96).
+- [SUPERATO al punto (1) dalla dec. 99: overdrive corrente = v0.2, vedi §5] [INGEGNERIA 2026-10-13 — design teorico completo] (1) Overdrive del filtro = cella drive del 5-way riusata con pad −6 dB e make-up +6 dB, 8 celle, mux del CV per sezione attiva (`docs/fase2/filter-module.md` §5bis); law [DA CONFERMARE-F]; con overdrive il canale filtro è −83,1 dBu A-wtd (core a) e il sistema con 4 filtri inseriti −75,3 (target −78 definito a filtri OFF) [DA DECIDERE-F]. (2) Shaper a tratti = 1 op-amp + rami diodo, verificato tra 20 e 50 °C (`docs/fase3/sistema-shaper.md`). (3) Audit infrasub: aggiunti blocco della continua all'ingresso line (0,72 Hz) e servo sul make-up EQ; percorso −0,03 dB a 10 Hz (gain-staging sheet §6). (4) Griglia del drive 5-way CORRETTA (livelli 3 dB più alti di quanto etichettato): dec. 87 da riconfermare (five-way §5.3bis). (5) Inventario comandi: `docs/fase3/sistema-comandi.md`. Lista delle decisioni che restano a Filippo: `docs/02-questioni-aperte.md`, in testa.
 
 ## 16. Roadmap di costruzione
 

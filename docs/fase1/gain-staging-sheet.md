@@ -38,7 +38,7 @@ sugli statici [M].
 | Post-GAIN (−∞…0…+10, detent 0) | 0 dBu | +10 dBu | +18 dBu | ±18 V | 5 dB | l'estremo = sorgente calda + gain +10 (user error): saturazione morbida OPA1612, recuperabile |
 | Post-EQ (bande +6 max) | 0 dBu | +16 dBu | +20 dBu | ±18 V | 3 dB | +20 = boost multipli su programma già caldo: intenzionalmente al limite (filosofia progetto) |
 | Filter send | 0 dBu | +16 dBu | — | ±18 V | | pre-fader, post-EQ |
-| Filter return (post-drive) | 0 dBu | +16…+20 dBu (drive inserito) | saturazione voluta | ±18 V | | vedi modulo filtro |
+| Filter return (post-drive) | 0 dBu | +16…+20 dBu (drive inserito) | saturazione voluta | ±18 V | | vedi modulo filtro; **REV 2026-10-13 (dec. 99, overdrive v0.2)**: a manopola tutta aperta l'uscita non supera ~+5,5 dBu; a manopola chiusa passa il livello del send |
 | Post-FADER (−∞…0) | 0 dBu | +16 dBu | — | ±18 V | | slider linked ≤0,5 dB |
 | Out driver → DJ BUS | 0 dBu | +16 dBu | — | ±18 V | | Z ≤ 50 Ω |
 
@@ -47,7 +47,7 @@ sugli statici [M].
 |---|---|---|---|---|
 | Core SVF in/out | 0 dBu | +16 dBu | ±18 V | 8 core mono (4 stereo) |
 | Picco di risonanza | — | +10 dBu sopra il livello (oscillazione +6…+10 dBu, locked) | ±18 V | soft limiting |
-| Overdrive (per sezione HPF/LPF) | 0 dBu in | uscita fino a saturazione VOLUTA | ±18 V | colore intenzionale |
+| Overdrive (per sezione HPF/LPF) | 0 dBu in | uscita fino a saturazione VOLUTA | ±18 V | colore intenzionale; **REV 2026-10-13**: tosatore in parallelo con tetto ~+5,5 dBu (filter-module §5ter) |
 | Recovery post-drive | 0 dBu | **+23 dBu clean** (non +24: il dominio ±18 qui basta; il +24 vero vive solo al master) | ±18 V | raffinamento [P] del target documenti "≥+24 where practical" — qui NOT practical, e va bene così |
 | Low-Z out → return | 0 dBu | +20 dBu | ±18 V | 20-50 Ω |
 
@@ -57,7 +57,7 @@ sugli statici [M].
 | DJ BUS (somma 4 canali) | 0 dBu | +12 dBu (4 canali correlati a 0) | ±18 V | doc: somma correlata +12 dB |
 | 5-way IN pad **−6 dB** [C] | −6 dBu | +6 dBu | ±18 V | il pad libera headroom per i boost di banda; makeup +6 in uscita → nessun effetto udibile |
 | Celle banda (+15 max) | −6 dBu | +15 dBu interno (boost estremi) | ±18 V | worst +21 dBu: entro capability +23 |
-| Drive 5-way (taper da decisione 24: CCW=0, 50%=ottimale +7 clean, >50%=saturazione progressiva) | — | saturazione voluta | ±18 V | taper da tradurre in law elettrica (dec. 24) |
+| Drive 5-way (taper da decisione 24: CCW=0, 50%=ottimale +7 clean, >50%=saturazione progressiva) | — | saturazione voluta | ±18 V | **SUPERATO 2026-10-13 (dec. 99)**: drive = GROWL + NASTRO in parallelo, volume fermo ±0,3 dB al nominale, nessun boost (five-way §5bis) |
 | 5-way OUT makeup **+6 dB** [C] | 0 dBu | +18 dBu | ±18 V | → MASTER SUM |
 
 ### Modulo FX
@@ -96,7 +96,7 @@ sugli statici [M].
 | Out driver di canale | **≤ −80 dBu A-wtd** (dec. 89, 2026-09-30: out driver, ingressi terminati, gain nominali; misurato −90,3 = margine 10,3 dB, nessuna fix) |
 | Bus FX send (contributori terminati) | **≤ −88 dBu A-wtd** (dec. 89 conferma: misurato −98,9/−100,8 = margine 12,8 dB; ritorno FX = coda 71A) |
 | Filtro (send 0 dBu, out core) | **≤ −80 dBu A-wtd** (dec. 89: core nudo (a) ideale −91,4 PASS, die reale −84…−76 a fc max = al limite → input per l'ascolto q70; (c-B) in target) |
-| Out 5-way | **≤ −80 dBu A-wtd** (dec. 88, 2026-09-30: out modulo, ingressi terminati, gain nominali, drive θ0; misurato −83,2 v03 / −83,9 v031 rerun 2026-10-01, margine 3,9 dB; il rumore segue la law del drive: +3,6 dB a θ50 con +7 dB di segnale) |
+| Out 5-way | **≤ −80 dBu A-wtd** (dec. 88, 2026-09-30: out modulo, ingressi terminati, gain nominali, drive θ0; misurato −83,2 v03 / −83,9 v031 rerun 2026-10-01, margine 3,9 dB; il rumore segue la law del drive: +3,6 dB a θ50 con +7 dB di segnale) **REV 2026-10-13: col drive v0.4 misurato −85,9 A-wtd, margine 5,9 dB, indipendente dalle manopole (five-way §5bis.5)** |
 | XLR MASTER (fader unity) | stadio ≤ −92 (misurato −119,2 VALIDO); **sistema ≤ −78 dBu A-wtd** (dec. 89, condizioni dichiarate docs/06 §2) |
 | Isolamento control→audio | ≥ 100 dB (verso corretto: il controllo resta 100 dB sotto l'audio) |
 | Phono | budget dedicato al design Rev A/B (input-referred, test inverse-RIAA) |
@@ -153,9 +153,9 @@ il percorso gestisce la tensione continua:
 | Tap CUE, tap send, send filtro | nessuno | 0 | passa | segue il fix del canale |
 | FX-SEND, bus FX | nessuno | 0 | passa fino al pedale | pedale e ritorno accoppiati |
 | Ritorno FX | servo DC 0,053 Hz | −0,001 dB | annullata (84 dB) | OK (validato fx §8.4) |
-| Filtro: core + overdrive | servo dell'overdrive 0,31 Hz | −0,005 dB | annullata | OK (in OFF: bypass, niente servo) |
+| Filtro: core + overdrive | **nessuno dal 2026-10-13** (l'overdrive v0.2 non ha servo; quello a 0,31 Hz era nella v0.1) | 0 | **passa** (offset del core OTA) | **BUCO RIAPERTO → nota sotto** |
 | Fader, DJ bus | nessuno | 0 | passa | segue il fix del canale |
-| 5-way: banca, EQ, drive | servo del drive 0,31 Hz | −0,005 dB | annullata prima del master sum | OK; la banda SUB passa fino alla continua per progetto |
+| 5-way: banca, EQ, drive | **nessuno dal 2026-10-13** (il drive v0.4 non ha servo; quello a 0,31 Hz era nella v0.3; i rami saturati sono accoppiati in alternata a ~1 Hz, il pulito no) | 0 | **passa** fino al master sum; la annulla solo il servo del master | **BUCO RIAPERTO → nota sotto** |
 | Master: sum, level, stadio HV | servo 0,048 Hz | −0,0001 dB | annullata (30 µV all'XLR) | OK |
 | MONO | C film 1,6 Hz | −0,11 dB | bloccata | OK |
 | MIC | passa-alto 60 Hz | −31 dB | bloccata | ESENTE: scelta di Filippo (dec. 97) |
@@ -166,6 +166,17 @@ non c'è nessun blocco della continua. Un offset di qualche mV del CDJ,
 più gli offset del VCA di gain e degli op-amp dell'EQ, attraversano
 manopole EQ, fader e cuffie. Effetti: fruscio girando le manopole,
 colpo muovendo il gain, continua amplificata dal boost LOW.
+
+**BUCO RIAPERTO il 2026-10-13 (pulizia dopo la decisione 99)**: i due
+servo a 0,31 Hz stavano dentro la cella drive v0.3 e dentro l'overdrive
+v0.1. I ridisegni di oggi (drive v0.4, overdrive v0.2) non li hanno:
+il percorso pulito è DC-coupled e nessuno azzera più la continua (a) del
+core del filtro verso canale e fader, (b) di banca + EQ del 5-way verso
+meter e master sum. Fix [PROVVISORIO, NON simulato]: la stessa cella
+servo dei ritorni FX (polo 0,053 Hz) sullo stadio I/V dell'overdrive (un
+doppio op-amp per cella, 8 in tutto) e sul make-up +6 dB del 5-way (uno
+per lato). Da verificare: rumore iniettato dal servo (lezione D6: il
+servo via Rinj era la seconda fonte di rumore del drive v0.3).
 
 **Fix (ingegneria, nessun comando nuovo)** [PROVVISORIO]:
 1. Ingresso line: C film 2,2 µF + 100 kΩ verso massa = polo 0,72 Hz.

@@ -421,6 +421,10 @@ sarebbe pressoché impossibile».
 
 ### Non fatto
 
+**Servo DC**: l'overdrive v0.1 azzerava la continua del core col suo servo
+(0,31 Hz). La v0.2 non ne ha: va aggiunto sullo stadio I/V (cella dei
+ritorni FX, 0,053 Hz) e ne va misurato il rumore (sheet §6).
+
 Rumore del VCA a guadagni diversi da 0 dB (dato di datasheet mancante); D5 col modello OTA reale (dopo q70); deriva termica dei
 diodi (il tetto scende ~2 mV/°C per diodo); interazione col soft
 limiter della risonanza.

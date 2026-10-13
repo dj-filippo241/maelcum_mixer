@@ -705,6 +705,10 @@ Per lato: 1 JFET, 4 diodi, ~4 doppi op-amp, 2 pot (doppi sul pannello).
 
 ### 5bis.6 Non fatto
 
+**Servo DC**: la v0.3 azzerava la continua del modulo col servo della cella
+drive (0,31 Hz). La v0.4 non ne ha: va aggiunto sul make-up +6 dB (cella
+dei ritorni FX, 0,053 Hz) e ne va misurato il rumore (sheet §6).
+
 Dispersione del JFET (Idss/Vto cambiano kt e il
 ginocchio: trim di livello o selezione, a banco); deriva termica dei
 diodi; shift infrasonico sui transienti di basso (la continua della
