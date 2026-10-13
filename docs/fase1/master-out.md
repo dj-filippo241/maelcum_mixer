@@ -79,6 +79,7 @@ Ipotesi di lavoro [PROVVISORIO], coerente con le voci bloccate (DJ bus → 5-way
 - Nodo summing in massa virtuale: crosstalk tra sorgenti trascurabile — è il motivo per preferire l'inverting al passivo su un backplane
 - Ingressi non usati: terminati a massa con 20 kΩ (il resistore di summing resta, ingresso a 0 V)
 - I gain di contribuzione stanno a monte (fader di canale, level ritorni FX): il summing è unity, così "MASTER SUM ≈ 0 dBu con programma a fader unity" resta vero
+- **[REV 2026-10-13, dec. 97]** Ingressi MSUM6 (moduli MIC) e MSUM7 (moduli MONO): fino a 4 moduli in totale si sommano in MULTIDROP su questi due net. La resistenza di somma da 20 kΩ sta lato SORGENTE (una per modulo, per canale); nel master i due ingressi entrano direttamente sulla massa virtuale (niente R_in a bordo, niente terminazione a massa). I contributori restano 7 (dec. 94a). Con 4 moduli il guadagno di rumore del sommatore passa da 8 a ~10: +0,02 dB sul sistema, trascurabile
 
 Alternativa da valutare se l'export dice che la somma è già fatta nel modulo 5-way: [A2] diventa un buffer di ingresso puro (unity, OPA1612 non-inverting, Z_in ≥ 20 kΩ, Z_out < 50 Ω).
 
@@ -194,7 +195,7 @@ Tutto analogico, niente MCU (coerenza col progetto):
 
 | Rail | Da | Per | Regolatore candidato [PROVVISORIO] | Corrente stimata |
 |---|---|---|---|---|
-| statici ±23,6…29,2 V [M] (REV dec. 93: era «±24 V filtrato»; worst rete −10% = ±23,7 del design verificato) | raw ±26 V [M] (W3 dedicato) | stadio HV uscita [G] | ferrite + bulk locale (1000 µF + 100 nF) | ~40 mA picco per canale |
+| statici ±23,6…29,2 V [M] [REV dec. 98, 2026-10-13: col trasformatore reale 23,3…30,3 V, riverificati nel Test 17: +25,1 dBu a rete −10 %, rame dei pass ≥ 5 cm²] (REV dec. 93: era «±24 V filtrato»; worst rete −10% = ±23,7 del design verificato) | raw ±26 V [M] (W3 dedicato) | stadio HV uscita [G] | ferrite + bulk locale (1000 µF + 100 nF) | ~40 mA picco per canale |
 | ±18 V | raw [M] | [F] front, VCA level, booth driver | LM317/LM337 (dropout ok: statico min 23,6 > 18+3) | ~60-80 mA |
 | ±15 V ultra-low-noise | ±18 | summing [A2], meter [E], REC [C] | LT3045/LT3094 DIRETTI dal ±18 (Vin max 20 V — fatto datasheet dec. 93: il pre-reg ±16,5 serve solo dai raw ±22; 0,8 µVrms) | ~40-60 mA |
 | +5 V control | bus backplane (regolato nella PSU, dec. 93) | LED, logica mute, comparator | bead + bulk locale | ~100 mA (LED dipendenti) |

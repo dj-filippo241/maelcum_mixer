@@ -40,8 +40,7 @@ margine ≥2,7× (≥4× sul tipico 0,9 A).
 | FX | 1 | 1×C96 | 4 bus-net in (multidrop, dec. 91) + 4 return out = 8 slot stereo |
 | MASTER | 1 | 1×C96 | 7 contributori MASTER SUM + MON out verso CUE |
 | CUE | 1 | 1×C96 | 4 cue in + MON in; ampli cuffia locale |
-| MIC | 1 | 1×C96 | send FX + out MASTER SUM |
-| GENERIC MONO | 1..n | 1×C96 | come MIC |
+| MIC / MONO | fino a 4 in totale (dec. 97) | 1×C96 cad. | due moduli SEPARATI, stessa classe di slot: out MASTER SUM + 4 out sui net dei bus FX (`docs/fase4/mic-mono-moduli.md`) |
 | PSU | 1 | 1×C96 (lato distribuzione) + morsetti/viti per ingresso rete e secondari | la PSU È la stella (§grounding): i radiali AGND partono dal suo connettore |
 | UTILITY/spare | 2 | 2×C96 | future/prototipi (SPECIFICA §3 "utility/future") |
 
@@ -86,10 +85,10 @@ Semantica degli slot PER CLASSE (slot 1 = b1-b3, slot 2 = b4-b6, …):
 | Slot | CDJ (CHn) | FILTRO | 5-WAY | FX | MASTER | CUE | MIC/GEN |
 |---|---|---|---|---|---|---|---|
 | 1 | DJBUS out L/R | CH1 send in | DJBUS in L/R | BUS1 net in¹ | MSUM1 in (5-way) | CUE1 in (CH1) | MSUM out |
-| 2 | CUE out L/R | CH1 return out | MSUM out L/R | BUS2 net in¹ | MSUM2 in (FX1) | CUE2 in (CH2) | FXSEND out (net¹) |
-| 3 | SEND TAP out (→FX-SEND) | CH2 send in | — | BUS3 net in¹ | MSUM3 in (FX2) | CUE3 in (CH3) | — |
-| 4 | FILT_SEND out L/R | CH2 return out | — | BUS4 net in¹ | MSUM4 in (FX3) | CUE4 in (CH4) | — |
-| 5 | FILT_RET in L/R | CH3 send in | — | RET1 out (→MSUM2) | MSUM5 in (FX4) | MON in (master) | — |
+| 2 | CUE out L/R | CH1 return out | MSUM out L/R | BUS2 net in¹ | MSUM2 in (FX1) | CUE2 in (CH2) | S1_OUT (net¹) |
+| 3 | SEND TAP out (→FX-SEND) | CH2 send in | — | BUS3 net in¹ | MSUM3 in (FX2) | CUE3 in (CH3) | S2_OUT (net¹) |
+| 4 | FILT_SEND out L/R | CH2 return out | — | BUS4 net in¹ | MSUM4 in (FX3) | CUE4 in (CH4) | S3_OUT (net¹) |
+| 5 | FILT_RET in L/R | CH3 send in | — | RET1 out (→MSUM2) | MSUM5 in (FX4) | MON in (master) | S4_OUT (net¹) |
 | 6 | — | CH3 return out | — | RET2 out (→MSUM3) | MSUM6 in (mic) | — | — |
 | 7 | — | CH4 send in | — | RET3 out (→MSUM4) | MSUM7 in (generic) | — | — |
 | 8 | — | CH4 return out | — | RET4 out (→MSUM5) | MON out L/R | — | — |
@@ -106,6 +105,16 @@ riga a/c come mappa comune (raw ±27 → ±18 audio locale, raw ±22 → ±15
 switch locale 78L15/79L15, +5 V control per i pull-up bottoni; bottoni assign = harness diretto dal
 pannello canale al front connector del modulo, NON sulla riga c: la mappa
 controllo resta identica per tutte le classi).
+**REV 2026-10-13 (architettura MIC/MONO v0.1, dec. 97)**: la classe MIC/GEN aveva un
+solo slot «FXSEND out», ma i bus sono 4: ora slot 2-5 = S1_OUT…S4_OUT,
+nelle STESSE posizioni della classe FX-SEND. Mandata = 4 pot send (dec. 97), niente switch di assign: ogni buffer
+d'iniezione resta sempre sul bus e pilota due R 10k, una sul net L e
+una sul net R. Fino a 4
+moduli MIC/MONO: i MIC si sommano in multidrop sul net MSUM6, i MONO sul
+net MSUM7 (R di somma lato sorgente; ingressi MSUM6/7 del master
+direttamente sulla massa virtuale — nota di revisione per master-out §A2).
+I contributori di MASTER SUM restano 7 (dec. 94a); i bus FX arrivano a 12
+contributori, caso già verificato (fx-module §3).
 
 Regole elettriche: driver di modulo ≤50 Ω (out driver dedicati, come il
 canale CDJ); ricevitore = iniezione 10 kΩ su summing a massa virtuale
@@ -137,9 +146,9 @@ elettricamente corte (λ = km). Bilanciato solo verso l'esterno
 | FX-SEND ×4 (dec. 91) | ±40/±60 mA cad. | ~5/10 cad. (78L15 switch) | — | ~10 mA | ~18 sezioni op-amp + 2 switch IC (µA) |
 | MASTER | — (LDO ±18/±15 locali da [M]) | — | ±130/±170 | ~30 mA | HV stage Iq 40 mA×2 + summing/meter + LDO locali |
 | CUE | ~61 a riposo / ≤ ~340 col clamp su entrambi i canali [REV 2026-10-12, ampli cuffia v0.2: stadio su ±18 locali da ±27, NON su LN; clamp VERIFICATO 126-168 mA per canale] | ~23/25 (summing/MON/blend/level su ±15 LN) | — | ~58/60 (2 relay DPDT eccitati + controller locale) | 1 Vrms/32 Ω ×2 uscite; design e numeri in `sistema-cue.md` §8 |
-| MIC/GEN | ±10/±20 cad. | ±20/±30 cad. (preamp LN) | — | ~10 mA | preamp + EQ2 |
+| MIC/MONO (fino a 4, dec. 97) | ±22/±40 cad. (mic) · ±30/±45 cad. (mono) [REV 2026-10-13] | ±20/±30 cad. (solo mic: front-end LN) · ~5 (mono: detector) | — | ~15 mA cad. | ~17-18 sezioni op-amp + 1 switch IC (solo mute mandate); `docs/fase4/mic-mono-moduli.md` §7 |
 | LED/metering (tutti) | — | ±100/±125 (albero riferimenti) | — | 200/500 mA | dato S4: ~103 segmenti (master 2×20 + zone 10×~6), 2 mA typ / 5 mA worst |
-| **Totale per raw** | **~±0,9-1,0 A tip** (somma dei max singoli ~1,5 A — nota sotto) | **~±0,28 A tip / ±0,45 A picco** (+switch µA-Iq) | **±0,13/±0,17 A** | **~0,55/1,0 A worst** (dimensionamento 1,25 A) | W1 1,2 A/lato · W2 0,6 A · W3 0,3 A · W4 1,2 A (S1 §2 v0.2) |
+| **Totale per raw** | **~±1,2 A tip** [REV 2026-10-13, dec. 98: la somma delle righe qui sopra dà ~1,2 A, non 0,9-1,0] (somma dei max singoli ~1,7 A — nota sotto) | **~±0,28 A tip / ±0,45 A picco** (+switch µA-Iq) | **±0,13/±0,17 A** | **~0,55/1,0 A worst** (dimensionamento 1,25 A) | W1 2,5 A · W2 1,0 A · W3 0,4 A · W4 2,0 A (S1 REV 2026-10-13, dec. 98; erano 1,2/0,6/0,3/1,2) |
 
 Nota sui massimi (dec. 93): i «max» per classe sono inviluppi conservativi
 del PICCO DI SEGNALE (scala ms) del singolo modulo — non si presentano mai

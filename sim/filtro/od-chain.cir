@@ -1,0 +1,95 @@
+* ============================================================
+* FILTRO — OVERDRIVE v0.1 (2026-10-13): cella DRIVE del 5-way riusata
+* tale e quale (drive-chain8, catena VALIDATA): VCA 218x -> CS JFET
+* «nastro» -> diff pair PNP «fuzz» -> recovery + servo. Posizione: dopo il
+* core, prima del return al canale (SPECIFICA §5: JFET prima / BJT
+* asimmetrico poi). INTERFACCIA DI LIVELLO: la cella e' validata per un
+* nominale di -6 dBu (riferimento interno 5-way). Nel filtro il nominale e'
+* 0 dBu: la law del VCA scende di 6 dB (pad) e dopo il recovery c'e' un
+* make-up +6 dB, come nel 5-way. Quindi: livello alla CELLA = livello del
+* filtro - 6 dB. Senza pad i picchi musicali di un programma a 0 dBu
+* toccherebbero il ceiling (+-2,79 V) anche a manopola chiusa.
+* CORREZIONE DI METODO: SINE(0 amp f) vuole il PICCO. drive-chain8 usava
+* 0,388 / 0,775 / 2,45 come picchi etichettandoli -6 / 0 / +10 dBu: erano
+* in realta' -9 / -3 / +7 dBu. Qui amp = Vrms*1,4142, livelli ALLA CELLA:
+*   -6 dBu 0,549 (filtro 0 nom) | 0 dBu 1,096 | +2 dBu 1,380 (filtro +8 =
+*   picco di risonanza) | +10 dBu 3,466 (filtro +16 = max send).
+* Questo run e' anche la griglia CORRETTA del drive 5-way (-6 / 0 / +10).
+* Griglia: amp x theta (0/50/65/80/90/100 %). Modelli [PROVVISORIO].
+* ============================================================
+
+.model NJ310 NJF(Beta=5m Vto=-3 Lambda=6m Cgs=25p Cgd=4p Is=10f)
+.model PNP3906 PNP(Is=1.72f Bf=190 Vaf=49.7 Ikr=0.237 Ne=2 Ise=43.4f Ikf=0.222 Br=4.9 Rb=1 Rc=3.7 Cje=19.2p Mje=0.37 Vje=0.75 Cjc=9.7p Mjc=0.34 Vjc=0.75 Fc=0.5 Tf=2.1n Tr=200n)
+.subckt OPAMP0 inp inn out
+E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
+.ends OPAMP0
+
+.param th=0.5
+.param amp=0.775
+
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 in 0 SINE(0 {amp} 1k)
+Vpot w 0 DC {5*th}
+
+* --- Stadio 1: shaper law + THAT 218x ---
+Bdb lawv 0 V={if(V(w)<2.5, -9.4+2.8*V(w), if(V(w)<4, -2.4+(V(w)-2.5)*3.3333, 2.6+(V(w)-4)*4))}
+Becp ecp 0 V={0.0061*max(0,V(lawv))}
+Becm ecm 0 V={0.0061*max(0,-V(lawv))}
+.subckt VCAM in out ecp ecm vp vm PARAMS: km=0.122
+Bg nout0 0 V={V(in)*limit(10**((V(ecp)-V(ecm))/km),1e-5,100)}
+Rpol nout0 nout1 1k
+Cpol nout1 0 8p
+Eout out 0 value={limit(V(nout1),V(vm)+1.5,V(vp)-1.5)}
+.ends VCAM
+X1 in vcaout ecp ecm vcc vee VCAM km=0.122
+
+* --- Stadio 2a: nastro = CS JFET ---
+Rg vcaout gate 10k
+J1 drain gate source NJ310
+Rd vcc drain 4.7k
+Rs source 0 1.05k
+
+* --- Basi pair dal drain (DC matched) ---
+Rdc drain basea 4.7k
+Rb2 drain baser 4.7k
+Cbyp baser 0 100u
+
+* --- Stadio 2b: fuzz = diff pair PNP single-ended ---
+Q3 coll basea emita PNP3906
+Q4 collb baser emitb PNP3906
+Rea emita tailp 470
+Reb emitb tailp 470
+Rc coll vee 4.7k
+Rc4 collb vee 4.7k
+Re3 tailp vcc 2.2k
+
+* --- Recovery invertente 2k/2k + servo DC 2 stadi su reco ---
+Rsrc coll recn 2k
+Rf recn reco 2k
+X3 0 recn reco OPAMP0
+R1s reco svinn 1Meg
+C1s svinn svint 470n
+X4 0 svinn svint OPAMP0
+Ri1 svint svi2n 100k
+Rfb svi2n svout2 100k
+X5 0 svi2n svout2 OPAMP0
+Rinj svout2 recn 2.2k
+Rser2 reco out 33
+Rl out 0 100k
+
+.options noopiter
+.nodeset V(drain)=6.5 V(gate)=0 V(source)=2.4 V(basea)=6.4 V(baser)=6.4 V(emita)=7.05 V(emitb)=7.05 V(tailp)=8.1 V(coll)=-7.5 V(collb)=-7.5 V(svint)=0 V(svout2)=8
+
+.tran 0 30m 0 5u
+.step param amp LIST 0.549 1.096 1.380 3.466
+.step param th LIST 0 0.5 0.65 0.8 0.9 1.0
+
+.meas tran vout_pk MAX V(out) FROM 20m TO 30m
+.meas tran vout_pkmin MIN V(out) FROM 20m TO 30m
+.meas tran vout_dc AVG V(out) FROM 29m TO 30m
+.meas tran vca_pk MAX V(vcaout) FROM 20m TO 30m
+.meas tran vdrain_pk MAX V(drain) FROM 20m TO 30m
+.meas tran vcoll_dc AVG V(coll) FROM 29m TO 30m
+.four 1k 9 V(out)
+.end

@@ -119,6 +119,8 @@ Catena [BLOCCATO]: RCA stereo → protezione → front-end (LINE; PHONO MM v0.1 
 ## 8. Mic e generic mono — requisiti
 
 - [BLOCCATO] MIC: XLR mono bilanciato; preamp 30-60 dB, Z_in ~2 kΩ, low-noise, high CMRR, fast recovery; NO phantom (V1); EQ 2 bande (LOW ~120 / HIGH ~5 kHz, −∞→0→+6, broad); meter warning-only dopo preamp prima di EQ; niente CUE/filtro/5-way/fader; → MASTER SUM.
+- [BLOCCATO decisione 97, 2026-10-13] MIC e MONO sono due moduli SEPARATI. Comandi di ciascuno, e nessun altro: GAIN, EQ 2 bande, 4 pot send (uno per bus FX, −∞…0 dB, presa post-EQ, nessun bottone), un LED di metering a tre colori (verde = segnale ok, giallo = vicino al clip, rosso = clip; presa pre-EQ; soglie [PROVVISORIO] −6 / +11 / +17 dBu). MIC: passa-alto fisso a 60 Hz. Massimo 4 moduli MIC/MONO nel sistema, in qualunque combinazione; primo prototipo: 1 MIC + 3 MONO.
+- [ARCHITETTURA v0.1, 2026-10-13 — `docs/fase4/mic-mono-moduli.md`, valori PROVVISORI] MIC: instrumentation amp OPA1612 a 30 dB fissi + stadio 0…+30 dB — EIN −126,5 dBu (150 Ω), CMRR 74 dB con sorgente sbilanciata 10 Ω, overload 300 mV rms. MONO: buffer FET 1 MΩ + pot passivo + make-up +10 dB — rumore modulo −101,3 dBu A-wtd. Entrambi: EQ2 a celle serie, due driver separati verso MASTER SUM L/R (MIC in multidrop su MSUM6, MONO su MSUM7: i contributori restano 7).
 - [BLOCCATO] GENERIC MONO: jack mono; buffer hi-Z ≥100 kΩ; gain −∞→0→+10; tollera +18 dBu; EQ 2 bande come mic; mono→stereo distribuito propriamente (mai hard-short); warning-only; niente CUE/filtro/5-way/fader; → MASTER SUM. Modulo generico, non cucito su uno strumento specifico; numero di varianti [APERTO].
 
 ## 9. Master, Booth, Rec — requisiti
@@ -146,7 +148,7 @@ Design circuitale: `docs/fase1/master-out.md` **v0.3 (2026-09-29: stadio finale 
 
 ## 12. Alimentazione — requisiti
 
-[REV dec. 90c/92 2026-10-01: PSU toroidale unico ~120 VA multi-avvolgimento + regolazione locale, fanless, protezione corto 3 strati — design in `docs/fase3/sistema-psu.md`; CV VCA resta 6,1 mV/dB + routing curato + test banco (dec. 92; 61 = fallback). Riconciliazione rail raw sul backplane con §3: APERTA (review 01/10)]
+[REV dec. 90c/92 2026-10-01: PSU toroidale unico da 200 VA (REV dec. 98, 2026-10-13: era ~120 VA; secondari 2×21 V 2,5 A · 2×18 V 1,0 A · 2×20 V 0,4 A · 9 V 2,0 A) multi-avvolgimento + regolazione locale, fanless, protezione corto 3 strati — design in `docs/fase3/sistema-psu.md`; CV VCA resta 6,1 mV/dB + routing curato + test banco (dec. 92; 61 = fallback). Riconciliazione rail raw sul backplane con §3: APERTA (review 01/10)]
 
 - [BLOCCATO] Lineare con toroidale + regolazione locale (decisioni 45/90c); domini §1; backplane porta raw ±27/±22/±26[M] e +5 V regolato nella PSU (REV decisione 93: tabella in `docs/fase3/sistema-psu.md` v0.2); ±18/±15 LN locali per modulo (miglioria §3).
 - [BLOCCATO] Mute power-on/off; sequencing; protezione per ramo di modulo; budget correnti/termico [APERTO — da calcolo a moduli definiti].
@@ -158,12 +160,14 @@ Design circuitale: `docs/fase1/master-out.md` **v0.3 (2026-09-29: stadio finale 
 
 ## 14. Rumore e banda — target
 
-- [PROVVISORIO] Allocazione per stadio (sheet §3): canale ≤−80 dBu A-wtd (dec. 89, misurato −90,3) · bus FX send ≤−88 A-wtd (dec. 89, misurato −100,8) · filtro ≤−80 A-wtd (dec. 89: core nudo al limite a fc max col die reale → input q70) · **5-way ≤−80 dBu A-wtd (dec. 88, 2026-09-30: misurato −83,2 v03 / −83,9 v031 (2026-10-01); out modulo, ingressi terminati, gain nominali, drive θ0)** · stadio XLR master ≤−92 (misurato −119,2 VALIDO; sistema ≤−78 A-wtd, dec. 89, condizioni docs/06 §2; VERIFICATO −80,5 = PASS 2,5 dB, docs/06 §7) · isolamento control→audio ≥100 dB · phono: budget dedicato al design. Tutto da validare in simulazione+misura (il −90 dBu "globale" dei doc resta target, non garanzia — correzione 13 review).
+- [PROVVISORIO] Allocazione per stadio (sheet §3): canale ≤−80 dBu A-wtd (dec. 89, misurato −90,0 [ricalcolo 2026-10-13, docs/06 §8]) · bus FX send ≤−88 A-wtd (dec. 89, misurato −100,7) · filtro ≤−80 A-wtd (dec. 89: core nudo al limite a fc max col die reale → input q70) · **5-way ≤−80 dBu A-wtd (dec. 88, 2026-09-30: misurato −83,2 v031 al ricalcolo 2026-10-13 (era −83,9); out modulo, ingressi terminati, gain nominali, drive θ0)** · stadio XLR master ≤−92 (misurato −119,2 VALIDO; sistema ≤−78 A-wtd, dec. 89, condizioni docs/06 §2; VERIFICATO −80,0 = PASS 2,0 dB al ricalcolo 2026-10-13, docs/06 §8; era −80,5) · isolamento control→audio ≥100 dB · phono: budget dedicato al design. Tutto da validare in simulazione+misura (il −90 dBu "globale" dei doc resta target, non garanzia — correzione 13 review).
 - [BLOCCATO] Banda: §1 (8 Hz–35 kHz; 10 Hz ±1 dB infrasub).
 
 ## 15. Interfaccia meccanica/elettrica
 
 - [BLOCCATO] Il design del pannello è di Filippo; l'elettronica fornisce: consumi per modulo, pin count/famiglia connettori, correnti backplane, contatti di massa, schermature, accessi di servizio/test. Fader = slider, resto = pot rotativi; hardware manopole = sessione dedicata (questione 40). [APERTO] ingombri/telaio (questione 29).
+
+- [INGEGNERIA 2026-10-13 — design teorico completo] (1) Overdrive del filtro = cella drive del 5-way riusata con pad −6 dB e make-up +6 dB, 8 celle, mux del CV per sezione attiva (`docs/fase2/filter-module.md` §5bis); law [DA CONFERMARE-F]; con overdrive il canale filtro è −83,1 dBu A-wtd (core a) e il sistema con 4 filtri inseriti −75,3 (target −78 definito a filtri OFF) [DA DECIDERE-F]. (2) Shaper a tratti = 1 op-amp + rami diodo, verificato tra 20 e 50 °C (`docs/fase3/sistema-shaper.md`). (3) Audit infrasub: aggiunti blocco della continua all'ingresso line (0,72 Hz) e servo sul make-up EQ; percorso −0,03 dB a 10 Hz (gain-staging sheet §6). (4) Griglia del drive 5-way CORRETTA (livelli 3 dB più alti di quanto etichettato): dec. 87 da riconfermare (five-way §5.3bis). (5) Inventario comandi: `docs/fase3/sistema-comandi.md`. Lista delle decisioni che restano a Filippo: `docs/02-questioni-aperte.md`, in testa.
 
 ## 16. Roadmap di costruzione
 

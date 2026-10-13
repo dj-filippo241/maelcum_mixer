@@ -30,17 +30,26 @@
 *   - corrente di rumore (vedi regola d'uso sopra), 1/f sotto ~10 Hz
 *   - slew/limit reali: clamp duro ±(rail−1,5 V) invece della saturazione
 *     morbida (i test di livello vanno letti come "tocca il rail")
+*
+* FIX 2026-10-13 (QUIRK 3 LTspice 26.0.2, trovato in sim/mic/): con E1
+* scritto come sorgente comportamentale `value={A*(V(inx)-V(inn))}` la
+* analisi .noise NON propagava il rumore di Rn (la en del chip): test
+* minimo G=31,8 con Rg noiseless -> 5,0 nV invece di 35,3 (= 1,1 nV x 31,8).
+* E1 ora e' una E LINEARE a 4 nodi (stessa funzione di trasferimento:
+* .ac/.tran/.op invariati; cambia solo .noise, che ora include la en).
+* I totali di rumore ottenuti PRIMA di questa data con questa libreria
+* non contenevano la en degli op-amp -> docs/02 voce 73.
 * =====================================================================
 .subckt OP1654 inp inn out vp vm
 Rn inp inx 1223
-E1 xx 0 value={1e6*(V(inx)-V(inn))}
+E1 xx 0 inx inn 1e6
 R1 xx p1 5005
 C1 p1 0 1.59u
 E2 out 0 value={limit(V(p1),V(vm)+1.5,V(vp)-1.5)}
 .ends OP1654
 .subckt OP1612 inp inn out vp vm
 Rn inp inx 73
-E1 xx 0 value={3.16e6*(V(inx)-V(inn))}
+E1 xx 0 inx inn 3.16e6
 R1 xx p1 3955
 C1 p1 0 1.59u
 E2 out 0 value={limit(V(p1),V(vm)+1.5,V(vp)-1.5)}

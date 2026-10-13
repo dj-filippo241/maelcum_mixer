@@ -1,0 +1,21 @@
+* MIC v0.1 — CMRR: segnale di MODO COMUNE 1 V su entrambe le gambe.
+* caso 1: tutto ideale tranne R diff 0,1% | caso 2: + sorgente sbilanciata
+* 10 ohm | caso 3: + bias 10k all'1%. Lettura: dB(V(pre)) - guadagno
+* differenziale (30,05 dB a x=0) = -CMRR.
+.include ../lib/opamp-audio.inc
+.param gp=0 rs=150 k=1
+.param mis=0.001
+.param du=table(k,1,0,2,10,3,10)
+.param bal=table(k,1,0,2,0,3,0.01)
+Vcl vcl 0 15
+Vel vel 0 -15
+V1 vin 0 0 AC 1
+Rmh vin hot {rs/2+du}
+Rmc vin cold {rs/2}
+.include mic-pre.inc
+.step param k list 1 2 3
+.ac dec 10 20 20k
+.meas ac cm50 FIND V(pre) AT 50
+.meas ac cm1k FIND V(pre) AT 1k
+.meas ac cm10k FIND V(pre) AT 10k
+.end

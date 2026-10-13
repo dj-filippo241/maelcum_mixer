@@ -1,0 +1,48 @@
+* MIC/MONO v0.1 (dec. 97 REV: 4 POT send) — rumore portato su UN bus FX
+* da UNA mandata di un modulo MONO. Catena: modulo mono completo fino al
+* nodo POST (v_hi) -> pot SEND 10k passivo (sp = frazione) -> buffer di
+* iniezione OP1654 -> R 10k lato sorgente -> summing virtual-earth del
+* bus (Rf 10k, OP1612). .step sp: 0,001 (pot chiuso) / 0,5 / 1 (aperto).
+* Non ci sono switch: il buffer resta SEMPRE collegato al bus.
+.include ../lib/opamp-audio.inc
+.param a=0.316 rs=1k sp=1
+Vcc vcc 0 18
+Vee vee 0 -18
+V1 vin 0 0 AC 1
+Rs vin j {rs}
+Rpr j jp 1k
+Cin jp b 100n
+Rbias b 0 1Meg
+Xb b bo bo vcc vee OP1654
+Rpt bo w {10k*(1-a)+1m}
+Rpb w 0 {10k*a+1m}
+Xm w mf pre vcc vee OP1654
+Rmf pre mf 2.15k
+Rmg mf 0 1k
+.include backend.inc
+Rst v_hi sw {10k*(1-sp)+1m}
+Rsb sw 0 {10k*sp+1m}
+Xinj sw inj inj vcc vee OP1654
+Rinj inj net1 10k
+Rfb net1 vbus 10k
+Xsum 0 net1 vbus vcc vee OP1612
+.step param sp list 0.001 0.5 1
+.noise V(vbus) V1 dec 20 10 100k
+.meas noise on1 FIND V(onoise) AT 20
+.meas noise on2 FIND V(onoise) AT 31.5
+.meas noise on3 FIND V(onoise) AT 50
+.meas noise on4 FIND V(onoise) AT 80
+.meas noise on5 FIND V(onoise) AT 125
+.meas noise on6 FIND V(onoise) AT 200
+.meas noise on7 FIND V(onoise) AT 315
+.meas noise on8 FIND V(onoise) AT 500
+.meas noise on9 FIND V(onoise) AT 800
+.meas noise on10 FIND V(onoise) AT 1250
+.meas noise on11 FIND V(onoise) AT 2000
+.meas noise on12 FIND V(onoise) AT 3150
+.meas noise on13 FIND V(onoise) AT 5000
+.meas noise on14 FIND V(onoise) AT 8000
+.meas noise on15 FIND V(onoise) AT 12500
+.meas noise on16 FIND V(onoise) AT 20000
+.meas noise g1k FIND gain AT 1000
+.end

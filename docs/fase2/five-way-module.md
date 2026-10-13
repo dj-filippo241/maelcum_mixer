@@ -483,6 +483,34 @@ e diventa evidente a θ80 con programma a 0 dBu (3,3 %); il fuzz pieno sta a
 il drive "sente" come suoni, non solo dove sta la manopola). Taper/knee esatti
 = ascolto M4L (dec. 78) — la griglia sopra è il punto di partenza, valori bloccati.
 
+### 5.3bis CORREZIONE 2026-10-13 — le etichette di livello della griglia erano 3 dB basse
+
+`drive-chain8.cir` dava al generatore `SINE` i valori 0,388 / 0,775 / 2,45
+come se fossero volt efficaci, ma LTspice li legge come PICCO. I livelli
+veri della griglia §5.3 erano quindi **−9 / −3 / +7 dBu**, non −6 / 0 / +10.
+Circuito, law di guadagno e ceiling NON cambiano. Griglia rifatta ai
+livelli giusti (`sim/filtro/od-chain.cir`, stessa catena) — THD %, 1 kHz:
+
+| θ \ programma | −6 dBu (nom) | 0 dBu | +10 dBu (hot) |
+|---|---|---|---|
+| 0 % (0 dB) | 0,10 | 0,20 | 6,9 |
+| 50 % (+7 dB) | 0,23 | 0,71 | 26 (ceiling) |
+| 65 % (+9,5) | 0,33 | 5,2 | 31 (ceiling) |
+| 80 % (+12) | 0,53 | 13 (fuzz) | 35 (fuzz) |
+| 90 % (+14) | 1,1 | 19 (fuzz) | 38 (fuzz) |
+| 100 % (+16) | **6,9** | 24 (fuzz) | 40 (fuzz) |
+
+Cosa cambia all'ascolto rispetto a quanto confermato con la decisione 87:
+- la zona pulita/calda a θ 0-50 resta (0,1-0,7 %);
+- il nastro arriva prima: con programma a 0 dBu si sente già a θ 65 (5 %),
+  non a θ 80;
+- con programma NOMINALE la manopola al 100 % dà **6,9 %**, non 0,7 %: a
+  volume normale il drive distorce già in modo evidente a fine corsa
+  (dato nuovo per la questione 72);
+- ceiling asimmetrico misurato: +2,79 / −4,06 V.
+
+**La decisione 87 va riconfermata da Filippo su questa griglia** (regola 2).
+
 ### 5.4 Simulazioni eseguite e lezioni (`sim/five-way/drive-*.cir`, 2026-09-29)
 
 - **D1** `drive-law.cir` — shaper+VCA: griglia esatta; ANOMALIA NOTATA: la

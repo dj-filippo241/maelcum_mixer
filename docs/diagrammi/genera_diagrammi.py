@@ -566,10 +566,67 @@ def cue():
     return d.save()
 
 
+# ---------------------------------------------------------------- MIC / MONO
+def mic_mono():
+    d = Diagram("mic-mono", 1610, 930, "MODULI MIC e MONO — due moduli separati",
+                "maelcum mixer — architettura v0.1 (2026-10-13, dec. 97): comandi = GAIN, EQ 2 bande, 4 pot send, 1 LED · massimo 4 moduli nel sistema",
+                "nuovo (dec. 97)", GREEN)
+
+    def banda(y, etichetta, front, msum):
+        d.text(40, y - 12, etichetta, 12, "#666", weight=700)
+        bx = [d.box(40 + k * 210, y, 175, 96, t, ln, kind) for k, (t, ln, kind) in enumerate(front)]
+        chain_h(d, bx)
+        cy = bx[0].cy
+        EQ = d.box(705, y, 200, 96, "EQ 2 BANDE", ["LOW shelf ~120 Hz", "HIGH ~5 kHz", "−∞ → 0 → +6 (celle serie)"])
+        d.arrow([bx[-1].r, (EQ.x - 2, cy)])
+        d.dot(670, cy)
+        LED = d.box(450, y + 126, 240, 88, "LED (uno, cambia colore)",
+                    ["presa pre-EQ [BLOCCATO]", "ROSSO = clip (soglia +17 dBu)", "!altri colori: da definire"], "ctrl", tsize=12)
+        d.arrow([(670, cy), (670, LED.y - 2)], "cv")
+        DR = d.box(985, y, 180, 96, "DRIVER L + DRIVER R", ["OPA1612, due buffer separati", "mai hard-short L/R"])
+        MS = d.box(1200, y, 170, 96, "→ MASTER SUM", [msum, "multidrop, 7 contributori"], "dark")
+        d.arrow([EQ.r, (DR.x - 2, cy)])
+        d.dot(950, cy)
+        d.arrow([DR.r, (MS.x - 2, cy)])
+        AS = d.box(985, y + 126, 180, 88, "SEND × 4 (pot)", ["uno per bus FX, 10k passivo", "−∞ … 0 dB, presa post-EQ", "come in un live mixer"])
+        INJ = d.box(1200, y + 126, 170, 88, "INIEZIONE × 4", ["OPA1654 quad", "2 × R 10k (net L e R)"])
+        BUS = d.box(1405, y + 126, 165, 88, "→ BUS FX 1-4", ["net multidrop", "backplane slot 2-5"], "dark")
+        d.arrow([(950, cy), (950, AS.cy), (AS.x - 2, AS.cy)])
+        chain_h(d, [AS, INJ, BUS])
+        GM = d.box(725, y + 126, 200, 88, "MUTE GLOBALE (c9)", ["apre le mandate a power-on/off", "(dec. 94b) — non è un comando", "di pannello"], "ctrl", tsize=12)
+        d.arrow([GM.b, (GM.cx, y + 230), (INJ.cx, y + 230), (INJ.cx, INJ.y + INJ.h + 2)], "cv")
+
+    banda(140, "MODULO MIC — front-end su ±15 V LN",
+          [("XLR + PROTEZIONE", ["bilanciato, NO phantom", "RFI, R 10 + clamp ai rail", "Zin 2,26k · CM 47k/gamba"], "dark"),
+           ("INA +30 dB FISSO", ["coppia OPA1612", "Rf 2×499 · Rg 32,4", "+ passa-alto 60 Hz (dec. 97)"], "std"),
+           ("GAIN 0 … +30 dB", ["OPA1654, pot 5k", "totale 29,5 … 59,3 dB"], "std")],
+          "net MSUM6")
+    banda(420, "MODULO MONO — dominio ±18 V",
+          [("JACK + PROTEZIONE", ["mono, tollera +18 dBu", "R 1k + clamp + TVS", "C film 100 nF (1,6 Hz)"], "dark"),
+           ("BUFFER FET", ["OPA1654 unity", "Zin 1 MΩ"], "std"),
+           ("GAIN −∞ → 0 → +10", ["pot 10k passivo", "+ make-up +10 dB"], "std")],
+          "net MSUM7")
+    d.box(40, 690, 760, 132, "NUMERI SIMULATI (sim/mic/)",
+          ["MIC: EIN −126,5 dBu su 150 Ω, uguale a ogni posizione del GAIN · passa-alto −3,1 dB a 60 Hz · −0,04 dB a 35 kHz",
+           "MIC: CMRR 74 dB con sorgente sbilanciata di 10 Ω · overload 300 mV rms al microfono (~138 dB SPL su SM58)",
+           "MIC: uscita modulo −97,3 / −90,0 / −69,3 dBu A-wtd a 30 / 38 / 59 dB · sistema entro −78 fino a ~46 dB di gain",
+           "MONO: banda −0,19 dB a 10 Hz, −0,08 a 35 kHz · uscita −101,3 dBu A-wtd · send chiuso: −111,2 dBu A-wtd sul bus"],
+          "note", align="start", lsize=10.5)
+    d.box(830, 690, 740, 132, "DECISIONE 97 (Filippo, 2026-10-13) E DOMANDE APERTE",
+          ["Due moduli separati. Su ciascuno solo: GAIN, EQ 2 bande, 4 pot send, 1 LED di metering (rosso = clip).",
+           "Massimo 4 moduli MIC/MONO nel sistema: i bus FX arrivano a 12 contributori (caso già verificato).",
+           "!Aperto: colori e livelli del LED sotto il rosso · conferma soglia rosso +17 dBu",
+           "!Aperto: «massimo 4» letto come 4 in totale tra MIC e MONO"],
+          "note", align="start", lsize=10.5)
+    d.legend(864, [("audio", "audio"), ("cv", "controllo / LED")])
+    d.footer("Fonte: docs/fase4/mic-mono-moduli.md v0.1 (2026-10-13) + sim/mic/RISULTATI-mic-mono.md + SPECIFICA §8 + decisioni 36/37/91/94/95/97")
+    return d.save()
+
+
 if __name__ == "__main__":
     warn = []
-    for f in (canale, fx, fx_send, master, five_way, filtro, cue):
+    for f in (canale, fx, fx_send, master, five_way, filtro, cue, mic_mono):
         warn += f()
-    print("scritti 7 SVG in", HERE)
+    print("scritti 8 SVG in", HERE)
     for w in warn:
         print("ATTENZIONE:", w)

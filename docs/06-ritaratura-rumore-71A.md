@@ -112,3 +112,49 @@ assegnati (−66,6 con 4 send a level 0 dB) contro target −78: FINDING
 CHIUSO da DECISIONE 95 (2026-10-02): DEROGA D'USO ratificata da Filippo
 (target −78 vale a send non assegnati; con FX in uso floor −73…−66,6
 accettato come carattere del caso d'uso, disciplina level send K4).
+
+## 8. RICALCOLO 2026-10-13 — quirk 3 (en degli op-amp assente dal `.noise`) → voce 73 CHIUSA
+
+Causa: nelle macro OP1654/OP1612 lo stadio d'ingresso era una sorgente
+comportamentale e LTspice 26.0.2 non propagava il rumore di tensione del
+chip (dettaglio: `sim/mic/RISULTATI-mic-mono.md` §4). Corretti la
+libreria `sim/lib/opamp-audio.inc` e le macro copiate in 17 netlist
+(five-way/module-noise-v03*, param-cell-real-noise, fx/fx-return-noise-71A,
+fx-dc-servo, filtro/svf-*). Metodo: ogni netlist di rumore rilanciato
+con libreria vecchia e nuova; totali 20 Hz–20 kHz, trapezoidale, pesatura
+A. Lo script riproduce i numeri ufficiali vecchi entro 0,05 dB.
+
+| Blocco | A-wtd prima | A-wtd ora | Δ | Target | Esito |
+|---|---|---|---|---|---|
+| Canale CDJ | −90,3 | **−90,0** | +0,26 | ≤ −80 | PASS 10,0 dB |
+| EQ β3 sola (unweighted) | −89,2 | −88,9 | +0,31 | — | — |
+| 5-way v031, θ0 | −83,9 | **−83,2** | +0,73 | ≤ −80 | PASS 3,2 dB (era 3,9) |
+| 5-way v031, θ50 | −79,4 | −78,2 | +1,20 | — | dato |
+| Bus FX send | −100,8 | −100,7 | +0,09 | ≤ −88 | PASS 12,7 dB |
+| Ritorno FX (uno) | −96,4 | −96,3 | +0,13 | — | 4 ritorni = −90,3 |
+| Send chain a canali vivi | −98,5 | −98,1 | +0,43 | — | dec. 95 invariata |
+| Summer DJ bus | −107,5 | −107,3 | +0,16 | — | trascurabile |
+| Summing master | −101,9 | −101,8 | +0,14 | — | trascurabile |
+| CUE (catena) | −114,5 | −114,4 | +0,09 | ≤ −90 | PASS 24 dB |
+| Filtro (a) ideale, fc max | −91,4 | **−89,9** | +1,47 | ≤ −80 | PASS 9,9 dB |
+| Filtro (a) ideale, fc media | −117,4 | −115,8 | +1,60 | ≤ −80 | PASS largo |
+| Filtro (a) ideale, fc minima | −139,2 | −123,6 | +15,6 | ≤ −80 | PASS largo (prima il floor era quasi solo OTA) |
+| Filtro variante B, fc max | −81,9 | **−80,6** | +1,30 | ≤ −80 | PASS 0,6 dB (era 1,9) |
+| Phono, uscita (unweighted 10 Hz–20 kHz) | −79,8 | −78,8 | +1,02 | — | EIN 1,79 → ~2,0 µV; ~18 dB sotto il fruscio del vinile (era 19) |
+| Drive 5-way (D6) | −87,6 | −87,6 | 0 | — | invariato (domina il VCA) |
+| Stadio master | −119,2 | −119,2 | — | ≤ −92 | macro propria senza Rn: integrazione già manuale, non toccato |
+
+**Sistema ricalcolato (potenze, condizioni §2)**: 4 canali −84,0 ⊕ 5-way
+−83,2 ⊕ 4 ritorni −90,3 ⊕ summer (−107,3 / −96,2) ⊕ master −119,2 =
+**−80,0 dBu A-wtd → PASS 2,0 dB sul target ≤ −78** (era −80,5 / 2,5 dB).
+Nessun esito si ribalta. Margini più stretti da tenere d'occhio: 5-way
+(3,2 dB) e filtro variante B a fc max (0,6 dB, dato d'ingresso per q70).
+
+Con i moduli MIC/MONO del primo prototipo (1 MIC a 30 dB + 3 MONO,
+mandate chiuse): −79,8 dBu A-wtd. Il MIC a 45 dB porta a ~−78,4.
+
+I numeri dei RISULTATI dei singoli moduli restano come storico: fa fede
+questa tabella. Non ricalcolati (netlist senza misure a punti, storici o
+superati): eq-serie/cascade-noise e -b2, filtro/svf-noise-* senza 71A,
+five-way/module-noise e -bank, param-cell-*, master-out/compB-noise.
+

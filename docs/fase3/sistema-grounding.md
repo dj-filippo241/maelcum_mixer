@@ -66,6 +66,7 @@ hardware).
 | RCA line/CDJ | shell → CHASSIS diretto al pannello | idem; guscio metallico del pannello = continuazione del telaio |
 | RCA phono | shell → CHASSIS; **in più** il terminale GND del giradischi è ISOLATO dal pannello e scende con filo dedicato alla stella AGND (posticino nel modulo phono/canale) | la corrente del filo di massa giradischi (che raccoglie il loop telaio-motore) non deve passare nello schermo del segnale né nel telaio: `phono-stage.md` riga 31/125 |
 | Jack pedali FX (send/return) | sleeve → AGND del modulo FX nel punto stella di modulo; nessun ground-lift di default | ritorno del pedale definito; see §5 |
+| Jack GENERIC MONO (in) | sleeve → AGND del modulo nel punto stella di modulo, come i jack pedali | sorgente esterna single-ended: il suo ritorno è il riferimento del buffer d'ingresso (`docs/fase4/mic-mono-moduli.md` §7) |
 | Jack CUE/booth/utility | sleeve → AGND locale del modulo | ritorno cuffia = riferimento dell'ampli, non del telaio |
 | Cavi interni schermati (dove servono: phono in→stadio, cue bus se lungo) | schermo mono-lato: lato sorgente a AGND, lato destino floating (nastro) | evita anelli di massa interni; la RF resta scaricata dal lato sorgente + chassis ai connettori |
 

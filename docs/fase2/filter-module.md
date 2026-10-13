@@ -142,6 +142,7 @@ le 11,8 ottave derivano del ~70% su 0-50 °C (misurato, §6).
     curva liscia monotona) si compensa nello shaper: vc* = vc_ideale − e(vc)/2,355
     (correzione ≤ 40 mV agli estremi) — la law risultante è esponenziale pura entro
     ~±1%.
+  - [CIRCUITO DELLA FAMIGLIA DEFINITO 2026-10-13 → `docs/fase3/sistema-shaper.md`: sommatore + rami diodo diretti e rovesciati; i valori per questa law si calcolano a law chiusa]
   - Circuito: generatore piecewise-lineare ATTIVO a tratti (2 sezioni op-amp per
     sezione CV: stadio a guadagno commutato da rami diodi-resistori in feedback +
     invertitore), riferimenti di piega da partitori sui rail ±15 V LN con trimmer
@@ -203,12 +204,93 @@ le 11,8 ottave derivano del ~70% su 0-50 °C (misurato, §6).
   dominio ±18 V, recovery low-Z 20-50 Ω con +23 dBu clean (sheet §2/K5). La curva
   clean→gritty→hard dub è sound design: aspetta le referenze di Filippo (questione 61).
   Mux CV: il drive di canale segue la sezione attiva (dec. 67).
+- **OVERDRIVE — DESIGN v0.1 (2026-10-13) → §5bis** (sostituisce la riga
+  qui sopra: le referenze sono arrivate con la decisione 82).
 - **Modo OFF**: bypass secco del core (return = send) con break-before-make + ramp
   1 ms generata nel modulo (SPECIFICA §4, decisione 80). Switch analogici famiglia ADG14xx
   [PROVVISORIO, stessi candidati dell'assign FX — metodo decisione 80].
 - Livelli interni: send 0 dBu nom/+16 max → buffer in → core (picco risonanza
   +10 dBu sopra il livello, sheet) → drive → recovery → return. Il dominio ±18 V
   del canale resta valido su tutto il modulo (sheet §2).
+
+## 5bis. Overdrive — design v0.1 (2026-10-13, chiude la questione 12 lato ingegneria)
+
+Requisiti (SPECIFICA §5, dec. 82): dopo il filtro, prima del meter di
+canale; da pulito a «hard dub overload»; JFET prima, BJT asimmetrico poi;
+referenza Sherman Filterbox, raschio che cresce con la risonanza; due
+manopole DRIVE (una per sezione HPF, una per LPF) condivise dai canali.
+
+### Topologia: la cella DRIVE del 5-way, riusata identica
+
+```
+uscita core (0 dBu nom, picco di risonanza fino a +8…+10 dBu)
+  ▼ THAT 218x — guadagno variabile; la law include un pad fisso di −6 dB
+  ▼ JFET common-source «nastro» (ginocchio 0,7-1,0 Vp)
+  ▼ diff pair PNP «fuzz» (ceiling +2,79 / −4,06 V)
+  ▼ recovery invertente + servo DC
+  ▼ make-up +6 dB → R serie 33 Ω → return al canale
+```
+
+- È la catena già validata in `drive-chain8.cir` (five-way §5.2): nessuna
+  topologia nuova, stessi componenti, stesse lezioni.
+- **Pad −6 dB e make-up +6 dB**: la cella è nata per un nominale di
+  −6 dBu. Nel filtro il nominale è 0 dBu: senza pad i picchi musicali
+  toccherebbero il ceiling anche a manopola chiusa. Guadagno netto a
+  manopola chiusa: 0 dB.
+- 8 celle (4 canali stereo): **+8 THAT 218x** rispetto al conteggio della
+  voce 37, + 8 JFET, 16 PNP, ~12 doppi op-amp.
+- **Mux del CV**: 2 shaper (uno per manopola, `sistema-shaper.md`) → 2 bus
+  CV → per ogni canale uno switch SPDT (classe ADG1434) sceglie il CV
+  della sezione attiva (dec. 67) → smoothing 1 ms (dec. 80) → i due VCA
+  L/R del canale. In OFF il modulo è in bypass e la cella è fuori percorso.
+
+### Griglia misurata (`sim/filtro/od-chain.cir`) — THD %, 1 kHz
+
+Law di partenza = quella del 5-way (0 / +7 / +9,5 / +12 / +14 / +16 dB a
+θ 0 / 50 / 65 / 80 / 90 / 100 %). Livelli riferiti al filtro:
+
+| θ \ segnale | 0 dBu (programma nom) | +8 dBu (picco di risonanza) | +16 dBu (max) |
+|---|---|---|---|
+| 0 % | 0,10 | 0,26 | 6,9 |
+| 50 % | 0,23 | 3,3 | 26 |
+| 65 % | 0,33 | 12 | 31 |
+| 80 % | 0,53 | 19 | 35 |
+| 90 % | 1,1 | 24 | 38 |
+| 100 % | 6,9 | 28 | 40 |
+
+Lettura: a manopola chiusa il filtro resta pulito anche col picco di
+risonanza (0,26 %). Aprendo, è la RISONANZA a sporcarsi per prima: a
+metà corsa il programma è ancora pulito (0,2 %) mentre il picco è già
+al 3 %, e a 65 % è al 12 %. È il comportamento della referenza: il
+raschio nasce sul fischio del filtro e cresce con lui. Uscita massima
+dopo il make-up: +5,6 / −8,1 V di picco.
+
+**Law, range e punto in cui finisce il pulito sono numeri musicali: da
+confermare da Filippo (regola 2).** Vale anche qui la domanda della
+questione 72 (distorcere senza salire di volume).
+
+### Rumore
+
+Cella drive con I/V del VCA a 10k, come già deciso per il drive 5-way
+(dec. 88): −90,1 dBu A-wtd prima del make-up (`drive-noise.cir` caso 4,
+conservativo) → −84,1 dopo il make-up. Canale filtro = core ⊕ overdrive:
+
+| Core | Solo core (docs/06 §8) | Con overdrive | Target ≤ −80 |
+|---|---|---|---|
+| (a) OTA nudo, fc max | −89,9 | **−83,1** | PASS 3,1 dB |
+| variante B, fc max | −80,6 | **−79,0** | FAIL 1,0 dB |
+
+Con l'overdrive nel percorso domina lui, non più il core. Sistema con
+tutti e 4 i filtri inseriti (core a): −80,0 ⊕ 4 canali filtro =
+**−75,3 dBu A-wtd**. Il target ≤ −78 è definito a filtri OFF (docs/06
+§2): con i filtri inseriti lo si supera di 2,7 dB. Dato da mettere
+davanti a Filippo: condizione d'uso come per le mandate (dec. 95).
+
+### Non fatto
+
+D5 (interazione fine tra risonanza e overdrive col modello OTA reale):
+resta dopo la scelta q70. Shaper delle due manopole DRIVE: stessa rete
+del drive 5-way (`sim/shaper/shaper-drive.cir`).
 
 ## 6. Simulazione di fattibilità (2026-09-24, `sim/filtro/`)
 

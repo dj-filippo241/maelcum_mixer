@@ -69,6 +69,7 @@
 ### 3.1 [A] Ingresso line + protezione
 Invariato dalla v0.1: RCA dorato isolato da chassis (rondella dedicata); R serie 100 Ω +
 TVS low-cap + bead; polo RC >100 kHz; buffer OPA1612 unity, Z_in ≥47 kΩ, dominio ±18 V.
+**[REV 2026-10-13, audit voce 58 — gain-staging sheet §6]** Aggiunto blocco della continua in ingresso: C film 2,2 µF + 100 kΩ verso massa (polo 0,72 Hz, −0,02 dB a 10 Hz; Z_in 100 kΩ). E sullo stadio di make-up dell'EQ (§3.3) un servo DC, cella dei ritorni FX (0,053 Hz): toglie gli offset di VCA ed EQ prima di CUE, send, filtro e fader. Prima il percorso line non aveva nessun blocco della continua fino al 5-way.
 
 ### 3.1bis [A0] Ingresso PHONO e selettore (v0.4, rinvia a phono-stage.md)
 

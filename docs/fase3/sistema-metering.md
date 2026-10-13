@@ -22,7 +22,7 @@ saturazione reale del dominio ±18 V; calibrazione identica tra canali
 | DJ ×4 | post-filter/overdrive, pre-fader (§3.7 cdj) | 0 / +20 (drive inserito) | g = 0,288 (identici tra canali) |
 | 5-way | post-drive, pre-master-sum (rif. interno −6 dB) | −6 / +10 | g = 0,576 (×2 = dominio assoluto post-makeup) |
 | FX return ×1 (mono centrato) | post-gain/EQ2, pre-fader | 0 / +23 (regola K) | g = 0,288 |
-| mic / generic | WARNING-ONLY | — | [SEGNAPOSTO: moduli non disegnati — 3 LED via comparator: sig ≥−6, loud ≥+6, purple ≥+23] |
+| mic / mono | WARNING-ONLY, nodo PRE (dopo il preamp, prima dell'EQ2) | 0 / +17 | **UN LED a tre colori (dec. 97)**: verde = segnale ok (≥ −6 dBu), giallo = vicino al clip (≥ +11), rosso = clip (≥ +17, latch) — soglie [PROVVISORIO]; rosso a +17 e non +23 perché il front-end mic su ±15 V clippa prima e l'EQ2 aggiunge fino a +6 (`docs/fase4/mic-mono-moduli.md` §5.2) |
 
 Niente meter per booth/rec/cuffie/send (SPEC §11). Barre totali: master 2 +
 DJ 4 + FX 1 + 5-way 1 = 8 barre + warning mic/generic.

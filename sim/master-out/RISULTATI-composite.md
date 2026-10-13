@@ -428,3 +428,20 @@ Netlist: `compB-thd-env.cir`, `compB-psrr.cir`, `compB-zobel.cir`,
   previsto; Zobel eventuale SOLO se i cavi resteranno ≤1 nF (documentato
   qui come valori ottimali in quel caso)**. CHIUSO per la sim, residuo
   a banco dichiarato.
+
+## REV dec. 98 — Test 17: inviluppo statici col trasformatore reale (2026-10-13)
+
+Il trasformatore ridimensionato (W3 2×20 V 0,4 A, `sim/system/psu-w3-real.cir`)
+dà statici [M] di **23,3 V a rete −10 % e 30,3 V a rete +10 %** (prima:
+23,6 / 29,2 calcolati con trasformatore ideale). Rilanciati i Test 13 ai
+nuovi estremi (`compB-swing3-env98.cir`, `compB-short-env98.cir`):
+
+| Statici | Swing + / − | Capability | Corto: I picco | Q1 medio / picco | Q7-Q8 medi |
+|---|---|---|---|---|---|
+| 23,3 V | +20,32 / −19,78 V | **+25,1 dBu** (requisito ≥ +24: PASS 1,1 dB) | 99,5 mA | 0,98 / 1,98 W | 0,92 W |
+| 30,3 V | ±22,0 V (limitata dall'ingresso) | ≥ +26,3 dBu | 106,5 mA | **1,34 / 2,84 W** | 1,25 W |
+
+Esito: PASS ai due estremi. Il limite di corto resta 106 mA. Il picco su
+Q1 sale da 2,72 a 2,84 W: rame di dissipazione da ≥ 4 a **≥ 5 cm²** per
+transistor [PROVVISORIO, termico vero = banco].
+

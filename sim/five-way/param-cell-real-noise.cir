@@ -16,7 +16,7 @@
 * ramo falso saturo → .noise = 0; lezione registrata in RISULTATI-ota-real)
 .subckt OPX inp inn out vp vm
 Rn inp inx 1223
-E1 xx 0 value={1e6*(V(inx)-V(inn))}
+E1 xx 0 inx inn 1e6
 R1 xx p1 5005
 C1 p1 0 1.59u
 E2 out 0 value={V(p1)}

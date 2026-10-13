@@ -1,4 +1,4 @@
-# Sistema PSU (q20) — v0.2 [PROVVISORIO — regola 3; rail RATIFICATI dec. 93]
+# Sistema PSU (q20) — v0.2 + REV 2026-10-13 (trasformatore 200 VA, dec. 98) [PROVVISORIO — regola 3; rail RATIFICATI dec. 93]
 
 Data: 2026-10-01 (v0.2 stessa data: TASK 0 riconciliazione rail, dec. 93).
 Workstream S1 del piano fase 3 (`00-piano-sistema.md`).
@@ -14,6 +14,55 @@ LN a **due stadi** (pre-reg ±16,5 → LT3045/94 → ±15,0 V esatti — il timo
 l'uscita max); +5 V **regolato nella PSU** (il «+10 raw sul backplane»
 della v0.1 §8 era un errore); correnti +5 riconciliate (worst 1,0 A,
 dimensionamento 1,25 A); supervisor a **finestre per avvolgimento**.
+
+## REV 2026-10-13 — trasformatore RIDIMENSIONATO (decisione 98) [sostituisce i numeri di §1 ramo audio e la tabella §2]
+
+Due errori della v0.2, trovati riverificando il budget con i moduli MIC/MONO:
+
+1. **Budget del ramo audio incompleto.** I 0,9 A non contavano i 4
+   micro-moduli FX-SEND (dec. 91: 4×40 mA) né l'ampli cuffia v0.2 sui
+   ±18 V (61 mA a riposo), e la riserva mic/mono era 50 mA contro
+   ~120 mA reali con 4 moduli.
+2. **Trasformatore trattato come ideale.** Le tensioni raw erano
+   calcolate come Vrms×1,414, senza la resistenza degli avvolgimenti, e
+   la corrente nominale del secondario era confrontata con la corrente
+   DC. Con ponte e condensatore la corrente efficace nell'avvolgimento è
+   ~1,9 volte la corrente DC.
+
+Budget del ramo audio ±18 V (per ramo, tipico): 4 canali 260 + 5-way 300
++ FX 180 + filtro 110 + 4 FX-SEND 160 + CUE 61 + MIC/MONO fino a 120
+= **~1,2 A** (era 0,9).
+
+Simulazione col trasformatore reale (`sim/system/psu-w1…w4-real.cir`:
+tensione a vuoto = nominale × (1 + regolazione), resistenza equivalente
+dell'avvolgimento, ponte, bulk invariati; rete −10 % / nominale / +10 %):
+
+| Avv. | v0.2 | Esito v0.2 a rete −10 % | NUOVO | Raw min / nom / max | Requisito min | Margine | Carico avv. |
+|---|---|---|---|---|---|---|---|
+| W1 audio | 2×19 V 1,2 A | 19,0 V (serve ≥21,7) **FAIL**, avvolgimento al 163 % | **2×21 V 2,5 A** | 23,8 / 26,9 / 31,3 V | ≥ 21,7 V (LM317 → 19,2) | 2,1 V | 93 % |
+| W2 LN/OTA | 2×17 V 0,6 A | 17,7 V (serve ≥18,5) **FAIL**, 132 % | **2×18 V 1,0 A** | 20,5 / 24,0 / 27,3 V | ≥ 18,5 V (pre-reg → 16,5) | 2,0 V | 88 % |
+| W3 master HV | 2×20 V 0,3 A | 22,3 V (punto verificato 23,6) | **2×20 V 0,4 A** | 23,3 / 27,1 / 30,3 V | ≥ ~22 V per +24 dBu | vedi sotto | 78 % |
+| W4 +5 V | 8 V 1,2 A | 6,6 V (serve ≥7,0) **FAIL**, 133 % | **9 V 2,0 A** | 8,5 / 10,7 / 12,7 V | ≥ 7,0 V (7805-class) | 1,5 V | 88 % |
+
+Totale ~175 VA → **toroidale da 200 VA** (era 120 VA). Resta un
+toroidale unico, fanless (dec. 90c invariata).
+
+Conseguenze:
+- I nomi dei rail restano quelli di dec. 93 (±27 audio, ±22 LN, ±26 [M],
+  +5). I valori reali: audio ~27 V nominali (invariato), LN ~24 V
+  (era 22), [M] ~27 V (era 26).
+- Calore nei regolatori locali: ramo audio (26,9 − 19,2) × 1,2 A × 2 =
+  ~18 W distribuiti sui moduli (la v0.2 ne contava ~14); pre-regolatori
+  LN (24 − 16,5) × 0,34 × 2 = ~5 W (erano ~3,7).
+- Master [M]: statici 23,3…30,3 V. **RIVERIFICATO in sim (Test 17,
+  `sim/master-out/RISULTATI-composite.md`)**: a 23,3 V capability
+  +25,1 dBu (requisito ≥ +24: PASS 1,1 dB); a 30,3 V corto 106,5 mA,
+  Q1 1,34 W medi / 2,84 W di picco → rame ≥ 5 cm² per transistor
+  (era ≥ 4).
+- Tensione dei condensatori bulk: ≥ 35 V su W1 e W3 (già così), W2 a 35 V.
+- Fusibile primario: T1,6 A → T2 A [PROVVISORIO].
+- Protezione a 1,6 A per ramo e supervisor: soglie da riallineare ai
+  nuovi raw (finestre per avvolgimento).
 
 ## 1. Budget assorbimenti per rail
 
@@ -32,7 +81,7 @@ OPA1654 ~1,8 mA/canale (7,2/quad) · OPA1612 ~2 mA/canale · THAT 2181
 
 ## 2. Trasformatore e architettura
 
-Toroidale unico 230 V, **~120 VA**, schermo elettrostatico tra primario e
+[TABELLA SUPERATA dalla REV 2026-10-13 in testa al documento: 200 VA, secondari nuovi] Toroidale unico 230 V, **~120 VA**, schermo elettrostatico tra primario e
 secondari, fusibile termico integrato, secondari [PROVVISORIO]:
 
 | Avvolgimento | Vrms / A | VA | Destinatari |
@@ -208,8 +257,9 @@ di modo comune oltre il filtro inlet.
 - Da banco: termografia chassis, test hum→wobble CV, hold-up/mute timing,
   soglie finestre supervisor, ripple/PSRR su PSU reale (task master-out-banco).
 - Da S2: conferma bonding/stella; S3 v0.2: pinout raw e sezioni rame ALLINEATI (dec. 93).
-- Mic/generic non disegnati: riserva 50 mA nel budget (aggiornare quando
-  esistono).
+- Mic/mono (dec. 97, fino a 4 moduli): ~22 mA (mic) e ~30 mA (mono) sul
+  ramo audio, ~20 mA LN per mic. RIVERIFICATO 2026-10-13 → REV in testa
+  al documento e decisione 98 (trasformatore 200 VA).
 - Integrazione S4 metering (2026-10-01): +5 V LED 103 segmenti (worst 0,9 A
   totali) e +100 mA LN per l'albero riferimenti inseriti nel budget —
   fonte `sistema-metering.md` §5/§9.

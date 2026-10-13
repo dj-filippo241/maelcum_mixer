@@ -1,0 +1,23 @@
+* MIC v0.1 — law del gain (x 0..1), risposta in frequenza, HPF
+.include ../lib/opamp-audio.inc
+.param gp=0 bal=0 mis=0 rs=150
+Vcl vcl 0 15
+Vel vel 0 -15
+V1 vin 0 0 AC 1
+Eh sh 0 vin 0 0.5
+Ec sc 0 vin 0 -0.5
+Rmh sh hot {rs/2}
+Rmc sc cold {rs/2}
+.include mic-pre.inc
+.step param gp list 0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1
+.ac dec 20 2 200k
+.meas ac g5 FIND V(pre) AT 5
+.meas ac g10 FIND V(pre) AT 10
+.meas ac g40 FIND V(pre) AT 40
+.meas ac g20 FIND V(pre) AT 20
+.meas ac g60 FIND V(pre) AT 60
+.meas ac g100 FIND V(pre) AT 100
+.meas ac g1k FIND V(pre) AT 1k
+.meas ac g20k FIND V(pre) AT 20k
+.meas ac g35k FIND V(pre) AT 35k
+.end

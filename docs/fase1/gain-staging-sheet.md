@@ -117,7 +117,7 @@ benchmark su 9 costruttori della scena (`docs/05-benchmark-preamp-scena-
 2026-09-30.md`). Restano **DA RITARARE (voce 71A)**: canale, bus FX, XLR
 master — dopo la simulazione dei budget mancanti [→ FATTA 2026-09-30:
 decisione 89, righe §3 aggiornate + docs/06; sistema VERIFICATO
-2026-10-01: −80,5 dBu A-wtd = PASS 2,5 dB (docs/06 §7)]. Dettagli: five-way §8.9 + `sim/five-way/RISULTATI-module-noise-v021.md`.
+2026-10-01: −80,5 dBu A-wtd = PASS 2,5 dB (docs/06 §7); RICALCOLO 2026-10-13 con la en degli op-amp: −80,0 = PASS 2,0 dB, tabella per blocco in docs/06 §8]. Dettagli: five-way §8.9 + `sim/five-way/RISULTATI-module-noise-v021.md`.
 Impatto sistema: il 5-way domina il rumore della catena master → anche
 XLR MASTER ≤−92 va ritarato sulla voce 71A (budget canale/FX/master) [FATTO: dec. 89 → stadio ≤−92 confermato, sistema ≤−78 A-wtd].
 **RITARATURA FATTA (decisione 89, 2026-09-30)**: canale ≤ −80, FX send
@@ -138,3 +138,43 @@ sintesi in `docs/06-ritaratura-rumore-71A.md`.
 - `master-out.md`: summing e VCA passano da ±15/±18 misti a **±18 V unici per la sezione audio** (il ±15 LN resta per CV/meter); REC confermato 0 dBu (addendum già presente).
 - `cdj-line-channel.md` v0.2: dominio audio ±18 V (non ±15); level plan da aggiornare con i valori di questo sheet.
 - `docs/fase2/filter-module.md` (v0.1, 2026-09-24): recovery +23 dBu recepito; CV shaper per la legge dei knob (decisione 70) = design v0.2.
+
+## 6. Audit infrasub 10 Hz e tensione continua (voce 58) — 2026-10-13
+
+Requisito (dec. 65, SPEC §1): banda 8 Hz–35 kHz, 10 Hz entro ±1 dB su
+tutto il percorso. Controllo di ogni polo in bassa frequenza e di come
+il percorso gestisce la tensione continua:
+
+| Tratto | Polo in basso | A 10 Hz | Continua | Esito |
+|---|---|---|---|---|
+| Phono | subsonica 13 Hz 2° ordine + DC block 1,6 Hz | circa −6 dB | bloccata | ESENTE: scelta voluta per il warp del vinile (dec. 79) |
+| Ingresso line | **nessuno specificato** | 0 | **passa** | **BUCO → fix sotto** |
+| GAIN VCA + EQ 4 bande | nessuno (DC-coupled) | 0 | passa, il boost LOW la amplifica di +6 dB | **BUCO → fix sotto** |
+| Tap CUE, tap send, send filtro | nessuno | 0 | passa | segue il fix del canale |
+| FX-SEND, bus FX | nessuno | 0 | passa fino al pedale | pedale e ritorno accoppiati |
+| Ritorno FX | servo DC 0,053 Hz | −0,001 dB | annullata (84 dB) | OK (validato fx §8.4) |
+| Filtro: core + overdrive | servo dell'overdrive 0,31 Hz | −0,005 dB | annullata | OK (in OFF: bypass, niente servo) |
+| Fader, DJ bus | nessuno | 0 | passa | segue il fix del canale |
+| 5-way: banca, EQ, drive | servo del drive 0,31 Hz | −0,005 dB | annullata prima del master sum | OK; la banda SUB passa fino alla continua per progetto |
+| Master: sum, level, stadio HV | servo 0,048 Hz | −0,0001 dB | annullata (30 µV all'XLR) | OK |
+| MONO | C film 1,6 Hz | −0,11 dB | bloccata | OK |
+| MIC | passa-alto 60 Hz | −31 dB | bloccata | ESENTE: scelta di Filippo (dec. 97) |
+| Meter a 10 Hz | release 0,3 s | droop 2,9 dB/ciclo | — | noto e accettato (dec. 81) |
+
+**Buco trovato**: dal connettore RCA line fino al servo del drive 5-way
+non c'è nessun blocco della continua. Un offset di qualche mV del CDJ,
+più gli offset del VCA di gain e degli op-amp dell'EQ, attraversano
+manopole EQ, fader e cuffie. Effetti: fruscio girando le manopole,
+colpo muovendo il gain, continua amplificata dal boost LOW.
+
+**Fix (ingegneria, nessun comando nuovo)** [PROVVISORIO]:
+1. Ingresso line: C film 2,2 µF + 100 kΩ verso massa = polo 0,72 Hz.
+   Zin 100 kΩ (requisito ≥ 47 kΩ rispettato).
+2. Stadio di make-up dell'EQ (il nodo da cui partono CUE, send, filtro e
+   fader): servo DC, la stessa cella validata per i ritorni FX (polo
+   0,053 Hz, annullamento 84 dB). Un doppio op-amp per canale.
+
+Con i fix il percorso line → XLR perde **0,03 dB a 10 Hz** e 0,10 dB a
+5 Hz: requisito PASS. Resta da banco: il colpo del VCA di gain quando si
+muove la manopola (feedthrough di controllo, si annulla col trim di
+simmetria del chip; non è nel modello).

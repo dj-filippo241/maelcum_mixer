@@ -1,0 +1,34 @@
+* MIC v0.1 — rumore PREAMP (uscita stadio 2), sorgente dinamica 150 ohm
+* .step x = posizione pot gain (0 = 30 dB, 1 = 60 dB). Metodo casa:
+* densita' a 16 punti, integrale in python (noise_total.py), MAI .meas INTEG.
+* La corrente di rumore dell'OPA1612 NON e' nel macro: aggiunta a calcolo.
+.include ../lib/opamp-audio.inc
+.param gp=0 bal=0 mis=0 rs=300
+Vcl vcl 0 15
+Vel vel 0 -15
+V1 vin 0 0 AC 1
+Eh sh 0 vin 0 0.5
+Ec sc 0 vin 0 -0.5
+Rmh sh hot {rs/2}
+Rmc sc cold {rs/2}
+.include mic-pre.inc
+.step param gp list 0 0.5 1
+.noise V(pre) V1 dec 20 10 100k
+.meas noise on1 FIND V(onoise) AT 20
+.meas noise on2 FIND V(onoise) AT 31.5
+.meas noise on3 FIND V(onoise) AT 50
+.meas noise on4 FIND V(onoise) AT 80
+.meas noise on5 FIND V(onoise) AT 125
+.meas noise on6 FIND V(onoise) AT 200
+.meas noise on7 FIND V(onoise) AT 315
+.meas noise on8 FIND V(onoise) AT 500
+.meas noise on9 FIND V(onoise) AT 800
+.meas noise on10 FIND V(onoise) AT 1250
+.meas noise on11 FIND V(onoise) AT 2000
+.meas noise on12 FIND V(onoise) AT 3150
+.meas noise on13 FIND V(onoise) AT 5000
+.meas noise on14 FIND V(onoise) AT 8000
+.meas noise on15 FIND V(onoise) AT 12500
+.meas noise on16 FIND V(onoise) AT 20000
+.meas noise g1k FIND gain AT 1000
+.end

@@ -1,0 +1,24 @@
+* GENERIC MONO v0.1 — guadagno e banda a pot 0 dB e +10, sorgente 1k e 10k
+.include ../lib/opamp-audio.inc
+.param a=0.316 rs=1k
+Vcc vcc 0 18
+Vee vee 0 -18
+V1 vin 0 0 AC 1
+Rs vin j {rs}
+Rpr j jp 1k
+Cin jp b 100n
+Rbias b 0 1Meg
+Xb b bo bo vcc vee OP1654
+Rpt bo w {10k*(1-a)+1m}
+Rpb w 0 {10k*a+1m}
+Xm w mf pre vcc vee OP1654
+Rmf pre mf 2.15k
+Rmg mf 0 1k
+.include backend.inc
+.step param a list 0.316 1
+.ac dec 20 2 200k
+.meas ac g5 FIND V(outl) AT 5
+.meas ac g10 FIND V(outl) AT 10
+.meas ac g1k FIND V(outl) AT 1k
+.meas ac g35k FIND V(outl) AT 35k
+.end

@@ -78,9 +78,12 @@ L/R con due path matched (centraggio affidabile, no phase games).
 
 - Virtual-earth: Rf 10k, N ingressi 10k [PROVVISORIO]: ogni send di canale
   (uscita a bassa Z, level −∞..0) contribuisce con peso unity.
-- Worst-case correlato (sheet §2/K3): 12 × 0 dBu in fase = 9,3 Vp =
-  +21,6 dBu — **verificato in simulazione** (§8): nessun clipping
-  (clamp ±16,5 V), margine 7,2 V. La saturazione oltre il worst è morbida
+- Worst-case correlato (sheet §2/K3): 12 × 0 dBu in fase = 9,3 Vrms =
+  +21,6 dBu = **13,2 V di picco** — nessun clipping (clamp ±16,5 V),
+  margine 3,3 V. [CORREZIONE 2026-10-13: `fx-summing.cir` usa 12 sorgenti
+  `SINE` da 0,775 V di PICCO, cioè −3 dBu ciascuna: il «9,3 Vp, margine
+  7,2 V» era il caso −3 dBu. Il caso vero resta dentro per conto diretto:
+  somma lineare su massa virtuale, 13,2 Vp < 16,5 V.] La saturazione oltre il worst è morbida
   (op-amp classe OPA1612 — il clamp del macro è duro, il reale satura
   graduale; carattere da verificare col modello TI, come per il master).
 - Crosstalk tra contributori: virtual-earth ideale = 0; reale ≈ (1+N)/A ≈
@@ -183,7 +186,7 @@ Stessa famiglia delle celle serie EQ v0.3 (decisione 76/77):
   (pre-fader, §5) è l'unico punto che vede il ritorno prima del master —
   il self passa dal fader del ritorno come i cross (gesto coerente: chiudo
   il fader e il feedback sparisce tutto).
-- **Law a tratti** (SPEC, tabella in §1): shaper CV a diodi/resistori —
+- **Law a tratti** [CIRCUITO DEFINITO 2026-10-13 → `docs/fase3/sistema-shaper.md`: 1 op-amp + 3 rami diodo, errore ±0,25 dB da 0 a −15 dB tra 20 e 50 °C] (SPEC, tabella in §1): shaper CV a diodi/resistori —
   stessa famiglia dello shaper del filtro (filter-module §4): 6 breakpoint,
   trimmer a banco. Il tratto 95-100% (−1…0 dB) è il controllo finissimo
   vicino all'apertura: è la zona musicale critica del dub feedback.
