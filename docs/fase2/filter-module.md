@@ -421,13 +421,45 @@ sarebbe pressoché impossibile».
 
 ### Non fatto
 
-**Servo DC**: l'overdrive v0.1 azzerava la continua del core col suo servo
-(0,31 Hz). La v0.2 non ne ha: va aggiunto sullo stadio I/V (cella dei
-ritorni FX, 0,053 Hz) e ne va misurato il rumore (sheet §6).
+**Servo DC**: FATTO il 2026-10-13, vedi «Servo DC» qui sotto.
 
 Rumore del VCA a guadagni diversi da 0 dB (dato di datasheet mancante); D5 col modello OTA reale (dopo q70); deriva termica dei
 diodi (il tetto scende ~2 mV/°C per diodo); interazione col soft
 limiter della risonanza.
+
+### Servo DC (2026-10-13) [SIMULATO, valori PROVVISORI]
+
+L'overdrive v0.1 azzerava la continua del core col suo servo; la v0.2 era
+nata senza (finding della pulizia, sheet §6). Aggiunto sullo stadio di
+somma finale (Xs), un op-amp per cella:
+
+- integratore invertente 1 MΩ / 47 nF (film) che legge l'uscita y,
+  op-amp FET classe OPA2134;
+- la sua uscita va al piedino + di Xs attraverso un partitore
+  100 kΩ / 1 kΩ. Iniettare nel nodo di somma darebbe retroazione
+  positiva: il piedino + dà il segno giusto senza un invertitore in più;
+- polo 0,050 Hz; corsa di correzione ±193 mV in uscita.
+
+Misure (`sim/filtro/od2-servo-dc.cir`, `od2-servo-noise.cir`):
+
+| Continua in ingresso (offset del core) | Uscita senza servo, m = 0 / 0,57 / 1 | Uscita col servo |
+|---|---|---|
+| 30 mV | 30 / 53 / 70 mV | 2,0 mV |
+| 60 mV | 60 / 106 / 140 mV | 2,0 mV |
+
+- Il residuo di 2,0 mV è l'offset dell'op-amp del servo, messo al massimo
+  di datasheet (tipico 0,5 mV). Sotto questo valore il servo non scende.
+- Il core dà 4-5 mV di continua (§6): la corsa basta con margine ≥ 16×
+  anche a overdrive tutto aperto (limite: 83 mV in ingresso a m = 1).
+- Piattezza: −0,0001 dB a 10 Hz, −0,0004 dB a 5 Hz.
+- Rumore: invariato. −102,6 / −102,1 / −100,6 / −98,9 dBu A-wtd a
+  m = 0 / 0,18 / 0,57 / 1 (senza servo: −102,6 / −102,1 / −100,7 / −99,0).
+  I numeri di §9 di `docs/06` restano validi.
+
+Conteggio: 8 celle = 4 doppi op-amp, 8 condensatori film 47 nF.
+A banco: il colpo del VCA quando si muove la manopola (il servo recupera
+in ~3 s, non lo toglie); una continua del core sposta di poco la
+simmetria del tosatore (5 mV contro una soglia di ~1,2 V).
 
 ## 6. Simulazione di fattibilità (2026-09-24, `sim/filtro/`)
 

@@ -1,0 +1,112 @@
+* ============================================================
+* EQ DI CANALE v0.4 — ISOLATOR A 4 BANDE (decisione 105, 2026-10-13)
+* Bande in PARALLELO: banca LR4 allineata in fase (stessa matematica
+* della kill bank del 5-way, five-way §3.1) a 3 incroci f1/f2/f3.
+*   spina HP condivisa: vin -> HP4(f1) -> HP4(f2) -> HP4(f3)
+*   LOW      = LP4(f1) + A2(f2) + A2(f3)
+*   LOW-MID  = presa dopo HP4(f1) -> LP4(f2) + A2(f3) -> invertitore
+*   MID-HIGH = presa dopo HP4(f2) -> LP4(f3)
+*   HIGH     = presa dopo HP4(f3)
+* Manopola di banda = pot LINEARE 10k (partitore) + buffer; somma
+* invertente a guadagno 2: fondo corsa = silenzio, centro (0,5) = 0 dB,
+* fine corsa = +6 dB. Rend = residuo di fondo corsa del pot (10 ohm).
+* Uscita INVERTITA rispetto all'ingresso (da chiudere nel canale).
+* Incroci [PROVVISORI, da confermare da Filippo]: 150 / 500 / 2500 Hz.
+* Op-amp reali: OP1654 (banca, buffer), OP1612 (somma).
+* RUMORE: densita a 16 punti (mai .meas INTEG). Casi 0 centro, 5 tutte a zero, 10 tutte al massimo.
+.include ../lib/opamp-audio.inc
+.param f1=150 f2=500 f3=2500
+.param Rp=10k Rend=10
+.subckt SKLP in out vcc vee PARAMS: fc=90 Cc=100n
+R1 in n1 {1/(2*pi*fc*sqrt(2)*Cc)}
+R2 n1 n2 {1/(2*pi*fc*sqrt(2)*Cc)}
+C1 n1 out {2*Cc}
+C2 n2 0 {Cc}
+Xop n2 out out vcc vee OP1654
+.ends SKLP
+.subckt SKHP in out vcc vee PARAMS: fc=90 Cc=10n
+C1 in n1 {Cc}
+C2 n1 n2 {Cc}
+R1 n1 out {1/(2*pi*fc*sqrt(2)*Cc)}
+R2 n2 0 {2/(2*pi*fc*sqrt(2)*Cc)}
+Xop n2 out out vcc vee OP1654
+.ends SKHP
+.subckt AP2 in out vcc vee PARAMS: f0=1200 C=10n
+R1 in n1 {1/(sqrt(2)*2*pi*f0*C)}
+R2 n1 0 {2/(sqrt(2)*2*pi*f0*C)}
+C1 n1 nm {2*C}
+Rf nm bp {1.5/(sqrt(2)*2*pi*f0*C)}
+C2 n1 bp {C}
+Xbp 0 nm bp vcc vee OP1654
+Ra in n 10k
+Rb bp n 5k
+Rg n out 10k
+Xsm 0 n out vcc vee OP1654
+.ends AP2
+* Manopola di banda: pot lineare Rp + buffer. th = posizione 0...1
+.subckt BPOT in out vcc vee PARAMS: th=0.5
+Rt in w {Rp*(1-th)+Rend}
+Rb w 0 {Rp*th+Rend}
+Xb w out out vcc vee OP1654
+.ends BPOT
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 vin 0 DC 0 AC 1
+* --- Spina HP condivisa ---
+XH1 vin r1 vcc vee SKHP fc={f1} Cc=100n
+XH1b r1 r1b vcc vee SKHP fc={f1} Cc=100n
+XH2 r1b r2 vcc vee SKHP fc={f2} Cc=47n
+XH2b r2 r2b vcc vee SKHP fc={f2} Cc=47n
+XH3 r2b r3 vcc vee SKHP fc={f3} Cc=10n
+XH3b r3 r3b vcc vee SKHP fc={f3} Cc=10n
+* --- LOW: LP4(f1) + A2(f2) + A2(f3) ---
+XA1 vin la vcc vee SKLP fc={f1} Cc=100n
+XA2 la lb vcc vee SKLP fc={f1} Cc=100n
+XP1 lb lc vcc vee AP2 f0={f2} C=22n
+XP2 lc low_o vcc vee AP2 f0={f3} C=4.7n
+* --- LOW-MID: presa r1b -> LP4(f2) + A2(f3) + invertitore (1 allpass = segno -) ---
+XB1 r1b ma vcc vee SKLP fc={f2} Cc=47n
+XB2 ma mb vcc vee SKLP fc={f2} Cc=47n
+XP3 mb mc vcc vee AP2 f0={f3} C=4.7n
+Ri1 mc ni 2k
+Ri2 ni lm_o 2k
+Xinv 0 ni lm_o vcc vee OP1654
+* --- MID-HIGH: presa r2b -> LP4(f3) ---
+XC1 r2b ha vcc vee SKLP fc={f3} Cc=10n
+XC2 ha mh_o vcc vee SKLP fc={f3} Cc=10n
+* --- HIGH: presa r3b diretta ---
+* --- 4 manopole + somma invertente a guadagno 2 (centro pot = 0,5 -> 0 dB) ---
+XK1 low_o k1 vcc vee BPOT th={t1}
+XK2 lm_o k2 vcc vee BPOT th={t2}
+XK3 mh_o k3 vcc vee BPOT th={t3}
+XK4 r3b k4 vcc vee BPOT th={t4}
+Rs1 k1 ns 5k
+Rs2 k2 ns 5k
+Rs3 k3 ns 5k
+Rs4 k4 ns 5k
+Rsf ns out 10k
+Xsum 0 ns out vcc vee OP1612
+.param t1={table(kcase,0,0.5,1,0,2,0.5,3,0.5,4,0.5,5,0,6,1,7,0.5,8,0.5,9,0.5,10,1,11,0.25,12,0,13,0.5)}
+.param t2={table(kcase,0,0.5,1,0.5,2,0,3,0.5,4,0.5,5,0,6,0.5,7,1,8,0.5,9,0.5,10,1,11,0.25,12,0,13,0.5)}
+.param t3={table(kcase,0,0.5,1,0.5,2,0.5,3,0,4,0.5,5,0,6,0.5,7,0.5,8,1,9,0.5,10,1,11,0.25,12,0.5,13,0)}
+.param t4={table(kcase,0,0.5,1,0.5,2,0.5,3,0.5,4,0,5,0,6,0.5,7,0.5,8,0.5,9,1,10,1,11,0.25,12,0.5,13,0)}
+.step param kcase list 0 5 10
+.noise V(out) V1 dec 20 10 100k
+.meas noise on1 FIND V(onoise) AT 20
+.meas noise on2 FIND V(onoise) AT 31.5
+.meas noise on3 FIND V(onoise) AT 50
+.meas noise on4 FIND V(onoise) AT 80
+.meas noise on5 FIND V(onoise) AT 125
+.meas noise on6 FIND V(onoise) AT 200
+.meas noise on7 FIND V(onoise) AT 315
+.meas noise on8 FIND V(onoise) AT 500
+.meas noise on9 FIND V(onoise) AT 800
+.meas noise on10 FIND V(onoise) AT 1250
+.meas noise on11 FIND V(onoise) AT 2000
+.meas noise on12 FIND V(onoise) AT 3150
+.meas noise on13 FIND V(onoise) AT 5000
+.meas noise on14 FIND V(onoise) AT 8000
+.meas noise on15 FIND V(onoise) AT 12500
+.meas noise on16 FIND V(onoise) AT 20000
+.meas noise g1k FIND gain AT 1000
+.end

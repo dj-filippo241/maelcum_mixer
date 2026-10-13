@@ -1,0 +1,31 @@
+* S1 REV 2026-10-13 — raddrizzatore con trasformatore REALE: EMF a vuoto =
+* Vnom*(1+reg), R equivalente = reg*Vnom/Inom per meta' avvolgimento.
+* Casi (.step k): Vnom, Inom, regolazione, fattore rete, Idc per ramo.
+* REV isolator (dec. 105, todo 41): il ramo audio sale da 1,2 a ~1,4 A
+* (+24 quad op-amp nell'EQ dei canali). Casi: 1-2 avvolgimento attuale
+* 2x21 V 2,5 A a rete -10 % / nominale; 3-4 candidato 2x21 V 3,0 A;
+* 5 candidato a rete +10 % con carico leggero 1,0 A (tensione massima).
+.param k=1
+.param vs=21 ir=table(k,1,2.5,2,2.5,3,3.0,4,3.0,5,3.0) reg=0.07 mf=table(k,1,0.9,2,1.0,3,0.9,4,1.0,5,1.1) idc=table(k,1,1.4,2,1.4,3,1.4,4,1.4,5,1.0)
+.param rw={reg*vs/ir} vpk={vs*(1+reg)*mf*1.4142}
+.model DR D(Is=5n Rs=0.03 N=1.6)
+Va a ct SINE(0 {vpk} 50)
+Vb ct b SINE(0 {vpk} 50)
+Vct ct 0 0
+Rwa a a1 {rw}
+Rwb b b1 {rw}
+D1 a1 vp DR
+D2 b1 vp DR
+D3 vn a1 DR
+D4 vn b1 DR
+C1 vp 0 10m ic=20
+C2 0 vn 10m ic=20
+I1 vp 0 {idc}
+I2 0 vn {idc}
+.step param k 1 5 1
+.tran 0 1.0 0.6 100u uic
+.meas tran irms RMS I(Rwa)
+.meas tran vdc AVG V(vp)
+.meas tran vmin MIN V(vp)
+.meas tran vmax MAX V(vp)
+.end

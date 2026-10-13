@@ -29,6 +29,8 @@ Due errori della v0.2, trovati riverificando il budget con i moduli MIC/MONO:
    DC. Con ponte e condensatore la corrente efficace nell'avvolgimento è
    ~1,9 volte la corrente DC.
 
+**[REV 2026-10-13, dec. 105 — EQ isolator]** Il ramo audio sale a ~1,4 A (+24 quad op-amp nei 4 canali): W1 2×21 V 2,5 A va al 105-107 %. Candidato 2×21 V 3,0 A (90-92 %, raw min 23,8 V), trasformatore ~225 VA: RATIFICATO → DECISIONE 106 ( `sim/system/psu-w1-iso.cir`).
+
 Budget del ramo audio ±18 V (per ramo, tipico): 4 canali 260 + 5-way 300
 + FX 180 + filtro 110 + 4 FX-SEND 160 + CUE 61 + MIC/MONO fino a 120
 = **~1,2 A** (era 0,9).

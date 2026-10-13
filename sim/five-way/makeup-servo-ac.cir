@@ -1,0 +1,35 @@
+* 5-WAY — MAKE-UP +6 dB con SERVO DC (todo 39, 2026-10-13): PIATTEZZA (.ac). Stadio isolato: sorgente 33 ohm (uscita drive) -> 10k/20k
+* invertente (gain -2) + servo 1M/100n -> partitore 100k/1k sul piedino +.
+* NG = 3, alfa 0,0099: fc = alfa*NG/(2*pi*RC) = 0,047 Hz; corsa +-385 mV.
+* vosi = offset dell'op-amp del servo (2 mV = massimo OPA2134).
+* Sweep DC ingresso 0/50/100 mV (= continua di banca + EQ + drive).
+* Senza servo l'uscita sarebbe -2 x ingresso.
+.include ../lib/opamp-audio.inc
+.subckt OPSRV inp inn out vp vm
+Rn inp inx 3863
+E1 xx 0 inx inn 1e6
+R1 xx p1 5005
+C1 p1 0 3.98u
+E2 out 0 value={limit(V(p1),V(vm)+1.5,V(vp)-1.5)}
+.ends OPSRV
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 in 0 DC 0 AC 1
+Rser in edrv 33
+Rmu1 edrv nmu 10k
+Rmu2 nmu vout 20k
+Xmu mup nmu vout vcc vee OP1612
+Rsvi vout svi 1Meg
+Csvi svi svo 100n
+Xsv sip svi svo vcc vee OPSRV
+Vosi sip 0 DC 2m
+Rsva svo mup 100k
+Rsvb mup 0 1k
+.ac dec 20 0.01 100k
+.meas ac h1k FIND V(vout) AT 1k
+.meas ac h20 FIND V(vout) AT 20
+.meas ac h10 FIND V(vout) AT 10
+.meas ac h5 FIND V(vout) AT 5
+.meas ac h1 FIND V(vout) AT 1
+.meas ac h005 FIND V(vout) AT 0.05
+.end

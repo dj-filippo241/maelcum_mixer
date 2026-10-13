@@ -1,0 +1,77 @@
+* ============================================================
+* FILTRO — OVERDRIVE v0.2b + SERVO DC (todo 39): ANNULLAMENTO CONTINUA
+* Stesso circuito di od2-servo-noise.cir. Sweep DC dell'ingresso x
+* (= offset del core OTA a monte): 0 / 30 / 60 mV, per m = 0 / 0,572 / 1.
+* vosi = offset dell'op-amp del servo (2 mV = massimo OPA2134).
+* Atteso: y = vosi a meno del guadagno finito; vint dentro +-13 V.
+* yno = uscita che si avrebbe SENZA servo (calcolata: copia senza servo).
+* ============================================================
+.include ../lib/opamp-audio.inc
+* Op-amp del servo: FET-input classe OPA2134 (en 8 nV/rtHz -> Rn 3863)
+.subckt OPSRV inp inn out vp vm
+Rn inp inx 3863
+E1 xx 0 inx inn 1e6
+R1 xx p1 5005
+C1 p1 0 3.98u
+E2 out 0 value={limit(V(p1),V(vm)+1.5,V(vp)-1.5)}
+.ends OPSRV
+.model D4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+.param m=0
+.param k=1.171
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 x 0 DC 0 AC 1
+Ri x gn 10k
+Rf gn a 20k
+X1 0 gn a vcc vee OP1654
+R1 a w 2.2k
+D1 w p1 D4148
+D2 p1 0 D4148
+D3 0 q1 D4148
+D4 q1 w D4148
+Xb w wb wb vcc vee OP1654
+Rvx x vin 10k
+Rvw wb vin {10k/k}
+Vs vin 0 DC 0
+Fv 0 sn Vs {m}
+Rvn vn 0 120k
+Gvn 0 sn vn 0 1e-4
+Rsa a sn 20k
+Rsf sn y 10k
+* --- SERVO DC (todo 39): integratore invertente su y, iniezione sul
+* --- piedino + del sommatore attraverso un partitore 100k/1k
+Rsi y sint 1Meg
+Ci sint vint 47n
+Xsi sip sint vint vcc vee OPSRV
+Vosi sip 0 DC {vosi}
+Ra vint vp 100k
+Rb vp 0 1k
+Xs vp sn y vcc vee OP1654
+* --- copia SENZA servo per confronto (stessi valori) ---
+Rin x gnn 10k
+Rfn gnn an 20k
+X1n 0 gnn an vcc vee OP1654
+R1n an wn 2.2k
+D1n wn p1n D4148
+D2n p1n 0 D4148
+D3n 0 q1n D4148
+D4n q1n wn D4148
+Xbn wn wbn wbn vcc vee OP1654
+Rvxn x vinn 10k
+Rvwn wbn vinn {10k/k}
+Vsn vinn 0 DC 0
+Fvn 0 snn Vsn {m}
+Rsan an snn 20k
+Rsfn snn yn 10k
+Xsn 0 snn yn vcc vee OP1654
+.param vosi=2m
+.step param m list 0 0.572 1
+.dc V1 0 60m 30m
+.meas dc y0 FIND V(y) AT 0
+.meas dc y30 FIND V(y) AT 30m
+.meas dc y60 FIND V(y) AT 60m
+.meas dc yn30 FIND V(yn) AT 30m
+.meas dc yn60 FIND V(yn) AT 60m
+.meas dc vi30 FIND V(vint) AT 30m
+.meas dc vi60 FIND V(vint) AT 60m
+.end

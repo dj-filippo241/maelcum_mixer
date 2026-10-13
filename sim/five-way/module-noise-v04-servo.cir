@@ -1,0 +1,281 @@
+* MODULE-NOISE v0.4 + SERVO DC sul make-up (todo 39, 2026-10-13). Confronto: module-noise-v04.cir
+* MODULE-NOISE v0.4 (2026-10-13, todo 33): netlist v031 con il DRIVE v0.4 (dec. 99) al posto del drive v0.3. Confronto: module-noise-v031-ref16.cir
+* MODULO 5-WAY v0.31 — RERUN CONSOLIDATO RUMORE (coda voce 71A,
+* 2026-10-01). Base: module-noise-v03.cir (decisione 88) con TRE
+* correzioni gia' decise/documentate:
+* (1) Rvn 240k → 133k: il drive usa il 218x con I/V 10k = floor
+*     −104 dBV (datasheet); 133k = 47 nV/√Hz esatto. Il 240k di v03
+*     (63 nV = −101 dBV) sovrastimava il drive ~2,6 dB — finding in
+*     sim/cdj/RISULTATI-channel-noise-71A.md "Finding di metodo".
+* (2) Gate π SPDT reali al posto dei 5 Rsw 33 Ω: switch ON-pass =
+*     Ron 4,7 Ω serie (ADG1434) + Coff 30p nodo→GND (shunt aperto).
+*     Design: five-way §8.10 + RISULTATI-gate-switch.md.
+* (3) 2 invertitori unity su SUB e MID (bande DISPARI di AP2, §8.10:
+*     la polarita' telescopica ora la fanno loro, non il VCA): R 2k,
+*     macro OPAMP (Rn 1223 = classe OPA1654). Stima: +~0,3 dB banca.
+* Catena invariata: pad −6 → banca → gate switch → summer → 5 celle
+* v0.2.1 detent → drive v0.3 (218x I/V 10k, NJ310, pair PNP, servo
+* OPA2134-class) → make-up +6 → vout.
+* TARGET (dec. 88/89): ≤ −80 dBu A-wtd, out modulo, ingressi terminati,
+* gain nominali, drive θ0. RISULTATI: RISULTATI-module-noise-v031.md.
+*
+* METODOLOGIA (quirk LTspice 26.0.2 — RISULTATI-module-noise-v021.md §1):
+* totali MAI da .meas INTEG (restituisce en²·√Δf): densità a 10 punti +
+* trapezoidale python + A-wtd IEC 61672 post. Iniezioni rumore con E
+* LINEARE 4 nodi. VCAM 218x INLINE con nomi unici (subckt + banca
+* SK/AP2 = bug parse "Instance already defined").
+* Rumore 218x da datasheet THAT: −98 dBV a 0 dB gain (Rout 20k);
+* −104 dBV typ con I/V 10k → Rvn 133k (47 nV/√Hz).
+* Ripartizione delta vs v03: varianti module-noise-v031a.cir (solo
+* correzione 1) e -v031b.cir (correzioni 1+3, switch come v03).
+* ============================================================
+.include ../lib/opamp-audio.inc
+.model NJFX NJF(Vto=-2 Beta=173u Lambda=5m)
+.model NJ310 NJF(Beta=5m Vto=-3 Lambda=6m Cgs=25p Cgd=4p Is=10f)
+.model PNP3906 PNP(Is=1.72f Bf=190 Vaf=49.7 Ikr=0.237 Ne=2 Ise=43.4f Ikf=0.222 Br=4.9 Rb=1 Rc=3.7 Cje=19.2p Mje=0.37 Vje=0.75 Cjc=9.7p Mjc=0.34 Vjc=0.75 Fc=0.5 Tf=2.1n Tr=200n)
+.param kcase=0
+.param th=0.5
+*
+* --- macro uniforme ~6 nV/√Hz per la banca (metodologia v0.2 §8.4) ---
+.subckt OPAMP inp inn out vp vm
+Rn inp inx 1223
+E1 xx 0 inx inn 1e6
+R1 xx p1 5005
+C1 p1 0 1.59u
+E2 out 0 value={limit(V(p1),V(vm)+1.5,V(vp)-1.5)}
+.ends OPAMP
+.subckt SKLP in out PARAMS: fc=90 Cc=100n
+R1 in n1 {1/(2*pi*fc*sqrt(2)*Cc)}
+R2 n1 n2 {1/(2*pi*fc*sqrt(2)*Cc)}
+C1 n1 out {2*Cc}
+C2 n2 0 {Cc}
+Xop n2 out out vcc vee OPAMP
+.ends SKLP
+.subckt SKHP in out PARAMS: fc=90 Cc=10n
+C1 in n1 {Cc}
+C2 n1 n2 {Cc}
+R1 n1 out {1/(2*pi*fc*sqrt(2)*Cc)}
+R2 n2 0 {2/(2*pi*fc*sqrt(2)*Cc)}
+Xop n2 out out vcc vee OPAMP
+.ends SKHP
+.subckt MFBPB in out PARAMS: f0=1200 C=10n
+R1 in n1 {1/(sqrt(2)*2*pi*f0*C)}
+R2 n1 0 {2/(sqrt(2)*2*pi*f0*C)}
+C1 n1 nm {2*C}
+Rf nm out {1.5/(sqrt(2)*2*pi*f0*C)}
+C2 n1 out {C}
+Xop 0 nm out vcc vee OPAMP
+.ends MFBPB
+.subckt APSUM va vb out PARAMS: R=10k
+Ra va n {R}
+Rb vb n {R/2}
+Rf n out {R}
+Xop 0 n out vcc vee OPAMP
+.ends APSUM
+.subckt AP2 in out PARAMS: f0=1200 C=10n
+Xbp in bp MFBPB f0={f0} C={C}
+Xsm in bp out APSUM
+.ends AP2
+* --- invertitore unity per polarita' gate (§8.10: bande DISPARI di AP2) ---
+.subckt INVU in out
+Rin in n 2k
+Rf n out 2k
+Xop 0 n out vcc vee OPAMP
+.ends INVU
+*
+* --- CELLA v0.2.1 (five-way §4.2): 7 OP1654 + 2 JFET VCR + pot detent ---
+.subckt PCELL21 vin out PARAMS: Cv=56n Vcmv=-1.39 Qv=1
+Vc2 vc2 0 DC {2*Vcmv}
+Rvin vin ns 40.2k
+Rlp lp_b ns 10k
+Bqd bqn 0 V={-V(bp_b)}
+Rq bqn ns {Qv*10k}
+Rf ns hp 10k
+Xsum 0 ns hp vcc vee OP1654
+Rg1a hp g1a 100k
+Rg2a vc2 g1a 100k
+J1 hp g1a nint1 NJFX
+Cint1 nint1 bp {Cv}
+Xint1 0 nint1 bp vcc vee OP1654
+Rb1 bp 0 1G
+Xb1 bp bp_b bp_b vcc vee OP1654
+Rg1b bp_b g1b 100k
+Rg2b vc2 g1b 100k
+J2 bp_b g1b nint2 NJFX
+Cint2 nint2 lp {Cv}
+Xint2 0 nint2 lp vcc vee OP1654
+Rb2 lp 0 1G
+Xb2 lp lp_b lp_b vcc vee OP1654
+Rib1 bp_b nbi 10k
+Ribf nbi nbp 10k
+Xinv 0 nbi nbp vcc vee OP1654
+RpT bp_b wp 5k
+RpB nbp wp 5k
+Rbw wp ns2 {2.5k*Qv/4.62}
+Rain vin ns2 10k
+Rf2 ns2 out 10k
+Xout 0 ns2 out vcc vee OP1654
+.ends PCELL21
+*
+* --- VCA: vedi inline nella sezione drive (subckt rimosso: bug flattening
+*     LTspice 26.0.2 con banca SK/AP2 → 'Instance already defined') ---
+.subckt OPAMP0 inp inn out
+E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
+.ends OPAMP0
+*
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 vin 0 DC 0 AC 1
+*
+* --- PAD −6 dB (20k/20k) + buffer ---
+Rpad1 vin npad 20k
+Rpad2 npad 0 20k
+Xpad npad vpad vpad vcc vee OPAMP
+*
+* --- BANCA allineata (kcase=0: tutti i gate in pass) ---
+XH1 vpad r1 SKHP fc=90 Cc=100n
+XH1b r1 r1b SKHP fc=90 Cc=100n
+XH2 r1b r2 SKHP fc=350 Cc=100n
+XH2b r2 r2b SKHP fc=350 Cc=100n
+XH3 r2b r3 SKHP fc=1200 Cc=10n
+XH3b r3 r3b SKHP fc=1200 Cc=10n
+XH4 r3b r4 SKHP fc=3500 Cc=10n
+XH4b r4 r4b SKHP fc=3500 Cc=10n
+XA1 vpad s1a SKLP fc=90 Cc=100n
+XA2 s1a s1b SKLP fc=90 Cc=100n
+XP1 s1b s1c AP2 f0=350 C=22n
+XP2 s1c s1d AP2 f0=1200 C=10n
+XP3 s1d sub_o AP2 f0=3500 C=2.2n
+XB1 r1b s2b SKLP fc=350 Cc=100n
+XB2 s2b s2c SKLP fc=350 Cc=100n
+XP4 s2c s2d AP2 f0=1200 C=10n
+XP5 s2d kick_o AP2 f0=3500 C=2.2n
+XC1 r2b s3c SKLP fc=1200 Cc=10n
+XC2 s3c s3d SKLP fc=1200 Cc=10n
+XP6 s3d mid_o AP2 f0=3500 C=2.2n
+XD1 r3b s4c SKLP fc=3500 Cc=10n
+XD2 s4c high_o SKLP fc=3500 Cc=10n
+*
+* --- INVERTITORI POLARITA' (correzione 3: SUB e MID = bande DISPARI AP2) ---
+XI1 sub_o sub_i INVU
+XI3 mid_o mid_i INVU
+*
+* --- KILL A SWITCH π SPDT (correzione 2, dec. 88 + §8.10): ON-pass =
+*     Ron 4,7 Ω serie + Coff 30p nodo→GND (shunt aperto); per il rumore
+*     il solo stato pass conta (kcase=0, tutti i gate chiusi) ---
+Rsw1 sub_i sub_g 4.7
+Csw1 sub_g 0 30p
+Rsw2 kick_o kick_g 4.7
+Csw2 kick_g 0 30p
+Rsw3 mid_i mid_g 4.7
+Csw3 mid_g 0 30p
+Rsw4 high_o high_g 4.7
+Csw4 high_g 0 30p
+Rsw5 r4b sup_g 4.7
+Csw5 sup_g 0 30p
+*
+* --- SUMMER ---
+Rs1 sub_g ns 10k
+Rs2 kick_g ns 10k
+Rs3 mid_g ns 10k
+Rs4 high_g ns 10k
+Rs5 sup_g ns 10k
+Rsf ns vsum 10k
+Xsum 0 ns vsum vcc vee OPAMP
+*
+* --- 5 CELLE v0.2.1 a detent (centri come v0.2; Vcm da formula §4.2) ---
+XE1 vsum e1 PCELL21 Cv=680n Vcmv=-1.257 Qv=1
+XE2 e1 e2 PCELL21 Cv=180n Vcmv=-1.410 Qv=1
+XE3 e2 e3 PCELL21 Cv=56n Vcmv=-1.390 Qv=3
+XE4 e3 e4 PCELL21 Cv=18n Vcmv=-1.346 Qv=1
+XE5 e4 e5 PCELL21 Cv=4.7n Vcmv=-1.317 Qv=0.5
+*
+* --- DRIVE v0.4 (dec. 99): GROWL fx 350 + NASTRO in parallelo al pulito
+*     (stessi valori di drive2-noise.cir). c: 0 chiuse | 3 entrambe 100 % |
+*     4 entrambe 50 % ---
+.model D4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+.param c=0
+.param mg={if(c==1|c==3,1,if(c==4,0.5,0))}
+.param mt={if(c==2|c==3,1,if(c==4,0.5,0))}
+Rdk1 e5 dn1 10k
+Rdk2 dn1 dn2 10k
+Cdk1 dn1 dlow {1.4142/(6.2832*350*10k)}
+Cdk2 dn2 0 {0.7071/(6.2832*350*10k)}
+Xdf dn2 dlow dlow vcc vee OP1654
+Rdgi dlow dgn 10k
+Rdgf dgn dgout 22k
+Ddga dgn dga1 D4148
+Rdga dga1 dgout 2.2k
+Ddgb1 dgout dgb1 D4148
+Ddgb2 dgb1 dgb2 D4148
+Ddgb3 dgb2 dgb3 D4148
+Rdgb dgb3 dgn 2.2k
+Xdg 0 dgn dgout vcc vee OP1654
+Cdga dgout dgac 10u
+Rdgs dgac ddgn {10k/0.613}
+Rdgl dlow ddgn 10k
+Rdgo ddgn ddg 10k
+Xddg 0 ddgn ddg vcc vee OP1654
+Rdpg1 ddg dwg {10k*(1-mg)+1m}
+Rdpg2 dwg 0 {10k*mg+1m}
+Xdbg dwg dbg dbg vcc vee OP1654
+Rds1x e5 ds1n 2.2k
+Rds1w dbg ds1n 2.2k
+Rds1f ds1n dy1 2.2k
+Xds1 0 ds1n dy1 vcc vee OP1612
+Rdtg dy1 dgate 10k
+J1d ddrain dgate djs1 NJ310
+Rdd vcc ddrain 1.5k
+Rdsu djs1 djs2 150
+Rdsb djs2 0 900
+Cdb djs2 0 2200u
+Cdta ddrain dtac 10u
+Rdts dtac ddtn {10k/0.206}
+Rdtl dy1 ddtn 10k
+Rdto ddtn ddt 10k
+Xddt 0 ddtn ddt vcc vee OP1654
+Rdpt1 ddt dwt {10k*(1-mt)+1m}
+Rdpt2 dwt 0 {10k*mt+1m}
+Xdbt dwt dbt dbt vcc vee OP1654
+Rds2x dy1 ds2n 2.2k
+Rds2w dbt ds2n 2.2k
+Rds2f ds2n dy2 2.2k
+Xds2 0 ds2n dy2 vcc vee OP1612
+Rser2 dy2 edrv 33
+*
+* --- MAKE-UP +6 dB (gain −2) ---
+Rmu1 edrv nmu 10k
+Rmu2 nmu vout 20k
+* --- SERVO DC sul make-up (todo 39): integratore 1M/100n su vout,
+* --- partitore 100k/1k sul piedino + di Xmu. NG = 3 -> fc 0,047 Hz,
+* --- corsa +-385 mV in uscita. Op-amp servo: FET classe OPA2134.
+Rsvi vout svi 1Meg
+Csvi svi svo 100n
+Rnsv 0 svx 3863
+Esv svo 0 svx svi 1e6
+Rsva svo mup 100k
+Rsvb mup 0 1k
+Xmu mup nmu vout vcc vee OPAMP
+*
+.options method=gear reltol=1e-4
+.nodeset V(djs2)=2.1 V(ddrain)=14.5
+.noise V(vout) V1 dec 50 20 20k
+.step param c LIST 0 3 4
+.meas noise on1 FIND V(onoise) AT 20
+.meas noise on2 FIND V(onoise) AT 31.5
+.meas noise on3 FIND V(onoise) AT 50
+.meas noise on4 FIND V(onoise) AT 80
+.meas noise on5 FIND V(onoise) AT 125
+.meas noise on6 FIND V(onoise) AT 200
+.meas noise on7 FIND V(onoise) AT 315
+.meas noise on8 FIND V(onoise) AT 500
+.meas noise on9 FIND V(onoise) AT 800
+.meas noise on10 FIND V(onoise) AT 1250
+.meas noise on11 FIND V(onoise) AT 2000
+.meas noise on12 FIND V(onoise) AT 3150
+.meas noise on13 FIND V(onoise) AT 5000
+.meas noise on14 FIND V(onoise) AT 8000
+.meas noise on15 FIND V(onoise) AT 12500
+.meas noise on16 FIND V(onoise) AT 20000
+.meas noise g1k FIND gain AT 1000
+.end

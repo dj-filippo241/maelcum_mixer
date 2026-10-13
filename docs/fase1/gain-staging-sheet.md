@@ -153,9 +153,9 @@ il percorso gestisce la tensione continua:
 | Tap CUE, tap send, send filtro | nessuno | 0 | passa | segue il fix del canale |
 | FX-SEND, bus FX | nessuno | 0 | passa fino al pedale | pedale e ritorno accoppiati |
 | Ritorno FX | servo DC 0,053 Hz | −0,001 dB | annullata (84 dB) | OK (validato fx §8.4) |
-| Filtro: core + overdrive | **nessuno dal 2026-10-13** (l'overdrive v0.2 non ha servo; quello a 0,31 Hz era nella v0.1) | 0 | **passa** (offset del core OTA) | **BUCO RIAPERTO → nota sotto** |
+| Filtro: core + overdrive | servo DC 0,050 Hz sullo stadio di somma dell'overdrive (dal 2026-10-13, filter-module §5ter) | −0,0001 dB | annullata (residuo ≤ 2 mV = offset del servo) | OK (simulato) |
 | Fader, DJ bus | nessuno | 0 | passa | segue il fix del canale |
-| 5-way: banca, EQ, drive | **nessuno dal 2026-10-13** (il drive v0.4 non ha servo; quello a 0,31 Hz era nella v0.3; i rami saturati sono accoppiati in alternata a ~1 Hz, il pulito no) | 0 | **passa** fino al master sum; la annulla solo il servo del master | **BUCO RIAPERTO → nota sotto** |
+| 5-way: banca, EQ, drive | servo DC 0,047 Hz sul make-up +6 dB (dal 2026-10-13, five-way §5bis.7) | −0,0001 dB | annullata (residuo ≤ 2 mV = offset del servo) | OK (simulato) |
 | Master: sum, level, stadio HV | servo 0,048 Hz | −0,0001 dB | annullata (30 µV all'XLR) | OK |
 | MONO | C film 1,6 Hz | −0,11 dB | bloccata | OK |
 | MIC | passa-alto 60 Hz | −31 dB | bloccata | ESENTE: scelta di Filippo (dec. 97) |
@@ -167,7 +167,7 @@ più gli offset del VCA di gain e degli op-amp dell'EQ, attraversano
 manopole EQ, fader e cuffie. Effetti: fruscio girando le manopole,
 colpo muovendo il gain, continua amplificata dal boost LOW.
 
-**BUCO RIAPERTO il 2026-10-13 (pulizia dopo la decisione 99)**: i due
+**BUCO RIAPERTO il 2026-10-13 (pulizia dopo la decisione 99) [CHIUSO lo stesso giorno, vedi sotto]**: i due
 servo a 0,31 Hz stavano dentro la cella drive v0.3 e dentro l'overdrive
 v0.1. I ridisegni di oggi (drive v0.4, overdrive v0.2) non li hanno:
 il percorso pulito è DC-coupled e nessuno azzera più la continua (a) del
@@ -177,6 +177,15 @@ servo dei ritorni FX (polo 0,053 Hz) sullo stadio I/V dell'overdrive (un
 doppio op-amp per cella, 8 in tutto) e sul make-up +6 dB del 5-way (uno
 per lato). Da verificare: rumore iniettato dal servo (lezione D6: il
 servo via Rinj era la seconda fonte di rumore del drive v0.3).
+
+**BUCO CHIUSO in simulazione il 2026-10-13 (todo 39)**: servo aggiunto su
+overdrive del filtro e make-up del 5-way. Cella diversa dal fix
+provvisorio: un solo op-amp, integratore invertente che entra dal
+piedino + dello stadio attraverso un partitore 100k/1k (niente
+iniezione via Rinj nel nodo di somma). Continua in uscita ≤ 2 mV contro
+70-200 mV senza servo; 10 Hz a −0,0001 dB; rumore invariato (5-way −85,9
+dBu A-wtd; overdrive −102,6…−98,9). Dettagli: filter-module §5ter
+«Servo DC», five-way §5bis.7.
 
 **Fix (ingegneria, nessun comando nuovo)** [PROVVISORIO]:
 1. Ingresso line: C film 2,2 µF + 100 kΩ verso massa = polo 0,72 Hz.

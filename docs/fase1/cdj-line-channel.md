@@ -95,6 +95,8 @@ colora: pot doppio selezionato + trim (più lavoro di calibrazione, tracking a r
 
 ### 3.3 [C] EQ 4 bande — SERIE per banda, famiglia Baxandall (v0.3, decisioni 76/77)
 
+> **[SUPERATO dalla DECISIONE 105, 2026-10-13]** L'EQ corrente è l'isolator a 4 bande: `eq-isolator-v0.4.md`. Questa sezione resta come archivio. Integrazione nel canale (polarità, servo DC, livelli) da fare.
+
 > **v0.3 (2026-09-25)**: sostituisce integralmente le celle a contribuzione della
 > v0.2, bocciate dalla simulazione (fase dei filtri LOW/HIGH —
 > `sim/cdj-eq/RISULTATI-eq.md`, questione 62 → decisione 76). Design completo,

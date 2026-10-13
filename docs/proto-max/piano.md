@@ -10,7 +10,7 @@
 > - Filtro: un percorso per canale (dec. 101: la voce 63 è chiusa); law
 >   FREQ e RES = Xone:96 (dec. 102, tabella in filter-module §4).
 > - EQ di canale: in serie v0.3 beta-3 + muto a fine corsa con tutte e 4 le
->   manopole a zero (dec. 104: la voce 59 è chiusa).
+>   manopole a zero (dec. 104: la voce 59 è chiusa). [SUPERATO dalla dec. 105: EQ = isolator a 4 bande, `docs/fase1/eq-isolator-v0.4.md`]
 
 > Decisione 78 [F]: prototipo musicale digitale del mixer completo PRIMA del
 > millefori. Ambiente: Ableton Live Suite (M4L incluso), controllo a mouse.

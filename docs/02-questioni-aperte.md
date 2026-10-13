@@ -17,7 +17,9 @@ voce porta in testa il suo stato a oggi.
 | A4 | **CHIUSA 2026-10-13 → DECISIONE 101 (un percorso per canale).** Filtro: un solo percorso per canale (HPF oppure LPF) o HPF e LPF in serie (16 core invece di 8) | filter-module §8 | 63 |
 | A5 | **CHIUSA 2026-10-13 → DECISIONE 100 (accettato come condizione d'uso).** **[MISURATO 2026-10-13 con l'overdrive v0.2 (filter-module §5ter): overdrive chiuso −78,5 = PASS; a metà −77,8; tutto aperto e in silenzio −74,8. La domanda si riduce a: accettare il soffio di un overdrive aperto senza musica?]** Rumore con i filtri inseriti: −75,3 dBu contro il target −78 (definito a filtri OFF). Accettare come condizione d'uso, come per le mandate (dec. 95)? | filter-module §5bis | nuova |
 | A6 | Tracking stereo dell'EQ: pot doppi selezionati (raccomandato) o un VCA per banda (+16 chip) | voce 53 | 53 |
-| A7 | **CHIUSA 2026-10-13 → DECISIONE 104 (EQ in serie confermato + muto a fine corsa quando tutte le manopole sono a zero; la 103 «isolator» è revocata).** EQ tutto chiuso non è silenzio (resta il fader): accettare o aggiungere l'auto-mute | voce 59 | 59 |
+| A7 | **[SUPERATA lo stesso giorno dalla DECISIONE 105: EQ = isolator, vedi A15]** **CHIUSA 2026-10-13 → DECISIONE 104 (EQ in serie confermato + muto a fine corsa quando tutte le manopole sono a zero; la 103 «isolator» è revocata).** EQ tutto chiuso non è silenzio (resta il fader): accettare o aggiungere l'auto-mute | voce 59 | 59 |
+| A15 | **RINVIATA ALL'ASCOLTO da Filippo il 2026-10-13 (→ B7; partenza 150/500/2500 Hz, +6 dB, law lineare).** ~~NUOVA (dec. 105, EQ isolator)~~: confermare incroci (150/500/2500 Hz oppure 100/630/4000 Hz: cambia quanto spariscono le bande medie chiuse da sole), boost +6 dB, law lineare della manopola | eq-isolator-v0.4 §4, §6 | 5, 59 |
+| A16 | **CHIUSA 2026-10-13 → DECISIONE 106 (trasformatore ~225 VA, W1 3,0 A).** ~~ratificare~~ il trasformatore da ~225 VA (avvolgimento audio 2×21 V 3,0 A invece di 2,5 A): con l'isolator quello da 200 VA lavora al 105-107 % | eq-isolator-v0.4 §8, `sim/system/psu-w1-iso.cir` | dec. 98 |
 | A8 | Chi costruisce (tu, un tecnico, PCB assemblati) | — | 23 |
 | A9 | Quali pedali userai: fissa i valori del pad di mandata | fx-module §4 | 25 |
 | A10 | Nome sul telaio e ingombri massimi | — | 29 |
@@ -32,15 +34,18 @@ voce porta in testa il suo stato a oggi.
 | B1 | Carattere del filtro: core OTA nudo (a) o pulito con VCA (c-B) | 70 |
 | B2 | Pendenza a 4 poli del filtro: Butterworth, Bessel o Linkwitz-Riley | 64 |
 | B3 | Frequenze delle 5 bande del 5-way (ora ~90 / 350 / 1,2k / 3,5k Hz) | 67 |
-| B4 | **[RIAPERTA dalla dec. 104, peso ridotto: conta solo con 1-3 bande chiuse]** Kill della banda HIGH: accettare «scurisce», o cella più profonda | 68 |
+| B4 | **[CADUTA con la dec. 105: nell'isolator HIGH a zero fa −39 dB a 8 kHz]** ~~[RIAPERTA dalla dec. 104]~~ Kill della banda HIGH: accettare «scurisce», o cella più profonda | 68 |
 | B5 | Review a orecchio dei centri EQ di canale (70 / 250 / 1k / 5k Hz) | 5 |
+| B7 | Incroci, boost e law dell'EQ isolator dei canali (partenza 150 / 500 / 2500 Hz, +6 dB, lineare; alternativa 100 / 630 / 4000 Hz) | dec. 105 |
 | B6 | Taratura fine: soglie dei LED mic/mono, carattere e curve di GROWL, NASTRO e overdrive filtro | dec. 97, 99 |
 
 ### C. Ingegneria che resta, ferma su A/B o sul banco
 
-- **Da dec. 104 (2026-10-13)**: circuito del muto a fine corsa dell'EQ di
-  canale (4 contatti in serie logica + interruttore analogico con ramp
-  1 ms); nessun ridisegno dell'EQ (la 103 «isolator» è revocata).
+- **Da dec. 105 (2026-10-13)**: EQ isolator v0.4-beta SIMULATO
+  (`docs/fase1/eq-isolator-v0.4.md` §8): contatto di fondo corsa (−100
+  dB a manopole chiuse), servo DC, ritardo, headroom, tolleranze, rumore.
+  Resta: integrazione nel canale (polarità) e nel piano Max, ricalcolo
+  ufficiale del rumore, banco. Il muto di canale della dec. 104 è caduto.
 - Mux di modo del filtro: definito dalla dec. 101 (SPDT per canale sul CV, già nel design). Dopo B1: interazione risonanza-overdrive
   col modello OTA reale (D5).
 - **Da dec. 99 (2026-10-13)**: drive 5-way v0.4 (five-way §5bis) e
@@ -51,9 +56,9 @@ voce porta in testa il suo stato a oggi.
 - Law di frequenza del filtro: CHIUSA dalla dec. 102 (curva Xone:96 nel
   90 % centrale). Valori dello shaper CALCOLATI e simulati
   (sistema-shaper §3). Resta la pre-distorsione del converter, a banco.
-- **Servo DC di filtro e 5-way** (finding pulizia 2026-10-13, sheet §6):
-  i servo stavano nelle celle sostituite dalla dec. 99. Da aggiungere e
-  simulare (annullamento e rumore).
+- **Servo DC di filtro e 5-way**: FATTO il 2026-10-13 (filter-module
+  §5ter «Servo DC», five-way §5bis.7): continua ≤ 2 mV, rumore invariato.
+  Resta il banco (offset reali, colpo del VCA).
 - Solo banco: THD e clip reali di mic/mono, colpo del VCA di gain,
   termico del master, EIN con sorgenti vere, RFI, charge injection degli
   switch, tarature dei meter.

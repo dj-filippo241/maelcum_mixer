@@ -1,5 +1,7 @@
 # EQ SERIE v0.3 — celle Baxandall a law asimmetrica (2026-09-24/27)
 
+> **[ARCHIVIATO dalla DECISIONE 105, 2026-10-13]** EQ corrente = isolator, `eq-isolator-v0.4.md`. Questo design resta come alternativa documentata.
+
 > **Stato: BETA-3 (2026-09-27).** ALPHA (cella LOW) + celle MID/HIGH + cascata
 > 4 bande con rumore/tracking/livelli (§9) + riferimento interno −6 dB e
 > summer 49,9k (§9.6) + specifica law/taper (§10) + OP-AMP REALI E TRIM

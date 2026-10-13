@@ -1,0 +1,77 @@
+* ============================================================
+* FILTRO — OVERDRIVE v0.2b + SERVO DC (todo 39, 2026-10-13): RUMORE
+* Base: od2-noise-b.cir (invariato) + servo sullo stadio di somma Xs.
+* Servo: integratore invertente 1M/47n (FET classe OPA2134) che legge y;
+* uscita vint -> partitore 100k/1k (alfa 0,0099) -> piedino + di Xs.
+* Segno: y = NG*alfa*vint = -NG*alfa*y/(sRC) -> retroazione negativa
+* (iniettare nel nodo di somma sn darebbe retroazione POSITIVA).
+* NG di Xs = 1 + 10k/20k = 1,5 (l'uscita del VCA e' una corrente).
+* Polo: fc = alfa*NG/(2*pi*R*C) = 0,050 Hz. Corsa: +-13 V*alfa*NG =
+* +-193 mV in uscita.
+* Confronto rumore: od2-noise-b.log (senza servo). g5/g10/g20 = piattezza.
+* ============================================================
+.include ../lib/opamp-audio.inc
+* Op-amp del servo: FET-input classe OPA2134 (en 8 nV/rtHz -> Rn 3863)
+.subckt OPSRV inp inn out vp vm
+Rn inp inx 3863
+E1 xx 0 inx inn 1e6
+R1 xx p1 5005
+C1 p1 0 3.98u
+E2 out 0 value={limit(V(p1),V(vm)+1.5,V(vp)-1.5)}
+.ends OPSRV
+.model D4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+.param m=0
+.param k=1.171
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 x 0 DC 0 AC 1
+Ri x gn 10k
+Rf gn a 20k
+X1 0 gn a vcc vee OP1654
+R1 a w 2.2k
+D1 w p1 D4148
+D2 p1 0 D4148
+D3 0 q1 D4148
+D4 q1 w D4148
+Xb w wb wb vcc vee OP1654
+Rvx x vin 10k
+Rvw wb vin {10k/k}
+Vs vin 0 DC 0
+Fv 0 sn Vs {m}
+Rvn vn 0 120k
+Gvn 0 sn vn 0 1e-4
+Rsa a sn 20k
+Rsf sn y 10k
+* --- SERVO DC (todo 39): integratore invertente su y, iniezione sul
+* --- piedino + del sommatore attraverso un partitore 100k/1k
+Rsi y sint 1Meg
+Ci sint vint 47n
+Xsi sip sint vint vcc vee OPSRV
+Vosi sip 0 DC {vosi}
+Ra vint vp 100k
+Rb vp 0 1k
+Xs vp sn y vcc vee OP1654
+.step param m list 0 0.177 0.572 1
+.param vosi=0
+.noise V(y) V1 dec 20 5 100k
+.meas noise on1 FIND V(onoise) AT 20
+.meas noise on2 FIND V(onoise) AT 31.5
+.meas noise on3 FIND V(onoise) AT 50
+.meas noise on4 FIND V(onoise) AT 80
+.meas noise on5 FIND V(onoise) AT 125
+.meas noise on6 FIND V(onoise) AT 200
+.meas noise on7 FIND V(onoise) AT 315
+.meas noise on8 FIND V(onoise) AT 500
+.meas noise on9 FIND V(onoise) AT 800
+.meas noise on10 FIND V(onoise) AT 1250
+.meas noise on11 FIND V(onoise) AT 2000
+.meas noise on12 FIND V(onoise) AT 3150
+.meas noise on13 FIND V(onoise) AT 5000
+.meas noise on14 FIND V(onoise) AT 8000
+.meas noise on15 FIND V(onoise) AT 12500
+.meas noise on16 FIND V(onoise) AT 20000
+.meas noise g1k FIND gain AT 1000
+.meas noise g5 FIND gain AT 5
+.meas noise g10 FIND gain AT 10
+.meas noise g20 FIND gain AT 20
+.end

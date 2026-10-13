@@ -705,15 +705,38 @@ Per lato: 1 JFET, 4 diodi, ~4 doppi op-amp, 2 pot (doppi sul pannello).
 
 ### 5bis.6 Non fatto
 
-**Servo DC**: la v0.3 azzerava la continua del modulo col servo della cella
-drive (0,31 Hz). La v0.4 non ne ha: va aggiunto sul make-up +6 dB (cella
-dei ritorni FX, 0,053 Hz) e ne va misurato il rumore (sheet §6).
+**Servo DC**: FATTO il 2026-10-13, vedi §5bis.7.
 
 Dispersione del JFET (Idss/Vto cambiano kt e il
 ginocchio: trim di livello o selezione, a banco); deriva termica dei
 diodi; shift infrasonico sui transienti di basso (la continua della
 saturazione asimmetrica segue l'inviluppo: corner del ramo wet da
 scegliere a banco); D5 interazione con la risonanza del filtro.
+
+### 5bis.7 Servo DC sul make-up (2026-10-13) [SIMULATO, valori PROVVISORI]
+
+La v0.3 azzerava la continua del modulo col servo della cella drive; la
+v0.4 era nata senza (finding della pulizia, sheet §6). Aggiunto sul
+make-up +6 dB, un op-amp per lato:
+
+- integratore invertente 1 MΩ / 100 nF (film) che legge l'uscita del
+  modulo, op-amp FET classe OPA2134;
+- la sua uscita va al piedino + del make-up attraverso un partitore
+  100 kΩ / 1 kΩ (stessa cella dell'overdrive del filtro, filter-module
+  §5ter);
+- polo 0,047 Hz; corsa di correzione ±385 mV in uscita.
+
+Misure (`sim/five-way/makeup-servo-dc.cir`, `makeup-servo-ac.cir`,
+`module-noise-v04-servo.cir`):
+
+- continua di 50 / 100 mV all'ingresso del make-up (banca + EQ + drive):
+  senza servo −100 / −200 mV in uscita, col servo 2,0 mV. Il residuo è
+  l'offset dell'op-amp del servo al massimo di datasheet (tipico 0,5 mV);
+- piattezza: −0,0001 dB a 10 Hz, −0,0004 dB a 5 Hz, −0,010 dB a 1 Hz;
+- rumore del modulo intero: **−85,9 dBu A-wtd, invariato** (−85,7 con
+  GROWL e NASTRO aperti, −85,8 a metà). Margine 5,9 dB sul target −80.
+
+Conteggio: 1 doppio op-amp e 2 condensatori film 100 nF per il modulo.
 
 ## 6. Headroom e livelli (sheet §2, dec. 73)
 
