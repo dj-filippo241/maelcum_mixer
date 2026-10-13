@@ -1,0 +1,96 @@
+* ============================================================
+* 5-WAY DRIVE v0.4 (dec. 99) — Test S4: RUMORE (todo 32, 2026-10-13)
+* Stessa catena di drive2-chain (GROWL fx 350 + NASTRO), circuito REALE:
+* op-amp con rumore (lib), pot 10k veri (R sopra/sotto il cursore),
+* buffer del cursore, sommatori invertenti. Segnale zero: diodi spenti.
+* Casi c: 0 = manopole chiuse | 1 = GROWL 100 % | 2 = NASTRO 100 % |
+* 3 = entrambe 100 % | 4 = entrambe 50 %.
+* Uscita y2 = prima del make-up +6 dB (confronto: v0.3 -85,7 dBu flat).
+* Metodo casa: densita' a 16 punti, totale con mic/noise_total.py
+* (MAI .meas INTEG). Valori R = quelli di drive2-chain [PROVVISORIO].
+* ============================================================
+.include ../lib/opamp-audio.inc
+.model NJ310 NJF(Beta=5m Vto=-3 Lambda=6m Cgs=25p Cgd=4p Is=10f)
+.model D4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+.param c=0
+.param mg={if(c==1|c==3,1,if(c==4,0.5,0))}
+.param mt={if(c==2|c==3,1,if(c==4,0.5,0))}
+.param fx=350
+.param kg=0.613
+.param kt=0.206
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 x 0 DC 0 AC 1
+
+* --- GROWL ---
+Rk1 x n1 10k
+Rk2 n1 n2 10k
+Ck1 n1 low {1.4142/(6.2832*fx*10k)}
+Ck2 n2 0 {0.7071/(6.2832*fx*10k)}
+Xf n2 low low vcc vee OP1654
+Rgi low gn 10k
+Rgf gn gout 22k
+Dga gn ga1 D4148
+Rga ga1 gout 2.2k
+Dgb1 gout gb1 D4148
+Dgb2 gb1 gb2 D4148
+Dgb3 gb2 gb3 D4148
+Rgb gb3 gn 2.2k
+Xg 0 gn gout vcc vee OP1654
+Cga gout gac 10u
+Rgs gac dgn {10k/kg}
+Rgl low dgn 10k
+Rgo dgn dg 10k
+Xdg 0 dgn dg vcc vee OP1654
+* pot GROWL 10k + buffer cursore
+Rpg1 dg wg {10k*(1-mg)+1m}
+Rpg2 wg 0 {10k*mg+1m}
+Xbg wg bg bg vcc vee OP1654
+* sommatore 1 (invertente): y1 = -(x + mg*dg)
+Rs1x x s1n 2.2k
+Rs1w bg s1n 2.2k
+Rs1f s1n y1 2.2k
+Xs1 0 s1n y1 vcc vee OP1612
+
+* --- NASTRO ---
+Rtg y1 gate 10k
+J1 drain gate js1 NJ310
+Rd vcc drain 1.5k
+Rsu js1 js2 150
+Rsb js2 0 900
+Cb js2 0 2200u
+Cta drain tac 10u
+Rts tac dtn {10k/kt}
+Rtl y1 dtn 10k
+Rto dtn dt 10k
+Xdt 0 dtn dt vcc vee OP1654
+Rpt1 dt wt {10k*(1-mt)+1m}
+Rpt2 wt 0 {10k*mt+1m}
+Xbt wt bt bt vcc vee OP1654
+* sommatore 2 (invertente): y2 = -(y1 + mt*dt) = polarita' totale diritta
+Rs2x y1 s2n 2.2k
+Rs2w bt s2n 2.2k
+Rs2f s2n y2 2.2k
+Xs2 0 s2n y2 vcc vee OP1612
+
+.nodeset V(js2)=2.1 V(drain)=14.5
+.step param c list 0 1 2 3 4
+.noise V(y2) V1 dec 20 10 100k
+.meas noise on1 FIND V(onoise) AT 20
+.meas noise on2 FIND V(onoise) AT 31.5
+.meas noise on3 FIND V(onoise) AT 50
+.meas noise on4 FIND V(onoise) AT 80
+.meas noise on5 FIND V(onoise) AT 125
+.meas noise on6 FIND V(onoise) AT 200
+.meas noise on7 FIND V(onoise) AT 315
+.meas noise on8 FIND V(onoise) AT 500
+.meas noise on9 FIND V(onoise) AT 800
+.meas noise on10 FIND V(onoise) AT 1250
+.meas noise on11 FIND V(onoise) AT 2000
+.meas noise on12 FIND V(onoise) AT 3150
+.meas noise on13 FIND V(onoise) AT 5000
+.meas noise on14 FIND V(onoise) AT 8000
+.meas noise on15 FIND V(onoise) AT 12500
+.meas noise on16 FIND V(onoise) AT 20000
+.meas noise g1k FIND gain AT 1000
+.end

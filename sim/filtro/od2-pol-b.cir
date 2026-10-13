@@ -1,0 +1,44 @@
+* ============================================================
+* FILTRO — OVERDRIVE v0.2b (todo 33, 2026-10-13): POLARITA' DIRITTA
+* od2-noise.cir (5 op-amp) usciva invertito. Topologia rivista, 3 op-amp:
+*   X1 invertente x2 (10k/20k): a = -2x
+*   R 2,2k + diodi 2+2 + buffer: wb = -CLIP(2x)   (tosatore simmetrico)
+*   ingresso VCA = nodo di somma in corrente: x via 10k + wb via 10k/k
+*     -> Iin = (x - k*CLIP)/10k = -d/10k
+*   I/V del VCA (10k, invertente): +m*d ; nello stesso nodo a via 20k: +x
+*   => y = x + m*d, NON invertente. Matematica identica a od2-chain
+*   (griglia tran invariata: il tosatore e' dispari).
+* VCA: F (specchio di corrente ideale, guadagno m) + rumore datasheet
+* -104 dBV su I/V 10k = 44,6 nV/rtHz -> R 120k + G lineare (corrente
+* = Vn/10k nel nodo di somma), costante anche a VCA chiuso (prudente).
+* Verifica: gain@1k = 1 a m=0 e fase 0 gradi; rumore a 16 punti.
+* ============================================================
+.include ../lib/opamp-audio.inc
+.model D4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+.param m=0
+.param k=1.171
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 x 0 DC 0 AC 1
+Ri x gn 10k
+Rf gn a 20k
+X1 0 gn a vcc vee OP1654
+R1 a w 2.2k
+D1 w p1 D4148
+D2 p1 0 D4148
+D3 0 q1 D4148
+D4 q1 w D4148
+Xb w wb wb vcc vee OP1654
+Rvx x vin 10k
+Rvw wb vin {10k/k}
+Vs vin 0 DC 0
+Fv 0 sn Vs {m}
+Rvn vn 0 120k
+Gvn 0 sn vn 0 1e-4
+Rsa a sn 20k
+Rsf sn y 10k
+Xs 0 sn y vcc vee OP1654
+.step param m list 0 0.177 0.572 1
+.ac dec 10 100 10k
+.meas ac gy FIND V(y) AT 1000
+.end

@@ -1,0 +1,49 @@
+* ============================================================
+* 5-WAY DRIVE v0.4 (dec. 99) — Test S1: i due saturatori DA SOLI
+* NASTRO = CS JFET nudo (stadio 2a della v0.3, validato)
+* GROWL  = op-amp invertente con diodi asimmetrici in feedback
+*          (1 diodo un verso, 2 l'altro, R serie = ginocchio morbido:
+*          «valvola spinta forte»)
+* Domanda: THD e livello d'uscita contro il picco in ingresso, per
+* scegliere il pre-guadagno fisso dei due rami wet.
+* SINE vuole il PICCO. Modelli [PROVVISORIO — regola 3].
+* ============================================================
+.model NJ310 NJF(Beta=5m Vto=-3 Lambda=6m Cgs=25p Cgd=4p Is=10f)
+.model D4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+.subckt OPAMP0 inp inn out
+E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
+.ends OPAMP0
+.param amp=0.5
+Vcc vcc 0 DC 18
+V1 in 0 SINE(0 {amp} 1k)
+
+* --- NASTRO: CS JFET ---
+Rg in gate 10k
+J1 drain gate source NJ310
+Rd vcc drain 4.7k
+Rs source 0 1.05k
+Cac drain tout 10u
+Rl1 tout 0 100k
+
+* --- GROWL: clipper asimmetrico ---
+Rin in gn 10k
+Rf gn gout 47k
+Da gn a1 D4148
+Ra a1 gout 1k
+Db1 gout b1 D4148
+Db2 b1 b2 D4148
+Rb b2 gn 1k
+X1 0 gn gout OPAMP0
+
+.options noopiter
+.tran 0 60m 0 5u
+.step param amp LIST 0.1 0.2 0.39 0.55 0.78 1.1 1.55 2.2 3.5
+.meas tran t_rms RMS V(tout) FROM 40m TO 60m
+.meas tran t_max MAX V(tout) FROM 40m TO 60m
+.meas tran t_min MIN V(tout) FROM 40m TO 60m
+.meas tran g_rms RMS V(gout) FROM 40m TO 60m
+.meas tran g_max MAX V(gout) FROM 40m TO 60m
+.meas tran g_min MIN V(gout) FROM 40m TO 60m
+.meas tran g_dc AVG V(gout) FROM 40m TO 60m
+.four 1k 6 V(tout) V(gout)
+.end

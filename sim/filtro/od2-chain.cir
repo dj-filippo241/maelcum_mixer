@@ -1,0 +1,48 @@
+* ============================================================
+* FILTRO — OVERDRIVE v0.2 (DECISIONE 99, 2026-10-13) — Test O2: catena
+* Tosatore in PARALLELO al pulito, dosato da UN VCA sul segnale
+* differenza (le manopole DRIVE sono condivise da 4 canali: serve un
+* elemento comandato da CV, non un pot diretto):
+*   y = x + m(theta) * ( k*CLIP(G*x) - x )
+* G = 2 (+6 dB), R 2,2k, diodi 2+2 a massa. k = 0,829 darebbe pari RMS
+* al nominale (prima stesura: tetto +2,5 dBu, risonanza a +1,6).
+* REV stesso giorno (Filippo: «alza il tetto senza esagerare»):
+* k = 1,171 = +3 dB. O3/O4: diodi o guadagno diversi non alzano il
+* tetto (+0,5 dB); il ginocchio morbido lo alza ma toglie sporco.
+* Con +3 dB sul ramo wet il tetto e' 1,33 V * k = 1,56 Vp (~+5,5 dBu).
+* Law che ACCELERA a fine corsa: m = theta^2,5
+*   theta 25/50/65/80/90/100 % -> m 0,031/0,177/0,341/0,572/0,768/1
+* (VCA: -30/-15/-9,4/-4,8/-2,3/0 dB; a 0 % VCA chiuso).
+* Livelli (PICCO): -10 dBu 0,346 | 0 nom 1,096 | +8 risonanza 2,752 |
+* +16 max 6,913. VCA ideale (sorgenti B). Modelli [PROVVISORIO].
+* ============================================================
+.model D4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+.param amp=1.096
+.param k=1.171
+V1 x 0 SINE(0 {amp} 1k)
+E1 a 0 value={limit(2*V(x),-16,16)}
+R1 a w 2.2k
+D1 w p1 D4148
+D2 p1 0 D4148
+D3 0 n1 D4148
+D4 n1 w D4148
+Rl w 0 1Meg
+Bd d 0 V=k*V(w)-V(x)
+Bt25 t25 0 V=V(x)+0.031*V(d)
+Bt50 t50 0 V=V(x)+0.177*V(d)
+Bt65 t65 0 V=V(x)+0.341*V(d)
+Bt80 t80 0 V=V(x)+0.572*V(d)
+Bt90 t90 0 V=V(x)+0.768*V(d)
+Bt99 t99 0 V=V(x)+1.000*V(d)
+.tran 0 20m 10m 2u
+.step param amp LIST 0.346 1.096 2.752 6.913
+.meas tran xr RMS V(x)
+.meas tran t25r RMS V(t25)
+.meas tran t50r RMS V(t50)
+.meas tran t65r RMS V(t65)
+.meas tran t80r RMS V(t80)
+.meas tran t90r RMS V(t90)
+.meas tran t99r RMS V(t99)
+.meas tran t99max MAX V(t99)
+.four 1k 9 V(t25) V(t50) V(t65) V(t80) V(t90) V(t99)
+.end

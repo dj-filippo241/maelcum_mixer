@@ -215,6 +215,13 @@ le 11,8 ottave derivano del ~70% su 0-50 °C (misurato, §6).
 
 ## 5bis. Overdrive — design v0.1 (2026-10-13, chiude la questione 12 lato ingegneria)
 
+> **[SUPERATO — DECISIONE 99, 2026-10-13]** Filippo non vuole lo stesso
+> circuito del drive 5-way («se no diventa ridondante»). Requisiti nuovi:
+> rendere più drammatici e violenti i transienti di filtro; meno aggressivo
+> dello Sherman; estremi accessibili a fine corsa; curva che accelera nel
+> tratto finale. Il §5bis qui sotto resta come storico e come dato di rumore
+> di riferimento. **Design corrente = §5ter (v0.2).**
+
 Requisiti (SPECIFICA §5, dec. 82): dopo il filtro, prima del meter di
 canale; da pulito a «hard dub overload»; JFET prima, BJT asimmetrico poi;
 referenza Sherman Filterbox, raschio che cresce con la risonanza; due
@@ -291,6 +298,127 @@ davanti a Filippo: condizione d'uso come per le mandate (dec. 95).
 D5 (interazione fine tra risonanza e overdrive col modello OTA reale):
 resta dopo la scelta q70. Shaper delle due manopole DRIVE: stessa rete
 del drive 5-way (`sim/shaper/shaper-drive.cir`).
+
+## 5ter. Overdrive v0.2 — tosatore in parallelo con tetto fisso (DECISIONE 99, 2026-10-13) [SIMULATO, valori PROVVISORI — griglia da confermare da Filippo]
+
+Sostituisce il §5bis come design corrente.
+
+### Requisiti (decisione 99)
+
+Circuito e carattere diversi dal drive 5-way; rende più drammatici e
+violenti i transienti di filtro; meno aggressivo dello Sherman (non deve
+assordare né rompere l'impianto); settaggi estremi a fine corsa; curva
+che accelera nel tratto finale. Posizione invariata: dopo il core, prima
+del return al canale. Due manopole DRIVE (HPF, LPF) condivise dai canali.
+
+### Topologia
+
+```
+x = uscita core (0 dBu nom, picco di risonanza +8…+10 dBu)
+  ▼ op-amp invertente ×2 (10k/20k): a = −2x ──────────────┐
+  ▼ R 2,2k → diodi 2+2 a massa → buffer: wb = −CLIP(2x)   │ 20k
+  ▼ ingresso THAT 218x = somma in corrente:               │
+      x via 10k + wb via 10k/k (k = 1,171) = −d/10k       │
+  ▼ I/V del VCA (10k, invertente) ◄───────────────────────┘
+      y = x + m·d      (non invertente, 3 op-amp per cella)
+  ▼ R serie 33 Ω → return al canale
+```
+
+Schema a blocchi equivalente: y = x + m·(k·CLIP(2x) − x). Polarità
+VERIFICATA diritta (`od2-pol-b.cir`: fase 0° a 1 kHz per ogni m).
+
+- **Diverso dal 5-way**: tosatore simmetrico e duro = armoniche dispari
+  (terza dominante, seconda assente): il «raschio». NASTRO e GROWL del
+  5-way sono asimmetrici e morbidi (seconda armonica).
+- **Tetto fisso**: il ramo saturato non può superare 1,56 V di picco.
+  A manopola tutta aperta l'uscita resta sotto ~+5,5 dBu qualunque cosa
+  entri. È la protezione dell'impianto, senza limitatori automatici.
+- **Tetto alzato di 3 dB su richiesta di Filippo (2026-10-13: «alza il
+  tetto senza esagerare»)**: la prima stesura (k = 0,829, pari volume al
+  nominale) teneva il tetto a +2,5 dBu e il picco di risonanza a +1,6.
+  Prove O3/O4 (`od2-explore2/3.cir`): cambiare diodi o guadagno sposta il
+  tetto di soli 0,5 dB (a pari volume nominale un tosatore duro lega il
+  tetto al livello del programma); un ginocchio morbido lo alza ma
+  toglie sporco (risonanza 18 % invece di 31). Scelta: stesso tosatore,
+  ramo saturato +3 dB. Costo: a fine corsa anche il programma sale di
+  3 dB.
+- **Un VCA per cella sul segnale differenza** (8 in tutto, come la v0.1):
+  le manopole sono condivise da 4 canali, serve un elemento comandato da
+  CV. A manopola chiusa il VCA è chiuso: percorso pulito esatto e rumore
+  del ramo overdrive fuori dal canale.
+- Tutto DC-coupled; il tosatore simmetrico non genera continua. Niente
+  pad −6 / make-up +6 della v0.1.
+- Mux del CV e smoothing 1 ms invariati (§5bis).
+
+### Law della manopola (accelera a fine corsa)
+
+m = θ^2,5 → θ 25 / 50 / 65 / 80 / 90 / 100 % = m 0,03 / 0,18 / 0,34 /
+0,57 / 0,77 / 1 (VCA −30 / −15 / −9,4 / −4,8 / −2,3 / 0 dB). Metà corsa
+usa meno di un quinto dell'effetto: lo spazio per lavorare fine sta
+all'inizio, gli estremi nell'ultimo quarto. Shaper: `sistema-shaper.md`.
+
+### Griglia misurata (`sim/filtro/od2-chain.cir`) — THD % · livello d'uscita in dBu
+
+| Manopola | Passaggio piano (−10 dBu) | Programma nominale (0 dBu) | Picco di risonanza (+8 dBu) | Massimo (+16 dBu) |
+|---|---|---|---|---|
+| 25 % | 0,03 · −9,7 | 0,8 · +0,1 | 0,6 · +7,9 | 0,3 · +15,8 |
+| 50 % | 0,16 · −8,2 | 4,5 · +0,6 | 3,8 · +7,4 | 2,1 · +14,8 |
+| 65 % | 0,27 · −6,8 | 8,2 · +1,1 | 7,8 · +6,9 | 4,7 · +13,6 |
+| 80 % | 0,37 · −5,1 | 13 · +1,8 | 15 · +6,1 | 10 · +11,4 |
+| 90 % | 0,43 · −3,9 | 16 · +2,4 | 21 · +5,4 | 18 · +9,1 |
+| 100 % | 0,49 · −2,7 | 20 · +3,0 | 31 · +4,6 | 37 · +5,5 |
+
+Lettura: il programma nominale sale poco e solo in fondo alla corsa
+(+0,6 dB a metà, +3 dB al massimo). Il picco di risonanza, aprendo la
+manopola, si sporca e viene frenato: a fine corsa è un'onda quasi
+quadra (31 %) che esce a +4,6 dBu invece di +8, ancora sopra il
+programma. I passaggi piani salgono fino a +7 dB: il filtro «riempie». Guadagno ×2 scelto tra ×1 (programma solo
+5,5 % a fine corsa: non estremo) e ×4 (programma già al 10 % nei piani).
+
+### Numeri musicali da confermare (regola 2)
+
+1. ~~Il tetto~~ → alzato di 3 dB su richiesta di Filippo (dec. 99 h);
+   resta da sentire a orecchio se basta.
+2-3. ~~Morso a fine corsa e law~~ → **CONFERMATI da Filippo il
+   2026-10-13 come punto di partenza** (dec. 99 i).
+
+### Rumore MISURATO (`sim/filtro/od2-noise.cir`, 2026-10-13)
+
+Blocco overdrive da solo (core escluso), topologia a 3 op-amp
+(`od2-noise-b.cir`), VCA col rumore di datasheet a 0 dB tenuto costante
+anche da chiuso (prudente):
+
+| Manopola | Guadagno a piccolo segnale | Blocco, dBu A-wtd |
+|---|---|---|
+| 0 % | 0 dB | −102,6 |
+| 50 % | +1,9 dB | −102,1 |
+| 80 % | +5,0 dB | −100,7 |
+| 100 % | +7,4 dB | −99,0 |
+
+Il blocco in sé è silenzioso (la v0.1 dava −84,1). **Ma la stima fatta
+in giornata era ottimista in un punto**: un tosatore amplifica i segnali
+piccoli, e il rumore del core è un segnale piccolo. A manopola aperta e
+senza musica il soffio del core sale del guadagno a piccolo segnale.
+Canale filtro (core a, −89,9) e sistema con 4 filtri inseriti:
+
+| Manopola overdrive | Canale filtro | Sistema, 4 filtri inseriti | Target −78 |
+|---|---|---|---|
+| 0 % | −89,7 | **−78,5** | PASS 0,5 dB |
+| 50 % | −87,9 | −77,8 | FAIL 0,2 dB |
+| 100 % | −82,4 | −74,8 | FAIL 3,2 dB |
+
+Con l'overdrive chiuso il sistema rientra nel target anche a filtri
+inseriti (era −75,3). Con l'overdrive tutto aperto, e in silenzio, si
+torna a −74,8: è il soffio di un overdrive aperto, coperto dal segnale
+appena c'è musica. **ACCETTATO da Filippo il 2026-10-13 (decisione
+100)**: «il caso in cui il drive è aperto al massimo e senza musica
+sarebbe pressoché impossibile».
+
+### Non fatto
+
+Rumore del VCA a guadagni diversi da 0 dB (dato di datasheet mancante); D5 col modello OTA reale (dopo q70); deriva termica dei
+diodi (il tetto scende ~2 mV/°C per diodo); interazione col soft
+limiter della risonanza.
 
 ## 6. Simulazione di fattibilità (2026-09-24, `sim/filtro/`)
 

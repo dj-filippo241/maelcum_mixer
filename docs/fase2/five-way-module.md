@@ -381,6 +381,15 @@ lato filtro). Delta costo vs v0.2: ~+5 quad (+8-12 €) +10 dual JFET
 
 ## 5. Drive e meter (questione 10 — v0.3 VALIDATA: design post-referenze, 2026-09-29)
 
+> **[SUPERATO come design corrente — DECISIONE 99, 2026-10-13 — ARCHIVIATO come
+> alternativa, non cancellare]** Filippo ha ridefinito il drive: due saturatori
+> con due manopole, GROWL (valvola spinta forte, solo sub e bassi) e NASTRO
+> (JFET tape), niente fuzz, livello d'uscita autoregolato (il saturatore non
+> alza il volume), nessun boost pulito, primo 5-10 % di corsa quasi inerte.
+> Tutto il §5 qui sotto descrive la catena v0.3 (218x → JFET → diff pair):
+> resta come riferimento e come via di ritorno. Lo stadio JFET «nastro» è il
+> punto di partenza del nuovo NASTRO. **Design corrente = §5bis (v0.4).**
+
 ### 5.1 Requisiti (BLOCCATI)
 
 - Posizione: dopo la somma EQ, prima del meter (§2). Law (decisione 82,
@@ -550,6 +559,157 @@ A banco: trim bilanciamento pair solo se il servo esce dall'autorità (±14,5 V)
   stile Pioneer DJM (dec. 81 che revisiona dec. 65: release ~0,3 s «leggibile
   a zone con ballistica viva»), clip latch 300-500 ms, segmenti = design modulo
   metering (questione 19/54).
+
+## 5bis. Drive v0.4 — GROWL + NASTRO (DECISIONE 99, 2026-10-13) [SIMULATO, valori PROVVISORI — griglia da confermare da Filippo]
+
+Sostituisce il §5 come design corrente. Il §5 resta archiviato.
+
+### 5bis.1 Requisiti (decisione 99)
+
+- Due saturatori, due manopole: GROWL (valvola spinta forte, solo sub e
+  bassi) e NASTRO (JFET tape, tutto il segnale [ASSUNZIONE]). Niente fuzz.
+- I saturatori non alzano il volume. Nessun boost pulito.
+- Primo 5-10 % di corsa: effetto molto flebile. Poi lavorano subito.
+- Posizione invariata: dopo la somma EQ, prima del meter. Make-up +6 dB
+  a valle invariato.
+
+### 5bis.2 Topologia: saturatori in PARALLELO al pulito (blend)
+
+```
+x = somma EQ (−6 dBu nom)
+  │
+  ├──────────────────────────────────────────────┐ pulito (DC-coupled)
+  ▼ LP 2 poli Butterworth a fx (Sallen-Key)      │
+  low ──► CLIPPER «GROWL» ──► kg ──┐             │
+   │                               ▼             │
+   └──────────────────────► (kg·W − low) = dg    │
+                                   ▼             │
+                        pot GROWL (0…1) ──► Σ ◄──┘     y1 = x + mg·dg
+  y1
+  ├──────────────────────────────────────────────┐ pulito
+  ▼ CS JFET «NASTRO» ──► kt ──► (kt·T − y1) = dt │
+                        pot NASTRO (0…1) ──► Σ ◄─┘     y2 = y1 + mt·dt
+  ▼ R serie 33 Ω → METER → MAKE-UP +6 dB → MASTER SUM
+```
+
+- La manopola è un pot che dosa il segnale «differenza» (saturato meno
+  pulito). A manopola chiusa il cursore è a massa: uscita = ingresso
+  ESATTO, qualunque sia il filtro del growl, e il rumore del saturatore
+  non entra. Aprendo, il suono saturato prende il posto di quello pulito.
+- Il volume resta fermo perché i due rami sono tarati a pari livello al
+  nominale (kg, kt). Nessun rivelatore, nessuna dinamica automatica
+  (filosofia del progetto rispettata): è una taratura fissa.
+- **GROWL** = op-amp invertente, Rin 10k, Rf 22k, diodi in feedback
+  asimmetrici: 1 × 1N4148 in un verso, 3 × nell'altro, 2,2k in serie a
+  ciascun ramo (ginocchio morbido). kg = 0,613. Filtro d'ingresso
+  **fx = 350 Hz [F — scelta di Filippo 2026-10-13: sub e tutta la zona
+  della cassa]**.
+- **NASTRO** = CS JFET (J310-like), Rd 1,5k, Rs divisa: 150 Ω in serie +
+  900 Ω bypassata da 2200 µF. kt = 0,206. La Rs tutta in serie della
+  v0.3 dava un taglio brusco (pulito 0,26 % fino a 1 Vp, poi 11 %): la
+  gradualità veniva dal VCA a monte. Con la Rs divisa la curvatura
+  quadratica del JFET lavora da subito e cresce in modo regolare.
+- Rami wet AC-coupled (corner ~1 Hz): tolgono la continua della
+  saturazione asimmetrica. Il percorso pulito resta DC-coupled (SUB 10 Hz).
+- **Niente THAT 218x nel drive**: −2 chip rispetto alla v0.3 (voce 37).
+  Le manopole sono pot doppi lineari diretti sul segnale, non CV.
+- Law delle manopole = pot lineare. La richiesta «primi 5-10 % quasi
+  inerti» è soddisfatta dalla fisica del blend (tabelle sotto).
+
+### 5bis.3 Griglia misurata (`sim/five-way/drive2-chain*.cir`)
+
+THD % e variazione di volume (dB) rispetto all'ingresso. Colonne =
+livello del programma. Righe = posizione della manopola (l'altra a zero).
+
+**NASTRO** (1 kHz; a 50 Hz identico) — quasi tutta seconda armonica:
+
+| Manopola | −16 dBu (piano) | −6 dBu (nominale) | 0 dBu (spinto) | +10 dBu (picchi caldi) |
+|---|---|---|---|---|
+| 5 % | 0,08 · 0,0 dB | 0,27 · 0,0 | 0,81 · −0,1 | 0,99 · −0,3 |
+| 10 % | 0,15 · 0,0 | 0,54 · 0,0 | 1,6 · −0,1 | 2,0 · −0,5 |
+| 25 % | 0,38 · 0,0 | 1,4 · 0,0 | 4,2 · −0,3 | 5,6 · −1,3 |
+| 50 % | 0,77 · 0,0 | 2,7 · −0,1 | 8,8 · −0,7 | 13 · −2,8 |
+| 75 % | 1,2 · 0,0 | 4,1 · −0,1 | 14 · −1,0 | 25 · −4,5 |
+| 100 % | 1,5 · +0,1 | 5,5 · −0,1 | 19 · −1,3 | 44 · −6,4 |
+
+**GROWL** (50 Hz, fx 350 Hz) — seconda e terza armonica:
+
+| Manopola | −16 dBu (piano) | −6 dBu (nominale) | 0 dBu (spinto) | +10 dBu (picchi caldi) |
+|---|---|---|---|---|
+| 5 % | 0,31 · +0,1 dB | 0,94 · 0,0 | 0,76 · −0,1 | 0,37 · −0,3 |
+| 10 % | 0,60 · +0,2 | 1,9 · 0,0 | 1,6 · −0,3 | 0,77 · −0,6 |
+| 25 % | 1,5 · +0,6 | 4,8 · −0,1 | 4,1 · −0,7 | 2,1 · −1,5 |
+| 50 % | 2,7 · +1,1 | 9,7 · −0,2 | 9,0 · −1,5 | 5,4 · −3,4 |
+| 75 % | 3,9 · +1,6 | 15 · −0,2 | 15 · −2,4 | 10 · −5,7 |
+| 100 % | 4,9 · +2,1 | 20 · −0,3 | 22 · −3,2 | 19 · −8,4 |
+
+Altre verifiche:
+- GROWL al 100 % su un tono a 1 kHz (fx 350): THD 0,04 % al nominale,
+  0,36 % a 0 dBu, 2,2 % sui picchi a +10 dBu; livello −0,3 dB. I medi
+  passano quasi intatti; un medio molto forte prende un velo di growl.
+- Tutte e due le manopole al 100 %, 50 Hz nominale: THD 18,0 %, livello
+  −0,6 dB. La seconda armonica del nastro si sottrae in parte a quella
+  del growl (17,3 → 14,0 %): polarità relativa dei due rami da scegliere
+  a orecchio (basta invertire i diodi del growl).
+- Continua in uscita: ≤ 11 mV nel caso peggiore.
+
+Lettura della griglia: al livello normale il volume resta entro 0,2 dB
+su tutta la corsa di entrambe le manopole. Un programma più forte del
+normale viene tenuto giù dal saturatore (fino a −6…−7 dB sui picchi
+caldi a manopola tutta aperta): il saturatore comprime, non alza mai.
+Unica salita: il GROWL su un basso molto piano, +2 dB a fine corsa.
+
+### 5bis.4 Numeri musicali da confermare (regola 2)
+
+1. ~~Frequenza sotto cui lavora il GROWL~~ → **350 Hz, deciso da Filippo
+   il 2026-10-13** (dec. 99 g).
+2. Quanto morde a fine corsa: NASTRO 5,5 % al nominale, GROWL 20 %.
+3. ~~La griglia intera come punto di partenza~~ → **CONFERMATA da
+   Filippo il 2026-10-13** (dec. 99 i); rifinitura a orecchio (B6).
+
+### 5bis.5 Rumore MISURATO e conteggi (`sim/five-way/drive2-noise.cir`, 2026-10-13)
+
+Circuito reale (op-amp con rumore, pot 10k veri, buffer dei cursori,
+sommatori 2,2k), metodo a 16 punti. Uscita prima del make-up +6 dB:
+
+| Manopole | dBu flat | dBu A-wtd |
+|---|---|---|
+| Chiuse | −110,3 | −112,3 |
+| GROWL 100 % | −103,4 | −105,4 |
+| NASTRO 100 % | −105,1 | −107,1 |
+| Entrambe 50 % | −105,7 | −107,7 |
+| Entrambe 100 % | −101,7 | −103,7 |
+
+La cella v0.3 misurava −85,7 flat / −90,1 A-wtd (VCA dominante): il nuovo
+drive è 13-22 dB più silenzioso. Dopo il make-up vale −97,7 dBu A-wtd nel
+caso peggiore: trascurabile nel modulo.
+
+**Modulo 5-way intero MISURATO** (`module-noise-v04.cir` = netlist v031
+col drive nuovo; riferimento `module-noise-v031-ref16.cir`, stesso
+metodo e stessa libreria):
+
+| Modulo | dBu flat | dBu A-wtd | Margine sul target −80 |
+|---|---|---|---|
+| Drive v0.3, θ0 | −81,6 | −83,3 | 3,3 dB |
+| Drive v0.3, θ50 | −76,7 | −78,3 | FAIL 1,7 |
+| Drive v0.4, manopole chiuse | −84,4 | **−85,9** | **5,9 dB** |
+| Drive v0.4, entrambe 50 % | −84,3 | −85,8 | 5,8 dB |
+| Drive v0.4, entrambe 100 % | −84,1 | −85,7 | 5,7 dB |
+
+Il rumore del modulo non dipende più dalla posizione delle manopole di
+saturazione (con la v0.3 a metà corsa saliva di 5 dB). Guadagno a piccolo
+segnale con le manopole aperte: −0,3…+0,1 dB (il rumore a monte non
+viene amplificato).
+
+Per lato: 1 JFET, 4 diodi, ~4 doppi op-amp, 2 pot (doppi sul pannello).
+
+### 5bis.6 Non fatto
+
+Dispersione del JFET (Idss/Vto cambiano kt e il
+ginocchio: trim di livello o selezione, a banco); deriva termica dei
+diodi; shift infrasonico sui transienti di basso (la continua della
+saturazione asimmetrica segue l'inviluppo: corner del ramo wet da
+scegliere a banco); D5 interazione con la risonanza del filtro.
 
 ## 6. Headroom e livelli (sheet §2, dec. 73)
 

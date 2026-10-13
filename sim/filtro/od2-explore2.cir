@@ -1,0 +1,44 @@
+* ============================================================
+* FILTRO — OVERDRIVE v0.2 — Test O3: alzare il TETTO (richiesta di
+* Filippo 2026-10-13: «alza il tetto senza esagerare»). A pari volume
+* sul programma nominale il tetto sale solo se il nominale viene tosato
+* meno. Varianti: A = G x2, diodi 3+3 | B = G x1,4, diodi 2+2 |
+* C = G x3, diodi 4+4. Livelli PICCO: -10 / 0 nom / +8 / +16 dBu.
+* ============================================================
+.model D4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+.param amp=1.096
+V1 x 0 SINE(0 {amp} 1k)
+E1 a 0 value={limit(2*V(x),-16,16)}
+R1 a wa 2.2k
+D1 wa p1 D4148
+D2 p1 p2 D4148
+D3 p2 0 D4148
+D4 0 n1 D4148
+D5 n1 n2 D4148
+D6 n2 wa D4148
+E2 b 0 value={limit(1.4*V(x),-16,16)}
+R2 b wb 2.2k
+D7 wb q1 D4148
+D8 q1 0 D4148
+D9 0 q2 D4148
+D10 q2 wb D4148
+E3 c 0 value={limit(3*V(x),-16,16)}
+R3 c wc 2.2k
+D11 wc r1 D4148
+D12 r1 r2 D4148
+D13 r2 r3 D4148
+D14 r3 0 D4148
+D15 0 s1 D4148
+D16 s1 s2 D4148
+D17 s2 s3 D4148
+D18 s3 wc D4148
+Rla wa 0 1Meg
+Rlb wb 0 1Meg
+Rlc wc 0 1Meg
+.tran 0 20m 10m 2u
+.step param amp LIST 0.346 1.096 2.752 6.913
+.meas tran war RMS V(wa)
+.meas tran wbr RMS V(wb)
+.meas tran wcr RMS V(wc)
+.four 1k 9 V(wa) V(wb) V(wc)
+.end

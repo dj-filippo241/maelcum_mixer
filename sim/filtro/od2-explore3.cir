@@ -1,0 +1,31 @@
+* ============================================================
+* FILTRO — OVERDRIVE v0.2 — Test O4: tetto MORBIDO. O3 ha mostrato che
+* diodi/guadagno diversi spostano il tetto di ~0,5 dB: a pari volume
+* nominale un tosatore duro lega il tetto al livello del programma.
+* Qui una R in serie ai diodi (Rd): sopra il ginocchio l'uscita cresce
+* ancora con pendenza Rd/(R1+Rd). G x2, R1 2,2k, diodi 2+2.
+* Varianti Rd: A 470 | B 1k | C 1,5k. Livelli PICCO -10/0/+8/+16 dBu.
+* ============================================================
+.model D4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+.param amp=1.096
+V1 x 0 SINE(0 {amp} 1k)
+.subckt SCLIP in out PARAMS: rd=1k
+E1 a 0 value={limit(2*V(in),-16,16)}
+R1 a out 2.2k
+Rd out m {rd}
+D1 m p1 D4148
+D2 p1 0 D4148
+D3 0 n1 D4148
+D4 n1 m D4148
+Rl out 0 1Meg
+.ends SCLIP
+Xa x wa SCLIP rd=470
+Xb x wb SCLIP rd=1k
+Xc x wc SCLIP rd=1.5k
+.tran 0 20m 10m 2u
+.step param amp LIST 0.346 1.096 2.752 6.913
+.meas tran war RMS V(wa)
+.meas tran wbr RMS V(wb)
+.meas tran wcr RMS V(wc)
+.four 1k 9 V(wa) V(wb) V(wc)
+.end

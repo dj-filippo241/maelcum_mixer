@@ -1,0 +1,108 @@
+* ============================================================
+* 5-WAY DRIVE v0.4 (DECISIONE 99, 2026-10-13) — Test S3: catena completa
+* Due saturatori in PARALLELO al pulito (blend), due manopole:
+*   y1 = x  + mg * ( kg*GROWL(LP(x)) - LP(x) )      GROWL, solo bassi
+*   y2 = y1 + mt * ( kt*NASTRO(y1)   - y1    )      NASTRO, tutto
+* A manopola 0 il ramo wet e' a massa: y = x esatto (qualunque filtro).
+* kg, kt = taratura di pari livello RMS al nominale (-6 dBu, 0,549 Vp).
+* GROWL: LP Sallen-Key 2 poli Butterworth a fx -> clipper asimmetrico
+*   1 diodo / 3 diodi, Rf 22k, R serie 2,2k (S2 variante g2).
+* NASTRO: CS JFET, Rs 150 in serie + 900 bypassata, Rd 1,5k (S2 t2).
+* Rami wet AC-coupled (corner ~1 Hz): il percorso pulito resta DC.
+* Mix calcolati per m = 0,05 / 0,10 / 0,25 / 0,50 / 0,75 / 1,00 in un
+* solo run (sorgenti B = pot ideale + sommatore). mg = posizione GROWL
+* vista dal NASTRO a valle. SINE = PICCO. Modelli [PROVVISORIO].
+* Uso: f = frequenza di prova, mg = 0 o 1.
+* ============================================================
+.model NJ310 NJF(Beta=5m Vto=-3 Lambda=6m Cgs=25p Cgd=4p Is=10f)
+.model D4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+.subckt OPAMP0 inp inn out
+E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
+.ends OPAMP0
+.param amp=0.549
+.param f=50
+.param mg=1
+.param fx=350
+.param kg=0.613
+.param kt=0.206
+.param ts={1/(f*4000)}
+.param t0={3-10/f}
+Vcc vcc 0 DC 18
+V1 x 0 SINE(0 {amp} {f})
+
+* --- GROWL: split bassi ---
+Rk1 x n1 10k
+Rk2 n1 n2 10k
+Ck1 n1 low {1.4142/(6.2832*fx*10k)}
+Ck2 n2 0 {0.7071/(6.2832*fx*10k)}
+Xf n2 low low OPAMP0
+* clipper asimmetrico (invertente)
+Rgi low gn 10k
+Rgf gn gout 22k
+Dga gn ga1 D4148
+Rga ga1 gout 2.2k
+Dgb1 gout gb1 D4148
+Dgb2 gb1 gb2 D4148
+Dgb3 gb2 gb3 D4148
+Rgb gb3 gn 2.2k
+Xg 0 gn gout OPAMP0
+* differenza dg = kg*W - low (sommatore invertente, wet AC-coupled)
+Cga gout gac 10u
+Rgs gac dgn {10k/kg}
+Rgl low dgn 10k
+Rgo dgn dg 10k
+Xdg 0 dgn dg OPAMP0
+Ey1 y1 0 value={V(x)+mg*V(dg)}
+
+* --- NASTRO ---
+Rtg y1 gate 10k
+J1 drain gate s1 NJ310
+Rd vcc drain 1.5k
+Rsu s1 s2 150
+Rsb s2 0 900
+Cb s2 0 2200u
+Cta drain tac 10u
+Rts tac dtn {10k/kt}
+Rtl y1 dtn 10k
+Rto dtn dt 10k
+Xdt 0 dtn dt OPAMP0
+
+* --- mix per le posizioni di manopola ---
+Bg05 g05 0 V=V(x)+0.05*V(dg)
+Bg10 g10 0 V=V(x)+0.10*V(dg)
+Bg25 g25 0 V=V(x)+0.25*V(dg)
+Bg50 g50 0 V=V(x)+0.50*V(dg)
+Bg75 g75 0 V=V(x)+0.75*V(dg)
+Bg99 g99 0 V=V(x)+1.00*V(dg)
+Bt05 t05 0 V=V(y1)+0.05*V(dt)
+Bt10 t10 0 V=V(y1)+0.10*V(dt)
+Bt25 t25 0 V=V(y1)+0.25*V(dt)
+Bt50 t50 0 V=V(y1)+0.50*V(dt)
+Bt75 t75 0 V=V(y1)+0.75*V(dt)
+Bt99 t99 0 V=V(y1)+1.00*V(dt)
+
+.options noopiter
+.ic V(s2)=2.1
+.tran 0 3 {t0} {ts}
+.step param amp LIST 0.173 0.549 1.096 3.466
+.meas tran xr RMS V(x)
+.meas tran g05r RMS V(g05)
+.meas tran g10r RMS V(g10)
+.meas tran g25r RMS V(g25)
+.meas tran g50r RMS V(g50)
+.meas tran g75r RMS V(g75)
+.meas tran g99r RMS V(g99)
+.meas tran t05r RMS V(t05)
+.meas tran t10r RMS V(t10)
+.meas tran t25r RMS V(t25)
+.meas tran t50r RMS V(t50)
+.meas tran t75r RMS V(t75)
+.meas tran t99r RMS V(t99)
+.meas tran t99max MAX V(t99)
+.meas tran t99min MIN V(t99)
+.meas tran g99max MAX V(g99)
+.meas tran g99min MIN V(g99)
+.meas tran g99dc AVG V(g99)
+.meas tran t99dc AVG V(t99)
+.four {f} 8 V(g05) V(g10) V(g25) V(g50) V(g75) V(g99) V(t05) V(t10) V(t25) V(t50) V(t75) V(t99)
+.end

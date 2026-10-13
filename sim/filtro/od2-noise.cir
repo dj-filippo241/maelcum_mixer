@@ -1,0 +1,66 @@
+* ============================================================
+* FILTRO — OVERDRIVE v0.2 (dec. 99) — Test O5: RUMORE (todo 32)
+* Catena reale di od2-chain: stadio x2 (non invertente 2,2k/2,2k) ->
+* R 2,2k -> diodi 2+2 (spenti a segnale zero) -> buffer -> differenza
+* d = k*CLIP - x (k 1,171) -> VCA 218x -> sommatore = I/V del VCA (10k)
+* che riceve anche x via 10k. Uscita y = -(x + m*d) [polarita' da
+* raddrizzare nel modulo]. Rumore VCA: datasheet -104 dBV con I/V 10k
+* (20-20k) = 44,6 nV/rtHz -> R termica 120k + E lineare in serie
+* all'uscita del VCA, tenuto COSTANTE anche a VCA chiuso (prudente).
+* Casi m: 0 (chiusa) | 0,177 (50 %) | 0,572 (80 %) | 1 (100 %).
+* Caso v=0: VCA silente (quota del VCA). Core escluso (docs/06 par. 8).
+* ============================================================
+.include ../lib/opamp-audio.inc
+.model D4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+.param m=0
+.param v=1
+.param k=1.171
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 x 0 DC 0 AC 1
+Xg x gn a vcc vee OP1654
+Rg1 a gn 2.2k
+Rg2 gn 0 2.2k
+R1 a w 2.2k
+D1 w p1 D4148
+D2 p1 0 D4148
+D3 0 q1 D4148
+D4 q1 w D4148
+Xb w wb wb vcc vee OP1654
+* differenza invertente: dn = -(k*wb) + ... -> d = k*CLIP - x in due passi
+Rda wb ddn {10k/k}
+Rdf ddn dinv 10k
+Xd1 0 ddn dinv vcc vee OP1654
+Rdb dinv d2n 10k
+Rdx x d2n 10k
+Rdo d2n dneg 10k
+Xd2 0 d2n dneg vcc vee OP1654
+* dneg = -( -k*CLIP + x ) = k*CLIP - x = d
+Evca vca0 0 dneg 0 {m}
+Rvn vn 0 {if(v==0,1,120k)}
+Evn vcaout vca0 vn 0 1
+Rsv vcaout sn 10k
+Rsx x sn 10k
+Rsf sn y 10k
+Xs 0 sn y vcc vee OP1654
+.step param m list 0 0.177 0.572 1
+.step param v list 1 0
+.noise V(y) V1 dec 20 10 100k
+.meas noise on1 FIND V(onoise) AT 20
+.meas noise on2 FIND V(onoise) AT 31.5
+.meas noise on3 FIND V(onoise) AT 50
+.meas noise on4 FIND V(onoise) AT 80
+.meas noise on5 FIND V(onoise) AT 125
+.meas noise on6 FIND V(onoise) AT 200
+.meas noise on7 FIND V(onoise) AT 315
+.meas noise on8 FIND V(onoise) AT 500
+.meas noise on9 FIND V(onoise) AT 800
+.meas noise on10 FIND V(onoise) AT 1250
+.meas noise on11 FIND V(onoise) AT 2000
+.meas noise on12 FIND V(onoise) AT 3150
+.meas noise on13 FIND V(onoise) AT 5000
+.meas noise on14 FIND V(onoise) AT 8000
+.meas noise on15 FIND V(onoise) AT 12500
+.meas noise on16 FIND V(onoise) AT 20000
+.meas noise g1k FIND gain AT 1000
+.end

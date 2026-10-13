@@ -1,0 +1,70 @@
+* ============================================================
+* 5-WAY DRIVE v0.4 (dec. 99) — Test S2: ginocchio dei due saturatori
+* S1 ha mostrato: CS JFET con Rs 1,05k tutta in serie = pulito fino a
+* 1 Vp poi taglio brusco (0,26 % -> 11 %): la degenerazione linearizza
+* e rende il cutoff duro. Qui Rs e' divisa: parte in serie (Rsu), parte
+* bypassata (corner < 1 Hz, solo ramo wet) -> curvatura quadratica
+* progressiva. Tre varianti NASTRO (Rsu 0 / 150 / 330), Rd 1,5k.
+* GROWL: tre varianti di clipper asimmetrico a diodi.
+* Ampiezze = PICCO, passi di 3 dB. Modelli [PROVVISORIO].
+* ============================================================
+.model NJ310 NJF(Beta=5m Vto=-3 Lambda=6m Cgs=25p Cgd=4p Is=10f)
+.model D4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+.subckt OPAMP0 inp inn out
+E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
+.ends OPAMP0
+.param amp=0.2
+Vcc vcc 0 DC 18
+V1 in 0 SINE(0 {amp} 1k)
+
+.subckt TAPE in out vcc PARAMS: rsu=150
+Rg in gate 10k
+J1 drain gate s1 NJ310
+Rd vcc drain 1.5k
+Rsu s1 s2 {rsu+0.001}
+Rsb s2 0 {1050-rsu}
+Cb s2 0 2200u
+Cac drain out 10u
+Rl out 0 100k
+.ends TAPE
+Xt1 in t1 vcc TAPE rsu=0
+Xt2 in t2 vcc TAPE rsu=150
+Xt3 in t3 vcc TAPE rsu=330
+
+.subckt GROWL2 in out PARAMS: rf=22k rk=2.2k
+Rin in gn 10k
+Rf gn out {rf}
+Da gn a1 D4148
+Ra a1 out {rk}
+Db1 out b1 D4148
+Db2 b1 b2 D4148
+Rb b2 gn {rk}
+X1 0 gn out OPAMP0
+.ends GROWL2
+.subckt GROWL3 in out PARAMS: rf=22k rk=2.2k
+Rin in gn 10k
+Rf gn out {rf}
+Da gn a1 D4148
+Ra a1 out {rk}
+Db1 out b1 D4148
+Db2 b1 b2 D4148
+Db3 b2 b3 D4148
+Rb b3 gn {rk}
+X1 0 gn out OPAMP0
+.ends GROWL3
+Xg1 in g1 GROWL2 rf=22k rk=2.2k
+Xg2 in g2 GROWL3 rf=22k rk=2.2k
+Xg3 in g3 GROWL2 rf=33k rk=4.7k
+
+.options noopiter
+.ic V(Xt1.s2)=2.4 V(Xt2.s2)=2.1 V(Xt3.s2)=1.7
+.tran 0 2.02 2.0 5u
+.step param amp LIST 0.1 0.14 0.2 0.28 0.39 0.55 0.78 1.1 1.55 2.2
+.meas tran t1r RMS V(t1)
+.meas tran t2r RMS V(t2)
+.meas tran t3r RMS V(t3)
+.meas tran g1r RMS V(g1)
+.meas tran g2r RMS V(g2)
+.meas tran g3r RMS V(g3)
+.four 1k 8 V(t1) V(t2) V(t3) V(g1) V(g2) V(g3)
+.end

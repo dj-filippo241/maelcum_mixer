@@ -34,7 +34,7 @@
 | | POSITION di banda | 5 | singolo lin → CV | |
 | | WIDTH di banda | 5 | selettore 3 posizioni a più vie | commuta resistenze 0,1 % |
 | | KILL di banda | 5 | bottoni o levette, logici | |
-| | DRIVE | 1 | singolo lin → CV | |
+| | GROWL e NASTRO (dec. 99; era DRIVE ×1) | 2 | doppio lin, diretto sul segnale (v0.4, niente CV) | primo 5-10 % quasi inerte |
 | | Meter | 1 | barra 10 LED | |
 | **Master** | MASTER | 1 | singolo lin → CV | detent a 0 dB |
 | | BOOTH | 1 | singolo lin → CV | |
@@ -67,14 +67,15 @@ mandata ai pedali, trimmer di taratura.
 | Barre LED | 6 da 10 + 2 da 20 |
 | LED tricolore | 4 |
 
-Manopole in tutto: 109. Con 4 moduli MIC/MONO al posto di 4 il conto non
+Manopole in tutto: 110 (dec. 99: +1 sul 5-way). Con 4 moduli MIC/MONO al posto di 4 il conto non
 cambia; ogni modulo MIC/MONO in meno toglie 7 pot singoli.
 
 ## Aperto per la sessione hardware
 
 - Taper custom: quante famiglie diverse servono davvero (EQ canale, EQ2,
   gain 5-way, EQ mic/mono) e se un solo fornitore le copre.
-- Dipende da A3 (voce 72): una eventuale manopola di livello dopo il
-  drive aggiunge 1 pot al 5-way e 2 al filtro.
+- Dec. 99 (2026-10-13): il 5-way ha 2 manopole di saturazione al posto di
+  1 (totale manopole 110); nessuna manopola di livello dopo il drive: i
+  saturatori si autoregolano. Il filtro resta a 2 manopole drive.
 - Dipende da A4 (voce 63): HPF e LPF in serie non aggiungono manopole,
   cambiano il selettore di canale.

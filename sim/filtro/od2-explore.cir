@@ -1,0 +1,33 @@
+* ============================================================
+* FILTRO — OVERDRIVE v0.2 (dec. 99) — Test O1: tosatore da solo
+* Ramo wet = guadagno fisso G -> R serie 2,2k -> diodi a massa
+* 2+2 in antiparallelo (ginocchio ~+-1,2 V, simmetrico = armoniche
+* dispari) -> buffer. Tre G: x1 / x2 / x4. Livelli al filtro (PICCO):
+* -10 dBu 0,346 | 0 dBu nom 1,096 | +8 dBu (picco di risonanza) 2,752
+* | +16 dBu (max) 6,913. Domanda: quale G mette il programma nominale
+* appena dentro il ginocchio e la risonanza ben oltre.
+* ============================================================
+.model D4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+.param amp=1.096
+V1 x 0 SINE(0 {amp} 1k)
+.subckt CLIP in out PARAMS: g=2
+E1 a 0 value={limit(g*V(in),-16,16)}
+R1 a out 2.2k
+D1 out p1 D4148
+D2 p1 0 D4148
+D3 0 n1 D4148
+D4 n1 out D4148
+Rl out 0 1Meg
+.ends CLIP
+X1 x w1 CLIP g=1
+X2 x w2 CLIP g=2
+X4 x w4 CLIP g=4
+.tran 0 20m 10m 2u
+.step param amp LIST 0.346 1.096 2.752 6.913
+.meas tran xr RMS V(x)
+.meas tran w1r RMS V(w1)
+.meas tran w2r RMS V(w2)
+.meas tran w4r RMS V(w4)
+.meas tran w2max MAX V(w2)
+.four 1k 9 V(w1) V(w2) V(w4)
+.end

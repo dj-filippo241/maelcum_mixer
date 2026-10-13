@@ -158,3 +158,19 @@ questa tabella. Non ricalcolati (netlist senza misure a punti, storici o
 superati): eq-serie/cascade-noise e -b2, filtro/svf-noise-* senza 71A,
 five-way/module-noise e -bank, param-cell-*, master-out/compB-noise.
 
+
+## 9. Aggiornamento 2026-10-13 (decisione 99: nuovo drive 5-way e nuovo overdrive filtro)
+
+- Drive 5-way v0.4 (`sim/five-way/drive2-noise.cir`): −112,3 dBu A-wtd a
+  manopole chiuse, −103,7 a entrambe aperte, prima del make-up. La cella
+  v0.3 era −90,1. **Modulo 5-way intero MISURATO** (`module-noise-v04.cir`
+  contro `module-noise-v031-ref16.cir`): da −83,3 a **−85,9 dBu A-wtd**
+  (margine 5,9 dB), −85,7 con entrambe le manopole aperte.
+- Overdrive filtro v0.2 (`sim/filtro/od2-noise.cir`): blocco −102,6…−99,0
+  A-wtd (topologia a 3 op-amp, polarità diritta: `od2-noise-b.cir`). Canale filtro (core a): −89,7 / −87,9 / −82,4 a manopola 0 / 50 /
+  100 % (a manopola aperta il tosatore amplifica il soffio del core).
+- Sistema con 4 filtri inseriti: −78,5 (overdrive chiuso, PASS) / −77,8 /
+  −74,8 dBu A-wtd. Prima: −75,3 in ogni caso. Accettato da Filippo:
+  decisione 100.
+- Sistema a filtri OFF (−80,0): non rilanciato; atteso un piccolo
+  guadagno dal 5-way.
