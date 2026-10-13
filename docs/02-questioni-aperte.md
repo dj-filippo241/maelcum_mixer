@@ -45,7 +45,8 @@ voce porta in testa il suo stato a oggi.
   (modulo 5-way intero −85,9 A-wtd; overdrive a polarità diritta).
   Resta: ricalcolo del totale di sistema a filtri OFF, dispersione
   JFET, D5.
-- Law di frequenza del filtro nello shaper: valori a law chiusa a banco.
+- Law di frequenza del filtro: CHIUSA dalla dec. 102 (curva Xone:96 nel
+  90 % centrale). Resta: calcolo dei valori dello shaper su questa law.
 - Solo banco: THD e clip reali di mic/mono, colpo del VCA di gain,
   termico del master, EIN con sorgenti vere, RFI, charge injection degli
   switch, tarature dei meter.

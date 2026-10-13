@@ -35,8 +35,8 @@
 | Sezioni | HPF e LPF indipendenti, entrambe full-range **10 Hz–35 kHz** | dec. 74 |
 | Pendenza | 24 dB/ott (4 poli = 2 sezioni 2-poli in cascata per core) | SPECIFICA §5 |
 | Pannello | 6 knob: FREQ/RES/DRIVE per sezione; per canale solo switch HPF/OFF/LPF | dec. 67 |
-| Legge knob | musicale ~90% centrale, accelerazione ultimi ~5%; estremo di taglio = silenzio totale | dec. 70/74 |
-| Risonanza | 0-70% normale; 70-90% aggressiva; 90-100% auto-oscillazione che segue il cutoff, +6…+10 dBu con soft limiting (carattere Sherman) | SPECIFICA §5 |
+| Legge knob | curva Xone:96 (20 Hz–20 kHz esponenziale) nel 90 % centrale; ultimi 5 % per lato fino a 10 Hz / 35 kHz; estremo di taglio = silenzio totale | dec. 70/74/102 |
+| Risonanza | 0-90 % curva Xone:96 (da sottile a un passo dall'oscillazione: Q = 0,707/(1 − θ/0,9) → picco per sezione ~0 / +4 / +10 / +16 / +22 dB a 25 / 50 / 70 / 80 / 85 %); 90-100 % auto-oscillazione che segue il cutoff, +6…+10 dBu con soft limiting | SPECIFICA §5, dec. 102 |
 | Overdrive | dopo filtro, prima del meter di canale; clean → hard dub overload; JFET prima / BJT asimmetrico poi; recovery low-Z 20-50 Ω, +23 dBu clean | SPECIFICA §5, sheet §2 |
 | Tracking | ≤2% in frequenza tra core a pari CV; trim per core; CV bufferizzate a stella | dec. 67, voce 51 |
 | Tolleranza freq | ±5-10% (più lasca di un VCO: un filtro non deve essere "intonato") | dec. 74 |
@@ -134,10 +134,15 @@ le 11,8 ottave derivano del ~70% su 0-50 °C (misurato, §6).
 - ΔV viene dal CV bus (0-5 V) attraverso: law shaper a tratti (dec. 70) → divisore di
   precisione (~1/24) → stadio PTAT.
 - **Law shaper — SPECIFICA v0.2** [PROVVISORIO, rifinitura a banco come da dec. 70]:
-  - Legge target (θ = rotazione knob 0→1): musicale = esponenziale nei ~90% centrali
-    con f(0,05) = 14 Hz e f(0,95) = 25 kHz (10,8 ottave); ultimi 5% per lato con
-    accelerazione ~4× agli estremi veri (10 Hz / 35 kHz = silenzio per superamento
-    della banda). Tabella θ→f = riferimento per taper e per il prototipo M4L.
+  - **Legge target — DECISIONE 102 (2026-10-13): curva della Xone:96 nel 90 %
+    centrale.** θ = rotazione 0→1. Per 0,05 ≤ θ ≤ 0,95: f = 20 Hz · 1000^((θ − 0,05)/0,9)
+    (20 Hz → 20 kHz, 10 ottave, 1,11 ottave ogni 10 % di corsa). Ultimi 5 % per
+    lato, esponenziali: 20 → 10 Hz (1 ottava in 5 %: ×1,8) e 20 → 35 kHz (0,81
+    ottave in 5 %: ×1,45). Tabella θ → f: 0 % 10 Hz · 5 % 20 Hz · 10 % 29 Hz ·
+    25 % 93 Hz · 40 % 294 Hz · 50 % 632 Hz · 60 % 1,36 kHz · 75 % 4,31 kHz ·
+    90 % 13,6 kHz · 95 % 20 kHz · 100 % 35 kHz. Riferimento per shaper e
+    prototipo M4L. [SUPERATO: f(0,05) = 14 Hz, f(0,95) = 25 kHz, «~4×» agli
+    estremi — in ottave gli estremi risultavano più lenti del centro.]
   - **Pre-distorsione**: l'errore residuo misurato del converter (§6: −3,6% → −9,4%,
     curva liscia monotona) si compensa nello shaper: vc* = vc_ideale − e(vc)/2,355
     (correzione ≤ 40 mV agli estremi) — la law risultante è esponenziale pura entro
