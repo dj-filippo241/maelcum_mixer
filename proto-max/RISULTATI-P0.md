@@ -9,7 +9,8 @@ Piano: `docs/proto-max/piano.md` §2 P0 e §3. Generatore:
   metà CCW lineare in dB da −100 a 0, metà CW da 0 a +10.
 - Isolator v0.4 (`eq-isolator-v0.4.md` §3, §9): banca LR4, allpass del
   2° ordine, pot lineare ×2, silenzio a fondo corsa (contatto).
-  Selettore A 150/500/2500 Hz, C 150 dolce/350/3150 Hz (B7; fino al
+  Selettore A 150/500/2500 Hz, C 150 dolce/350/3150, D 150 dolce/700/3150
+  Hz (B7; fino al
   2026-10-14 sera B 100/630/4000, scartata con A, dec. 114), dissolvenza
   20 ms tra due banche che girano entrambe.
 - Fader −∞ … 0, law [PROVVISORIA]: θ², −12 dB a metà corsa.
@@ -108,4 +109,23 @@ dolce: LOW e MID-HIGH la riempiono. È il prezzo dell'accavallamento.
 Verifiche: `verifica.py` PASS invariato (A e B contro LTspice, il
 modello LR4 non cambia); `prova_gen.py` PASS con 16 punti di C, scarti
 ≤ 0,001 dB. Il selettore ora porta A e C.
+
+## Variante D (2026-10-14 sera)
+
+Richiesta di Filippo: HI-MID «abbastanza ampio ma senza il kick», «più
+simile ai mixer DJ del benchmark» (`docs/09`: confine implicito tra i
+centri LO-MID e HI-MID = 620-760 Hz). **D = 150 Hz dolce / 700 / 3150 Hz**,
+scelta di Filippo tra D, 500 Hz e entrambe. Nota a Filippo: contraddice in
+parte la richiesta di prima (HI-MID sotto 500/630); nei mixer DJ i medi
+sono campane larghe e il taglio di HI-MID si sente anche verso 400 Hz.
+
+| Modello, dB | C (350) | D (700) |
+|---|---|---|
+| HI-MID aperta da sola, 250 Hz (colpo del kick) | −16,4 | −38,6 |
+| HI-MID aperta da sola, 150 Hz | −35,7 | −59,6 |
+| HI-MID chiusa, buco più profondo | −27,5 (1148 Hz) | −19,9 (1514 Hz) |
+| LOW-MID chiusa, buco più profondo | −7,8 (226 Hz) | −13,8 (367 Hz) |
+
+Selettore a tre posizioni (A, C, D), dissolvenza 20 ms tra varianti
+vicine. `prova_gen.py` PASS con 9 punti di D in più.
 

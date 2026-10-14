@@ -4,7 +4,7 @@ Uso:  python3 proto-max/coefficienti/prova_gen.py
 Verifica il codice gen~ VERO (non le formule): sinusoidi in ingresso,
 ampiezza in uscita, confronto con la risposta del modello (canale.py), che
 verifica.py ha gia confrontato con LTspice. Prova anche law di GAIN e
-fader, il selettore A/C e la separazione dei due lati.
+fader, il selettore A/C/D e la separazione dei due lati.
 
 Non prova la sintassi di gen~: quella la controlla Max all'apertura.
 """
@@ -41,7 +41,7 @@ class Gen:
 
     def __init__(self, testo, fs):
         self.ns = {"bq": bq, "ap": ap, "tan": math.tan, "exp": math.exp,
-                   "pow": math.pow, "pi": math.pi, "samplerate": fs}
+                   "pow": math.pow, "max": max, "abs": abs, "pi": math.pi, "samplerate": fs}
         corpo, in_funzione = [], False
         for riga in testo.splitlines():
             riga = riga.split("//")[0].strip()
@@ -138,9 +138,13 @@ def main():
         ("C: HIGH a zero", (50, 50, 50, 0), 1, [5000, 8000]),
         ("C: LOW al massimo", (100, 50, 50, 50), 1, [50, 300]),
         ("C: tutte a zero", (0, 0, 0, 0), 1, [150]),
+        ("D: tutte al centro", (50, 50, 50, 50), 2, [150, 700, 3150]),
+        ("D: LOW-MID a zero", (50, 0, 50, 50), 2, [367, 700]),
+        ("D: MID-HIGH a zero", (50, 50, 0, 50), 2, [250, 1514]),
+        ("D: solo MID-HIGH", (0, 0, 50, 0), 2, [250, 700]),
     ]
     for nome, man, sel, freq in casi:
-        var = "AC"[sel]
+        var = "ACD"[sel]
         inc, pend = canale.INCROCI[var], canale.PENDENZE[var]
         for f in freq:
             p = dict(zip(["low", "lowmid", "midhigh", "high"], man))

@@ -33,9 +33,9 @@ MANOPOLE = [
 ]
 FADER = ("fader", "FADER", 100.0)
 # varianti di incroci nel selettore (B scartata all'ascolto, dec. 114)
-VARIANTI = ["A", "C"]
+VARIANTI = ["A", "C", "D"]
 SELETTORE = ("incroci", "INCROCI",
-             ["A 150/500/2500", "C 150 dolce/350/3150"])
+             ["A 150/500/2500", "C 150d/350/3150", "D 150d/700/3150"])
 BANDE = ["low", "lowmid", "midhigh", "high"]
 
 
@@ -123,7 +123,7 @@ def genexpr():
     r()
     for nome, _, ini in MANOPOLE + [FADER]:
         r(f"Param {nome}({ini}, min=0, max=100);")
-    r(f"Param {SELETTORE[0]}(0, min=0, max=1);")
+    r(f"Param {SELETTORE[0]}(0, min=0, max={len(VARIANTI) - 1});")
     pos_data = len(g.righe)
     r("@@DATA@@")
     for nome, _, ini in MANOPOLE + [FADER]:
@@ -205,7 +205,10 @@ def genexpr():
                 g.r(f"{p} = g_low * {p}l + g_lowmid * {p}lm"
                     f" + g_midhigh * {p}mh + g_high * {p}hi;")
                 ys.append(p)
-            g.r(f"{lato}_y{k} = (1 - s_x) * {ys[0]} + s_x * {ys[1]};")
+            # dissolvenza tra varianti vicine: peso 1 - |s_x - i|, min 0
+            g.r(f"{lato}_y{k} = " + " + ".join(
+                f"max(0, 1 - abs(s_x - {i})) * {y}" for i, y in enumerate(ys))
+                + ";")
         g.giu(f"{lato}_v0", f"{lato}_y0", f"{lato}_y1", 2, (lato, "giu", 2))
         g.giu(f"{lato}_v1", f"{lato}_y2", f"{lato}_y3", 2, (lato, "giu", 2))
         g.giu(f"{lato}_w", f"{lato}_v0", f"{lato}_v1", 1, (lato, "giu", 1))

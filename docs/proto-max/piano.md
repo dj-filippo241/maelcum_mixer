@@ -64,7 +64,8 @@ Chiude a orecchio:
   porta un selettore 150 / 500 / 2500 contro 100 / 630 / 4000 Hz, per il
   confronto con un DJM a memoria.
   [2026-10-14 sera, dec. 114: +6 e GAIN confermati; A e B scartate; il
-  selettore porta A contro C = 150 dolce / 350 / 3150 Hz,
+  selettore porta A, C = 150 dolce / 350 / 3150 Hz e D = 150 dolce / 700 /
+  3150 Hz (come i mixer DJ, docs/09),
   `proto-max/RISULTATI-P0.md` §Variante C. Curva: solo pot di serie.]
 
 Serve anche a montare l'infrastruttura (procedura di montaggio, set di

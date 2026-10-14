@@ -24,9 +24,12 @@ INCROCI = {
     "A": (150.0, 500.0, 2500.0),
     "B": (100.0, 630.0, 4000.0),
     "C": (150.0, 350.0, 3150.0),
+    "D": (150.0, 700.0, 3150.0),
 }
 # Pendenza di ogni incrocio: 4 = LR4 (24 dB/ott), 2 = LR2 (12 dB/ott).
 # C: primo incrocio dolce, LOW e LOW-MID si accavallano di piu (dec. 114).
+# D: come C, ma HI-MID parte da 700 Hz come nei mixer DJ (docs/09: confine
+# implicito 620-760 Hz) e non contiene il colpo del kick.
 # LR2 solo sul primo incrocio: LP2 - HP2 (Q 0,5) = allpass del 1o ordine,
 # quindi i rami alti girano di polarita e la somma resta piatta senza
 # allpass in piu sugli altri rami.
@@ -34,6 +37,7 @@ PENDENZE = {
     "A": (4, 4, 4),
     "B": (4, 4, 4),
     "C": (2, 4, 4),
+    "D": (2, 4, 4),
 }
 Q_LR2 = 0.5
 Q_BW = 1.0 / math.sqrt(2.0)   # Butterworth: due in cascata = LR4
