@@ -41,6 +41,15 @@ LIV = 1.0954 * 10 ** (12 / 20)  # volt per 1,0 digitale (0 dBu = -12 dBFS)
 Q1 = 0.5412                     # Butterworth 4 poli, sezione fissa
 Q2 = 1.3066                     # sezione con la RES
 
+# Pendenze a 4 poli per B2 (q64): (Q1, f1/fc, Q2, f2/fc), -3 dB sul taglio
+# salvo LR4 (-6 dB). Tabelle classiche (Bessel normalizzato a -3 dB).
+# Nell'HPF le frequenze delle sezioni si dividono invece di moltiplicarsi.
+ALLINEAMENTI = {
+    "BUTTERWORTH": (0.5412, 1.0, 1.3066, 1.0),
+    "LINKWITZ-RILEY": (0.7071, 1.0, 0.7071, 1.0),
+    "BESSEL": (0.5219, 1.4192, 0.8055, 1.5912),
+}
+
 # limitatore (tarato sul D5, vedi taratura())
 G_LIM = 1.7
 VK_LIM = 0.82
@@ -115,16 +124,23 @@ class Sezione:
 
 
 class Core:
-    """4 poli: sezione 1 (Q1 fissa) poi sezione 2 (RES)."""
+    """4 poli: sezione 1 (Q fissa) poi sezione 2 (RES), pendenza a scelta."""
 
-    def __init__(self, lineare):
+    def __init__(self, lineare, fs, allineamento="BUTTERWORTH"):
         self.a = Sezione(lineare, False)
         self.b = Sezione(lineare, True)
+        self.fs = fs
+        self.al = ALLINEAMENTI[allineamento]
 
-    def passo(self, x, g, gres, modo):
-        hp, _, lp = self.a.passo(x, g, 1.0 / Q1)
-        hp2, _, lp2 = self.b.passo(hp if modo == "hp" else lp, g,
-                                   smorz(gres, Q2))
+    def passo(self, x, fc, gres, modo):
+        q1, m1, q2, m2 = self.al
+        if modo == "hp":
+            m1, m2 = 1 / m1, 1 / m2
+        g1 = math.tan(math.pi * fc * m1 / self.fs)
+        g2 = math.tan(math.pi * fc * m2 / self.fs)
+        hp, _, lp = self.a.passo(x, g1, 1.0 / q1)
+        hp2, _, lp2 = self.b.passo(hp if modo == "hp" else lp, g2,
+                                   smorz(gres, q2))
         return hp2 if modo == "hp" else lp2
 
 
@@ -170,3 +186,31 @@ def oscillazione(core_o_sez, fc, fs, dur, coda, passo):
         return -999.0, 0.0
     f = (len(zc) - 1) * fs / (zc[-1] - zc[0])
     return (20 * math.log10(rms / 0.775), 12 * math.log2(f / fc))
+
+
+# ------------------------------------------------------- overdrive ---
+# Overdrive v0.2 (filter-module §5ter, dec. 99/110): y = x + m (k CLIP(2x) - x)
+# CLIP = 2,2k + 2+2 1N4148 a massa (modello di od2-chain.cir), m = theta^2,5.
+OD_K = 1.171
+OD_R = 2200.0
+OD_IS = 2.52e-9
+OD_A = 2 * 1.752 * 0.025865     # due diodi in serie, N 1,752, 27 C
+OD_ESP = 2.5
+
+
+def clip(v):
+    """Tensione sui diodi: (v - w)/R = 2 Is sinh(w/A), due passi di Newton."""
+    s = 1.0 if v >= 0 else -1.0
+    a = abs(v)
+    w = min(a, OD_A * math.asinh(a / (2 * OD_IS * OD_R)))
+    for _ in range(3):
+        e = math.exp(w / OD_A)
+        f = (a - w) / OD_R - OD_IS * (e - 1 / e)
+        df = -1 / OD_R - OD_IS * (e + 1 / e) / OD_A
+        w = w - f / df
+    return s * w
+
+
+def overdrive(x, theta):
+    m = theta ** OD_ESP
+    return x + m * (OD_K * clip(2 * x) - x)

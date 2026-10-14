@@ -8,9 +8,9 @@ genera.py (P0). Come in P0, il codice gen~ usa solo assegnazioni,
 peek/poke e funzioni senza stato proprio: prova_filtro.py lo traduce in
 Python e lo fa suonare.
 
-Pannello (parte 1): FREQ e RES per HPF e LPF (dec. 67/102), MODO
-HPF / OFF / LPF (dec. 101), CORE (a') OTA / PULITO (c-B) per B1.
-DRIVE (overdrive) e pendenza (B2) arrivano nella parte 2.
+Pannello: FREQ, RES e DRIVE per HPF e LPF (dec. 67/102/99/110), MODO
+HPF / OFF / LPF (dec. 101), CORE (a') OTA / PULITO (c-B) per B1,
+PENDENZA Butterworth / Linkwitz-Riley / Bessel per B2 (q64).
 """
 
 import json
@@ -28,15 +28,26 @@ NOME = "MC-FILTRO"
 MANOPOLE = [
     ("freq_hp", "HPF FREQ", 0.0),
     ("res_hp", "HPF RES", 0.0),
+    ("drive_hp", "HPF DRIVE", 0.0),
     ("freq_lp", "LPF FREQ", 100.0),
     ("res_lp", "LPF RES", 0.0),
+    ("drive_lp", "LPF DRIVE", 0.0),
 ]
 MODO = ("modo", "MODO", ["HPF", "OFF", "LPF"], 1)
 CORE = ("core", "CORE", ["OTA (a')", "PULITO (c-B)"], 0)
+PENDENZA = ("pend", "PENDENZA", list(filtro.ALLINEAMENTI), 0)
 
 
 def funzioni(r):
     vs = filtro.VS
+    r("// allpass del 1o ordine del halfband; stato in m[i] (x), m[i+1] (y)")
+    r("ap(m, i, x, c) {")
+    r("\ty = c * (x - peek(m, i + 1)) + peek(m, i);")
+    r("\tpoke(m, x, i);")
+    r("\tpoke(m, y, i + 1);")
+    r("\treturn y;")
+    r("}")
+    r()
     r("// guadagno a secante dell'OTA: Vs tanh(u/Vs)/u; lin = 1 -> lineare")
     r("aota(u, lin) {")
     r("\tm = max(abs(u), 0.000001);")
@@ -54,6 +65,21 @@ def funzioni(r):
     w, vk, g = filtro.W_LIM, filtro.VK_LIM, filtro.G_LIM
     r(f"\treturn {g!r} * {w!r} * (spl((m - {vk!r}) / {w!r})"
       f" - spl({-vk / w!r})) / m;")
+    r("}")
+    r()
+    r("// tosatore dell'overdrive: 2,2k + 2+2 1N4148, tre passi di Newton")
+    r("clipd(v) {")
+    r("\ta = abs(v);")
+    k2 = 2 * filtro.OD_IS * filtro.OD_R
+    r(f"\tt = a / {k2!r};")
+    r(f"\tw = min(a, {filtro.OD_A!r} * log(t + sqrt(t * t + 1)));")
+    for _ in range(3):
+        r(f"\tex = exp(w / {filtro.OD_A!r});")
+        r(f"\tf = (a - w) / {filtro.OD_R!r} - {filtro.OD_IS!r} * (ex - 1 / ex);")
+        r(f"\tdf = -1 / {filtro.OD_R!r}"
+          f" - {filtro.OD_IS!r} * (ex + 1 / ex) / {filtro.OD_A!r};")
+        r("\tw = w - f / df;")
+    r("\treturn w * ((v >= 0) * 2 - 1);")
     r("}")
     r()
     r("// sezione SVF 2 poli TPT; stato in m[i..i+3] = s1, s2, hp, bp")
@@ -90,12 +116,14 @@ def genexpr():
         r(f"Param {nome}({ini}, min=0, max=100);")
     r(f"Param {MODO[0]}({MODO[3]}, min=0, max=2);")
     r(f"Param {CORE[0]}({CORE[3]}, min=0, max=1);")
+    r(f"Param {PENDENZA[0]}({PENDENZA[3]}, min=0, max=2);")
     pos_data = len(g.righe)
     r("@@DATA@@")
     for nome, _, ini in MANOPOLE:
         r(f"History s_{nome}({ini});")
     r(f"History s_{MODO[0]}({MODO[3]});")
     r(f"History s_{CORE[0]}({CORE[3]});")
+    r(f"History s_{PENDENZA[0]}({PENDENZA[3]});")
     r()
     r("// manopole lisciate 10 ms; MODO 1 ms (rampa, dec. 80); CORE 20 ms")
     r("t1 = exp(-1 / (0.001 * samplerate));")
@@ -105,24 +133,38 @@ def genexpr():
         r(f"s_{nome} = {nome} + t10 * (s_{nome} - {nome});")
     r("s_modo = modo + t1 * (s_modo - modo);")
     r("s_core = core + t20 * (s_core - core);")
+    r("s_pend = pend + t20 * (s_pend - pend);")
     r("w_hp = max(0, 1 - abs(s_modo));")
     r("w_off = max(0, 1 - abs(s_modo - 1));")
     r("w_lp = max(0, 1 - abs(s_modo - 2));")
     r()
     r("sr4 = samplerate * 4;")
+    r("// PENDENZA: Q e frequenze delle due sezioni, scivolano in 20 ms")
+    al = list(filtro.ALLINEAMENTI.values())
+    for j in range(3):
+        r(f"wp{j} = max(0, 1 - abs(s_pend - {j}));")
+    for nome, idx, inv in (("q1i", 0, True), ("m1", 1, False),
+                           ("q2i", 2, True), ("m2", 3, False)):
+        termini = " + ".join(
+            f"wp{j} * {(1 / a[idx] if inv else a[idx])!r}"
+            for j, a in enumerate(al))
+        r(f"{nome} = {termini};")
+    r("d1 = q1i;")
     for sez in ("hp", "lp"):
         r(f"// sezione {sez.upper()}: FREQ dec. 102 (a), RES dec. 102 (b)")
         r(f"th = s_freq_{sez} / 100;")
         r(f"f_{sez} = (th < 0.05) * 10 * pow(2, th / 0.05)"
           f" + (th >= 0.05) * (th <= 0.95) * 20 * pow(1000, (th - 0.05) / 0.9)"
           f" + (th > 0.95) * 20000 * pow(1.75, (th - 0.95) / 0.05);")
-        r(f"g_{sez} = tan(pi * f_{sez} / sr4);")
+        op = "/" if sez == "hp" else "*"
+        r(f"g_{sez}1 = tan(pi * f_{sez} {op} m1 / sr4);")
+        r(f"g_{sez}2 = tan(pi * f_{sez} {op} m2 / sr4);")
+        r(f"od_{sez} = pow(s_drive_{sez} / 100, {filtro.OD_ESP!r});")
         r(f"tr = s_res_{sez} / 100;")
         r(f"gr = (tr <= 0.9) * (1 - tr / 0.9)"
           f" + (tr > 0.9) * (-0.75 * (tr - 0.9) / 0.1);")
-        r(f"d_{sez} = (gr > 0) * gr / {filtro.Q2!r}"
+        r(f"d_{sez} = (gr > 0) * gr * q2i"
           f" + (gr <= 0) * {2 ** 0.5!r} * gr;")
-    r(f"d1 = {1 / filtro.Q1!r};")
     r()
     r(f"// livelli: 1,0 digitale = {filtro.LIV:.3f} V (0 dBu = -12 dBFS)")
     n_st = 0
@@ -141,17 +183,20 @@ def genexpr():
             for lin, nome_c in ((0, "a"), (1, "c")):
                 for sez in ("hp", "lp"):
                     p = f"{nome_c}{sez}"
-                    r(f"{p}h, {p}l = sez(st, {i}, x, g_{sez}, d1, {lin}, 0);")
+                    r(f"{p}h, {p}l = sez(st, {i}, x, g_{sez}1, d1,"
+                      f" {lin}, 0);")
                     a = f"{p}h" if sez == "hp" else f"{p}l"
-                    r(f"{p}h, {p}l = sez(st, {i + 4}, {a}, g_{sez},"
+                    r(f"{p}h, {p}l = sez(st, {i + 4}, {a}, g_{sez}2,"
                       f" d_{sez}, {lin}, 1);")
                     out[(nome_c, sez)] = f"{p}h" if sez == "hp" else f"{p}l"
                     i += 8
-            r(f"{lato}_y{k} = (w_off * x"
-              f" + w_hp * ((1 - s_core) * {out[('a', 'hp')]}"
-              f" + s_core * {out[('c', 'hp')]})"
-              f" + w_lp * ((1 - s_core) * {out[('a', 'lp')]}"
-              f" + s_core * {out[('c', 'lp')]})) / {filtro.LIV!r};")
+            for sez in ("hp", "lp"):
+                r(f"o{sez} = (1 - s_core) * {out[('a', sez)]}"
+                  f" + s_core * {out[('c', sez)]};")
+                r(f"o{sez} = o{sez} + od_{sez} * ({filtro.OD_K!r}"
+                  f" * clipd(2 * o{sez}) - o{sez});")
+            r(f"{lato}_y{k} = (w_off * x + w_hp * ohp + w_lp * olp)"
+              f" / {filtro.LIV!r};")
         n_st = base + 32
         g.giu(f"{lato}_v0", f"{lato}_y0", f"{lato}_y1", 2, (lato, "giu", 2))
         g.giu(f"{lato}_v1", f"{lato}_y2", f"{lato}_y3", 2, (lato, "giu", 2))
@@ -212,16 +257,16 @@ def patch(codice):
                 [8 + 56 * i, 8, 50, 48],
                 {"parameter_type": 0, "parameter_mmax": 100.0,
                  "parameter_initial": [ini], "parameter_unitstyle": 5})
-    for j, (ng, nl, voci, ini) in enumerate((MODO, CORE)):
-        comando(4 + j, f"obj-t{j}", ng, nl, "live.tab",
-                [8, 64 + 26 * j, 220, 20],
+    for j, (ng, nl, voci, ini) in enumerate((MODO, CORE, PENDENZA)):
+        comando(6 + j, f"obj-t{j}", ng, nl, "live.tab",
+                [8, 60 + 24 * j, 330, 20],
                 {"parameter_type": 2, "parameter_enum": voci,
                  "parameter_mmax": float(len(voci) - 1),
                  "parameter_initial": [ini], "parameter_unitstyle": 0})
     boxes.append(box("obj-nota", maxclass="live.comment", numinlets=1,
                      numoutlets=0, presentation=1,
-                     presentation_rect=[8, 116, 230, 44],
-                     patching_rect=[20, 440, 230, 44], linecount=3,
+                     presentation_rect=[8, 134, 330, 30],
+                     patching_rect=[20, 440, 330, 30], linecount=2,
                      text="FREQ 0-100 % = 10 Hz-35 kHz (Xone:96). RES oltre "
                           "90 % = fischio. 0 dBu = -12 dBFS."))
     p = {"patcher": {

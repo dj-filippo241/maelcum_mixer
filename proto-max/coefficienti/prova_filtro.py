@@ -11,6 +11,7 @@ Non prova la sintassi di gen~: quella la controlla Max all'apertura.
 import math
 import os
 import random
+import re
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
@@ -22,38 +23,38 @@ FILE = os.path.join(os.path.dirname(QUI), "MC-FILTRO.genexpr")
 FS = 48000.0
 
 
-def aota(u, lin):
-    m = max(abs(u), 0.000001)
-    return lin + (1 - lin) * filtro.VS * math.tanh(m / filtro.VS) / m
+def funzioni_gen(testo):
+    """Traduce in Python le funzioni del .genexpr (righe semplici)."""
+    out, dentro = [], False
+    for riga in testo.splitlines():
+        riga = riga.split("//")[0].rstrip()
+        m = re.match(r"^(\w+)\((.*)\)\s*\{$", riga)
+        if m:
+            out.append(f"def {m.group(1)}({m.group(2)}):")
+            dentro = True
+            continue
+        if dentro:
+            if riga.strip() == "}":
+                dentro = False
+                continue
+            out.append("    " + riga.strip().rstrip(";"))
+    return "\n".join(out)
 
 
-def spl(z):
-    return math.log(1 + math.exp(min(z, 30))) + max(z - 30, 0)
-
-
-def alim(v):
-    m = max(abs(v), 0.000001)
-    w, vk = filtro.W_LIM, filtro.VK_LIM
-    return filtro.G_LIM * w * (spl((m - vk) / w) - spl(-vk / w)) / m
-
-
-def sez(st, i, x, g, d, lin, lim):
-    s1, s2, bpv = st[i], st[i + 1], st[i + 3]
-    g1 = g * aota(st[i + 2], lin)
-    g2 = g * aota(bpv, lin)
-    rr = d * aota(bpv, lin) + lim * alim(bpv)
-    bp = (g1 * (x - s2) + s1) / (1 + g1 * g2 + g1 * rr)
-    hp = x - s2 - (g2 + rr) * bp
-    lp = g2 * bp + s2
-    st[i], st[i + 1], st[i + 2], st[i + 3] = bp + g1 * hp, lp + g2 * bp, hp, bp
-    return hp, lp
+def poke(m, v, i):
+    m[i] = v
 
 
 def nuovo(testo):
     g = Gen(testo, FS)
     rnd = random.Random(1)
-    g.ns.update(sez=sez, tanh=math.tanh, log=math.log,
+    g.ns.update(peek=lambda m, i: m[i], poke=poke, tanh=math.tanh,
+                log=math.log, sqrt=math.sqrt,
                 noise=lambda: rnd.uniform(-1, 1))
+    # solo le funzioni scritte nel .genexpr: niente aiuti da prova_gen
+    for nome in ("bq", "ap"):
+        g.ns.pop(nome, None)
+    exec(funzioni_gen(testo), g.ns)
     return g
 
 
@@ -72,14 +73,16 @@ def suona(testo, f, amp, durata=0.12, coda=0.04, **p):
     return y, n - int(coda * FS)
 
 
-def modello(f, fc, amp_v, res, modo, lin, durata=0.12, coda=0.04):
-    """Core di filtro.py a 4x, senza halfband: ampiezza in volt."""
+def modello(f, fc, amp_v, res, modo, lin, durata=0.12, coda=0.04,
+            al="BUTTERWORTH", drive=0.0):
+    """Core e overdrive di filtro.py a 4x, senza halfband: volt."""
     fs4 = 4 * FS
-    c = filtro.Core(lin)
+    c = filtro.Core(lin, fs4, al)
     gres = filtro.res_law(res / 100)
     return filtro.sinusoide(
         c, f, fc, fs4, amp_v, durata, coda,
-        lambda c, x, g: c.passo(x, g, gres, modo))
+        lambda c, x, g: filtro.overdrive(c.passo(x, fc, gres, modo),
+                                         drive / 100))
 
 
 def nota(y, n0, fs):
@@ -134,6 +137,40 @@ def main():
                     controlla(f"{nome_c} {nm.upper()} RES {res} % {dbu} dBu",
                               gen_db, mod_db, 0.3)
 
+    print("PENDENZA a piccolo segnale (-30 dBu, sul taglio, 1 kHz)")
+    attesi = {"BUTTERWORTH": -3.01, "LINKWITZ-RILEY": -6.02, "BESSEL": -3.01}
+    for j, (al, att) in enumerate(attesi.items()):
+        for modo, nm in ((2, "lp"), (0, "hp")):
+            a = 1.0954 * 10 ** (-30 / 20) / liv
+            y, n0 = suona(testo, 1000, a, modo=modo, pend=j,
+                          **{f"freq_{nm}": theta_freq(1000)})
+            controlla(f"{al} {nm.upper()}", db(ampiezza(y, 1000, FS, n0) / a),
+                      att, 0.1)
+            y, n0 = suona(testo, 2000, a, modo=modo, pend=j,
+                          **{f"freq_{nm}": theta_freq(1000)})
+            mod = db(modello(2000, 1000, a * liv, 0, nm, 0, al=al) / (a * liv))
+            controlla(f"{al} {nm.upper()} a 2 kHz contro modello",
+                      db(ampiezza(y, 2000, FS, n0) / a), mod, 0.05)
+
+    print("DRIVE, LPF sul taglio, RES 85 %: gen~ contro modello")
+    for dr in (50, 100):
+        for dbu in (-10, 0):
+            av = 1.0954 * 10 ** (dbu / 20)
+            y, n0 = suona(testo, 1000, av / liv, modo=2, res_lp=85,
+                          drive_lp=dr, freq_lp=theta_freq(1000))
+            gen_db = db(ampiezza(y, 1000, FS, n0) * liv / av)
+            mod_db = db(modello(1000, 1000, av, 85, "lp", 0, drive=dr) / av)
+            controlla(f"DRIVE {dr} % {dbu} dBu", gen_db, mod_db, 0.3)
+    av = 1.0954 * 10 ** (16 / 20)
+    y, n0 = suona(testo, 1000, av / liv, modo=1, drive_lp=100)
+    controlla("OFF con DRIVE 100 %: resta trasparente",
+              db(ampiezza(y, 1000, FS, n0) * liv / av), 0.0, 0.01)
+    y, n0 = suona(testo, 200, av / liv, modo=2, drive_lp=100, res_lp=85,
+                  freq_lp=theta_freq(1000), durata=0.1, coda=0.05)
+    picco = max(abs(v) for v in y[n0:]) * liv
+    print(f"  info: +16 dBu a 200 Hz, RES 85 %, DRIVE 100 %: picco {picco:.2f} V"
+          f" (tetto overdrive 1,59 V + passante)")
+
     print("Fischio (RES 100 %, senza ingresso): gen~ contro modello")
     for lin, nome_c in ((0, "OTA (a')"), (1, "PULITO (c-B)")):
         for fc in (200, 1000, 5000):
@@ -142,9 +179,8 @@ def main():
             n = int(0.35 * FS)
             y = [g.campione(0.0, 0.0)[0] for _ in range(n)]
             rms, f = nota(y, n - int(0.08 * FS), FS)
-            c = filtro.Core(lin)
-            gm = math.tan(math.pi * fc / (4 * FS))
-            ym = [c.passo(1e-6 if i < 10 else 0.0, gm, -0.75, "lp")
+            c = filtro.Core(lin, 4 * FS)
+            ym = [c.passo(1e-6 if i < 10 else 0.0, fc, -0.75, "lp")
                   for i in range(int(0.35 * 4 * FS))]
             rms_m, f_m = nota(ym, len(ym) - int(0.08 * 4 * FS), 4 * FS)
             controlla(f"{nome_c} fc {fc} Hz livello dBu",

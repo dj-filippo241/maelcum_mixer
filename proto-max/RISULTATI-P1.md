@@ -1,8 +1,9 @@
-# RISULTATI P1 (parte 1) — MC-FILTRO (2026-10-15)
+# RISULTATI P1 — MC-FILTRO (2026-10-15)
 
 Piano: `docs/proto-max/piano.md` §2 P1. Generatore:
 `proto-max/coefficienti/genera_filtro.py` (numeri in `filtro.py`).
-Verifica: `prova_filtro.py`. Parte 2 (DRIVE, pendenza B2): da fare.
+Verifica: `prova_filtro.py`. Parte 1 (core) e parte 2 (DRIVE, PENDENZA)
+fatte nella stessa notte, su richiesta di Filippo («tutto P1»).
 
 ## Cosa contiene
 
@@ -13,12 +14,16 @@ Verifica: `prova_filtro.py`. Parte 2 (DRIVE, pendenza B2): da fare.
 - **MODO** HPF / OFF / LPF (dec. 101), rampa 1 ms (dec. 80; dissolvenza
   incrociata, non break-before-make).
 - **CORE** OTA (a′) / PULITO (c-B), dissolvenza 20 ms (B1).
-- SVF 4 poli = sezione Q 0,541 fissa + sezione Q 1,307 con RES e
-  limitatore (Butterworth a RES zero) [PROVVISORIO: B2 nella parte 2].
+- SVF 4 poli = sezione fissa + sezione con RES e limitatore. Q e
+  frequenze secondo la PENDENZA (Butterworth: 0,541 / 1,307).
 - Banca a 4× (halfband di P0).
 - Livelli: 1,0 digitale = 4,36 V di picco; **0 dBu = sinusoide a
   −12 dBFS di picco** [PROVVISORIO, da sentire].
-- Non modellati: DRIVE, rumore del core, deriva, offset, servo.
+- **DRIVE** HPF e LPF: overdrive v0.2 (dec. 99/110), dopo il core;
+  in OFF non agisce.
+- **PENDENZA** Butterworth / Linkwitz-Riley / Bessel (B2, q64): Q e
+  frequenze delle due sezioni scivolano in 20 ms.
+- Non modellati: rumore del core, deriva, offset, servo DC.
 
 ## 1. Modello del core
 
@@ -93,3 +98,40 @@ Fischio a 4 poli: OTA +4,7 dBu, −5,5 st (1 kHz); pulito +8,1 dBu.
 - Sintassi gen~ e CPU: si vedono all'apertura in Live.
 - Il fischio parte da un seme di rumore a −98 dBu (`noise()`), come il
   circuito vero parte dal suo rumore.
+
+## 4. DRIVE (overdrive v0.2)
+
+y = x + m·(1,171·CLIP(2x) − x), m = θ^2,5; CLIP = 2,2k + 2+2 1N4148
+(Is 2,52 nA, N 1,752, modello di `od2-chain.cir`), risolto con tre passi
+di Newton.
+
+Modello contro LTspice (`od2-chain.cir`, tono 1 kHz, 24 caselle della
+griglia di filter-module §5ter): livello ≤ 0,1 dB, THD entro 1 punto
+percentuale (es. 100 % su +8 dBu: 31,4 % · +4,5 dBu contro 31 % · +4,6;
+tetto 1,59 V).
+
+gen~ contro modello (LPF sul taglio, RES 85 %): ≤ 0,01 dB a DRIVE 50 e
+100 %, −10 e 0 dBu. Con +16 dBu, RES 85 % e DRIVE 100 % il picco
+d'uscita resta 1,56 V. In OFF il DRIVE non agisce (0,00 dB).
+
+## 5. PENDENZA (B2)
+
+| Pendenza | Q1 · f1/fc | Q2 · f2/fc | sul taglio | LPF a 2 kHz (fc 1 kHz) |
+|---|---|---|---|---|
+| Butterworth | 0,541 · 1 | 1,307 · 1 | −3,0 dB | −24,1 dB |
+| Linkwitz-Riley | 0,707 · 1 | 0,707 · 1 | −6,0 dB | −24,6 dB |
+| Bessel | 0,522 · 1,419 | 0,806 · 1,591 | −3,1 dB | −13,6 dB |
+
+Nell'HPF le frequenze delle sezioni si dividono. La RES agisce sulla
+sezione 2: il suo lato positivo segue la Q della pendenza, il lato del
+fischio è uguale per tutte (stesso OTA RES del D5). gen~ contro modello
+≤ 0,01 dB.
+
+## 6. Errore trovato e corretto
+
+Il primo `MC-FILTRO.genexpr` chiamava `ap()` (allpass dell'oversampling)
+senza definirla: in Live non avrebbe compilato. La prova non lo vedeva,
+perché `prova_gen.Gen` fornisce `ap` e `bq` già pronte. Ora
+`prova_filtro.py` toglie quelle due e traduce in Python le funzioni
+scritte davvero nel `.genexpr`.
+

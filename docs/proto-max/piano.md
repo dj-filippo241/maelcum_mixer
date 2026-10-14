@@ -85,9 +85,10 @@ Chiude a orecchio:
 
 Sblocca il todo 11 (prototipo del filtro su millefori), fermo su B1.
 
-[2026-10-15: parte 1 FATTA — `MC-FILTRO` con FREQ, RES, MODO, CORE (a′)/
-(c-B); modello tarato sul D5 (≤ 0,3 dB, fischio ≤ 0,6 dB / 0,3 st), gen~
-contro modello PASS; `proto-max/RISULTATI-P1.md`. Restano DRIVE e B2.]
+[2026-10-15: P1 COSTRUITO — `MC-FILTRO` con FREQ, RES, DRIVE, MODO,
+CORE (a′)/(c-B), PENDENZA; core tarato sul D5 (≤ 0,3 dB, fischio
+≤ 0,6 dB / 0,3 st), overdrive su od2-chain (≤ 0,1 dB), gen~ contro
+modello PASS; `proto-max/RISULTATI-P1.md`. Manca l'ascolto di Filippo.]
 
 ### P2 — 5-way (2 sessioni)
 
