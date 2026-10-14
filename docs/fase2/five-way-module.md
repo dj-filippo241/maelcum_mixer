@@ -352,6 +352,35 @@ MEGLIO dei mirror Iabc (27 cent); trim 10 giri per lato/banda. Tempco Vt
 assoluta (−2 mV/°C → 0,3-1,7%/°C) = comune per coppia e per bus: trim
 assorbe, deriva musicale trascurabile [PROVVISORIO: verifica a banco]. **[REV 2026-10-14, dec. 111, todo 49 — FINDING: vale solo per ±10 °C. Con 40 °C ambiente l'interno sale di ~30 K: −60 mV su un overdrive di comando di 247-1707 mV spostano la resistenza del canale del 3,5-24 %, fino a ~4 semitoni all'inizio della corsa di ogni banda. Rimedio da progettare: riferimento di Vt nel buffer del bus Vcm (JFET dello stesso tipo polarizzato a soglia, che sottrae la stessa deriva). `docs/fase3/sistema-psu.md` REV dec. 111.]**
 
+> **[REV 2026-10-14, todo 50 — SERVO REPLICA, sostituisce il rimedio del
+> finding qui sopra] [PROVVISORIO]** Dati: `sim/five-way/RISULTATI-deriva-termica.md`.
+> 1. **Il finding era incompleto.** Contava solo la soglia. Anche β cala a
+>    caldo (classe −0,6 %/K) e le due derive hanno segno opposto: da 35 a
+>    65 °C la cella attuale fa +0,9 semitoni a 250 Hz e −1,6…−2,4 da 700 a
+>    1500 Hz (EQ3, `cell-v021-temp.cir`). Il JFET di riferimento a soglia
+>    toglierebbe solo la parte della soglia e lascerebbe ~−3 semitoni
+>    ovunque: **scartato**.
+> 2. **Rimedio: un JFET replica per ogni JFET di segnale, nello stesso
+>    dual.** Il replica è bootstrappato come la cella (gate = (Vd + vc2)/2)
+>    e lavora con Vds fisso 100 mV. Un op-amp integratore regola il suo vc2
+>    finché la corrente del replica vale Ictl. Allora g = Ictl / 100 mV, e
+>    f0 ∝ Ictl: soglia e β escono dal conto. Simulato
+>    (`cell-v021-replica-a.cir`): law esatta e deriva nulla nel modello;
+>    nel componente vero ~0,05 semitoni (appaiamento termico dentro il
+>    dual).
+> 3. **Lo shaper genera Ictl invece di Vcm.** La law resta lineare in
+>    frequenza (f0 ∝ Ictl) e la famiglia dec. 70 non cambia. Sparisce
+>    l'offset Vt dalla law: niente trim di soglia per lato e per banda.
+>    Ictl = V_shaper / R 0,1 %, una R per servo: il tracking L/R e tra i due
+>    integratori lo fanno le resistenze, non più l'appaiamento dei JFET.
+> 4. **Variante economica scartata**: un replica per banda su un altro
+>    chip (`cell-v021-replica-b.cir`). Con il 10 % di differenza nei
+>    coefficienti termici resta −0,4…−0,9 semitoni, peggio di oggi in
+>    basso.
+> 5. **Costo**: dual JFET da 10 a **20** (ogni dual = segnale + replica),
+>    +20 servo (5 quad op-amp), +20 R 0,1 %. Corrente: ~+36 mA sui ±18 del
+>    5-way (~+1,3 W), dentro il margine del W1.
+
 **Verificato sui valori finali** (`cell-v021-law.cir`, `cell-v021-thd.cir`,
 EQ3): law 250,0/375,0/699,9/1000,0/1499,6 Hz (**±0,03%**); Q invariante
 (bpk ±0,01 dB su 2,6 ottave); notch −46,2…−47,0 dB (spec kill −30: margine
@@ -755,12 +784,12 @@ Conteggio: 1 doppio op-amp e 2 condensatori film 100 nF per il modulo.
 | Voce | Qtà | Note |
 |---|---|---|
 | Quad op-amp low-noise (classe OPA1654/1612) | ~34-36 | banca 14 (v0.2 allineata in fase: 16 SK + 12 allpass), EQ 17,5 (7 sezioni/cella × 10, §4.2 v0.2.1), invertitori polarità gate 1 (§8.10), gate/buffer/make-up |
-| Dual JFET N matched (classe LSK589/MMBF5457 selezionato) | 10 | celle parametriche v0.2.1: VCR bootstrappato, 2 per cella (§4.2) [reperibilità da verificare]; LM13700 RIMOSSI dalle celle (questione 70) |
+| Dual JFET N matched (classe LSK589/MMBF5457 selezionato) | ~~10~~ **20** [REV todo 50] | celle parametriche v0.2.1: VCR bootstrappato, 2 per cella (§4.2) [reperibilità da verificare]; LM13700 RIMOSSI dalle celle (questione 70); REV todo 50: ogni dual = JFET di segnale + replica del servo |
 | THAT 2180/2181 per gate kill → **RIMOSSI (dec. 88): 10 SPDT π classe ADG1434 = 3 IC** | 0 VCA gate / 10 SPDT | gate = π SPDT hard-cut Ron ≤4,7 Ω, famiglia assign FX/LINE-PHONO (§8.10); il drive tiene 2× 218x (§5.5); 2162 dual resta scartato (±16 V, THD 0,05%) |
 | THAT 2180/2181 (SINGLE) | 2 | gain drive stadio 1 (v0.3: solo 218x, law nativa dB — voce 37) |
 | JFET J310-like + PNP 2N3906-like | 2+4 | drive v0.3 §5.5: nastro CS 1/lato + diff pair fuzz 2/lato |
 | OPA1612 dual (recovery) + dual classe OPA2134 (servo, dec. 88; draft TL062) | 1+2 | recovery condiviso L/R; 1 dual per lato per il servo (§5.5) |
-| Shaper position θ→Vcm + buffer gain-2 | ~5-8 sezioni | v0.2.1 (§4.2): shaper famiglia dec. 70, 1 per banda L/R ganged; sostituisce converter expo + mirror Iabc |
+| Shaper position θ→Vcm + buffer gain-2 [REV todo 50: θ→Ictl + 20 servo replica = +5 quad] | ~5-8 sezioni | v0.2.1 (§4.2): shaper famiglia dec. 70, 1 per banda L/R ganged; sostituisce converter expo + mirror Iabc |
 | R 0,1% / C0G-PP / trimmer allineamento | — | banca: 8 edge + 6 sezioni allpass per lato |
 | Stima costo | ~220-300 € | il modulo più siliconato del mixer |
 

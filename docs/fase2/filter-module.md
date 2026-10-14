@@ -114,6 +114,19 @@ Sezione 2-poli, stato HP/BP/LP (solo HP e LP usati; BP serve alla risonanza):
 > resta costante. La deriva «≤ 2,4 % su 0-50 °C» del §6 vale solo per
 > l'OTA ideale della simulazione di fattibilità. Da progettare e
 > simulare col modello reale (todo).
+>
+> **[REV 2026-10-14, todo 50 — Iref PTAT progettata e simulata]
+> [PROVVISORIO]** Iref = sorgente di corrente PTAT classe **LM334** (I =
+> 227 µV/K × T / Rset; Rset ~170 Ω + trimmer per 400 µA, resistenze a film
+> metallico ≤ 25 ppm/K), tra il +15 V e il nodo di Q1. È PTAT per fisica:
+> niente taratura della pendenza. Va montata **sulla scheda dei core,
+> vicino agli LM13700**, perché sente la sua temperatura: ogni kelvin di
+> differenza vale 0,33 % di frequenza. Il converter moltiplica Iref per
+> un rapporto che non dipende da T (ΔV già PTAT), quindi Iabc ∝ T e gm
+> resta costante. Simulato col modello reale (`sim/filtro/ota-iref-ptat.cir`,
+> `RISULTATI-iref-ptat.md`): da 35 a 65 °C gm −8,6…−8,9 % con Iref fissa
+> (~1,6 semitoni), **≤ 0,23 %** con Iref PTAT (≤ 0,04 semitoni). Costo:
+> 1 LM334 + 2 R + 1 trimmer per converter (2 converter per sezione).
 
 Problema: spazzare 10 Hz–35 kHz (3500:1 = 11,8 ottave) con law esponenziale
 (1 ottava = ΔV fisso) e deriva termica entro ±5-10% (dec. 74). La fisica: in un

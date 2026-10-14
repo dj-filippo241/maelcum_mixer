@@ -205,14 +205,14 @@ CTRL_GND dei moduli. Corrente: ~0,3 A sul W4 → il W4 passa da 2,0 a
   converter compensa la sua coppia, ma Iref = 400 µA è fissa: tutti i
   core scendono di ~1,6 semitoni da 35 a 65 °C, mentre il mixer si scalda
   durante la serata. **Rimedio: Iref PTAT** (Iref = V_PTAT/R, dallo stesso
-  generatore PTAT della scalatura di ΔV). Annotato in filter-module §4.
+  generatore PTAT della scalatura di ΔV). Annotato in filter-module §4. [FATTO, todo 50: LM334, deriva ≤ 0,04 semitoni, filter-module §4.]
 - **Celle EQ del 5-way: centro banda che si sposta (FINDING).** Le celle
   v0.2.1 sono JFET VCR; la soglia Vt deriva di ~−2 mV/°C. Con l'overdrive
   di comando 247-1707 mV (five-way §4.2), 30 K spostano la resistenza del
   canale del 3,5-24 %: fino a ~4 semitoni all'inizio della corsa di ogni
   banda. La nota «deriva trascurabile» valeva per ±10 °C. **Rimedio da
   progettare: riferimento di Vt nel buffer del bus Vcm** (un JFET dello
-  stesso tipo, polarizzato a soglia, che sottrae la stessa deriva).
+  stesso tipo, polarizzato a soglia, che sottrae la stessa deriva). [SUPERATO, todo 50: contava solo la soglia; con β la deriva vera è +0,9…−2,4 semitoni e il rimedio va col servo replica, five-way §4.2 REV todo 50.]
 - **VCA THAT 218x: la scala in dB si stringe col caldo.** La costante
   6,1 mV/dB è proporzionale alla temperatura assoluta (+0,33 %/K): da 35 a
   65 °C ogni legge in dB si comprime del ~10 %. I punti a 0 dB (detent)

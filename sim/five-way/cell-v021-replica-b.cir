@@ -1,0 +1,71 @@
+* MODULO 5-WAY — todo 50: cella v0.2.1 con SERVO REPLICA, variante B: UN replica per banda
+* su un chip DIVERSO (stesso tipo e bin). Caso sfavorevole: Vt iniziale +20 mV, coefficienti
+* termici diversi del 10 % (Vtotc -2,42 mV/K, Betatce -0,54 %/K). L'errore statico a 35 C
+* (offset di conduttanza 2 beta dVt) si tara con un offset su Ictl; qui conta la deriva.
+* --- testo originale ---
+* Valori definitivi: C = 56n (banda EQ3 250-1500 Hz), beta nom. 173 uA/V²,
+* Vt = −2 V → Vcm tabellati = −1,7458/−1,6187/−1,2881/−0,9831/−0,4746 V.
+* Core a −12 dBu locale: Rvin 40,2k (eccitazione /4), make-up assorbito:
+* dry 10k/10k unity + iniezione Rbw/4 → H identica alla v0.2 (segno di b
+* invertito: notch a bq = −1, pot sul terminale opposto — gesto invariato).
+* Atteso: f0 = 250/375/700/1000/1500 Hz (±1,8% classe PoC), Q invariante.
+.include ../lib/opamp-audio.inc
+.param n=3
+.param Ictl=table(n,1,8.796u,2,13.193u,3,24.632u,4,35.185u,5,52.779u)
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 vin 0 DC 0 AC 1
+* --- SERVO REPLICA: vc2 (= 2 Vcm) generato in anello ---
+* replica J0 bootstrappato come le celle (gate = (Vd + vc2)/2), Vds fisso 100 mV, source sul
+* nodo virtuale del servo; Ictl (dallo shaper: V/R di precisione) esce dallo stesso nodo.
+* Il servo regola vc2 finche' I(J0) = Ictl: g = 2 beta (Vcm - Vt) = Ictl / 100 mV.
+Vrd rd 0 DC 0.1
+Rg0a rd g0 100k
+Rg0b vc2 g0 100k
+J0 rd g0 sv NJFR
+Ic sv 0 DC {Ictl}
+Cs sv vc2 100n
+Xs 0 sv vc2 vcc vee OP1654
+.nodeset V(vc2)=-2.6
+* --- summer (Rvin 40,2k = pad core −12 dB) ---
+Rvin vin ns 40.2k
+Rlp lp_b ns 10k
+Bqd bqn 0 V={-V(bp_b)}
+Rq bqn ns 10k
+Rf ns hp 10k
+Xsum 0 ns hp vcc vee OP1654
+* --- integratore 1: VCR JFET bootstrappato ---
+Rg1a hp g1a 100k
+Rg2a vc2 g1a 100k
+J1 hp g1a nint1 NJFX
+Cint1 nint1 bp 56n
+Xint1 0 nint1 bp vcc vee OP1654
+Rb1 bp 0 1G
+Xb1 bp bp_b bp_b vcc vee OP1654
+* --- integratore 2 ---
+Rg1b bp_b g1b 100k
+Rg2b vc2 g1b 100k
+J2 bp_b g1b nint2 NJFX
+Cint2 nint2 lp 56n
+Xint2 0 nint2 lp vcc vee OP1654
+Rb2 lp 0 1G
+Xb2 lp lp_b lp_b vcc vee OP1654
+.model NJFX NJF(Vto=-2 Beta=173u Lambda=5m Vtotc=-2.2m Betatce=-0.6)
+.options tnom=35
+.model NJFR NJF(Vto=-1.98 Beta=173u Lambda=5m Vtotc=-2.42m Betatce=-0.54)
+* --- iniezione b (notch bq = −1; Rbw /4 = make-up ×4 del core) ---
+Bw bwv 0 V={-1/4.62*V(bp_b)}
+Rbw bwv ns2 {2.5k/4.62}
+Rain vin ns2 10k
+Rf2 ns2 vout 10k
+Xout 0 ns2 vout vcc vee OP1654
+.step param n 1 5 1
+.step temp LIST 35 50 65
+.ac dec 500 20 20k
+.meas ac flo WHEN mag(V(bp))=0.1768 CROSS=1
+.meas ac fhi WHEN mag(V(bp))=0.1768 CROSS=2
+.meas ac f0geo PARAM sqrt(flo*fhi)
+.meas ac bpk MAX mag(V(bp))
+.meas ac hmin MIN mag(V(vout))
+.meas ac vcm2 FIND V(vc2) AT 1k
+.end

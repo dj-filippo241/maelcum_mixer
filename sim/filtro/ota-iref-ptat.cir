@@ -1,0 +1,21 @@
+* FILTRO — todo 50: Iref PTAT. gm dell'LM13700 reale con Iabc proporzionale a T assoluta.
+* Iabc = Iabc0 * T/T0, T0 = 308,15 K (35 C, taratura). Nel circuito: Iref da una sorgente
+* PTAT classe LM334 (I = 227 uV/K x T / Rset, Rset ~170 ohm per 400 uA a 300 K) sulla stessa
+* scheda degli LM13700; il converter (rapporto exp, DeltaV gia' PTAT) moltiplica Iref per un
+* fattore che non dipende da T, quindi Iabc eredita la PTAT.
+* Confronto: Iabc fissa (k=0) contro Iabc PTAT (k=1). Atteso: gm costante con k=1.
+.include ../lib/lm13700.inc
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+.param Iabc=100u k=1
+V1 inp 0 DC 0 AC 1m
+Rl out 0 100k
+B1 vcc iabc1 I={Iabc}*(1+{k}*((temp+273.15)/308.15-1))
+X1 inp 0 out iabc1 db1 db2 vcc vee LM13700
+.step param k LIST 0 1
+.step param Iabc LIST 7.56u 100u 500u
+.step temp LIST 35 50 65
+.ac dec 20 10 1Meg
+.meas ac gm1k FIND mag(V(out))/100k AT 1k
+.meas ac gm_ratio PARAM gm1k/{Iabc}
+.end
