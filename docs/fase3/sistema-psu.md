@@ -118,6 +118,23 @@ verificare con la meccanica, q29]:
    (in basso, vicino alle prese) o su parete dissipante.
 4. **Elettrolitici** da 105 °C, lontani dai regolatori.
 
+**DECISIONE 112 (stesso giorno): due ventole a termostato** [PROVVISORIO
+per tutto ciò che segue]. Ventole da 120 mm, flusso dal basso-retro verso
+l'alto-retro (stesso percorso del camino). Con ~2 × 15 l/s a bassa
+velocità l'aria interna sale di **~4 K** sopra l'ambiente (131 W / ρ·cp·Q),
+contro 10-15 K del camino e 25-30 K del telaio chiuso: a 40 °C fuori,
+interno ~45 °C. Termostato: NTC sulla barra dei regolatori; ventole spente
+sotto ~35 °C interni, poi tensione che sale in modo lineare fino al
+massimo a ~50 °C (nessun PWM: niente fronti ripidi vicino all'audio).
+A ventole ferme il camino resta il percorso dell'aria: il mixer lavora fino
+a ~30 °C ambiente senza ventole, quindi un guasto non lo ferma.
+Alimentazione: dal raw W4 (~10,7 V nominali) con un transistor di
+controllo, ventole 12 V tenute a 5-10 V (silenziose); ritorno delle
+ventole su un filo dedicato fino alla stella della PSU, mai su AGND né sul
+CTRL_GND dei moduli. Corrente: ~0,3 A sul W4 → il W4 passa da 2,0 a
+**2,5 A** (9 V; +4,5 VA, dentro i ~250 VA). Filtri antipolvere sulle prese
+(all'aperto vanno puliti: manutenzione da scrivere nel manuale d'uso).
+
 **Derive a caldo (todo 49), interno fino a 65 °C:**
 - Shaper (reroute, drive, position, frequenza filtro): **PASS**. Deriva
   ≤ 0,28 dB nella zona del feedback, ≤ 0,12 dB sul drive, ≤ 3,3 % sulla
