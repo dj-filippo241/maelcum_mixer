@@ -36,6 +36,7 @@ FADER = ("fader", "FADER", 100.0)
 VARIANTI = ["A", "C", "D"]
 SELETTORE = ("incroci", "INCROCI",
              ["A 150/500/2500", "C 150d/350/3150", "D 150d/700/3150"])
+CURVA = ("curva", "CURVA", ["LINEARE", "PIONEER"])
 BANDE = ["low", "lowmid", "midhigh", "high"]
 
 
@@ -124,11 +125,13 @@ def genexpr():
     for nome, _, ini in MANOPOLE + [FADER]:
         r(f"Param {nome}({ini}, min=0, max=100);")
     r(f"Param {SELETTORE[0]}(0, min=0, max={len(VARIANTI) - 1});")
+    r(f"Param {CURVA[0]}(0, min=0, max=1);")
     pos_data = len(g.righe)
     r("@@DATA@@")
     for nome, _, ini in MANOPOLE + [FADER]:
         r(f"History s_{nome}({ini});")
     r("History s_x(0);")
+    r("History s_c(0);")
     r()
     r("// manopole lisciate: 10 ms (selettore 20 ms, dissolvenza A/B)")
     r("t10 = exp(-1 / (0.010 * samplerate));")
@@ -136,13 +139,18 @@ def genexpr():
     for nome, _, _ in MANOPOLE + [FADER]:
         r(f"s_{nome} = {nome} + t10 * (s_{nome} - {nome});")
     r(f"s_x = {SELETTORE[0]} + t20 * (s_x - {SELETTORE[0]});")
+    r(f"s_c = {CURVA[0]} + t20 * (s_c - {CURVA[0]});")
     r()
     r("// GAIN: fondo corsa muto, meta CCW -100..0 dB, meta CW 0..+10 dB")
     r("tg = s_gain / 100;")
     r("g_gain = pow(10, min(200 * tg - 100, 20 * tg - 10) / 20) * (tg > 0);")
-    r("// bande: pot lineare x2; a fondo corsa il contatto da silenzio")
+    r("// bande: pot lineare x2, oppure curva Pioneer ideale (docs/09 §7):")
+    r("// taglio (2 theta)^1,5, boost uguale; a fondo corsa il contatto da silenzio")
     for b in BANDE:
-        r(f"g_{b} = 2 * s_{b} / 100 * max({b} > 0, s_{b} > 0.001);")
+        r(f"x_{b} = 2 * s_{b} / 100;")
+        r(f"g_{b} = ((1 - s_c) * x_{b} + s_c * (pow(min(x_{b}, 1), "
+          f"{canale.ESP_PIONEER!r}) + max(x_{b} - 1, 0)))"
+          f" * max({b} > 0, s_{b} > 0.001);")
     r("// fader [PROVVISORIO]: curva quadratica, -12 dB a meta corsa")
     r("tf = s_fader / 100;")
     r("g_fader = tf * tf;")
@@ -325,9 +333,14 @@ def patch(codice):
             {"parameter_type": 2, "parameter_enum": voci,
              "parameter_mmax": float(len(voci) - 1),
              "parameter_initial": [0], "parameter_unitstyle": 0})
+    ng, nl, voci = CURVA
+    comando(7, "obj-cur", ng, nl, "live.tab", [8, 114, 240, 20],
+            {"parameter_type": 2, "parameter_enum": voci,
+             "parameter_mmax": float(len(voci) - 1),
+             "parameter_initial": [0], "parameter_unitstyle": 0})
     boxes.append(box("obj-nota", maxclass="live.comment", numinlets=1,
                      numoutlets=0, presentation=1,
-                     presentation_rect=[8, 120, 250, 36],
+                     presentation_rect=[8, 138, 250, 30],
                      patching_rect=[20, 440, 250, 36], linecount=2,
                      text="50% = 0 dB (detent). Bande: 0% silenzio, "
                           "100% +6 dB. GAIN 100% = +10 dB."))

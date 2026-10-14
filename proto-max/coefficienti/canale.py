@@ -62,6 +62,18 @@ def banda_lin(theta):
     return BOOST_MAX * theta
 
 
+# Curva "Pioneer ideale" (docs/09 §7): solo per l'ascolto, non realizzabile
+# con pot lineari di serie. Lato taglio (2 theta)^1,5: -12 dB a ore 9
+# (theta 0,2, corsa 300 gradi) come DJM-600/850; partenza dolce, crollo
+# finale. Lato boost uguale al lineare (Pioneer non da dati).
+ESP_PIONEER = 1.5
+
+
+def banda_pioneer(theta):
+    x = BOOST_MAX * theta
+    return min(x, 1.0) ** ESP_PIONEER + max(x - 1.0, 0.0)
+
+
 def fader_lin(theta):
     """Fader [PROVVISORIO]: theta^2, cioe -12 dB a meta corsa."""
     return theta * theta
@@ -110,8 +122,8 @@ def bande(f, fs, incroci, pendenze=(4, 4, 4)):
     return low, lowmid, midhigh, high
 
 
-def isolator(f, fs, incroci, manopole, pendenze=(4, 4, 4)):
-    return sum(banda_lin(t) * b
+def isolator(f, fs, incroci, manopole, pendenze=(4, 4, 4), law=banda_lin):
+    return sum(law(t) * b
                for t, b in zip(manopole, bande(f, fs, incroci, pendenze)))
 
 
@@ -181,9 +193,10 @@ def risposta_halfband(coefs, f, fs_alto):
     return 0.5 * (a[0] + z1 * a[1])
 
 
-def isolator_os(f, fs, incroci, manopole, pendenze=(4, 4, 4)):
+def isolator_os(f, fs, incroci, manopole, pendenze=(4, 4, 4),
+                law=banda_lin):
     """Catena del gen~: su 2x, su 4x, banca a 4fs, giu 4x, giu 2x."""
     h1 = risposta_halfband(coef_halfband(*HALFBAND[1]), f, 2 * fs)
     h2 = risposta_halfband(coef_halfband(*HALFBAND[2]), f, 4 * fs)
-    return (h1 * h2 * isolator(f, 4 * fs, incroci, manopole, pendenze)
+    return (h1 * h2 * isolator(f, 4 * fs, incroci, manopole, pendenze, law)
             * h2 * h1)

@@ -129,3 +129,20 @@ sono campane larghe e il taglio di HI-MID si sente anche verso 400 Hz.
 Selettore a tre posizioni (A, C, D), dissolvenza 20 ms tra varianti
 vicine. `prova_gen.py` PASS con 9 punti di D in più.
 
+
+## Selettore CURVA (2026-10-14, 23:55)
+
+Filippo vuole la curva dei DJM Pioneer. I dati (docs/09 §7) dicono
+−12 dB a ore 9 (DJM-600/850) e taglio rapido a fine corsa; col pot
+lineare di serie nessuna rete passiva ci arriva. Per sentire se la
+differenza conta: selettore **CURVA = LINEARE / PIONEER** (ideale, solo
+ascolto). PIONEER: lato taglio (2θ)^1,5, lato boost uguale al lineare.
+
+| Manopola | 5 % | 10 % | 20 % (ore 9) | 30 % | 40 % | 50 % | 75 % | 100 % |
+|---|---|---|---|---|---|---|---|---|
+| LINEARE, dB | −20,0 | −14,0 | −8,0 | −4,4 | −1,9 | 0 | +3,5 | +6,0 |
+| PIONEER, dB | −30,0 | −21,0 | −11,9 | −6,7 | −2,9 | 0 | +3,5 | +6,0 |
+
+`prova_gen.py` PASS (6 punti della curva PIONEER su D). Se PIONEER vince
+all'ascolto, il circuito per costruirla resta da studiare (pot a taper
+con trim, oppure stadio attivo).

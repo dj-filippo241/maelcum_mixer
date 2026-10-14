@@ -72,6 +72,8 @@ class Gen:
             self.ns[k] = float(v)
             if k == "incroci":
                 self.ns["s_x"] = float(v)
+            elif k == "curva":
+                self.ns["s_c"] = float(v)
             else:
                 self.ns[f"s_{k}"] = float(v)
 
@@ -152,6 +154,17 @@ def main():
             atteso = canale.db(canale.isolator_os(
                 f, FS, inc, [m / 100 for m in man], pend))
             controlla(f"{nome}, {f} Hz", db(a), atteso)
+
+    print("CURVA PIONEER (D, MID-HIGH, 1514 Hz)")
+    inc, pend = canale.INCROCI["D"], canale.PENDENZE["D"]
+    for pos in (5, 20, 40, 50, 75, 100):
+        man = (50, 50, pos, 50)
+        a, _ = suona(testo, 1514, incroci=2, curva=1, low=50, lowmid=50,
+                     midhigh=pos, high=50)
+        atteso = canale.db(canale.isolator_os(
+            1514, FS, inc, [m / 100 for m in man], pend,
+            canale.banda_pioneer))
+        controlla(f"MID-HIGH {pos} %", db(a), atteso)
 
     print("GAIN (1 kHz)")
     for pos, atteso in [(0, -999.0), (25, -50.0), (50, 0.0), (75, 5.0), (100, 10.0)]:

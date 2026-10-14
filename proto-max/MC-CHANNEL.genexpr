@@ -26,6 +26,7 @@ Param midhigh(50.0, min=0, max=100);
 Param high(50.0, min=0, max=100);
 Param fader(100.0, min=0, max=100);
 Param incroci(0, min=0, max=2);
+Param curva(0, min=0, max=1);
 Data st(164);
 Data hb(128);
 History s_gain(50.0);
@@ -35,6 +36,7 @@ History s_midhigh(50.0);
 History s_high(50.0);
 History s_fader(100.0);
 History s_x(0);
+History s_c(0);
 
 // manopole lisciate: 10 ms (selettore 20 ms, dissolvenza A/B)
 t10 = exp(-1 / (0.010 * samplerate));
@@ -46,15 +48,21 @@ s_midhigh = midhigh + t10 * (s_midhigh - midhigh);
 s_high = high + t10 * (s_high - high);
 s_fader = fader + t10 * (s_fader - fader);
 s_x = incroci + t20 * (s_x - incroci);
+s_c = curva + t20 * (s_c - curva);
 
 // GAIN: fondo corsa muto, meta CCW -100..0 dB, meta CW 0..+10 dB
 tg = s_gain / 100;
 g_gain = pow(10, min(200 * tg - 100, 20 * tg - 10) / 20) * (tg > 0);
-// bande: pot lineare x2; a fondo corsa il contatto da silenzio
-g_low = 2 * s_low / 100 * max(low > 0, s_low > 0.001);
-g_lowmid = 2 * s_lowmid / 100 * max(lowmid > 0, s_lowmid > 0.001);
-g_midhigh = 2 * s_midhigh / 100 * max(midhigh > 0, s_midhigh > 0.001);
-g_high = 2 * s_high / 100 * max(high > 0, s_high > 0.001);
+// bande: pot lineare x2, oppure curva Pioneer ideale (docs/09 §7):
+// taglio (2 theta)^1,5, boost uguale; a fondo corsa il contatto da silenzio
+x_low = 2 * s_low / 100;
+g_low = ((1 - s_c) * x_low + s_c * (pow(min(x_low, 1), 1.5) + max(x_low - 1, 0))) * max(low > 0, s_low > 0.001);
+x_lowmid = 2 * s_lowmid / 100;
+g_lowmid = ((1 - s_c) * x_lowmid + s_c * (pow(min(x_lowmid, 1), 1.5) + max(x_lowmid - 1, 0))) * max(lowmid > 0, s_lowmid > 0.001);
+x_midhigh = 2 * s_midhigh / 100;
+g_midhigh = ((1 - s_c) * x_midhigh + s_c * (pow(min(x_midhigh, 1), 1.5) + max(x_midhigh - 1, 0))) * max(midhigh > 0, s_midhigh > 0.001);
+x_high = 2 * s_high / 100;
+g_high = ((1 - s_c) * x_high + s_c * (pow(min(x_high, 1), 1.5) + max(x_high - 1, 0))) * max(high > 0, s_high > 0.001);
 // fader [PROVVISORIO]: curva quadratica, -12 dB a meta corsa
 tf = s_fader / 100;
 g_fader = tf * tf;
