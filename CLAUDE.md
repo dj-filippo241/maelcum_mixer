@@ -8,7 +8,7 @@ Il repository non contiene software da compilare né test: contiene documenti di
 
 ## Regole del progetto
 
-1. **Una decisione, un posto solo.** Le decisioni bloccate stanno in `docs/01-decisioni-bloccate.md`; le aperte in `docs/02-questioni-aperte.md`; la specifica consolidata in `SPECIFICA.md` (v0.1, rev. 2026-10-14: decisioni 76-112). Quando una questione si chiude: spostarla da 02 a 01 con data e origine [F]/[R]/[C], e aggiornare la specifica.
+1. **Una decisione, un posto solo.** Le decisioni bloccate stanno in `docs/01-decisioni-bloccate.md`; le aperte in `docs/02-questioni-aperte.md`; la specifica consolidata in `SPECIFICA.md` (v0.1, rev. 2026-10-14: decisioni 76-113). Quando una questione si chiude: spostarla da 02 a 01 con data e origine [F]/[R]/[C], e aggiornare la specifica.
 2. **Non inventare decisioni di design.** Le scelte sonore/ergonomiche sono di Filippo. L'ingegneria (topologie, componenti, simulazioni, calcoli) è di Claude, ma i numeri che vincolano l'uso musicale vanno mostrati e confermati.
 3. **Niente valori congelati prima della topologia.** Regola ereditata dalla review: mai fissare valori di componenti prima di aver scelto il circuito. Distinguere sempre [BLOCCATO] / [PROVVISORIO] / [APERTO] / [SUPERATO].
 4. **Metodo della fase circuitale**: requisito funzionale → funzione di trasferimento → topologia → componenti → simulazione → vincoli PCB → prototipo → misura → revisione.
@@ -57,7 +57,7 @@ Regole di simulazione (ognuna nasce da un errore già pagato; il contesto sta ne
 - SVF con OTA della RES a Iabc quasi zero: il `.op` non converge (9 minuti a vuoto). Usare `.tran ... uic` e misurare il segnale con `PP`, non `RMS`: col partitore l'offset dell'OTA sale di 1/k.
 - Non fermare LTspice con `pkill -f <nome netlist>`: uccide anche lo script. `drive2-chain` a 150 Hz non termina (causa ignota): usare 50 Hz o 1 kHz.
 
-## Stato corrente (2026-10-14, decisioni 1-112)
+## Stato corrente (2026-10-14, decisioni 1-113)
 
 Il design teorico (carta + simulazione) è completo per tutti i moduli. Il prototipo musicale in Max for Live (dec. 78) è in pausa e precede il millefori. Gli acquisti sono sospesi fino al prototipo.
 
@@ -70,7 +70,7 @@ Il design teorico (carta + simulazione) è completo per tutti i moduli. Il proto
 | Filtro | v0.2; un percorso per canale (dec. 101, 8 core); law Xone:96 (dec. 102); overdrive v0.2 §5ter (dec. 99); core OTA (a′) con partitore 1/30 §5quater (dec. 109: il core nudo non funziona col chip reale; B1 aperta); numeri col chip reale accettati (dec. 110: oscillazione ~+5 dBu, calo di nota = carattere) | `docs/fase2/filter-module.md` | `sim/filtro/` |
 | 5-way | v0.3; celle v0.2.1; kill a switch §8.10 (dec. 88); drive v0.4 GROWL + NASTRO §5bis (dec. 99) | `docs/fase2/five-way-module.md` | `sim/five-way/` |
 | Mic e Mono | v0.1, due moduli separati, max 4 (dec. 97) | `docs/fase4/mic-mono-moduli.md` | `sim/mic/` |
-| Sistema | PSU ~250 VA (dec. 93/98/106; W1 3,5 A per i moduli opzionali, dec. 111; ~114-131 W da smaltire: due ventole a termostato, dec. 112), grounding, backplane, metering (dec. 81/90), CUE (dec. 96), shaper, inventario comandi | `docs/fase3/` | `sim/system/`, `sim/meter/`, `sim/shaper/` |
+| Sistema | PSU ~250 VA (dec. 93/98/106; W1 3,5 A per i moduli opzionali, dec. 111; alimentatore ESTERNO con pre-regolatori, dec. 113; ~95-100 W nel mixer, due ventole a termostato, dec. 112), grounding, backplane, metering (dec. 81/90), CUE (dec. 96), shaper, inventario comandi | `docs/fase3/` | `sim/system/`, `sim/meter/`, `sim/shaper/` |
 
 Review contro il benchmark (dec. 111): ibrido DJ / sound system / live, nessun fork, moduli opzionali predisposti (uscite per via, crossfader, EQ grafico, sirena), tasto MONO master, MUTE mic, ambiente da sound system all'aperto (`docs/07`, `docs/08`).
 
@@ -97,7 +97,7 @@ La coda vive in tre posti, non qui:
 
 ```
 SPECIFICA.md                  specifica consolidata
-docs/01-decisioni-bloccate.md cosa è deciso (112 voci; 103 e 104 revocate)
+docs/01-decisioni-bloccate.md cosa è deciso (113 voci; 103 e 104 revocate)
 docs/02-questioni-aperte.md   cosa manca: liste A/B/C in testa, storico delle voci sotto
 docs/03 … 08                  revisione critica, architettura filtro, benchmark, rumore, review
 docs/storico-sessioni.md      cronaca delle sessioni fino al 2026-10-13

@@ -66,6 +66,55 @@ Conseguenze:
 - Protezione a 1,6 A per ramo e supervisor: soglie da riallineare ai
   nuovi raw (finestre per avvolgimento).
 
+## REV 2026-10-14 — decisione 113: alimentatore ESTERNO [PROVVISORIO — regola 3]
+
+Scelta di Filippo (dec. 113). Architettura proposta da Claude:
+
+```
+BOX ESTERNO (alette, senza ventola, all'aria aperta)        CAVO ≤ 2 m        MIXER
+ rete IEC + filtro + fusibile + NTC                          connettore         modulo PSU-IN (stella)
+ toroidale ~250 VA (W1 2×21 V 3,5 A, W2 2×18 V 1,0 A,        circolare            │
+   W3 2×20 V 0,4 A, W4 9 V 2,5 A)                            metallico,           ├─ backplane riga a
+ ponti + bulk (2×10 mF per W1/W2, 2×4,7 mF W3, 10 mF W4)     a vite, IP65,        │   (stessa mappa, valori nuovi)
+ PRE-REG ±22,5 V (da W1, 1,7 A, LDO dropout ≤ 1 V)  ───────  ≥ 16 pin ≥ 5 A ──── ├─ LM317/337 locali → ±18 (invariati)
+ PRE-REG ±19 V   (da W2)                            ───────                       ├─ pre-reg ±16,5 + LT3045/94 → ±15 LN
+ raw [M] ±27 (W3, non regolato: serve allo swing)    ───────                       ├─ master [M] (invariato)
+ +5 V regolato (W4)                                  ───────                       ├─ +5 control
+ +12 V ventole (W4 raw)                              ───────                       └─ ventole (ritorno dedicato)
+ terra di rete → schermo del cavo → telaio del mixer
+```
+
+- **Perché un primo stadio nel box**: col solo trasformatore fuori
+  uscirebbero ~13 W. Col pre-regolatore a ±22,5 V esce anche la caduta
+  raw → 22,5 V (~15 W nominali, ~28 W a rete +10 %): i regolatori locali
+  dei moduli lavorano sempre su ~3,3 V di caduta, a qualunque tensione di
+  rete. Margine dei locali: LM317 → 19,2 V con ≤ 0,35 A per modulo chiede
+  ~20,9 V; arrivano 22,5 − 0,2 (cavo) = 22,3 V. A rete −10 % il raw minimo
+  è 23,5 V (`psu-w1-opt.cir`): il pre-regolatore resta in regolazione con
+  dropout ≤ 1 V (classe LT1083/LT1085 o discreto) [da simulare].
+- **[M] resta raw**: lo swing del master (+24 dBu) usa tutta la tensione
+  disponibile (statici 23,3-30,3 V); regolarlo costerebbe headroom.
+- **Calore**: dentro il mixer da ~131 a **~95-100 W** (coi moduli
+  opzionali) e **indipendente dalla rete**; nel box ~30 W nominali, ~45 W
+  a rete +10 %, su alette all'aria esterna. Con le ventole (dec. 112)
+  l'interno sta ~3 K sopra l'ambiente.
+- **Cavo**: ≤ 2 m; ±22,5 audio su 2 conduttori per polo (1,7 A), caduta
+  ~0,2 V; +5 V su 2 conduttori per polo con regolazione a monte (caduta
+  ~0,1 V a 1,3 A: 4,9 V, accettabile per LED e logiche); schermo
+  complessivo = terra di rete. Connettore: circolare metallico a vite,
+  IP65, ≥ 16 contatti da ≥ 5 A, con codifica (famiglia Amphenol / Harting
+  / LEMO: scelta nella sessione hardware, voce 40).
+- **Supervisor e mute** (master-out §3.7): invariati; sentono i rail al
+  loro arrivo nel mixer. Cavo staccato o box spento = rail assenti =
+  mute: nessun pop. Le soglie delle finestre vanno riscritte sui nuovi
+  valori (±22,5 / ±19 / [M] / +5).
+- **Masse**: la stella resta **dentro il mixer**, nel modulo PSU-IN
+  (`sistema-grounding.md` REV dec. 113). Il box non ha un suo 0 V verso
+  terra: gli zeri dei secondari viaggiano nel cavo e si uniscono solo alla
+  stella; la terra di rete arriva al telaio del mixer dallo schermo del
+  cavo (bond chassis unico invariato).
+- **Fusibili di ramo**: nel mixer, sul modulo PSU-IN (accessibili).
+
 ## REV 2026-10-14 — decisione 111: moduli opzionali, 40 °C ambiente, bilancio termico rifatto [PROVVISORIO]
 
 Dati e netlist: `sim/system/RISULTATI-dec111.md`.

@@ -15,6 +15,15 @@ test point per modulo; CV 0-5 V = convenzione d'interfaccia. Masse:
 topologia in `sistema-grounding.md` (stella unica alla PSU; qui viaggiano
 i ritorni dedicati).
 
+## REV 2026-10-14 — decisione 113: alimentatore esterno [PROVVISORIO]
+
+La riga a conserva la mappa (§3) ma cambiano i valori: i pin «±27 V raw
+AUDIO» portano **±22,5 V pre-regolati** dal box; i pin «±22 V raw LN»
+portano **±19 V pre-regolati**; [M] resta raw (±27 nominali); +5 V
+invariato. Lo slot PSU diventa **PSU-IN**: riceve il cavo dal box,
+ospita la stella, i fusibili di ramo e il controllo delle ventole
+(dec. 112). Dettagli in `sistema-psu.md` REV dec. 113.
+
 ## REV 2026-10-14 — decisione 111: predisposizioni per i moduli opzionali [PROVVISORIO]
 
 Moduli che il backplane deve accogliere senza grosse modifiche (dec. 111 b):

@@ -7,6 +7,14 @@ Scope: topologia analogue-0V, bonding chassis, schermi, masse speciali
 `phono-stage.md` (GND giradischi → stella), `sistema-backplane.md` (i
 ritorni di massa viaggiano sul backplane — pinout lì).
 
+> **[REV 2026-10-14, dec. 113 — alimentatore esterno]** La stella
+> analogue-0V resta DENTRO il mixer, nel modulo PSU-IN che riceve il cavo
+> dal box esterno (`sistema-psu.md` REV dec. 113). Il box non collega i
+> suoi zeri alla terra: gli 0 V dei secondari viaggiano nel cavo e si
+> uniscono solo alla stella. La terra di rete arriva al telaio del mixer
+> dallo schermo del cavo; il bond CHASSIS↔AGND unico (§2) resta alla
+> stella. Dove sotto si legge «modulo PSU», vale «modulo PSU-IN».
+
 ## 1. Principio
 
 Un solo punto di riferimento: la **stella analogue-0V** nel modulo PSU
