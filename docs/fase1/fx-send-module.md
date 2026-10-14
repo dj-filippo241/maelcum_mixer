@@ -49,6 +49,9 @@ IN L/R (send tap dal canale CDJ, post-EQ/pre-filter/pre-fader,
   │  pot doppi 10k custom taper (voce 40/85 famiglia), −∞→0→+6
   ▼ LEVEL pot doppio 10k log [PROVVISORIO — taper custom candidato
   │  voce 40]: divisore passivo −∞…0 dB, nessun gain positivo [BLOCCATO]
+  │  [REV 2026-10-14, dec. 108: unico controllo del livello al pedale
+  │  (pad del modulo FX fisso 0 dB); log standard curva A: −20 dB a metà
+  │  corsa, 0 dB a fine corsa; niente taper custom — fx-module §4]
   ▼ ASSIGN ×4 destinazioni (S1-S4): π SPDT famiglia ADG1434-class
   │  (serie + shunt a GND da off, Ron ≤4,7 Ω — stessa topologia e
   │  famiglia del kill 5-way, five-way §8.10): 8 switch stereo =

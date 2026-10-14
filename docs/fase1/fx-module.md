@@ -103,6 +103,23 @@ L/R con due path matched (centraggio affidabile, no phase games).
 > 0 dBu (picchi fino a +16). Da rifare: law di LEVEL con risoluzione nel
 > tratto −30…−10 dB; regola g_loop riformulata su LEVEL + GAIN ritorno
 > (verifica a banco col pedale vero).
+>
+> **[2026-10-14, todo 44 — conseguenze ingegneristiche, accettate da
+> Filippo]**
+> - **Regola g_loop nuova**: g_loop(dB) = GAIN ritorno + reroute(dB) +
+>   guadagno del pedale. LEVEL non è nel giro. Auto-oscillazione con
+>   pedale a unity quando reroute = −GAIN: GAIN 0 → fine corsa (law SPEC:
+>   0 dB a 100 %); GAIN +10 → reroute −10 dB (~70 %); GAIN +20 → reroute
+>   −20 dB (~45 %). Il bounding resta la saturazione del pedale (§8):
+>   ampiezza a regime invariata, cambia solo dove parte sulla corsa.
+> - **Soffio**: il floor della mandata (~−98,5 dBu A-wtd al jack con un
+>   send vivo, `RISULTATI-send-chain-71A.md`) va al pedale a livello
+>   pieno e torna moltiplicato dal GAIN: ~−78,5 dBu A-wtd al master con
+>   GAIN +20 [STIMA, da confermare in simulazione/banco].
+> - **Law di LEVEL**: pot doppio 10k log standard (curva A 10 %) basta:
+>   −20 dB a metà corsa (pedali a livello chitarra), 0 dB a fine corsa
+>   (pedali line), ~0,45 dB per % di corsa nel tratto −30…−10 dB. Nessun
+>   taper custom per LEVEL [PROVVISORIO].
 
 - **Send**: summing → driver buffer (OPA1612 class, low-Z ≤50 Ω) →
   **pad selezionabile** solder-pad/DIP: −20 dB (prototipo, chitarra/rack
