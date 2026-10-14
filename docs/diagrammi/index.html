@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<title>maelcum mixer — diagrammi di modulo</title>
+<title>maelcum mixer — schema totale e diagrammi di modulo</title>
 <style>
   body { margin: 0; background: #E8E5DE; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: #141414; }
   header { padding: 28px 40px 12px; }
@@ -18,10 +18,11 @@
 </head>
 <body>
 <header>
-  <h1>maelcum mixer — diagrammi a blocchi dei moduli</h1>
-  <p class="sub">Generati dai design doc correnti (2026-10-12, decisioni fino alla 96) con <code>genera_diagrammi.py</code>. SVG vettoriali: riapribili e modificabili in Illustrator / Figma / Inkscape. Rosso = audio, blu tratteggiato = controllo, viola = feedback e modifiche rispetto alla versione del 2026-09-28, ambra = questioni aperte.</p>
+  <h1>maelcum mixer — schema totale e diagrammi dei moduli</h1>
+  <p class="sub">Generati dai design doc correnti (2026-10-14, decisioni fino alla 109) con <code>genera_diagrammi.py</code>. SVG vettoriali: riapribili e modificabili in Illustrator / Figma / Inkscape. Schema totale: rosso = ingressi, blu = uscite, verde = moduli con comandi, grigio = blocchi passivi. Diagrammi di modulo: rosso = audio, blu tratteggiato = controllo, viola = feedback e note evidenziate, ambra = questioni aperte.</p>
 </header>
 <nav>
+  <a href="#schema">Schema totale</a>
   <a href="#canale">Canale CDJ/Line</a>
   <a href="#fxsend">FX-Send</a>
   <a href="#fx">FX</a>
@@ -32,13 +33,14 @@
   <a href="#micmono">Mic / Mono</a>
 </nav>
 
-<figure id="canale"><img src="canale-cdj.svg" alt="Diagramma modulo canale CDJ/Line"><figcaption>Canale CDJ/Line v0.4 — docs/fase1/cdj-line-channel.md (phono MM incluso; send FX spostato nel micro-modulo, dec. 91a)</figcaption></figure>
-<figure id="fxsend"><img src="fx-send.svg" alt="Diagramma micro-modulo FX-SEND"><figcaption>Micro-modulo FX-SEND v0.1-WIP — docs/fase1/fx-send-module.md (nuovo: EQ2 + level + assign, uno per canale)</figcaption></figure>
-<figure id="fx"><img src="fx.svg" alt="Diagramma modulo FX"><figcaption>FX v0.3-WIP — docs/fase1/fx-module.md (una delle 4 sezioni bus + matrice feedback 16× con self-feedback, dec. 91b)</figcaption></figure>
-<figure id="fiveway"><img src="five-way.svg" alt="Diagramma modulo 5-way"><figcaption>5-Way dub preamp v0.3 — docs/fase2/five-way-module.md (kill a switch dec. 88, drive validato dec. 82/87, celle v0.2.1)</figcaption></figure>
-<figure id="filtro"><img src="filtro.svg" alt="Diagramma modulo filtro"><figcaption>Filtro globale v0.2/v0.3-WIP — docs/fase2/filter-module.md (questione 70 aperta: carattere vs pulito; rumore dec. 89)</figcaption></figure>
+<figure id="schema"><img src="schema-totale.svg" alt="Schema funzionale totale del mixer"><figcaption>Schema funzionale totale — tutti gli ingressi, i moduli e le uscite; un canale DJ e un bus FX disegnati, gli altri identici</figcaption></figure>
+<figure id="canale"><img src="canale-cdj.svg" alt="Diagramma modulo canale CDJ/Line"><figcaption>Canale CDJ/Line v0.4 — docs/fase1/cdj-line-channel.md (EQ isolator 4 bande dec. 105, phono MM incluso, send FX nel micro-modulo dec. 91a)</figcaption></figure>
+<figure id="fxsend"><img src="fx-send.svg" alt="Diagramma micro-modulo FX-SEND"><figcaption>Micro-modulo FX-SEND v0.1-WIP — docs/fase1/fx-send-module.md (EQ2 + LEVEL + assign; LEVEL = unico livello al pedale, dec. 108)</figcaption></figure>
+<figure id="fx"><img src="fx.svg" alt="Diagramma modulo FX"><figcaption>FX v0.3-WIP — docs/fase1/fx-module.md (una delle 4 sezioni bus + matrice feedback 16× con self-feedback, dec. 91b; pad fisso 0 dB, dec. 108)</figcaption></figure>
+<figure id="fiveway"><img src="five-way.svg" alt="Diagramma modulo 5-way"><figcaption>5-Way dub preamp v0.3 — docs/fase2/five-way-module.md (kill a switch dec. 88, drive v0.4 GROWL + NASTRO dec. 99, celle v0.2.1)</figcaption></figure>
+<figure id="filtro"><img src="filtro.svg" alt="Diagramma modulo filtro"><figcaption>Filtro globale v0.2 + D5 — docs/fase2/filter-module.md (core OTA (a′) con partitore 1/30 dec. 109, overdrive v0.2 dec. 99, un percorso per canale dec. 101; B1 aperta)</figcaption></figure>
 <figure id="master"><img src="master-out.svg" alt="Diagramma modulo master out"><figcaption>Master Out v0.2 + stadio finale v0.3 — docs/fase1/master-out.md (bootstrap dec. 86, summing 7 contributori dec. 94a, buffer MON verso CUE)</figcaption></figure>
-<figure id="cue"><img src="cue.svg" alt="Diagramma modulo cue e cuffie"><figcaption>Cue / Cuffie S5 v0.2 — docs/fase3/sistema-cue.md (nuovo: ampli cuffia ridisegnato 2026-10-12, standard classe DJM dec. 96)</figcaption></figure>
-<figure id="micmono"><img src="mic-mono.svg" alt="Diagramma moduli mic e mono"><figcaption>Mic e Mono — architettura v0.1 (2026-10-13) — docs/fase4/mic-mono-moduli.md (nuovo: due moduli separati, dec. 97)</figcaption></figure>
+<figure id="cue"><img src="cue.svg" alt="Diagramma modulo cue e cuffie"><figcaption>Cue / Cuffie S5 v0.2 — docs/fase3/sistema-cue.md (ampli cuffia ridisegnato 2026-10-12, standard classe DJM dec. 96)</figcaption></figure>
+<figure id="micmono"><img src="mic-mono.svg" alt="Diagramma moduli mic e mono"><figcaption>Mic e Mono — architettura v0.1 (2026-10-13) — docs/fase4/mic-mono-moduli.md (due moduli separati, dec. 97; LED tricolore)</figcaption></figure>
 </body>
 </html>
