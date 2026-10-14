@@ -96,6 +96,14 @@ L/R con due path matched (centraggio affidabile, no phase games).
 
 ## 4. Interfaccia pedali (questione 13 — proposta v0.2 [PROVVISORIO])
 
+> **[REV 2026-10-14 — DECISIONE 108]** Il pad selezionabile qui sotto è
+> SUPERATO: pad fisso 0 dB. Il livello al pedale lo dà solo LEVEL del
+> micro-modulo FX-SEND (−∞…0); la compensazione la fa il GAIN del
+> ritorno (−∞…0…+20). Al nominale con LEVEL aperta il pedale riceve
+> 0 dBu (picchi fino a +16). Da rifare: law di LEVEL con risoluzione nel
+> tratto −30…−10 dB; regola g_loop riformulata su LEVEL + GAIN ritorno
+> (verifica a banco col pedale vero).
+
 - **Send**: summing → driver buffer (OPA1612 class, low-Z ≤50 Ω) →
   **pad selezionabile** solder-pad/DIP: −20 dB (prototipo, chitarra/rack
   -10 dBu sensibili) / −10 / 0 dB (rack +4 dBu) → R serie 100 Ω + TVS
