@@ -28,8 +28,10 @@
 * RUMORE — ASSENTE dal datasheet come specifica numerica (solo Fig. 15,
 * grafico "Output Noise vs Frequency"): il modello lo genera FISICAMENTE
 * (shot/termica della coppia: en ≈ sqrt(4kT·2·(Rb+re)), re = 2VT/IABC):
-* MISURATO nel self-test: 2,5 nV/√Hz a 500 µA · 4,3 a 100 µ · 7,3 a 31 µ ·
-* 14,6 a 7,56 µ · 28,7 a 2 µ · 130 a 100 nA (piatta in frequenza nel macro).
+* MISURATO nel self-test (modello col mirror d'uscita completo, 2026-10-14):
+* 3,7 nV/√Hz a 500 µA · 6,4 a 100 µ · 10,8 a 31 µ · 21,4 a 7,56 µ ·
+* 41,4 a 2 µ · 186 a 100 nA (piatta in frequenza nel macro). Prima del fix
+* del 2026-10-14 i valori erano ×0,71 (2,6 · 4,5 · 7,7 · 15,2 · 29,4 · 133).
 * [PROVVISORIO — regola 3: è il LIMITE FISICO della coppia; il die reale
 * (r_bb' vera, mirror, geometria laterale) sarà verosimilmente 2-5× peggio:
 * trattare i margini di rumore come OTTIMISTI e verificare a banco.]
@@ -61,10 +63,19 @@ Q2 tail iabc vee QN13700
 Vosrc inn innx DC {Vos}
 * --- coppia d'ingresso: Q4 su inp, Q5 su innx ---
 Q4 a inp tail QN13700
-Q5 out innx tail QN13700
-* --- mirror di uscita PNP: riporta Ic4 su out (push-pull con Q5) ---
+Q5 b innx tail QN13700
+* --- mirror di uscita PNP: riporta Ic4 su out (sorgente) ---
 Q6 a a vcc QP13700
 Q7 out a vcc QP13700
+* --- FIX 2026-10-14 (D5, sim/filtro/RISULTATI-D5.md): Ic5 arriva su out
+* attraverso un mirror PNP (Q8/Q9) e un mirror NPN (Q10/Q11), come nel
+* die reale. Prima Q5 aveva il collettore direttamente su out: sotto
+* ~-0,4 V d'uscita Q5 saturava (continua e H2 spurie). I risultati con
+* stati d'uscita sopra -0,4 V (core nudo, celle 5-way) non cambiano. ---
+Q8 b b vcc QP13700
+Q9 c b vcc QP13700
+Q10 c c vee QN13700
+Q11 out c vee QN13700
 * --- diodi linearizzanti (matched alla coppia): ID da dbp/dbn ---
 QDp dbp dbp inp QN13700
 QDn dbn dbn inn QN13700

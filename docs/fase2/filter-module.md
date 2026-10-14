@@ -1,5 +1,11 @@
 # FASE 2 — Modulo FILTRO: design v0.2 + v0.3-WIP (2026-09-28)
 
+> **D5 (2026-10-14, dec. 109, `sim/filtro/RISULTATI-D5.md`) → §5quater**:
+> il core (a) nudo di §3 non funziona ai livelli di progetto col chip
+> reale (picco di risonanza sotto −12 dBu, oscillazione 3,5 ottave sotto
+> FREQ). Core OTA corrente = **(a′)**: partitore 1/30 davanti agli OTA,
+> C 1,1 nF, limitatore a perdita non lineare verso il summer. Il soft
+> limiter sul nodo BP di §5 è SUPERATO. B1 resta aperta: (a′) o (c-B).
 > **v0.3-WIP (2026-09-28, `sim/filtro/RISULTATI-ota-real.md`)**: item §9.2 e
 > §9.3 FATTI — (a) ramp BBM validata: τ 1 ms = click −8,4 dB vs brusco,
 > 5 ms ≈ baseline; famiglia unica 1 ms con gate 5-way [escluso dec. 88: kill hard-cut a switch] e reroute FX (ratificata:
@@ -423,7 +429,7 @@ sarebbe pressoché impossibile».
 
 **Servo DC**: FATTO il 2026-10-13, vedi «Servo DC» qui sotto.
 
-Rumore del VCA a guadagni diversi da 0 dB (dato di datasheet mancante); D5 col modello OTA reale (dopo q70); deriva termica dei
+Rumore del VCA a guadagni diversi da 0 dB (dato di datasheet mancante); D5 FATTO il 2026-10-14 (§5quater); deriva termica dei
 diodi (il tetto scende ~2 mV/°C per diodo); interazione col soft
 limiter della risonanza.
 
@@ -460,6 +466,75 @@ Conteggio: 8 celle = 4 doppi op-amp, 8 condensatori film 47 nF.
 A banco: il colpo del VCA quando si muove la manopola (il servo recupera
 in ~3 s, non lo toglie); una continua del core sposta di poco la
 simmetria del tosatore (5 mV contro una soglia di ~1,2 V).
+
+## 5quater. Core (a′) e D5: risonanza + overdrive col chip reale (2026-10-14, DECISIONE 109) [SIMULATO, valori PROVVISORI]
+
+Dati completi e netlist: `sim/filtro/RISULTATI-D5.md`. Qui la sintesi.
+
+### Perché
+
+Col modello reale dell'LM13700 il core (a) di §3 (OTA pilotati dal
+segnale pieno) satura sul tetto dei 52 mV (`RISULTATI-ota-real.md` §6).
+Misurato (RISULTATI-D5 §1): picco di risonanza sotto ~−12 dBu a
+qualunque livello d'ingresso; programma a 0 dBu −23 dB sul taglio;
+auto-oscillazione ~3,5 ottave sotto FREQ. La v0.2 non lo vedeva: usava
+OTA ideali senza limite di corrente.
+
+### Topologia (a′)
+
+```
+summer ─hp─► 2,9k ─┬─► OTA1 ─► 1,1 nF ─► buffer ─bp_b─► 2,9k ─┬─► OTA2 ─► 1,1 nF ─► buffer ─► LP
+                   100 Ω                                       100 Ω
+                                                              └─► OTA RES ± (Iabc 221 uA·|gres|) ─► summer
+bp_b ─► 4,7k ─► 2+2 1N4148 antiparallele ─► summer   (limitatore)
+```
+
+- **Partitore 1/30** davanti agli ingressi degli OTA: il tetto di stato
+  sul taglio sale a 1,56 V. Rumore e offset dell'OTA riferiti agli stati
+  crescono di 30×.
+- **C = 33 nF/30 = 1,1 nF** (C0G/PP, matched): la mappa Iabc → fc resta
+  quella di §4. Converter, mirror, shaper (dec. 102) invariati.
+- **RES**: OTA nel summer come in §5, ingresso dallo stesso partitore,
+  Iabc ×30 (221 uA per gres = 1). Due OTA a polarità opposta in
+  simulazione per il segno di gres; nel circuito vale la soluzione di §5.
+- **Limitatore**: perdita non lineare dal buffer BP (bassa impedenza) al
+  summer. Il soft limiter sul nodo BP di §5 prendeva corrente dall'OTA, e
+  l'ampiezza cambiava col taglio (+3,5 dB per decade): SUPERATO.
+
+### Misure (fc ~1 kHz, tono sul taglio)
+
+- Piccolo segnale: risposta di un 2 poli Q 0,707 esatta.
+- Risonanza sul taglio, uscita/ingresso: a −30 dBu come l'ideale
+  (+21 dB a RES 85 %); a −10 dBu +7,2 dB a RES 70 % e +8,5 a 85 %; a
+  0 dBu ~+1 dB al massimo. THD del core a 0 dBu 1,5-2 %.
+- Auto-oscillazione: −1,8 dBu poco oltre il 90 % di RES, +4,9 dBu a
+  fine corsa; nota −1,3 / −5,7 semitoni rispetto al taglio. Livello e
+  nota uguali su tre decadi (100 Hz-10 kHz).
+- Rumore: −87,4 dBu A-wtd a fc max (`d5a-noise-k30-397u.cir`); sistema
+  con 4 filtri inseriti e overdrive chiuso −79,0 (docs/06 §11).
+- Offset in continua all'uscita LP: 3,9 mV con Vos tipico; ~40 mV
+  stimati col Vos massimo, dentro la corsa del servo dell'overdrive
+  (83 mV a m = 1).
+
+### D5: core (a′) + overdrive v0.2 (`d5-chain.cir`)
+
+THD % · uscita dBu rms, manopola DRIVE 0 / 50 / 100 %:
+
+| RES · ingresso | 0 % | 50 % | 100 % |
+|---|---|---|---|
+| 85 % · −10 dBu | 1,3 · −1,5 | 3,4 · −0,7 | 15,7 · +2,5 |
+| 85 % · 0 dBu | 1,8 · +0,7 | 3,5 · +1,1 | 20,0 · +3,1 |
+| 0 % · 0 dBu | 0,6 · −3,5 | 2,8 · −2,3 | 11,3 · +1,8 |
+
+- Il fischio arriva all'overdrive a −1,5…+2 dBu, non a +8 come nella
+  griglia di §5ter: l'overdrive lo sporca meno (15-20 % invece di 31 %)
+  e lo alza invece di frenarlo.
+- Il primo sporco sul fischio lo fa il core (1,3-2 %); l'overdrive lo
+  allarga. Programma e fischio si sporcano quasi insieme.
+- Tetto rispettato: uscita massima misurata +5,4 dBu.
+
+**Da riconfermare da Filippo (voce A17)**: griglia dell'overdrive, law
+RES, livello e nota dell'oscillazione.
 
 ## 6. Simulazione di fattibilità (2026-09-24, `sim/filtro/`)
 

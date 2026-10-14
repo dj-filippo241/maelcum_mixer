@@ -1,0 +1,59 @@
+* FILTRO — D5 rumore del core (a') con partitore k = 0.025 (1/40), Iabc 397u
+* Modello LM13700 col mirror d'uscita completo (fix 2026-10-14). RES al minimo
+* (gres 1: OTA RES a 7,365 uA/k, il suo rumore e' incluso). C = 33 nF*k.
+* Metodo docs/06 e five-way §8.9: densita' a 16 punti + noise_total.py,
+* one-shot, macro OPX senza clamp, .nodeset sugli stati.
+.include ../lib/lm13700.inc
+.subckt OPX inp inn out vp vm
+Rn inp inx 1223
+E1 xx 0 inx inn 1e6
+R1 xx p1 5005
+C1 p1 0 1.59u
+E2 out 0 value={V(p1)}
+.ends OPX
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+V1 vin 0 DC 0 AC 1
+Ix1 vcc iabc1 DC 397u
+Ix2 vcc iabc2 DC 397u
+Ixp vcc iabp DC 0.0002946
+Ixn vcc iabn DC 1n
+Rvin vin ns 10k
+Rlp lp_b ns 10k
+Rf ns hp 10k
+Xsum 0 ns hp vcc vee OPX
+Ra1 hp hpk 3900
+Rd1 hpk 0 100
+Xota1 hpk 0 bp iabc1 d1 d2 vcc vee LM13700
+C1i bp 0 8.25e-10
+Rb1 bp 0 100Meg
+Xb1 bp bp_b bp_b vcc vee OPX
+Ra2 bp_b bpk 3900
+Rd2 bpk 0 100
+Xota2 bpk 0 lp iabc2 d3 d4 vcc vee LM13700
+C2i lp 0 8.25e-10
+Rb2 lp 0 100Meg
+Xb2 lp lp_b lp_b vcc vee OPX
+XresP bpk 0 ns iabp d5 d6 vcc vee LM13700
+XresN 0 bpk ns iabn d7 d8 vcc vee LM13700
+.options gmin=1e-9 abstol=1e-11 vntol=1e-8
+.nodeset V(bp)=0 V(lp)=0 V(hp)=0 V(bp_b)=0 V(lp_b)=0
+.noise V(lp_b) V1 dec 50 20 20k
+.meas noise on1 FIND V(onoise) AT 20
+.meas noise on2 FIND V(onoise) AT 31.5
+.meas noise on3 FIND V(onoise) AT 50
+.meas noise on4 FIND V(onoise) AT 80
+.meas noise on5 FIND V(onoise) AT 125
+.meas noise on6 FIND V(onoise) AT 200
+.meas noise on7 FIND V(onoise) AT 315
+.meas noise on8 FIND V(onoise) AT 500
+.meas noise on9 FIND V(onoise) AT 800
+.meas noise on10 FIND V(onoise) AT 1250
+.meas noise on11 FIND V(onoise) AT 2000
+.meas noise on12 FIND V(onoise) AT 3150
+.meas noise on13 FIND V(onoise) AT 5000
+.meas noise on14 FIND V(onoise) AT 8000
+.meas noise on15 FIND V(onoise) AT 12500
+.meas noise on16 FIND V(onoise) AT 20000
+.meas noise g1k FIND gain AT 1000
+.end

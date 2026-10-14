@@ -1,0 +1,67 @@
+* =====================================================================
+* FILTRO — D5 passo 2 (2026-10-14): core (a') = OTA con PARTITORE davanti
+* agli ingressi degli OTA (pratica dei filtri OTA reali, Sherman compreso).
+* Partitore k = Rd/(Ra+Rd), Rd 100 ohm: il tetto di stato a fc diventa
+* 52 mV/k; il rumore dell'OTA riferito agli stati sale di 1/k.
+* C = 33 nF * k: la mappa Iabc -> fc resta quella della v0.2 (converter e
+* shaper invariati). RES: stessi OTA del passo 1, ingresso dallo stesso
+* partitore dello stato BP, Iabc_res = 7,365 uA * |gres| / k.
+* Griglia come d5-core.cir: gres (law dec. 102) x livello x frequenza x k.
+* Avvio con uic (il .op non converge con gli OTA RES a Iabc ~0).
+* Livelli (PICCO): -30 dBu 0,0346 | -10 dBu 0,346 | 0 dBu 1,096
+* =====================================================================
+.include ../lib/lm13700.inc
+.include ../lib/opamp-audio.inc
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+.param k=0.05
+.param Ra={100*(1/k-1)} Ci={33n*k}
+.param Ip={7.365u/k*max(gres,0)+1n} In={7.365u/k*max(-gres,0)+1n}
+V1 vin 0 SINE(0 {A} {f})
+Ix1 vcc iabc1 DC 10.8u
+Ix2 vcc iabc2 DC 10.8u
+Ixp vcc iabp DC {Ip}
+Ixn vcc iabn DC {In}
+* --- summer ---
+Rvin vin ns 10k
+Rlp lp_b ns 10k
+Rf ns hp 10k
+Xsum 0 ns hp vcc vee OP1654
+* --- integratori OTA reali + buffer di stato ---
+Ra1 hp hpk {Ra}
+Rd1 hpk 0 100
+Xota1 hpk 0 bp iabc1 d1 d2 vcc vee LM13700
+C1i bp 0 {Ci}
+Rb1 bp 0 100Meg
+Xb1 bp bp_b bp_b vcc vee OP1654
+Ra2 bp_b bpk {Ra}
+Rd2 bpk 0 100
+Xota2 bpk 0 lp iabc2 d3 d4 vcc vee LM13700
+C2i lp 0 {Ci}
+Rb2 lp 0 100Meg
+Xb2 lp lp_b lp_b vcc vee OP1654
+* --- RES: OTA reali nel summer (positivo smorza, negativo innesca) ---
+XresP bpk 0 ns iabp d5 d6 vcc vee LM13700
+XresN 0 bpk ns iabn d7 d8 vcc vee LM13700
+* --- soft limiter sul nodo BP (filter-module §5) ---
+.model D1N4148 D(Is=2.53n Rs=0.568 N=1.752 Cjo=4p M=0.4 Tt=20n)
+Rlim bp dlim 1k
+D1 dlim n1 D1N4148
+D2 n1 n1b D1N4148
+D3 n1b 0 D1N4148
+D4 0 n2b D1N4148
+D5 n2b n2 D1N4148
+D6 n2 dlim D1N4148
+.ic V(lp)=0.01
+.tran 0 80m 0 5u uic
+.param gres=1
+.param A=0.0346
+.step param k LIST 0.1 0.025
+.step param f LIST 250 500 1000 2000 4000
+.meas tran lppp PP V(lp_b) FROM 60m TO 80m
+.meas tran lpdc AVG V(lp_b) FROM 60m TO 80m
+.meas tran lprms RMS V(lp_b) FROM 60m TO 80m
+.four {f} V(lp_b)
+.meas tran bppp PP V(bp_b) FROM 60m TO 80m
+.meas tran hppp PP V(hp) FROM 60m TO 80m
+.end

@@ -1,0 +1,87 @@
+* =====================================================================
+* FILTRO — D5 passo 3 (2026-10-14): CORE (a') + OVERDRIVE v0.2 (§5ter)
+* Core: come d5a-core2.cir (partitore k, limitatore 4,7k + 2+2 1N4148).
+* Overdrive: blocco di od2-chain.cir sull'uscita LP del core,
+*   y = x + m*(k_od*CLIP(2x) - x), k_od 1,171, diodi 2+2 su 2,2k, VCA ideale,
+*   m = theta^2,5 -> manopola 0/25/50/65/80/90/100 % in parallelo (B).
+* Core (a') = OTA con PARTITORE davanti
+* agli ingressi degli OTA (pratica dei filtri OTA reali, Sherman compreso).
+* Partitore k = Rd/(Ra+Rd), Rd 100 ohm: il tetto di stato a fc diventa
+* 52 mV/k; il rumore dell'OTA riferito agli stati sale di 1/k.
+* C = 33 nF * k: la mappa Iabc -> fc resta quella della v0.2 (converter e
+* shaper invariati). RES: stessi OTA del passo 1, ingresso dallo stesso
+* partitore dello stato BP, Iabc_res = 7,365 uA * |gres| / k.
+* Griglia come d5-core.cir: gres (law dec. 102) x livello x frequenza x k.
+* Avvio con uic (il .op non converge con gli OTA RES a Iabc ~0).
+* Livelli (PICCO): -30 dBu 0,0346 | -10 dBu 0,346 | 0 dBu 1,096
+* =====================================================================
+.include ../lib/lm13700.inc
+.include ../lib/opamp-audio.inc
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+.param A=0.346 gres=1 k=0.05
+.param Ra={100*(1/k-1)} Ci={33n*k}
+.param Ip={7.365u/k*max(gres,0)+1n} In={7.365u/k*max(-gres,0)+1n}
+V1 vin 0 SINE(0 {A} {f})
+Ix1 vcc iabc1 DC 10.8u
+Ix2 vcc iabc2 DC 10.8u
+Ixp vcc iabp DC {Ip}
+Ixn vcc iabn DC {In}
+* --- summer ---
+Rvin vin ns 10k
+Rlp lp_b ns 10k
+Rf ns hp 10k
+Xsum 0 ns hp vcc vee OP1654
+* --- integratori OTA reali + buffer di stato ---
+Ra1 hp hpk {Ra}
+Rd1 hpk 0 100
+Xota1 hpk 0 bp iabc1 d1 d2 vcc vee LM13700
+C1i bp 0 {Ci}
+Rb1 bp 0 100Meg
+Xb1 bp bp_b bp_b vcc vee OP1654
+Ra2 bp_b bpk {Ra}
+Rd2 bpk 0 100
+Xota2 bpk 0 lp iabc2 d3 d4 vcc vee LM13700
+C2i lp 0 {Ci}
+Rb2 lp 0 100Meg
+Xb2 lp lp_b lp_b vcc vee OP1654
+* --- RES: OTA reali nel summer (positivo smorza, negativo innesca) ---
+XresP bpk 0 ns iabp d5 d6 vcc vee LM13700
+XresN 0 bpk ns iabn d7 d8 vcc vee LM13700
+* --- limitatore = perdita non lineare buffer BP -> summer (d5a-nl.cir) ---
+.model D1N4148 D(Is=2.53n Rs=0.568 N=1.752 Cjo=4p M=0.4 Tt=20n)
+Rnl bp_b nl 4.7k
+Dn1 nl nl1 D1N4148
+Dn2 nl1 ns D1N4148
+Dn3 ns nl2 D1N4148
+Dn4 nl2 nl D1N4148
+.model D4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+E1od a_od 0 value={limit(2*V(lp_b),-16,16)}
+R1od a_od w_od 2.2k
+Dod1 w_od p1od D4148
+Dod2 p1od 0 D4148
+Dod3 0 n1od D4148
+Dod4 n1od w_od D4148
+Rlod w_od 0 1Meg
+Bdod d_od 0 V=1.171*V(w_od)-V(lp_b)
+Bt25 t25 0 V=V(lp_b)+0.031*V(d_od)
+Bt50 t50 0 V=V(lp_b)+0.177*V(d_od)
+Bt65 t65 0 V=V(lp_b)+0.341*V(d_od)
+Bt80 t80 0 V=V(lp_b)+0.572*V(d_od)
+Bt90 t90 0 V=V(lp_b)+0.768*V(d_od)
+Bt99 t99 0 V=V(lp_b)+1.000*V(d_od)
+.ic V(lp)=0.01
+.tran 0 80m 0 5u uic
+.step param gres LIST 1 0.222 0.056 -0.75
+.step param A LIST 0.346 1.096
+.step param k LIST 0.05 0.0333 0.025
+.param f=1000
+.meas tran r00 RMS V(lp_b) FROM 60m TO 80m
+.meas tran r25 RMS V(t25) FROM 60m TO 80m
+.meas tran r50 RMS V(t50) FROM 60m TO 80m
+.meas tran r65 RMS V(t65) FROM 60m TO 80m
+.meas tran r80 RMS V(t80) FROM 60m TO 80m
+.meas tran r90 RMS V(t90) FROM 60m TO 80m
+.meas tran r99 RMS V(t99) FROM 60m TO 80m
+.four {f} V(lp_b) V(t25) V(t50) V(t65) V(t80) V(t90) V(t99)
+.end

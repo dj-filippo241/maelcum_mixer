@@ -211,3 +211,31 @@ Nota: le tre righe «filtri inseriti» del §9 usavano ancora il 5-way a
 −83,2; qui usano −85,9. La dec. 100 (condizioni accettate) resta valida:
 i numeri migliorano. La dec. 95 (send FX assegnati) non è ricalcolata:
 la domina il floor dei send, non il canale.
+
+
+## 11. Aggiornamento 2026-10-14 (D5, decisione 109: core del filtro (a′) con partitore 1/30)
+
+Fonte: `sim/filtro/RISULTATI-D5.md` §0 e §2. Due cambi:
+
+- **Modello LM13700 corretto** (`sim/lib/lm13700.inc`, mirror d'uscita
+  completo): il rumore dell'OTA sale di 3,0 dB a ogni Iabc.
+- **Core del filtro = (a′)**, OTA con partitore 1/30 davanti agli
+  ingressi (dec. 109). Il core (a) nudo dei §8-§10 non funziona ai livelli
+  di progetto (RISULTATI-D5 §1). Il suo −89,9 a fc max non è riproducibile:
+  il netlist di settembre cade nel ramo DC falso col modello nuovo.
+
+Core (a′) 1/30, uscita LP, RES al minimo: **−87,4 dBu A-wtd a fc max**,
+−87,9 a 1 kHz (`d5a-noise-k30-{397u,10.8u}.cir`). La fonte principale è
+l'OTA della RES (221 uA).
+
+| Condizione | §10 | Ora |
+|---|---|---|
+| Filtri OFF | −82,9 | −82,9 (invariato) |
+| 4 filtri inseriti, overdrive chiuso | −80,3 | **−79,0** (PASS 1,0) |
+| 4 filtri inseriti, overdrive a metà | −79,3 | −77,8 |
+| 4 filtri inseriti, overdrive tutto aperto, in silenzio | −75,5 | −73,4 |
+
+Calcolo: canale filtro = core (+ guadagno a piccolo segnale
+dell'overdrive: 0 / +1,9 / +7,4 dB) ⊕ blocco overdrive (§9); sistema =
+−82,9 ⊕ 4 canali filtro. Le righe con l'overdrive aperto ricadono nella
+condizione d'uso accettata dalla dec. 100.

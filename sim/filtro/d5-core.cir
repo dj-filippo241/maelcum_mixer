@@ -1,0 +1,63 @@
+* =====================================================================
+* FILTRO — D5 passo 1 (2026-10-14): quanto esce dal core (a) col chip
+* reale, al variare di RES e del livello d'ingresso.
+* Core (a) = SVF 2 poli di svf-real-thd.cir istanza A (OTA nudo, LM13700
+* reale, C 33 nF, Iabc 10,8 uA -> fc ~1 kHz) + RES di res-osc.cir con OTA
+* REALE al posto della sorgente G3 ideale + soft limiter 1k + 3+3 1N4148.
+* RES: 1/Q = Rf*gm_res, gm_res = 141,4 uS * gres (Q 0,707 a gres 1).
+*   Law dec. 102: Q = 0,707/(1 - theta/0,9) -> gres = 1 - theta/0,9
+*   theta 0/50/70/80/85 % -> gres 1/0,444/0,222/0,111/0,056
+*   theta >90 % -> gres negativo = auto-oscillazione (-0,375 / -0,75)
+* gm_res con segno: due OTA a polarita' opposta, Iabc sterzata tra i due
+* (Iabc = 7,365 uA * |gres|). Domanda: il picco di risonanza del core (a)
+* reale arriva ai +8 dBu che la griglia od2-chain ha supposto?
+* Avvio con uic: il .op del loop con gli OTA RES a Iabc ~0 non converge.
+* Livelli (PICCO): -30 dBu 0,0346 | -10 dBu 0,346 | 0 dBu 1,096
+* =====================================================================
+.include ../lib/lm13700.inc
+.include ../lib/opamp-audio.inc
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+.param A=0.346 f=1000 gres=1
+.param Ip={7.365u*max(gres,0)+1n} In={7.365u*max(-gres,0)+1n}
+V1 vin 0 SINE(0 {A} {f})
+Ix1 vcc iabc1 DC 10.8u
+Ix2 vcc iabc2 DC 10.8u
+Ixp vcc iabp DC {Ip}
+Ixn vcc iabn DC {In}
+* --- summer ---
+Rvin vin ns 10k
+Rlp lp_b ns 10k
+Rf ns hp 10k
+Xsum 0 ns hp vcc vee OP1654
+* --- integratori OTA reali + buffer di stato ---
+Xota1 hp 0 bp iabc1 d1 d2 vcc vee LM13700
+C1i bp 0 33n
+Rb1 bp 0 100Meg
+Xb1 bp bp_b bp_b vcc vee OP1654
+Xota2 bp_b 0 lp iabc2 d3 d4 vcc vee LM13700
+C2i lp 0 33n
+Rb2 lp 0 100Meg
+Xb2 lp lp_b lp_b vcc vee OP1654
+* --- RES: OTA reali nel summer (positivo smorza, negativo innesca) ---
+XresP bp_b 0 ns iabp d5 d6 vcc vee LM13700
+XresN 0 bp_b ns iabn d7 d8 vcc vee LM13700
+* --- soft limiter sul nodo BP (filter-module §5) ---
+.model D1N4148 D(Is=2.53n Rs=0.568 N=1.752 Cjo=4p M=0.4 Tt=20n)
+Rlim bp dlim 1k
+D1 dlim n1 D1N4148
+D2 n1 n1b D1N4148
+D3 n1b 0 D1N4148
+D4 0 n2b D1N4148
+D5 n2b n2 D1N4148
+D6 n2 dlim D1N4148
+.ic V(lp)=0.01
+.tran 0 80m 0 5u uic
+.step param gres LIST 1 0.444 0.222 0.111 0.056 -0.375 -0.75
+.step param A LIST 0.0346 0.346 1.096
+.step param f LIST 250 1000
+.meas tran lppk MAX ABS(V(lp_b)) FROM 60m TO 80m
+.meas tran lprms RMS V(lp_b) FROM 60m TO 80m
+.meas tran bppk MAX ABS(V(bp_b)) FROM 60m TO 80m
+.meas tran hppk MAX ABS(V(hp)) FROM 60m TO 80m
+.end
