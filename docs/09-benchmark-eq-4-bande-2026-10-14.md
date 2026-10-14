@@ -88,3 +88,36 @@ e ripido nella seconda; in modo EQ succede il contrario. Niente numeri.
 - MasterSounds Radius 4 MK2: manuals.plus, theransomnote.com; MK1: manualslib.com/manual/1565567
 - Condesa Carmen V: condesaelectronics.com/products/carmen-v, rubadub.co.uk
 - Misure: wavealign.app/blog/pioneer-mixer-isolator-vs-eq-mode; forum.ableton.com/viewtopic.php?t=161248
+
+## 7. Curva della manopola nei DJM Pioneer (ricerca 2026-10-14, 23:45)
+
+Pioneer non pubblica la curva. Dati trovati:
+
+| Fonte | Modello | Dato |
+|---|---|---|
+| djresource.eu (recensione) | DJM-850 / DJM-1000 (curva «già nei DJM-600») | manopola orizzontale a sinistra (ore 9) ≈ −12 dB; oltre, verso il kill |
+| djresource.eu (recensione) | DJM-400 (EQ «che taglia come un isolator») | ore 9 ≈ −18 dB; «l'ultima parte è logaritmica e taglia rapidamente» |
+| wavealign.app [M, solo grafici] | DJM non dichiarato, modo isolator | dolce nella prima metà del taglio, ripido nella seconda; in modo EQ il contrario |
+
+Ore 9 = 90° dal centro. Con corsa totale 270-300° è il 60-67 % della metà
+di taglio, cioè θ ≈ 0,17-0,20.
+
+Il nostro pot lineare ×2 a ore 9: −8,0 dB (corsa 300°) … −9,5 dB (270°);
+a ore 11 circa −2 dB (partenza dolce, come Pioneer). Scarto dal DJM-600/850:
+2,5-4 dB; dal DJM-400: 8,5-10 dB.
+
+Fattibilità con pot di serie (dec. 114 c), verificata col calcolo
+(rete con pot lineare, R in serie in alto, R cursore-massa, R
+cursore-capo alto, guadagno fisso; vincoli centro 0 dB e fine corsa
++6 dB): **nessuna rete passiva taglia più del lineare a ore 9.** Ogni
+resistenza aggiunta tira il cursore verso il centro (curva più dolce),
+mai verso il basso. I pot doppi con detent in commercio per EQ sono
+lineari (B); quelli a taper (A/C, MN) con detent sono rari e hanno il
+centro impreciso (servirebbe un trim per banda). Un circuito attivo con
+pot lineare (pot nell'anello di un op-amp) dà −12 dB a ore 9 col centro
+esatto, ma non si ferma a +6 dB senza perdere il centro.
+
+Fonti: djresource.eu/Topics/story/142 (DJM-850), /73 (DJM-1000), /98
+(DJM-400); wavealign.app/blog/pioneer-mixer-isolator-vs-eq-mode;
+diyaudio.com (thread «2 gang 100k log B pot with centre detent
+unobtainable?», «dual gang Alpha 24mm center detent pots»).
