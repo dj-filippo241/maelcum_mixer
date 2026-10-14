@@ -14,7 +14,7 @@
 | Modulo | Comando | Qtà | Tipo elettrico | Note |
 |---|---|---|---|---|
 | **Canale CDJ** (×4) | GAIN | 1 | singolo 10k lin → CV | detent a 0 dB |
-| | EQ LOW / LOW-MID / MID-HIGH / HIGH | 4 | doppio 10k, taper custom | detent al centro; tracking ≤ 0,25 dB |
+| | EQ LOW / LOW-MID / MID-HIGH / HIGH | 4 | doppio 10k LINEARE + contatto di fondo corsa (chiude a massa) [REV 2026-10-13, dec. 105: isolator, prima taper custom] | detent al centro; tracking ≤ 0,25 dB; eq-isolator §5 e §8 |
 | | LINE / PHONO | 1 | selettore 2 posizioni | |
 | | Filtro HPF / OFF / LPF | 1 | selettore 3 posizioni, logico | |
 | | CUE | 1 | bottone, logico | |
@@ -59,7 +59,7 @@ mandata ai pedali, trimmer di taratura.
 | Tipo | Quantità |
 |---|---|
 | Pot singoli | 66 (38 → CV lineari, 28 sui moduli MIC/MONO) |
-| Pot doppi | 43 (di cui 37 con taper custom, detent dove indicato) |
+| Pot doppi | 43 (di cui 21 con taper custom e 16 lineari con contatto di fondo corsa per l'EQ dei canali, dec. 105; detent dove indicato) |
 | Slider stereo | 8 |
 | Selettori 3 posizioni | 9 |
 | Selettori 2 posizioni | 4 |
@@ -72,8 +72,10 @@ cambia; ogni modulo MIC/MONO in meno toglie 7 pot singoli.
 
 ## Aperto per la sessione hardware
 
-- Taper custom: quante famiglie diverse servono davvero (EQ canale, EQ2,
-  gain 5-way, EQ mic/mono) e se un solo fornitore le copre.
+- Taper custom: quante famiglie diverse servono davvero (EQ2, gain 5-way,
+  EQ mic/mono) e se un solo fornitore le copre. L'EQ dei canali non ne ha
+  più bisogno (dec. 105): 16 pot doppi lineari con detent e contatto di
+  fondo corsa. Il contatto deve chiudere solo all'ultimo grado di corsa.
 - Dec. 99 (2026-10-13): il 5-way ha 2 manopole di saturazione al posto di
   1 (totale manopole 110); nessuna manopola di livello dopo il drive: i
   saturatori si autoregolano. Il filtro resta a 2 manopole drive.

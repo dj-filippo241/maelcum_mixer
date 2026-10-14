@@ -154,14 +154,14 @@ def canale():
     A = d.box(215, 170, 165, 72, "[A] PROT + BUFFER", ["R 100 Ω + TVS low-cap + bead", "OPA1612 unity, Zin ≥ 47k"])
     B = d.box(425, 170, 175, 72, "[B] GAIN", ["VCA THAT 218x stereo link", "−∞ → 0 (detent) → +10 dB"])
     d.text(520, 258, "post: 0 / +10 dBu worst", 10, AUDIO, "middle")
-    C = d.box(650, 150, 240, 112, "[C] EQ 4 BANDE IN SERIE",
-              ["famiglia Baxandall (dec. 76/77)", "LOW / LOW-MID / MID-HIGH / HIGH",
-               "−30 dB kill … 0 (detent) … +6 dB", "beta-3: OPA1654/1612 reali"])
+    C = d.box(650, 150, 240, 112, "[C] EQ ISOLATOR 4 BANDE",
+              ["bande in parallelo LR4 (dec. 105)", "LOW / LOW-MID / MID-HIGH / HIGH",
+               "silenzio … 0 (detent) … +6 dB", "somma non invertente + servo DC"])
     d.text(770, 278, "post: 0 / +16 dBu worst", 10, AUDIO, "middle")
     chain_h(d, [rca, A, B, C])
     cvg = d.box(425, 100, 175, 32, "", ["CV gain (1 per coppia L/R)"], "ctrl", lsize=11)
     d.arrow([cvg.b, (B.cx, B.y - 2)], "cv")
-    pots = d.box(660, 84, 220, 32, "", ["4 pot doppi con detent + law §10"], "ctrl", lsize=11)
+    pots = d.box(660, 84, 220, 32, "", ["4 pot doppi lin. + contatto fondo corsa"], "ctrl", lsize=11)
     d.arrow([pots.b, (C.cx, C.y - 2)], "cv")
     # nodo split
     nx = 935
@@ -191,7 +191,7 @@ def canale():
     d.arrow([(1150, F.y + F.h), (1150, 394), (G.cx, 394), (G.cx, G.y - 2)])
     d.text(1260, 388, "ritorno filtro", 10.5, "#777")
     chain_v(d, [G, H, I])
-    fc = d.box(1330, 100, 190, 32, "", ["fader CV → [H] (linked)"], "ctrl", lsize=11)
+    fc = d.box(1330, 100, 190, 32, "", ["slider doppio nel segnale"], "ctrl", lsize=11)
     d.arrow([fc.r, (1542, fc.cy), (1542, H.cy), (H.x + H.w + 2, H.cy)], "cv")
     # phono
     A0 = d.box(40, 330, 205, 104, "[A0] PHONO MM v0.1",

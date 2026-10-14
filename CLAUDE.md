@@ -49,6 +49,7 @@ Regole di simulazione (ognuna nasce da un errore già pagato; il contesto sta ne
 - Sorgenti di rumore e op-amp: solo sorgenti `E` lineari a 4 nodi. Una `E` comportamentale non propaga il rumore nel `.noise`.
 - Subckt del VCA insieme alla banca Sallen-Key: errore di parse («Instance already defined»). Mettere il VCA inline con nomi unici.
 - `SINE` vuole il valore di picco: 0 dBu = 1,095 Vp, non 0,775.
+- THD: leggere sempre Partial E Total (`fourier_tab.py` li stampa entrambi). Total molto sopra Partial non è distorsione armonica: guardare la forma d'onda.
 - `.meas ac`: `FIND V(nodo)`, mai `FIND dB(V(nodo))`. Serve uno sweep (`.ac dec ...`), non `.ac list` con un punto solo.
 - `.tran` con anelli di retroazione: `.nodeset` obbligatorio. Macro op-amp in due varianti: specchio lineare per `.ac`/`.noise`, `abs` per `.tran`.
 - Sallen-Key high-pass: R_fb = R_gnd/2 per Q 0,707.

@@ -25,39 +25,47 @@
 
 ## 2. Diagramma a blocchi del modulo
 
+> **[REV 2026-10-14 — allineato a dec. 63, 94a e all'ADDENDUM [N] del
+> 2026-10-02]** Lo schema v0.2 prendeva BOOTH e REC da un «MASTER SUM bus»
+> già sommato e dava [A2] come opzionale. Con la dec. 94a la somma vive
+> qui: [A2] riceve i 7 contributori e i quattro buffer ([A], [B], [C], [N])
+> partono dalla sua uscita, pre-master-level. Lo schema v0.2 è in git.
+
 ```
-(dal backplane: MASTER SUM bus, stereo)
+(dal backplane, slot 8: 7 contributori MASTER SUM stereo, dec. 94a)
+ MSUM1 5-way · MSUM2-5 ritorni FX 1-4 · MSUM6 mic · MSUM7 mono
+ (MSUM6/7 in multidrop, R di somma lato sorgente, dec. 97)
         │
-        ├────────────────────────────┬──────────────────────────┐
-        │                            │                          │
-  [A] IN BUFFER x2            [B] BOOTH BUFFER x2         [C] REC BUFFER x2
-        │                            │                          │
-        │                     [B2] BOOTH LEVEL            [C2] ATTENUATORE
-        │                        (VCA, −∞→0 dB)             FISSO (per Zoom)
-        │                            │                          │
-  [A2] MASTER SUMMING x2             │                   [C3] REC MUTE
-   (opzionale, vedi §3.1)            │                          │
-        │                            │                          │
-  [D] MASTER LEVEL x1 stereo         │                          │
-   (VCA doppio, −∞→+6 dB,            │                          │
-    un solo controllo CV)            │                          │
-        │                            │                          │
-        ├──► [E] METER PICKUP        │                          │
-        │     (peak L/R + clip det.) │                          │
-        │                            │                          │
-  [F] OUT FRONT x2            [B3] BOOTH DRIVER x2              │
-   (OPA1612, ±18 V)              (±18 V)                        │
-        │                            │                          │
-  [G] STADIO USCITA HV x2     [B4] BOOTH MUTE            [C4] USCITA REC
-   (discreto, [M] ±26 V,             │                          │
-    composite con [F])         [B5] USCITA BOOTH           (TRS/mini-jack
-        │                            │                    [APERTO-F])
-  [H] MUTE + PROTEZIONE        (XLR o TRS [APERTO-F])            │
-        │                                                        │
-  [I] XLR MASTER OUT L/R                                         │
-                                                                 │
-  [L] MUTE CONTROLLER (analogico: supervisore rail + timer) ─────┘
-      comanda [H], [B4], [C3]
+  [A2] MASTER SUMMING x2
+   (invertente su massa virtuale, OPA1612; polarità −1)
+        │
+        ├─────────────────────┬──────────────────────┬──────────────────────┐
+        │                     │                      │                      │
+  [A] IN BUFFER x2     [B] BOOTH BUFFER x2    [C] REC BUFFER x2     [N] MON BUFFER x2
+        │                     │                      │               (OP1612 unity non inv.,
+        │              [B2] BOOTH LEVEL       [C2] PAD 0/−10/−20      ≤ 50 Ω → slot 8
+        │                 (VCA, −∞→0 dB)        (solder, dec. 63)     MON out → modulo CUE)
+        │                     │                      │
+  [D] MASTER LEVEL x1 stereo  │               [C3] REC MUTE
+   (2 VCA, −∞→+6 dB,          │                      │
+    un solo controllo CV)     │               [C4] USCITA REC TRS
+        │                     │                (0 dBu fissi, dec. 63)
+        ├──► [E] METER PICKUP │                      │
+        │     (peak L/R + clip det.)                 │
+        │                     │                      │
+  [F] OUT FRONT x2      [B3] BOOTH DRIVER x2         │
+   (OPA1612, ±18 V)        (±18 V)                   │
+        │                     │                      │
+  [G] STADIO USCITA HV x2 [B4] BOOTH MUTE            │
+   (bootstrap rail,           │                      │
+    [M] ±26 V, dec. 86)  [B5] USCITA BOOTH XLR       │
+        │                                            │
+  [H] MUTE + PROTEZIONE                              │
+        │                                            │
+  [I] XLR MASTER OUT L/R                             │
+                                                     │
+  [L] MUTE CONTROLLER (supervisore rail + timer) ────┘
+      comanda [H], [B4], [C3] e la linea GLOBAL_MUTE c9 (dec. 94b)
 
   [M] PSU LOCALE: raw ±26 V [M] in (W3 dedicato backplane, dec. 93)
       → statici ±23,6…29,2 V filtrati (stadio HV),
@@ -65,7 +73,7 @@
       (summing/meter/sum), +5 V control (bus backplane, LED/logica mute)
 ```
 
-Ogni ramo ha il suo buffer: il vincolo [BLOCCATO] "mai un buffer unico splittato" è rispettato alla lettera — [A], [B], [C] sono tre ingressi distinti dello stesso bus.
+Ogni ramo ha il suo buffer: il vincolo [BLOCCATO] "mai un buffer unico splittato" è rispettato alla lettera — [A], [B], [C], [N] sono quattro ingressi distinti dello stesso nodo somma.
 
 ## 3. Design per stadio
 

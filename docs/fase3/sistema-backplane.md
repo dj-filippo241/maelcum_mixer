@@ -139,7 +139,7 @@ elettricamente corte (λ = km). Bilanciato solo verso l'esterno
 
 | Classe | ±27 audio (tip/max) | ±22 LN (tip/max) | ±26 [M] | +5 V | Nota dominante |
 |---|---|---|---|---|---|
-| CDJ ×4 | ±65/±110 mA cad. | ±17/±40 cad. (phono LN) | — | ~20 mA | op-amp ~24 sezioni + 1-3 VCA |
+| CDJ ×4 | ±113/±160 mA cad. [REV 2026-10-13, dec. 105: +24 sezioni per l'EQ isolator, ~2 mA l'una; era ±65/±110] | ±17/±40 cad. (phono LN) | — | ~20 mA | op-amp ~56 sezioni (EQ isolator 48 + somme, servo, buffer) + 1-3 VCA |
 | 5-WAY | ±250/±350 mA | ~5/10 (Iq 78L15 switch) | — | ~20 mA | ~35 quad + 2 VCA + 3 switch IC (µA) |
 | FILTRO | ±110/±150 mA | ±65-100/±190 (OTA + riserva c-B) | — | ~20 mA | 8 core OTA (Iabc!) + ~20 quad |
 | FX | ±180/±300 mA [PROVV] | — | — | ~20 mA | 20 VCA 218x (16 matrice + 4 ritorno gain, dec. 91b) + op-amp |
@@ -148,7 +148,7 @@ elettricamente corte (λ = km). Bilanciato solo verso l'esterno
 | CUE | ~61 a riposo / ≤ ~340 col clamp su entrambi i canali [REV 2026-10-12, ampli cuffia v0.2: stadio su ±18 locali da ±27, NON su LN; clamp VERIFICATO 126-168 mA per canale] | ~23/25 (summing/MON/blend/level su ±15 LN) | — | ~58/60 (2 relay DPDT eccitati + controller locale) | 1 Vrms/32 Ω ×2 uscite; design e numeri in `sistema-cue.md` §8 |
 | MIC/MONO (fino a 4, dec. 97) | ±22/±40 cad. (mic) · ±30/±45 cad. (mono) [REV 2026-10-13] | ±20/±30 cad. (solo mic: front-end LN) · ~5 (mono: detector) | — | ~15 mA cad. | ~17-18 sezioni op-amp + 1 switch IC (solo mute mandate); `docs/fase4/mic-mono-moduli.md` §7 |
 | LED/metering (tutti) | — | ±100/±125 (albero riferimenti) | — | 200/500 mA | dato S4: ~103 segmenti (master 2×20 + zone 10×~6), 2 mA typ / 5 mA worst |
-| **Totale per raw** | **~±1,2 A tip** [REV 2026-10-13, dec. 98: la somma delle righe qui sopra dà ~1,2 A, non 0,9-1,0] (somma dei max singoli ~1,7 A — nota sotto) | **~±0,28 A tip / ±0,45 A picco** (+switch µA-Iq) | **±0,13/±0,17 A** | **~0,55/1,0 A worst** (dimensionamento 1,25 A) | W1 2,5 A · W2 1,0 A · W3 0,4 A · W4 2,0 A (S1 REV 2026-10-13, dec. 98; erano 1,2/0,6/0,3/1,2) |
+| **Totale per raw** | **~±1,4 A tip** [REV 2026-10-13 sera, dec. 105/106: isolator +0,19 A; era ~1,2 A dalla dec. 98] (somma dei max singoli ~1,7 A — nota sotto) | **~±0,28 A tip / ±0,45 A picco** (+switch µA-Iq) | **±0,13/±0,17 A** | **~0,55/1,0 A worst** (dimensionamento 1,25 A) | W1 3,0 A (dec. 106; era 2,5 dalla dec. 98) · W2 1,0 A · W3 0,4 A · W4 2,0 A (S1 REV 2026-10-13; erano 1,2/0,6/0,3/1,2) |
 
 Nota sui massimi (dec. 93): i «max» per classe sono inviluppi conservativi
 del PICCO DI SEGNALE (scala ms) del singolo modulo — non si presentano mai

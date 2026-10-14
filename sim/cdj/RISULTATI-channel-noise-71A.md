@@ -1,5 +1,11 @@
 # RISULTATI — Budget rumore canale DJ completo (voce 71A)
 
+> **[SUPERATO 2026-10-13 sera]** Questo budget usa l'EQ in serie β3,
+> archiviata dalla dec. 105. Il canale con l'EQ isolator è
+> `channel-noise-v04-iso.cir`: −94,6 dBu A-wtd (numeri in
+> `docs/fase1/eq-isolator-v0.4.md` §9, sistema in `docs/06` §10). Resta
+> come storico.
+
 Data: 2026-09-30. Netlist: `channel-noise-71A.cir`. Metodo §8.9 five-way:
 densità `.noise` a 10 punti (20 Hz-20 kHz), integrazione trapezoidale
 python, MAI `.meas INTEG` (quirk LTspice 26.0.2). Macro op-amp reali
