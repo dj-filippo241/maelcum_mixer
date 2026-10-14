@@ -1,0 +1,109 @@
+* PSU esterna (dec. 113, todo 51): pre-regolatore +-22,0 V sul W1 audio, LDO DISCRETO a MOSFET (era 22,5: a rete -10 % usciva di regolazione nella valle).
+* Bulk 10 mF (caso prudente per il ripple; il valore adottato e 15 mF, vedi psu-box-off15.cir).
+* Perche' discreto: a rete -10 % e 1,7 A il raw del W1 scende a 23,5 V nella valle del ripple
+* (psu-w1-opt.cir caso 2). Un LT1083/1085 a 1,7 A chiede ~1,2-1,3 V di dropout: non regola.
+* Con P-MOSFET (+) e N-MOSFET (-): caduta = I x (Rsense + Rds) ~ 0,5 V.
+* Catena: W1 2x21 V 3,5 A reg 7 % -> ponte -> 10 mF -> Rsense 0,22 -> MOSFET -> 470 uF box
+*         -> cavo 2 m (2 conduttori per polo) -> 2,2 mF ingresso PSU-IN -> carico.
+* Casi (.step k): 1 rete -10 % 1,7 A | 2 nominale 1,7 A | 3 +10 % 1,0 A | 4 +10 % 1,7 A (calore max)
+* Errore d'amplificatore: macro comportamentale inline (solo .tran), A0 100 dB, GBW ~1 MHz,
+* uscita limitata a 1,5 V dai rail. Soft-start: riferimento con RC (tau ~0,1 s). Niente uic: con condizioni iniziali forzate
+* l anello parte da uno stato impossibile e il passo crolla (LTspice non termina). Accensione reale da zero.
+.param k=1
+.param mf=table(k,1,0.9,2,1.0,3,1.1,4,1.1) idc=table(k,1,1.7,2,1.7,3,1.0,4,1.7)
+.param vs=21 ir=3.5 reg=0.07
+.param rw={reg*vs/ir} vpk={vs*(1+reg)*mf*1.4142}
+.model DR D(Is=5n Rs=0.03 N=1.6)
+.model DZ12 D(Is=1p Rs=5 BV=12 IBV=1m)
+.model DZ25 D(Is=1p Rs=2 BV=2.5 IBV=1m)
+.model QN NPN(Is=1f Bf=150 Vaf=80 Cjc=5p Cje=10p Tf=1n)
+.model QP PNP(Is=1f Bf=150 Vaf=80 Cjc=5p Cje=10p Tf=1n)
+.model MP VDMOS(pchan Vto=-3.5 Kp=8 Rd=0.06 Rs=0.02 Cgdmax=1n Cgdmin=0.2n Cgs=1.5n Cjo=1n)
+.model MN VDMOS(Vto=3.5 Kp=8 Rd=0.06 Rs=0.02 Cgdmax=1n Cgdmin=0.2n Cgs=1.5n Cjo=1n)
+.subckt EA inp inn out vp vm
+* transconduttanza lineare + polo dominante: A0 = 1e5, GBW ~1 MHz; clamp a diodi 1,5 V dai rail
+G1 0 y inp inn 1m
+Ry y 0 100Meg
+Cy y 0 159p
+Vch vp hi 1.5
+Vcl lo vm 1.5
+Dch y hi DCL
+Dcl lo y DCL
+.model DCL D(Is=1f N=1)
+E1 o 0 y 0 1
+Ro o out 100
+.ends
+* --- trasformatore e ponte ---
+Va a ct SINE(0 {vpk} 50)
+Vb ct b SINE(0 {vpk} 50)
+Vct ct 0 0
+Rwa a a1 {rw}
+Rwb b b1 {rw}
+D1 a1 vp DR
+D2 b1 vp DR
+D3 vn a1 DR
+D4 vn b1 DR
+C1 vp 0 10m
+C2 0 vn 10m
+* --- ramo positivo ---
+Rsp vp sp 0.22
+Qlp g1 sp vp QP
+M1 op g1 sp MP
+Rgs1 sp g1 10k
+Dz1 g1 sp DZ12
+Qd1 g1 bd1 ed1 QN
+Re1 ed1 0 4.7k
+Rbd1 ea1 bd1 1k
+Rr1 vp r1 10k
+Dr1 0 r1 DZ25
+Rss1 r1 ref1 100k
+Css1 ref1 0 1u
+R11 op fb1 38.3k
+R21 fb1 0 4.99k
+XE1 ref1 fb1 ea1 vp 0 EA
+Cc1 ea1 cz1 10n
+Rz1 cz1 fb1 10k
+Cop op 0 470u Rser=0.05
+* --- ramo negativo (specchio) ---
+Rsn sn vn 0.22
+Qln g2 sn vn QN
+M2 on g2 sn MN
+Rgs2 g2 sn 10k
+Dz2 sn g2 DZ12
+Qd2 g2 bd2 ed2 QP
+Re2 0 ed2 4.7k
+Rbd2 ea2 bd2 1k
+Rr2 r2 vn 10k
+Dr2 r2 0 DZ25
+Rss2 r2 ref2 100k
+Css2 ref2 0 1u
+R12 on fb2 38.3k
+R22 fb2 0 4.99k
+XE2 ref2 fb2 ea2 0 vn EA
+Cc2 ea2 cz2 10n
+Rz2 cz2 fb2 10k
+Con 0 on 470u Rser=0.05
+* --- cavo 2 m: 2 x 0,5 mm2 per polo (0,036 ohm/m) ---
+Rcp op cp 0.036
+Lcp cp mp 1u
+Rcn on cn 0.036
+Lcn cn mn 1u
+Cmp mp 0 2.2m Rser=0.03
+Cmn 0 mn 2.2m Rser=0.03
+I1 mp 0 PWL(0 0 0.3 0 0.4 {idc})
+I2 0 mn PWL(0 0 0.3 0 0.4 {idc})
+.step param k 1 4 1
+.tran 0 1.4 0 50u
+.meas tran vmix_min MIN V(mp) FROM 1.0 TO 1.4
+.meas tran vmix_max MAX V(mp) FROM 1.0 TO 1.4
+.meas tran vmixn_min MIN V(mn) FROM 1.0 TO 1.4
+.meas tran vmixn_max MAX V(mn) FROM 1.0 TO 1.4
+.meas tran vbox AVG V(op) FROM 1.0 TO 1.4
+.meas tran vraw_min MIN V(vp) FROM 1.0 TO 1.4
+.meas tran vds_min MIN V(sp,op) FROM 1.0 TO 1.4
+.meas tran pm1b AVG V(sp,op)*Id(M1) FROM 1.0 TO 1.4
+.meas tran pm2 AVG V(on,sn)*Id(M2) FROM 1.0 TO 1.4
+.meas tran vdsn_min MIN V(on,sn) FROM 1.0 TO 1.4
+.meas tran pp_mix PP V(mp) FROM 1.0 TO 1.4
+.meas tran irms_w RMS I(Rwa) FROM 1.0 TO 1.4
+.end

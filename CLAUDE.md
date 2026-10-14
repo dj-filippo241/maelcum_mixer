@@ -70,7 +70,7 @@ Il design teorico (carta + simulazione) è completo per tutti i moduli. Il proto
 | Filtro | v0.2; un percorso per canale (dec. 101, 8 core); law Xone:96 (dec. 102); overdrive v0.2 §5ter (dec. 99); core OTA (a′) con partitore 1/30 §5quater (dec. 109: il core nudo non funziona col chip reale; B1 aperta); numeri col chip reale accettati (dec. 110: oscillazione ~+5 dBu, calo di nota = carattere) | `docs/fase2/filter-module.md` | `sim/filtro/` |
 | 5-way | v0.3; celle v0.2.1; kill a switch §8.10 (dec. 88); drive v0.4 GROWL + NASTRO §5bis (dec. 99) | `docs/fase2/five-way-module.md` | `sim/five-way/` |
 | Mic e Mono | v0.1, due moduli separati, max 4 (dec. 97) | `docs/fase4/mic-mono-moduli.md` | `sim/mic/` |
-| Sistema | PSU ~250 VA (dec. 93/98/106; W1 3,5 A per i moduli opzionali, dec. 111; alimentatore ESTERNO con pre-regolatori, dec. 113; ~95-100 W nel mixer, due ventole a termostato, dec. 112), grounding, backplane, metering (dec. 81/90), CUE (dec. 96), shaper, inventario comandi | `docs/fase3/` | `sim/system/`, `sim/meter/`, `sim/shaper/` |
+| Sistema | PSU ~250 VA (dec. 93/98/106; W1 3,5 A per i moduli opzionali, dec. 111; alimentatore ESTERNO con pre-regolatori, dec. 113, progettato in `sistema-psu-esterno.md`: LDO discreti ±22,0/±19 V, AC_OK, PSU-IN; ~83-97 W nel mixer, due ventole a termostato, dec. 112), grounding, backplane, metering (dec. 81/90), CUE (dec. 96), shaper, inventario comandi | `docs/fase3/` | `sim/system/` (box: `psu-box-*`, senza `uic`), `sim/meter/`, `sim/shaper/` |
 
 Review contro il benchmark (dec. 111): ibrido DJ / sound system / live, nessun fork, moduli opzionali predisposti (uscite per via, crossfader, EQ grafico, sirena), tasto MONO master, MUTE mic, ambiente da sound system all'aperto (`docs/07`, `docs/08`).
 

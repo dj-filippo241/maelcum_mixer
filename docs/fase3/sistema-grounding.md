@@ -14,6 +14,10 @@ ritorni di massa viaggiano sul backplane — pinout lì).
 > uniscono solo alla stella. La terra di rete arriva al telaio del mixer
 > dallo schermo del cavo; il bond CHASSIS↔AGND unico (§2) resta alla
 > stella. Dove sotto si legge «modulo PSU», vale «modulo PSU-IN».
+> [Precisazione todo 51, `sistema-psu-esterno.md` §3: la terra viaggia su
+> un **conduttore PE dedicato** (≥ 0,75 mm², contatto che chiude per
+> primo); lo schermo si chiude sui gusci dei connettori. Il ritorno delle
+> ventole ha il suo conduttore fino alla stella.]
 
 ## 1. Principio
 

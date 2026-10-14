@@ -68,6 +68,17 @@ Conseguenze:
 
 ## REV 2026-10-14 — decisione 113: alimentatore ESTERNO [PROVVISORIO — regola 3]
 
+> **[AGGIORNATA 2026-10-14, todo 51 → `sistema-psu-esterno.md`]** Il design
+> del box e del PSU-IN sta là. Cambiano questi numeri della proposta sotto:
+> pre-regolatore audio **±22,0 V** (a 22,5 V e rete −10 % usciva di
+> regolazione nella valle, simulato), **LDO discreto a MOSFET** (un
+> LT1083/1085 non regola), **bulk W1 15 mF** (tenuta allo spegnimento),
+> **linea AC_OK** nel cavo, **conduttore PE** dedicato oltre lo schermo,
+> fusibili di gruppo nel PSU-IN + PTC per modulo, supervisor con soglie
+> nuove e mute in 1 ms. Calore: box ~48 W nominali / ~63 W a rete +10 %;
+> mixer ~83 W base / ~97 W coi moduli opzionali. Il testo sotto resta come
+> traccia della proposta.
+
 Scelta di Filippo (dec. 113). Architettura proposta da Claude:
 
 ```
@@ -279,6 +290,8 @@ rilascio pulito dei relay (niente pop). Hold-up rail ±18: 10 mF × 6,5 V
 utilizzabili / 0,9 A ≈ 70 ms > tempo di rilascio relay.
 
 ## 4. Protezione abuso corto prolungato (master)
+
+[REV 2026-10-14, todo 51: fusibili e soglie del supervisor riscritti per l'alimentatore esterno in `sistema-psu-esterno.md` §4.3-4.4. Il testo sotto vale per l'architettura con raw nel mixer.]
 
 Tre strati, nessuno limita il programma:
 1. **Caso di progetto** (corto uscita master auto-limitato 106 mA, Q1
