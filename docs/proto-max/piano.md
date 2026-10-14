@@ -22,7 +22,7 @@ Cambia rispetto al v0.1:
 | Overdrive filtro candidato | tosatore in parallelo, griglia di `d5-chain.cir` | dec. 99, 110 |
 | FX: matrice a 3 reroute | matrice 16 VCA con self-feedback; in mandata solo LEVEL; GAIN sul ritorno | dec. 91, 108 |
 | — | **tasto MONO** sul master, **MUTE** del mic, mic con un MC vero | dec. 111 |
-| — | prove richieste dalla review: mix con e senza crossfader; le 5 parametriche del 5-way bastano senza EQ grafico? | dec. 111 |
+| — | prova richiesta dalla review: le 5 parametriche del 5-way bastano senza EQ grafico? (la prova del crossfader è tolta da Filippo il 2026-10-14; il modulo resta predisposto) | dec. 111 |
 | Patch .maxpat disegnate a mano | **DSP in codice `gen~` testuale** dentro patch minime (§3) | ingegneria |
 
 La voce B5 (centri dell'EQ in serie 70 / 250 / 1k / 5k Hz) cade con la
@@ -48,14 +48,12 @@ le risposte alle voci B della fase.
 
 `MC-CHANNEL` ×4: trim, GAIN (law −∞ … 0 … +10), **isolator a 4 bande**
 (incroci di partenza 150 / 500 / 2500 Hz, +6 dB, law lineare, silenzio a
-fondo corsa), fader. Dispositivo `MC-XF` opzionale: crossfader sul
-contributo post-fader dei canali.
+fondo corsa), fader.
 
 Chiude a orecchio:
 - **B7**: incroci, boost e law dell'isolator. Il pannello del prototipo
   porta un selettore 150 / 500 / 2500 contro 100 / 630 / 4000 Hz, per il
   confronto con un DJM a memoria.
-- **Crossfader**: ti serve davvero, o mixi coi fader? (dec. 111)
 
 Serve anche a montare l'infrastruttura (procedura di montaggio, set di
 prova): le fasi dopo costano meno.
@@ -145,7 +143,6 @@ proto-max/
 ├── montaggio.md                ← procedura di assemblaggio in Live (P0)
 ├── coefficienti/               ← script Python: law, curve, tabelle
 ├── MC-CHANNEL.maxpat + .genexpr   P0
-├── MC-XF.maxpat                   P0 (opzionale)
 ├── MC-FILTRO.maxpat + .genexpr    P1
 ├── MC-5WAY.maxpat + .genexpr      P2
 ├── MC-FX.maxpat + .genexpr        P3
