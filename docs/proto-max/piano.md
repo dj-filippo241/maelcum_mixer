@@ -1,131 +1,166 @@
-# Prototipo Max for Live — piano v0.1 (2026-09-24)
+# Prototipo Max for Live — piano v0.2 (2026-10-14) [PROPOSTA — da approvare da Filippo]
 
-> **AGGIORNAMENTO 2026-10-13 (decisioni 99-104) — da recepire nella proposta
-> di ripresa (todo #1); il testo sotto è ancora quello del 24/09.**
-> - Drive 5-way: non più «taper dec. 24» ma due manopole, GROWL (sotto
->   350 Hz) e NASTRO, saturatori in parallelo al pulito, volume fermo
->   (five-way §5bis).
-> - Overdrive filtro: tosatore simmetrico in parallelo, tetto ~+5,5 dBu,
->   law θ^2,5 (filter-module §5ter).
-> - Filtro: un percorso per canale (dec. 101: la voce 63 è chiusa); law
->   FREQ e RES = Xone:96 (dec. 102, tabella in filter-module §4).
-> - EQ di canale: in serie v0.3 beta-3 + muto a fine corsa con tutte e 4 le
->   manopole a zero (dec. 104: la voce 59 è chiusa). [SUPERATO dalla dec. 105: EQ = isolator a 4 bande, `docs/fase1/eq-isolator-v0.4.md`]
-> - Filtro col chip reale (dec. 109-110): il core gen~ deve riprodurre il
->   tetto dell'OTA (picco di risonanza che cala col livello d'ingresso:
->   +21 dB a −30 dBu, +8 a −10, ~+1 a 0 dBu), l'oscillazione a ~+5 dBu e
->   la nota che cala di ~6 semitoni tra 90 % e 100 % di RES
->   (filter-module §5quater). Un SVF ideale falserebbe l'ascolto di B1/B6.
+Sostituisce il piano v0.1 del 2026-09-24 (`piano-v0.1.md`, archiviato).
+Todo 1. Base: decisione 78 (prototipo musicale prima del millefori, Ableton
+Live Suite) e lo stato del design alle decisioni 99-113.
 
-> Decisione 78 [F]: prototipo musicale digitale del mixer completo PRIMA del
-> millefori. Ambiente: Ableton Live Suite (M4L incluso), controllo a mouse.
-> Questo piano è [PROVVISORIO] dove non cita decisioni bloccate.
+## 0. Perché adesso, e cosa cambia dal v0.1
 
-## 1. Cosa valida e cosa NO
+Il design su carta e in simulazione è completo per tutti i moduli. Restano
+aperte le decisioni che vogliono l'orecchio (lista B di `docs/02`), e gli
+acquisti aspettano il prototipo. Il prototipo è quindi il collo di
+bottiglia: ogni fase chiude delle voci B.
 
-**Valida (a orecchio, subito):**
-- Gesto e feel: law dei knob (filtro dec. 70/74, taper EQ dec. 76/77), corse, detent.
-- Curve: kill −30 dB delle bande EQ, shelf/bell, sovrapposizioni, all-kill.
-- Carattere musicale delle scelte pendenti: allineamento 4 poli (questione 64,
-  A/B Butterworth/Bessel/LR in tempo reale), mux filtro single-path vs serie (63),
-  drive/distorsione (61: il prototipo È lo strumento per scegliere le referenze),
-  centri/Q delle bande EQ (review con Filippo), position/width del 5-way.
-- Workflow dub: quanto "suona" la catena completa mentre mixi.
+Cambia rispetto al v0.1:
 
-**NON valida (resta al millefori + misure):**
-- Rumore, headroom reale, saturazione degli OTA veri, tracking meccanico dei pot,
-  PSRR, THD dei componenti. Il drive nel prototipo è un waveshaper candidato:
-  approssima il carattere, non è il circuito.
+| v0.1 | v0.2 | Origine |
+|---|---|---|
+| EQ di canale a 4 bande in serie, kill −30 dB | **isolator a 4 bande**: ogni banda dal silenzio a +6 dB, contatto di fondo corsa | dec. 105 |
+| Filtro con mux single-path / serie da scegliere | un percorso per canale, interruttore HPF / OFF / LPF | dec. 101 |
+| SVF ideale in gen~ | core che imita il **chip reale**: picco di risonanza che cala col livello, oscillazione a ~+5 dBu, nota che cala ~6 semitoni tra 90 e 100 % di RES; A/B con il core pulito a VCA | dec. 109-110, B1 |
+| Drive 5-way unico (taper dec. 24) | **GROWL** (solo sub e bassi, sotto 350 Hz) e **NASTRO**, in parallelo al pulito, volume fermo | dec. 99 |
+| Overdrive filtro candidato | tosatore in parallelo, griglia di `d5-chain.cir` | dec. 99, 110 |
+| FX: matrice a 3 reroute | matrice 16 VCA con self-feedback; in mandata solo LEVEL; GAIN sul ritorno | dec. 91, 108 |
+| — | **tasto MONO** sul master, **MUTE** del mic, mic con un MC vero | dec. 111 |
+| — | prove richieste dalla review: mix con e senza crossfader; le 5 parametriche del 5-way bastano senza EQ grafico? | dec. 111 |
+| Patch .maxpat disegnate a mano | **DSP in codice `gen~` testuale** dentro patch minime (§3) | ingegneria |
 
-Regola (dec. 78): ciò che viene approvato a orecchio qui diventa requisito
-del design circuitale corrispondente.
+La voce B5 (centri dell'EQ in serie 70 / 250 / 1k / 5k Hz) cade con la
+dec. 105: al suo posto c'è B7 (incroci dell'isolator).
 
-## 2. Architettura — famiglia di dispositivi "MC-PROTO"
+## 1. Cosa valida e cosa no (invariato, dec. 78)
 
-Live elabora un flusso stereo per traccia: il mixer diventa una famiglia di
-dispositivi M4L + il routing nativo di Live.
+**Valida a orecchio**: gesto, law delle manopole, curve, carattere dei
+saturatori, risonanza, scelte di banda, workflow dub mentre mixi.
 
-| Dispositivo | Tipo | Dove vive | Contenuto |
-|---|---|---|---|
-| `MC-CHANNEL` | audio effect ×4 | una per traccia CDJ 1-4 | GAIN (law −∞..0..+10), EQ 4 bande serie (curve v0.3: kill −30 dB, detent esatto, law asimmetrica), switch modo filtro HPF/OFF/LPF (core locale pilotato dal pannello globale), FX SEND (EQ2 + level + assign S1-S4), trim ingresso. Audio FX: `send~ mc_fx1..4`; parametri filtro: `receive` dai messaggi globali |
-| `MC-FILTRO` | pannello di controllo | traccia utility (o MIDI effect su una traccia) | 6 knob (HPF/LPF: freq, res, drive), law esponenziale 10 Hz–35 kHz + shaper a tratti (dec. 70), broadcast via `send` a tutti i core canale. Contiene anche l'A/B per la questione 64 (selettore allineamento) |
-| `MC-FX` | audio effect | traccia Return FX | 4 bus (`receive~ mc_fx1..4`), pad, "pedale" = segnaposto modellabile (dry/saturo/delay semplice), matrice feedback 3 reroute per ritorno con law a tratti della SPECIFICA §7, fader ritorno, somma → master. Niente vincoli di routing di Live: tutto interno al device |
-| `MC-5WAY` | audio effect | gruppo "DJ BUS" | 5 bande kill + EQ creativo position/width + drive (taper dec. 24), riferimento interno −6 dB (dec. 73), meter. Le bande: ~90/350/1,2k/3,5k PROVVISORI (dec. 66) — il prototipo serve ANCHE a confermarle |
-| `MC-MASTER` | audio effect | master | level (law VCA), meter 20 segmenti (soglie/colori da SPECIFICA §11), booth/rec = uscite monitor di Live |
-| CUE | — | — | NON modellato: il cue/monitor nativo di Live copre il requisito nel prototipo |
+**Non valida**: rumore, headroom reale, THD dei componenti, tracking dei pot,
+derive termiche. Quelle restano al millefori e alle misure.
 
-DSP: dove possibile oggetti nativi (`biquad~`/`filtercoeff~` per EQ shelf/bell
-coefficienti calcolati dalle curve di design); SVF del filtro in `gen~`
-(Chamberlin/SMV stabile, auto-oscillazione con soft limiting — stesse equazioni
-del design OTA, `docs/fase2/filter-module.md`). Coefficienti e law generati da
-script Python nel repo (`proto-max/coefficienti/`) → tabelle/patcher includibili:
-la matematica resta versionata e verificabile.
+Regola: ciò che approvi a orecchio diventa requisito del circuito
+corrispondente, con una voce in `docs/01`.
 
-Comunicazione tra dispositivi: `send`/`receive` (messaggi) e `send~`/`receive~`
-(audio) — globali nel runtime Max dello stesso set. Latenza: i receive~ vivono
-nel device FX sulla traccia Return: verificare il ritardo di un ciclo buffer e,
-se udibile, compensare (nudge clip / lookahead) — nota nel test P3.
+## 2. Fasi, in ordine di valore
 
-## 3. Fasi di costruzione (ognuna = set giocabile e commit)
+Ogni fase finisce con un set di Live suonabile, una sessione d'ascolto tua e
+le risposte alle voci B della fase.
 
-- **P0 — Canale**: `MC-CHANNEL` (gain + EQ 4 bande con curve v0.3 + trim) e
-  `MC-PROTO-SET.als` di prova (4 tracce CDJ con loop reggae/dub liberi o tuoi).
-  Valida subito: kill −30, detent, law asimmetrica, centri 70/250/1k/5k (review
-  con Filippo A/B). Dipendenza: nessuna (le curve target sono già decise; la
-  v0.3-beta circuitale può procedere in parallelo e CONFRONTARSI col prototipo).
-- **P1 — Filtro**: `MC-FILTRO` + core SVF gen~ nei canali (freq expo 10 Hz–35 kHz,
-  res fino ad auto-oscillazione limitata, drive candidato). Chiude a orecchio:
-  63 (mux), 64 (allineamento, selettore A/B nel pannello), parte di 61 (drive).
-- **P2 — 5-way**: `MC-5WAY` sul gruppo DJ BUS: bande kill, position/width, drive
-  (taper dec. 24). Esplora il carattere fase 2 PRIMA del design circuitale
-  (regola 5 rispettata: il prototipo insegna, il circuito segue).
-- **P3 — FX e master**: `MC-FX` (matrice feedback con law a tratti) + `MC-MASTER`
-  (level, meter). Verifica stabilità dei loop di feedback e latenza receive~.
-- **P4 — Rifinitura**: mappature complete, preset di partenza (tutto a detent),
-  documentazione d'uso, eventuale MIDI mapping futuro.
+### P0 — Canale (1 sessione mia)
 
-## 4. Consegna e montaggio (vincolo tecnico onesto)
+`MC-CHANNEL` ×4: trim, GAIN (law −∞ … 0 … +10), **isolator a 4 bande**
+(incroci di partenza 150 / 500 / 2500 Hz, +6 dB, law lineare, silenzio a
+fondo corsa), fader. Dispositivo `MC-XF` opzionale: crossfader sul
+contributo post-fader dei canali.
 
-I file `.amxd` sono binari generabili solo dentro Max. Consegna quindi:
-1. Claude scrive le patch come **`.maxpat` testuali** in `proto-max/` (versionate git).
-2. Filippo apre Live Suite → crea un nuovo Max Audio Effect vuoto → in Max:
-   File > Open del `.maxpat` fornito → seleziona tutto, copia, incolla nel
-   device → Save come `.amxd` nella cartella User Library. Procedura di ~10
-   minuti la prima volta, guidata passo-passo (documento `proto-max/montaggio.md`,
-   da scrivere in P0).
-3. Iterazione: modifiche = riapri, re-incolla (o edit diretto in Max con guida).
-4. Il set `.als` di prova: salvato da Filippo, condiviso nel repo se utile
-   (binario: valutare peso; in alternativa istruzioni di routing).
+Chiude a orecchio:
+- **B7**: incroci, boost e law dell'isolator. Il pannello del prototipo
+  porta un selettore 150 / 500 / 2500 contro 100 / 630 / 4000 Hz, per il
+  confronto con un DJM a memoria.
+- **Crossfader**: ti serve davvero, o mixi coi fader? (dec. 111)
 
-## 5. Struttura file
+Serve anche a montare l'infrastruttura (procedura di montaggio, set di
+prova): le fasi dopo costano meno.
+
+### P1 — Filtro (2 sessioni)
+
+`MC-FILTRO` (pannello: FREQ, RES, overdrive, law Xone:96, dec. 102) e un
+core per canale.
+
+Chiude a orecchio:
+- **B1**: carattere del filtro, core OTA (a′) contro core pulito a VCA
+  (c-B), con un interruttore A/B in tempo reale. Il core (a′) del
+  prototipo riproduce i quattro numeri della dec. 110.
+- **B2**: pendenza a 4 poli, Butterworth / Bessel / Linkwitz-Riley in A/B.
+- **B6**, parte filtro: la griglia dell'overdrive.
+
+Sblocca il todo 11 (prototipo del filtro su millefori), fermo su B1.
+
+### P2 — 5-way (2 sessioni)
+
+`MC-5WAY` sul gruppo DJ BUS: 5 bande con kill a interruttore, EQ creativo
+position / width, GROWL e NASTRO, riferimento interno −6 dB (dec. 73).
+
+Chiude a orecchio:
+- **B3**: frequenze delle 5 bande (ora ~90 / 350 / 1,2k / 3,5k Hz).
+- **B6**, parte 5-way: carattere e curve di GROWL e NASTRO.
+- **EQ grafico**: le 5 parametriche bastano da sole? (dec. 111)
+
+### P3 — FX e master (2 sessioni)
+
+`MC-FX` (4 bus, ritorno con GAIN, matrice di feedback 16 VCA con
+self-feedback, pedale = segnaposto: delay e saturazione semplici) e
+`MC-MASTER` (MASTER LEVEL, tasto MONO, meter a 6 zone con le soglie della
+SPECIFICA §11).
+
+Verifica: dove parte il feedback rispetto a GAIN e reroute (dec. 108), se
+il loop resta governabile con le mani, e la latenza tra i dispositivi
+(`send~` / `receive~`: un buffer di ritardo, da sentire).
+
+### P4 — Mic (1 sessione)
+
+`MC-MIC`: il modulo mic con MUTE (rampa 1 ms) e la sua catena. Prova con un
+MC vero sopra il mix.
+
+Chiude a orecchio: **serve un limiter sul mic?** (idea della review, non
+discussa) e **B6**, parte mic: soglie dei LED.
+
+**Totale stimato: ~8 sessioni mie, 5 sessioni d'ascolto tue.** Le fasi
+sono indipendenti dopo P0: l'ordine di P1-P4 si può cambiare.
+
+## 3. Come lo costruisco (ingegneria)
+
+- **DSP in `gen~` codebox**: codice testuale (GenExpr) dentro una patch
+  Max minima: manopole `live.dial`, un oggetto `gen~`, ingressi e uscite.
+  Il codice testuale si genera, si confronta e si versiona meglio di una
+  patch disegnata.
+- **Curve e law dai numeri del design**: uno script Python nel repo
+  (`proto-max/coefficienti/`) genera tabelle e costanti dalle stesse
+  formule dei design doc (law Xone:96, isolator LR4, griglie dei
+  saturatori). Così il prototipo e il circuito partono dagli stessi numeri.
+- **Ogni dispositivo ha un tasto «riferimento»**: suono del design
+  attuale contro alternativa, per gli A/B senza toccare altro.
+- **Controllo di verifica**: per ogni dispositivo confronto la risposta
+  del prototipo con la simulazione LTspice (rumore rosa e analisi in
+  frequenza dentro Max). Se non coincidono entro ~0,5 dB, la patch non
+  esce.
+
+Limiti onesti: il core del filtro e i saturatori sono **modelli di
+comportamento** tarati sulle simulazioni, non il circuito. Imitano il
+carattere misurato (tetto, calo di nota, griglia di distorsione), non
+ogni dettaglio.
+
+## 4. Cosa devi fare tu
+
+1. **Una volta per dispositivo, ~10 minuti la prima volta**: in Live crei
+   un Max Audio Effect vuoto, apri il file che ti preparo, copi e incolli,
+   salvi. Ti guido passo passo (`proto-max/montaggio.md`, scritto in P0).
+2. **Set di prova**: 4 tracce con loop dub e reggae tuoi, più qualche
+   traccia moderna «senza anima» per il NASTRO.
+3. **Ascolto**: una sessione a fine fase, con le domande della fase in
+   chat, una alla volta.
+
+## 5. Struttura dei file
 
 ```
 proto-max/
-├── piano.md                  ← questo documento (in docs/proto-max/)
-├── MC-CHANNEL.maxpat         ← P0
-├── MC-FILTRO.maxpat          ← P1
-├── MC-5WAY.maxpat            ← P2
-├── MC-FX.maxpat              ← P3
-├── MC-MASTER.maxpat          ← P3
-├── montaggio.md              ← procedura assemblaggio in Live
-└── coefficienti/             ← script Python: law, curve EQ, coeff biquad, tabelle gen~
+├── montaggio.md                ← procedura di assemblaggio in Live (P0)
+├── coefficienti/               ← script Python: law, curve, tabelle
+├── MC-CHANNEL.maxpat + .genexpr   P0
+├── MC-XF.maxpat                   P0 (opzionale)
+├── MC-FILTRO.maxpat + .genexpr    P1
+├── MC-5WAY.maxpat + .genexpr      P2
+├── MC-FX.maxpat + .genexpr        P3
+├── MC-MASTER.maxpat               P3
+└── MC-MIC.maxpat + .genexpr       P4
 ```
 
-## 6. Questioni toccate
+## 6. Decisioni di Filippo per partire
 
-- 61 (referenze distorsione): il prototipo diventa lo strumento di scelta —
-  candidati drive ascoltabili in A/B (tanh, asimmetrico, diode-fold, nastro-ish).
-- 63 (mux filtro) e 64 (allineamento 4 poli): chiusura a orecchio in P1.
-- Review centri/Q EQ e taper law: P0.
-- 59 (residuo all-kill): ascoltabile in P0 (curva target), conferma numerica
-  resta alla cascata analogica v0.3-beta.
-- NUOVA [APERTO-F, P2]: confermare le 5 frequenze di banda (~90/350/1,2k/3,5k,
-  dec. 66 PROVVISORI) a orecchio sul 5-way.
-- Loopregola: ogni scelta musicale approvata nel prototipo → nota in docs/01
-  come requisito del blocco circuitale corrispondente.
-
-## 7. Prossimo passo concreto
-
-P0: `MC-CHANNEL.maxpat` + script coefficienti EQ (curve dalle griglie
-`sim/eq-serie/` + legge taper) + `montaggio.md` + set di prova. Stima: una
-sessione dedicata.
+1. **Ordine delle fasi**: P0 → P1 filtro → P2 5-way → P3 → P4, oppure un
+   altro. Raccomandazione: P0 per primo, poi il filtro, perché B1 tiene
+   fermo il todo 11.
+2. **Controllo**: solo mouse (dec. 78), oppure un controller MIDI che hai
+   già. Con un controller senti il gesto vero (due manopole insieme,
+   una spazzata veloce); a mouse no.
+3. **Dove ascolti**: cuffie, monitor da studio o un impianto con sub.
+   Le decisioni sui bassi (GROWL, banda a ~90 Hz, B3) chiedono un sub
+   vero, almeno per la sessione finale di P2.
