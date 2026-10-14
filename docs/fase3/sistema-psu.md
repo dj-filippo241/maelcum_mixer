@@ -66,6 +66,87 @@ Conseguenze:
 - Protezione a 1,6 A per ramo e supervisor: soglie da riallineare ai
   nuovi raw (finestre per avvolgimento).
 
+## REV 2026-10-14 — decisione 111: moduli opzionali, 40 °C ambiente, bilancio termico rifatto [PROVVISORIO]
+
+Dati e netlist: `sim/system/RISULTATI-dec111.md`.
+
+**Moduli opzionali predisposti (todo 47).** Stima d'assorbimento sul ramo
+audio ±18 V: EQ grafico stereo 12 bande ~50 mA per inserzione (fino a 2:
+master e dopo il 5-way, ~100 mA); uscite per via (crossover LR4 stereo
+allineato + 10 driver bilanciati) ~150 mA; crossfader (8 VCA 218x +
+op-amp, anello audio post-fader, `sistema-backplane.md` REV dec. 111)
+~75 mA; driver + buffer dell'anello nei 4 canali ~15 mA; sirena = slot
+MONO già contato. Ramo audio: **1,4 → ~1,7 A** per ramo. Simulato (`psu-w1-opt.cir`): con W1 3,0 A
+l'avvolgimento va al 106 % (sovraccarico); con **W1 2×21 V 3,5 A** al 93 %
+e raw minimo 23,5 V a rete −10 % (requisito ≥ 21,7). Trasformatore
+**~225 → ~250 VA** (taglia commerciale già prevista dalla dec. 106).
+Bulk 2×10 mF invariato (ripple a 1,7 A ~0,6 V picco-picco nel caso 2).
+
+**Bilancio termico rifatto.** La tabella §5 contava solo i regolatori
+(25-29 W). Il calore vero include la potenza che gli op-amp, i VCA e gli
+OTA assorbono dai rail: ogni ampere su ±18 V sono 36 W dentro il telaio.
+
+| Sorgente (rete nominale) | Base (1,4 A) | Con moduli opzionali (1,7 A) |
+|---|---|---|
+| Regolatori ±18 (27 → 19,2 V) | 21,6 W | 26,2 W |
+| Cap-moltiplicatori ±18 | 3,4 W | 4,1 W |
+| **Op-amp / VCA sui ±18 (I × 36 V)** | **50,4 W** | **61,2 W** |
+| LN ±15: pre-reg + LT3045/94 + carichi | 13,4 W | 13,8 W |
+| +5 V: regolatore + LED/logiche | 5,9 W | 5,9 W |
+| Master [M]: stadio HV + LDO | 7,0 W | 7,0 W |
+| Perdite del trasformatore (~5 %) | ~12 W | ~13 W |
+| **Totale dentro il telaio** | **~114 W** | **~131 W** |
+| Rete +10 % (regolatori: raw ~29,5 V a pieno carico) | ~123 W | **~140 W** |
+
+**Cosa vuol dire a 40 °C ambiente (dec. 111 e).** Un telaio chiuso
+smaltisce ~5,5 W/m²·K (convezione naturale + irraggiamento). Per tenere
+l'interno a ≤ 15 K sopra l'ambiente servirebbero ~1,6 m² di superficie:
+un mixer da banco ne ha ~0,8-1. Chiuso, l'interno salirebbe di ~25-30 K,
+cioè **65-70 °C** a 40 °C fuori. Requisiti conseguenti [PROVVISORIO, da
+verificare con la meccanica, q29]:
+1. **Ventilazione naturale a camino**, senza ventola (dec. 90c intatta):
+   prese in basso e sul retro, uscite in alto sul retro. **Il pannello
+   superiore resta chiuso** (liquidi, dec. 111 e): nessuna feritoia sopra
+   i comandi; rete antipolvere sulle prese. Obiettivo: interno ≤ 55 °C a
+   40 °C fuori.
+2. **Regolatori ±18 dei moduli caldi** (5-way, FX, canali) **sul telaio o
+   su una barra dissipante comune**, non su isole di rame locali: con
+   l'interno a 55 °C e 2-3 W per TO-220 su 10-20 cm² di rame la giunzione
+   arriva a ~100-115 °C (limite 125), troppo vicina alla rete +10 %.
+   Obiettivo: Rθ giunzione-aria ≤ 15 K/W per regolatore.
+3. **Trasformatore e regolatore +5** fuori dal flusso d'aria dei moduli
+   (in basso, vicino alle prese) o su parete dissipante.
+4. **Elettrolitici** da 105 °C, lontani dai regolatori.
+
+**Derive a caldo (todo 49), interno fino a 65 °C:**
+- Shaper (reroute, drive, position, frequenza filtro): **PASS**. Deriva
+  ≤ 0,28 dB nella zona del feedback, ≤ 0,12 dB sul drive, ≤ 3,3 % sulla
+  position, ≤ 2,2 % sul filtro tra 10 e 90 % di corsa, ±8 % agli estremi
+  (dentro dec. 74). Simulato a 50/65/75 °C.
+- **Filtro: taglio che scende col caldo (FINDING).** Nell'LM13700 reale
+  gm = Iabc/2V_T: a Iabc fissa −11,8 % da 25 a 65 °C (simulato). Il
+  converter compensa la sua coppia, ma Iref = 400 µA è fissa: tutti i
+  core scendono di ~1,6 semitoni da 35 a 65 °C, mentre il mixer si scalda
+  durante la serata. **Rimedio: Iref PTAT** (Iref = V_PTAT/R, dallo stesso
+  generatore PTAT della scalatura di ΔV). Annotato in filter-module §4.
+- **Celle EQ del 5-way: centro banda che si sposta (FINDING).** Le celle
+  v0.2.1 sono JFET VCR; la soglia Vt deriva di ~−2 mV/°C. Con l'overdrive
+  di comando 247-1707 mV (five-way §4.2), 30 K spostano la resistenza del
+  canale del 3,5-24 %: fino a ~4 semitoni all'inizio della corsa di ogni
+  banda. La nota «deriva trascurabile» valeva per ±10 °C. **Rimedio da
+  progettare: riferimento di Vt nel buffer del bus Vcm** (un JFET dello
+  stesso tipo, polarizzato a soglia, che sottrae la stessa deriva).
+- **VCA THAT 218x: la scala in dB si stringe col caldo.** La costante
+  6,1 mV/dB è proporzionale alla temperatura assoluta (+0,33 %/K): da 35 a
+  65 °C ogni legge in dB si comprime del ~10 %. I punti a 0 dB (detent)
+  restano esatti; +16 dB di drive diventano ~+14,5, +10 di gain ~+9,
+  −15 di reroute ~−13,5. Il punto in cui parte il feedback FX (GAIN +
+  reroute, dec. 108) quasi non si muove: i due VCA si stringono insieme.
+  Compensazione pronta se il banco la chiede: resistenza a +3300-3500
+  ppm/K nella scalatura del CV (nota applicativa THAT).
+- Diodi dei clipper (GROWL, overdrive): ginocchio −2 mV/°C, ~−60 mV su
+  30 K: soglia di saturazione ~1 dB più bassa a caldo. Accettato.
+
 ## 1. Budget assorbimenti per rail
 
 Stime di classe dichiarate (Iq da datasheet-class, non misurati):

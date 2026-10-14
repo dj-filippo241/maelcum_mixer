@@ -104,6 +104,17 @@ Sezione 2-poli, stato HP/BP/LP (solo HP e LP usati; BP serve alla risonanza):
 
 ## 4. Controllo di frequenza — converter esponenziale tempcompensato
 
+> **[REV 2026-10-14, dec. 111, todo 49 — FINDING]** Il converter compensa
+> la sua coppia (ΔV scalato PTAT), ma non la gm degli OTA: nell'LM13700
+> reale gm = Iabc/2V_T, e a Iabc fissa scende dell'11,8 % da 25 a 65 °C
+> (`sim/filtro/ota-selftest-ac-temp.cir`). Con Iref = 400 µA fissa tutti i
+> core scendono di ~1,6 semitoni da 35 a 65 °C interni, mentre il mixer si
+> scalda (40 °C ambiente, dec. 111 e). **Iref va resa PTAT** (Iref =
+> V_PTAT/R, dallo stesso generatore che scala ΔV): allora Iabc ∝ T e gm
+> resta costante. La deriva «≤ 2,4 % su 0-50 °C» del §6 vale solo per
+> l'OTA ideale della simulazione di fattibilità. Da progettare e
+> simulare col modello reale (todo).
+
 Problema: spazzare 10 Hz–35 kHz (3500:1 = 11,8 ottave) con law esponenziale
 (1 ottava = ΔV fisso) e deriva termica entro ±5-10% (dec. 74). La fisica: in un
 bipolare Ic ∝ exp(Vbe/V_T) e V_T = kT/q cresce +0,085%/K → senza compensazione

@@ -1,0 +1,37 @@
+* VARIANTE CALDA (dec. 111, todo 49): 40 C ambiente -> interno 50-75 C. Copia di shaper-drive.cir con .step temp 50 65 75.
+* DRIVE 5-way: 0/+7/+9,5/+12/+14/+16 dB (dec. 82/87), 61 mV/dB a scala x10
+* SHAPER a tratti — famiglia unica (dec. 70): UN op-amp sommatore invertente
+* + rami diodo/resistori. Ogni ramo: Vx -> Ra -> nodo -> diodo -> massa
+* virtuale; il nodo e' tirato a -5 V da Rb: il ramo entra in conduzione
+* sopra una soglia e AGGIUNGE pendenza (curva convessa). Vout = -Rf*I.
+* Valori E96 dal fit (sim/shaper/shaper_fit.py), taratura a 35 C.
+* .step temp 20/35/50 = escursione interna del telaio fanless.
+.include ../lib/opamp-audio.inc
+.model D1N4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p Tt=4n)
+Vcc vcc 0 15
+Vee vee 0 -15
+Vref nref 0 -5
+Vx x 0 0
+Rm x sj 57.6k
+Ra1 x n1 162k
+Rb1 n1 nref 294k
+D1 n1 sj D1N4148
+Ra2 x n2 280k
+Rb2 n2 nref 64.9k
+D2 n2 sj D1N4148
+Rf sj out 10k
+Xop 0 sj out vcc vee OP1654
+.dc Vx 0 5 0.005
+.step temp list 50 65 75
+.meas dc m0 FIND V(out) AT 0.0000
+.meas dc m1 FIND V(out) AT 1.2500
+.meas dc m2 FIND V(out) AT 2.5000
+.meas dc m3 FIND V(out) AT 2.8750
+.meas dc m4 FIND V(out) AT 3.2500
+.meas dc m5 FIND V(out) AT 3.6250
+.meas dc m6 FIND V(out) AT 4.0000
+.meas dc m7 FIND V(out) AT 4.2500
+.meas dc m8 FIND V(out) AT 4.5000
+.meas dc m9 FIND V(out) AT 4.7500
+.meas dc m10 FIND V(out) AT 5.0000
+.end

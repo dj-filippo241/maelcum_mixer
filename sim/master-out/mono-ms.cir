@@ -1,0 +1,37 @@
+* MASTER — tasto MONO (dec. 111 d, todo 48) [PROVVISORIO — regola 3]
+* Topologia: matrice M/S dopo il sommatore [A2]. M = (L+R)/2, S = (L-R)/2;
+* S passa da UN VCA THAT 218x (larghezza w); uscite L' = M + w*S,
+* R' = M - w*S. Normale: w = 1 (0 dB) -> L' = L, R' = R esatti.
+* MONO: rampa del CV di S da 0 dB a -100 dB in tau (famiglia dec. 80,
+* niente BBM: la larghezza scende in modo continuo, nessun buco).
+* Worst case per il click: tutto il segnale su un lato (R = 0, S = L/2),
+* +18 dBu (6,16 Vp) a 1 kHz, commutazione al picco. Sonda HP 2 poli
+* ~1,6 kHz come bbm-ramp.cir. tau = 1 us = commutatore secco (riferimento).
+* Matrice con sorgenti E ideali: nel circuito sono 2 op-amp per lato con
+* R 0,1 % (separazione L/R a w = 1 limitata dall'appaiamento: ~60 dB).
+.include ../lib/that2181.inc
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+VL l 0 SINE(0 6.16 1000)
+VR r 0 0
+.param t0=2.25m
+.param tau=1m
+Em m 0 value={(V(l)+V(r))/2}
+Es s 0 value={(V(l)-V(r))/2}
+Vcs ecs 0 PWL(0 0 {t0} 0 {t0+tau} 0.61 25m 0.61)
+Xs s sw 0 ecs vcc vee THAT2181
+Elo lo 0 value={V(m)+V(sw)}
+Ero ro 0 value={V(m)-V(sw)}
+Ch1 lo h1 10n
+Rh1 h1 0 10k
+Ch2 h1 h2 10n
+Rh2 h2 0 10k
+.step param tau LIST 1u 0.3m 1m
+.tran 0 25m 0 0.1u
+.meas tran lopre MAX ABS(V(lo)) FROM 1m TO {t0}
+.meas tran ropre MAX ABS(V(ro)) FROM 1m TO {t0}
+.meas tran hpbase MAX ABS(V(h2)) FROM 1m TO {t0}
+.meas tran hpmax MAX ABS(V(h2)) FROM {t0} TO {t0+12m}
+.meas tran lopost MAX ABS(V(lo)) FROM 15m TO 25m
+.meas tran ropost MAX ABS(V(ro)) FROM 15m TO 25m
+.end

@@ -350,7 +350,7 @@ rete 2×100k per JFET. Tracking L/R = partitore resistivo 0,1% (1,7 cent) +
 coppia JFET matched stesso die (ΔVt ~0,1-0,3 mV = 5-17 cent su ±10 °C) —
 MEGLIO dei mirror Iabc (27 cent); trim 10 giri per lato/banda. Tempco Vt
 assoluta (−2 mV/°C → 0,3-1,7%/°C) = comune per coppia e per bus: trim
-assorbe, deriva musicale trascurabile [PROVVISORIO: verifica a banco].
+assorbe, deriva musicale trascurabile [PROVVISORIO: verifica a banco]. **[REV 2026-10-14, dec. 111, todo 49 — FINDING: vale solo per ±10 °C. Con 40 °C ambiente l'interno sale di ~30 K: −60 mV su un overdrive di comando di 247-1707 mV spostano la resistenza del canale del 3,5-24 %, fino a ~4 semitoni all'inizio della corsa di ogni banda. Rimedio da progettare: riferimento di Vt nel buffer del bus Vcm (JFET dello stesso tipo polarizzato a soglia, che sottrae la stessa deriva). `docs/fase3/sistema-psu.md` REV dec. 111.]**
 
 **Verificato sui valori finali** (`cell-v021-law.cir`, `cell-v021-thd.cir`,
 EQ3): law 250,0/375,0/699,9/1000,0/1499,6 Hz (**±0,03%**); Q invariante

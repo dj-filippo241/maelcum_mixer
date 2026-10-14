@@ -329,3 +329,25 @@ Voce 40 (sessione hardware): taper dei pot GAIN e SEND.
 3. Schema e BOM dei due moduli.
 4. Riverifica PSU con 4 moduli (S1) e nota di revisione a master-out §A2.
 5. Banco: EIN con sorgente reale, CMRR con cavo lungo, RFI.
+
+## REV 2026-10-14 — decisione 111: tasto MUTE sul MIC [PROVVISORIO]
+
+Solo il modulo MIC (il MONO no, risposta 6 della review `docs/08`).
+
+- **Dove**: dopo lo stadio variabile 0…+30 dB e l'EQ2, prima dello split
+  verso MSUM e verso i 4 pot send. Così il MUTE spegne anche le mandate:
+  è il caso del larsen e dell'MC che appoggia il microfono.
+- **Il LED tricolore resta prima del MUTE** (presa pre-EQ, dec. 97):
+  con il mic muto vedi ancora se l'MC sta parlando.
+- **Come**: un VCA THAT 218x (o V2181L) mono a 0 dB, che il tasto porta a
+  −100 dB con rampa da 1 ms (famiglia dec. 80, stessa cella del tasto MONO
+  del master, `sim/master-out/mono-ms.cir`: click +0,55 dB contro +8,9
+  di un interruttore secco). Alternativa scartata: interruttore secco
+  ADG1434 come i kill del 5-way (dec. 88): costo zero ma click su un mic
+  aperto, proprio nel caso del larsen.
+- **Rumore**: il VCA a 0 dB aggiunge ~−98 dBu A-wtd [STIMA da datasheet]
+  all'uscita del modulo: −97,3 → ~−94,6 dBu a 30 dB di gain, −90,0 →
+  ~−89,4 a 38 dB, invariato a 59 dB. Sul sistema (mic sempre aperto)
+  < 0,1 dB.
+- **Corrente**: +5,5 mA sul ramo audio per modulo MIC.
+- Il tasto e l'eventuale LED sono comandi di pannello di Filippo (voce 40).

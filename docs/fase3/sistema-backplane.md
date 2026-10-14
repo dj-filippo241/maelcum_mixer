@@ -15,6 +15,54 @@ test point per modulo; CV 0-5 V = convenzione d'interfaccia. Masse:
 topologia in `sistema-grounding.md` (stella unica alla PSU; qui viaggiano
 i ritorni dedicati).
 
+## REV 2026-10-14 — decisione 111: predisposizioni per i moduli opzionali [PROVVISORIO]
+
+Moduli che il backplane deve accogliere senza grosse modifiche (dec. 111 b):
+crossfader, EQ grafico, uscite per via, sirena. Principio: **nessun
+commutatore nel percorso audio a modulo assente**. Dove un modulo si
+inserisce nel segnale, il backplane porta un **ponticello di continuità**
+(link a innesto, una coppia L/R per punto) che si toglie quando il modulo
+c'è. Senza modulo il segnale passa sul rame, come oggi.
+
+1. **Crossfader — anello audio post-fader.** Il crossfader deve agire
+   solo sul contributo al DJ bus: CUE, mandate FX e filtro restano
+   pre-fader (SPECIFICA §4). Il VCA di gain del canale sta all'inizio della
+   catena e non va usato (scartato: abbasserebbe anche cuffia e mandate).
+   Nel canale CDJ, dopo [H] fader: **XF_SEND out (slot 6)** con driver
+   dedicato ≤ 50 Ω → **XF_RET in (slot 7)** su buffer ≥ 100 k → [I] driver
+   del DJ bus. Sul backplane: **ponticello JXF per canale** (4 coppie L/R)
+   tra slot 6 e 7. Modulo assente = ponticello = segnale invariato. Il
+   modulo crossfader (UTIL-XF) contiene 8 VCA (2 per canale) e la logica
+   d'assegnazione. Costo nel canale, sempre presente: 1 driver + 1 buffer
+   stereo (~4 sezioni op-amp, rumore ~−112 dBu, trascurabile).
+2. **EQ grafico — due punti d'inserzione.**
+   - Dopo il 5-way: il net 5-WAY slot 2 (MSUM out) → MASTER slot 1 (MSUM1
+     in) passa da un **ponticello J5W** (L/R). Il modulo grafico, se c'è,
+     riceve il 5-way e rimanda su MSUM1.
+   - Sul master: il modulo MASTER espone **INS_SEND (slot 9) e INS_RET
+     (slot 10)** dopo il sommatore e il tasto MONO, prima dei quattro
+     buffer (master-out REV dec. 111). Ponticello **JMS** tra i due slot
+     sul backplane. Così il grafico agisce su master, booth, rec e cuffia
+     MON, come sull'impianto.
+3. **Uscite per via — presa dopo il MASTER LEVEL.** Il modulo MASTER
+   porta **VIE_TAP** (post-level, post-MONO, 0 dBu nominale, driver
+   dedicato ≤ 50 Ω) su **b31-b32** (L/R; AGND da b30). Il modulo vie ha le
+   sue uscite su pannello posteriore, non sul backplane, e ascolta
+   GLOBAL_MUTE (c9).
+4. **Sirena**: slot MIC/MONO esistente, nessuna modifica.
+
+**Slot nuovi.** I 2 slot UTILITY diventano 3 slot dedicati + 1 spare:
+
+| Classe | Riga b | Riga c |
+|---|---|---|
+| UTIL-XF (crossfader) | slot 1-4 = XF_IN CH1-4 (dagli slot 6 dei canali), slot 5-8 = XF_OUT CH1-4 (verso gli slot 7) | GLOBAL_MUTE |
+| UTIL-GEQ (EQ grafico) | slot 1 = 5W_IN (dal 5-way), slot 2 = 5W_OUT (verso MSUM1), slot 3 = MS_IN (da INS_SEND), slot 4 = MS_OUT (verso INS_RET) | GLOBAL_MUTE |
+| UTIL-VIE (uscite per via) | slot 1 = VIE_TAP in (da b31-b32 del master) | GLOBAL_MUTE |
+| UTILITY | spare | spare |
+
+Connettori sul backplane: ~19 → **~21**. Correnti dei moduli opzionali:
+`sistema-psu.md` REV dec. 111 (ramo audio 1,4 → ~1,7 A, W1 3,5 A).
+
 ## 1. Famiglia connettori — scelta
 
 | Candidato | Pro | Contro | Esito |
@@ -76,7 +124,7 @@ avvolgimento, S1 §4 v0.2) — solo lettura di tensione, nessun assorbimento.
 ## 4. Riga b — AUDIO (single-ended 0 dBu, convenzione q38 confermata qui [PROVVISORIO])
 
 Struttura: **10 slot stereo** (L, R, AGND) = 30 posizioni + 2 spare
-(b31-b32). L'AGND ogni 3 pin isola gli slot adiacenti (capacità pin-pin
+(b31-b32; sul MASTER = VIE_TAP L/R, dec. 111). L'AGND ogni 3 pin isola gli slot adiacenti (capacità pin-pin
 ~0,5-1 pF: crosstalk stimato < −100 dB a 20 kHz su impedenze 10k —
 coerente col misurato DJ bus −98 dB @1 kHz / −72 @20 kHz, `sim/cdj/`).
 
@@ -89,10 +137,11 @@ Semantica degli slot PER CLASSE (slot 1 = b1-b3, slot 2 = b4-b6, …):
 | 3 | SEND TAP out (→FX-SEND) | CH2 send in | — | BUS3 net in¹ | MSUM3 in (FX2) | CUE3 in (CH3) | S2_OUT (net¹) |
 | 4 | FILT_SEND out L/R | CH2 return out | — | BUS4 net in¹ | MSUM4 in (FX3) | CUE4 in (CH4) | S3_OUT (net¹) |
 | 5 | FILT_RET in L/R | CH3 send in | — | RET1 out (→MSUM2) | MSUM5 in (FX4) | MON in (master) | S4_OUT (net¹) |
-| 6 | — | CH3 return out | — | RET2 out (→MSUM3) | MSUM6 in (mic) | — | — |
-| 7 | — | CH4 send in | — | RET3 out (→MSUM4) | MSUM7 in (generic) | — | — |
+| 6 | XF_SEND out (post-fader, dec. 111) | CH3 return out | — | RET2 out (→MSUM3) | MSUM6 in (mic) | — | — |
+| 7 | XF_RET in (dec. 111) | CH4 send in | — | RET3 out (→MSUM4) | MSUM7 in (generic) | — | — |
 | 8 | — | CH4 return out | — | RET4 out (→MSUM5) | MON out L/R | — | — |
-| 9-10 | spare | spare | spare | spare | spare | spare | spare |
+| 9 | spare | spare | spare | spare | INS_SEND out (dec. 111) | spare | spare |
+| 10 | spare | spare | spare | spare | INS_RET in (dec. 111) | spare | spare |
 
 ¹ **REV dec. 91 (2026-10-01)**: i bus FX S1-S4 sono NET MULTIDROP (stessa
 convenzione del DJ bus): i 4 moduli FX-SEND (out S1-S4), MIC e GEN

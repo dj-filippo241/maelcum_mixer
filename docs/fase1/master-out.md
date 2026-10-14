@@ -380,3 +380,49 @@ VERIFICATA in sim (`sim/system/RISULTATI-cue.md` Test 3): [A2] inverte,
 [N] non inverte, cue summer inverte → al centro del blend le due
 componenti sommano a livello pieno (un anello invertito per errore
 cancellerebbe a −104 dB).
+
+## ADDENDUM 2026-10-14 — decisione 111: tasto MONO, inserzione EQ grafico, presa per le uscite per via [PROVVISORIO]
+
+Simulazione: `sim/master-out/mono-ms.cir`; dati in
+`sim/system/RISULTATI-dec111.md` §4.
+
+```
+[A2] MASTER SUMMING x2
+        │
+  [A3] MONO (matrice M/S + 1 VCA sulla larghezza)     ← tasto MONO (dec. 111 d)
+        │
+  INS_SEND (slot 9) ══ ponticello JMS / modulo EQ grafico ══ INS_RET (slot 10)
+        │
+        ├── [A] IN BUFFER → [D] MASTER LEVEL ──┬── [E] meter → [F] → [G] → XLR
+        │                                      └── [V] VIE_TAP driver → b31-b32 (uscite per via)
+        ├── [B] BOOTH   ├── [C] REC   └── [N] MON → CUE
+```
+
+**[A3] MONO.** M = (L+R)/2 e S = (L−R)/2 con due op-amp per lato (R 0,1 %);
+S attraversa un VCA THAT 218x (o V2181L) a 0 dB; uscite L' = M + S,
+R' = M − S. Il tasto porta il CV del VCA da 0 a −100 dB con una rampa da
+1 ms (generatore della famiglia dec. 80, senza BBM: la larghezza scende in
+modo continuo, nessun buco nel suono). Agisce su **tutte le uscite**
+(master, booth, rec, MON verso la cuffia: in cuffia senti ciò che sente
+l'impianto, utile per controllare la fase), come chiesto nella risposta 3
+della review (`docs/08`).
+- Simulato, caso peggiore +18 dBu tutto a sinistra commutato sul picco:
+  click **+0,55 dB** sopra il programma con 1 ms (secco: +8,9 dB).
+- Livelli in MONO: sorgente tutta su un lato −6 dB su entrambe le uscite;
+  sorgente al centro invariata; due lati scorrelati −3 dB.
+- Separazione a tasto spento: limitata dall'appaiamento della matrice,
+  ~60 dB con R 0,1 %.
+- Costo: 1 VCA + 4 op-amp. Il VCA resta sempre nel percorso a 0 dB:
+  ~+0,2 dB sul rumore di sistema [STIMA da datasheet].
+- Il tasto e il suo LED (se previsto) sono comandi di pannello di Filippo
+  (voce 40): qui si definisce solo il circuito.
+
+**INS_SEND / INS_RET (EQ grafico, dec. 111 b).** Dopo [A3], prima dei
+quattro buffer: driver dedicato ≤ 50 Ω verso slot 9, ricevitore buffer
+≥ 100 k da slot 10. Senza modulo il ponticello JMS del backplane chiude
+l'anello. Costo sempre presente: 1 driver + 1 buffer stereo.
+
+**[V] VIE_TAP (uscite per via, dec. 111 b).** Dopo [D] MASTER LEVEL:
+driver dedicato ≤ 50 Ω, 0 dBu nominale, su b31-b32. Così il modulo per vie
+segue master level, MONO e grafico. Mute: il modulo per vie ascolta
+GLOBAL_MUTE (c9).
