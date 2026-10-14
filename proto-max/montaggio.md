@@ -68,3 +68,15 @@ I file `MC-*.genexpr`, `.maxpat` e `.amxd` NON si modificano a mano:
 si rigenerano con `python3 proto-max/coefficienti/genera.py`. Prima di
 consegnare: `verifica.py` (modello contro LTspice) e `prova_gen.py`
 (codice gen~ contro modello) devono dire PASS.
+
+## MC-FILTRO (P1, parte 1)
+
+1. Trascina `MC-FILTRO.amxd` sulla stessa traccia, **dopo** MC-CHANNEL.
+2. Pannello: HPF FREQ, HPF RES, LPF FREQ, LPF RES; MODO HPF / OFF / LPF;
+   CORE OTA (a′) / PULITO (c-B).
+3. Parte in OFF: suono invariato. Metti MODO su LPF e abbassa LPF FREQ.
+4. RES oltre il 90 %: il filtro fischia da solo, anche senza musica.
+5. Livello: 0 dBu del mixer = −12 dBFS di picco. Il core OTA cambia
+   carattere col livello: con GAIN di MC-CHANNEL più alto la risonanza
+   si schiaccia di più.
+

@@ -85,6 +85,10 @@ Chiude a orecchio:
 
 Sblocca il todo 11 (prototipo del filtro su millefori), fermo su B1.
 
+[2026-10-15: parte 1 FATTA — `MC-FILTRO` con FREQ, RES, MODO, CORE (a′)/
+(c-B); modello tarato sul D5 (≤ 0,3 dB, fischio ≤ 0,6 dB / 0,3 st), gen~
+contro modello PASS; `proto-max/RISULTATI-P1.md`. Restano DRIVE e B2.]
+
 ### P2 — 5-way (2 sessioni)
 
 `MC-5WAY` sul gruppo DJ BUS: 5 bande con kill a interruttore, EQ creativo
