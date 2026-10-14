@@ -224,6 +224,9 @@ complete nel log, leggibili con `python3 sim/fourier_tab.py`.
 
 ## 4. Numeri musicali da confermare (regola 2)
 
+**ESITO 2026-10-14: DECISIONE 110.** Filippo accetta i quattro punti come
+punto di partenza (k 1/30 già deciso nella 109).
+
 - **Partitore k**: rumore contro forza della risonanza e accordatura
   dell'oscillazione (tabelle §2). Proposta di Claude: **1/30**. Rumore
   di sistema PASS 1,0 dB; oscillazione −1,3…−5,7 semitoni,

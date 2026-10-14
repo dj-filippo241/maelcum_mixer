@@ -11,6 +11,11 @@
 >   FREQ e RES = Xone:96 (dec. 102, tabella in filter-module §4).
 > - EQ di canale: in serie v0.3 beta-3 + muto a fine corsa con tutte e 4 le
 >   manopole a zero (dec. 104: la voce 59 è chiusa). [SUPERATO dalla dec. 105: EQ = isolator a 4 bande, `docs/fase1/eq-isolator-v0.4.md`]
+> - Filtro col chip reale (dec. 109-110): il core gen~ deve riprodurre il
+>   tetto dell'OTA (picco di risonanza che cala col livello d'ingresso:
+>   +21 dB a −30 dBu, +8 a −10, ~+1 a 0 dBu), l'oscillazione a ~+5 dBu e
+>   la nota che cala di ~6 semitoni tra 90 % e 100 % di RES
+>   (filter-module §5quater). Un SVF ideale falserebbe l'ascolto di B1/B6.
 
 > Decisione 78 [F]: prototipo musicale digitale del mixer completo PRIMA del
 > millefori. Ambiente: Ableton Live Suite (M4L incluso), controllo a mouse.

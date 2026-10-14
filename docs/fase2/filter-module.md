@@ -392,6 +392,8 @@ programma. I passaggi piani salgono fino a +7 dB: il filtro «riempie». Guadagn
    resta da sentire a orecchio se basta.
 2-3. ~~Morso a fine corsa e law~~ → **CONFERMATI da Filippo il
    2026-10-13 come punto di partenza** (dec. 99 i).
+   [SUPERATA la griglia dalla dec. 110: col chip reale il fischio arriva a
+   −1,5…+2 dBu, non a +8; griglia di riferimento in §5quater.]
 
 ### Rumore MISURATO (`sim/filtro/od2-noise.cir`, 2026-10-13)
 
@@ -533,8 +535,10 @@ THD % · uscita dBu rms, manopola DRIVE 0 / 50 / 100 %:
   allarga. Programma e fischio si sporcano quasi insieme.
 - Tetto rispettato: uscita massima misurata +5,4 dBu.
 
-**Da riconfermare da Filippo (voce A17)**: griglia dell'overdrive, law
-RES, livello e nota dell'oscillazione.
+**CONFERMATI da Filippo il 2026-10-14 come punto di partenza (DECISIONE
+110, chiude A17)**: questa griglia sostituisce quella di §5ter; picco di
+risonanza come misurato sopra (Xone-like); oscillazione ~+5 dBu
+(requisito abbassato); calo di nota a fine corsa = carattere.
 
 ## 6. Simulazione di fattibilità (2026-09-24, `sim/filtro/`)
 
