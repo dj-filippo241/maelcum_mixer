@@ -777,10 +777,139 @@ def schema_totale():
     return d.save()
 
 
+# ---------------------------------------------------------------- PSU
+def psu():
+    d = Diagram("psu", 1560, 960, "SISTEMA PSU — ALIMENTAZIONE",
+                "maelcum mixer — design v0.2 + REV dec. 98/106 · toroidale unico, regolazione LOCALE in ogni modulo, fanless (dec. 90c) · rail ratificati dec. 93",
+                "trasformatore ~225 VA (dec. 106)", GREEN)
+    RE = d.box(40, 130, 150, 90, "RETE 230 V", ["IEC + interruttore", "bipolare"], "dark")
+    IN = d.box(230, 120, 200, 110, "INGRESSO RETE", ["fusibile T2 A [PROVV]", "NTC 10-20 Ω anti-inrush",
+                                                  "filtro EMC (§7)"])
+    TR = d.box(470, 110, 210, 130, "TOROIDALE ~225 VA", ["unico, 4 secondari", "schermo primario/secondari",
+                                                       "termico integrato", "taglia 225 o 250 VA all'acquisto"], "green")
+    chain_h(d, [RE, IN, TR])
+    rows = [
+        ("W1 2×21 V 3,0 A", ["ponte + bulk 2 × 10 mF", "raw min 23,8 V a rete −10 %"], "RAW ±27 V AUDIO",
+         ["LM317/337 locali → 19,2 V", "+ cap multiplier → ±18 V"],
+         ["canali · 5-way · FX · filtro", "FX-SEND · ampli CUE · mic/mono"], "~1,4 A per ramo (dec. 106)"),
+        ("W2 2×18 V 1,0 A", ["ponte + bulk 2 × 10 mF", "raw 20,5 / 24,0 / 27,3 V"], "RAW ±22 V LN / OTA",
+         ["pre-reg ±16,5 → LT3045/94 → ±15,0", "+ 78L15/79L15 ±15 per gli switch"],
+         ["phono · mic · CV · meter · CUE", "OTA filtro · switch kill/assign"], "picco LN ~450 mA, distribuito"),
+        ("W3 2×20 V 0,4 A", ["ponte + bulk 2 × 4,7 mF", "raw 23,3 / 27,1 / 30,3 V"], "RAW ±26 V [M]",
+         ["statici dello stadio HV master", "+ LDO locali del master"],
+         ["solo master out: +24 dBu reali", "(+25,1 dBu a rete −10 %, Test 17)"], "~130-170 mA"),
+        ("W4 9 V 2,0 A", ["ponte + bulk 10 mF", "raw 8,5 / 10,7 / 12,7 V"], "+5 V CONTROL",
+         ["7805 / LM2940 nel modulo PSU", "regolato sul backplane"],
+         ["LED dei meter · logiche", "relay di mute · supervisor"], "worst 1,0 A (LED 0,5)"),
+    ]
+    y = 290
+    for wn, wl, raw, rl, dest, cur in rows:
+        W = d.box(470, y, 210, 76, wn, wl, tsize=12, lsize=10)
+        R = d.box(730, y, 210, 76, raw, ["sul backplane, a stella"], "dark", tsize=12, lsize=10)
+        L = d.box(990, y, 250, 76, "", rl, "amber", lsize=10.5)
+        D = d.box(1280, y, 240, 76, "", dest + ["!" + cur], "note", lsize=10)
+        d.arrow([(575, y - 14 if y == 290 else y - 14), (W.cx, W.y - 2)], head=False)
+        chain_h(d, [W, R, L, D])
+        y += 100
+    d.arrow([TR.b, (TR.cx, 290 - 2)])
+    d.text(1115, 280, "regolazione nel modulo che usa il rail", 10.5, "#777", "middle")
+    d.text(1400, 280, "chi lo usa · corrente", 10.5, "#777", "middle")
+    # protezioni e mute
+    P = d.box(40, 300, 390, 170, "PROTEZIONI (§4)",
+              ["1. corto master: auto-limitato 106 mA, nessuna azione", "2. corto in un modulo: il regolatore locale limita",
+               "   e va in protezione; gli altri moduli non lo vedono", "3. fusibili di ramo sul raw: canali T315 · 5-way T630",
+               "   FX T400 · filtro T315 · master T500 [PROVV]", "+ fusibile secondari + termico del toroidale"],
+              "note", align="start", lsize=10.5, tsize=12)
+    S = d.box(40, 500, 390, 170, "SUPERVISOR E MUTE (§3)",
+              ["comparatori a finestra per avvolgimento (dec. 93)", "fuori finestra > 100 ms → mute generale + LED fault",
+               "relay di mute failsafe: diseccitati = muto", "accensione: relay chiusi dopo 1,5-2 s",
+               "spegnimento: il bulk +5 tiene vivo il supervisor", "~50 ms → relay aperti senza colpi"],
+              "ctrl", align="start", lsize=10.5, tsize=12)
+    d.arrow([(S.x + S.w, 585), (452, 585), (452, 688), (700, 688)], "cv")
+    d.text(710, 692, "GLOBAL_MUTE (c9) e relay [H] [B4] [C3] del master", 10.5, CV)
+    d.box(40, 710, 1480, 110, "CALORE E NUMERI (fanless, dec. 90c)",
+          ["Regolatori ±18 locali: ~18-21 W distribuiti sui moduli (ognuno ≤ 2,5 W su rame) · pre-regolatori LN ~5 W · stadio HV master: rame ≥ 5 cm² per transistor.",
+           "Uscita dei regolatori ±18: 18,00 V, ripple ~7 µVpp stimato al modulo (sim §9a) · hold-up ±18: ~70 ms, più del tempo di rilascio dei relay.",
+           "CV dei VCA a 6,1 mV/dB (dec. 92): l'hum sui CV è quantificato (§6), verifica al banco. Da banco: termografia, soglie del supervisor, PSRR reale."],
+          "note", align="start", lsize=10.5, tsize=12)
+    d.legend(856, [("audio", "potenza / raw"), ("cv", "mute e supervisione"), (AMBER, "regolazione nel modulo")])
+    d.footer("Fonte: docs/fase3/sistema-psu.md v0.2 (REV 2026-10-13, §2-§5, §9) + decisioni 54/90/92/93/98/106 + sim/system/psu-*.cir")
+    return d.save()
+
+
+# ---------------------------------------------------------------- METERING
+def metering():
+    d = Diagram("metering", 1560, 960, "SISTEMA METERING — BARRE LED A ZONE",
+                "maelcum mixer — design S4 v0.1 · ballistica Pioneer DJM (dec. 81) · soglie assolute (dec. 90): fondo scala +24 dBu uguale su ogni barra",
+                "8 barre + LED mic/mono", GREEN)
+    # punti di presa
+    d.text(40, 122, "PUNTI DI PRESA (SPECIFICA §11, bloccati)", 13, INK, weight=700)
+    taps = [("MASTER L/R", ["post master level,", "pre stadio HV", "2 barre da 20 segm."]),
+            ("DJ × 4", ["post filtro/overdrive,", "pre-fader", "4 barre da 10 segm."]),
+            ("5-WAY", ["post drive, pre", "master sum (g × 2)", "1 barra da 10 segm."]),
+            ("RITORNO FX", ["post gain/EQ2,", "pre-fader", "1 barra da 10 segm."]),
+            ("MIC / MONO", ["dopo il preamp,", "prima dell'EQ2", "solo LED tricolore"])]
+    tb = []
+    for i, (t, ln) in enumerate(taps):
+        tb.append(d.box(40 + i * 300, 136, 270, 86, t, ln, "dark", tsize=12.5, lsize=10.5))
+    # catena per zona
+    d.text(40, 268, "CATENA PER BARRA (§2) — una per ogni barra, detector su ±15 V LN", 13, INK, weight=700)
+    y = 284
+    c1 = d.box(40, y, 220, 96, "INGRESSO", ["guadagno g + trim ±2 %", "(calibrazione per zona)", "buffer OPA1612"], tsize=12, lsize=10)
+    c2 = d.box(300, y, 220, 96, "SUPERDIODO", ["OPA + 1N4148", "clamp anti-windup −1,5 V", "attacco 0,23 ms"], tsize=12, lsize=10)
+    c3 = d.box(560, y, 220, 96, "HOLD + RELEASE", ["C 100 nF da solo sul nodo", "R 2M + trimmer 3,3M", "τ 0,2…0,53 s (0,3 tipico)"], tsize=12, lsize=10)
+    c4 = d.box(820, y, 200, 96, "BUFFER", ["hold al picco +24,00 dBu", "droop −2,9 dB/ciclo", "a 10 Hz (dec. 81)"], tsize=12, lsize=10)
+    c5 = d.box(1060, y - 30, 220, 76, "LM3915 (scala)", ["10 segm. × 3 dB · master:", "2 chip in cascata = 20"], "green", tsize=12, lsize=10)
+    c6 = d.box(1060, y + 70, 220, 76, "PURPLE (clip latch)", ["LM339 a +23 dBu", "one-shot 0,7 s → 479 ms"], "purple", tsize=12, lsize=10)
+    chain_h(d, [c1, c2, c3, c4])
+    d.arrow([c4.r, (1040, c4.cy), (1040, c5.cy), (c5.x - 2, c5.cy)])
+    d.arrow([(1040, c4.cy), (1040, c6.cy), (c6.x - 2, c6.cy)])
+    d.dot(1040, c4.cy)
+    led = d.box(1320, y - 30, 200, 176, "LED", ["LM3915 sul +5 V control", "(LED isolati dal rail LN)", "2-5 mA per segmento",
+                                             "worst ~0,5 A su +5 V", "", "master purple: sensing", "dello stadio HV [aperto]"], "note", tsize=12, lsize=10)
+    d.arrow([c5.r, (led.x - 2, c5.cy)])
+    d.arrow([c6.r, (led.x - 2, c6.cy)])
+    # scala colori
+    d.text(40, 470, "SCALA E COLORI (§3) — soglie dec. 90 rispettate, split giallo/ambra a +12 [PROVV]", 13, INK, weight=700)
+    bands = [("BLU", "< −6 dBu", "#3B6FB6", "solo master (9 segm.)"),
+             ("VERDE", "−6 … +6", "#2E9E4F", "programma attorno a 0"),
+             ("GIALLO", "+6 … +12", "#E3C21B", "forte"),
+             ("AMBRA", "+12 … +18", "#E88A1A", "molto forte"),
+             ("ROSSO", "+18 … +24", "#D2322D", "estremo"),
+             ("VIOLA", "≥ +23 latch", "#8A4A9E", "clip, LED dedicato")]
+    x = 40
+    for name, rng, col, note in bands:
+        d.o.append(f'  <rect x="{x}" y="490" width="236" height="40" rx="6" fill="{col}"/>')
+        d.text(x + 118, 515, name, 13, "#fff" if name != "GIALLO" else "#141414", "middle", 700)
+        d.text(x + 118, 550, rng, 11.5, INK, "middle", 600)
+        d.text(x + 118, 568, note, 10.5, "#666", "middle")
+        x += 248
+    d.text(40, 598, "Zone a 10 segmenti: +24 … −3 dBu (sotto −3 la barra è spenta). Master a 20 segmenti: +24 … −33 dBu.", 11, "#444")
+    # albero riferimenti
+    ref = d.box(40, 630, 720, 110, "ALBERO DEI RIFERIMENTI CONDIVISO (§5)",
+                ["+15 V LN → partitore 10k/5k 0,1 % → follower → vrefA 5,000 V = fondo scala +24 dBu (tutte le barre)",
+                 "→ partitore 10k/4,625k 0,1 % → follower → vrefB 1,581 V (secondo chip delle cascate master)",
+                 "!follower obbligatori: il partitore nudo caricato scendeva a 4,07 V (finding sim)",
+                 "calibrazione identica per costruzione: errore ≤ ±0,012 dB"], "ctrl", align="start", lsize=10.5, tsize=12)
+    d.box(800, 630, 720, 110, "MIC / MONO: UN LED TRICOLORE (dec. 97)",
+          ["verde = segnale ok (≥ −6 dBu) · giallo = vicino al clip (≥ +11) · rosso = clip (≥ +17, latch)",
+           "rosso a +17 e non +23: il front-end mic su ±15 V clippa prima, e l'EQ2 aggiunge fino a +6",
+           "soglie [PROVVISORIO] · comparatori LM339 condivisi col purple delle zone"],
+          "note", align="start", lsize=10.5, tsize=12)
+    d.box(40, 770, 1480, 92, "BOM E APERTI",
+          ["BOM di massima: 10 LM3915 · ~12 OPA1612 · 2 LM339 · ~103 LED + 8 purple · ~50-80 € [molto PROVVISORIA]. Alternativa a LM3915: ladder di LM339 (10× i chip).",
+           "Niente meter su booth, rec, cuffie e mandate (SPECIFICA §11). Aperti (voce 40 / q54): posizione delle barre, 10 o 20 segmenti per zona,",
+           "luminosità 2 o 5 mA, purple del master a doppio criterio o uno solo, procedura di calibrazione con toni a livelli noti."],
+          "note", align="start", lsize=10.5, tsize=12)
+    d.legend(892, [("audio", "segnale"), ("cv", "riferimenti / logica")])
+    d.footer("Fonte: docs/fase3/sistema-metering.md v0.1 (§1-§9) + sim/system/meter-*.cir + sim/meter/RISULTATI-peak-det.md + decisioni 81/90/97")
+    return d.save()
+
+
 if __name__ == "__main__":
     warn = []
-    for f in (schema_totale, canale, fx, fx_send, master, five_way, filtro, cue, mic_mono):
+    for f in (schema_totale, canale, fx, fx_send, master, five_way, filtro, cue, mic_mono, psu, metering):
         warn += f()
-    print("scritti 9 SVG in", HERE)
+    print("scritti 11 SVG in", HERE)
     for w in warn:
         print("ATTENZIONE:", w)
