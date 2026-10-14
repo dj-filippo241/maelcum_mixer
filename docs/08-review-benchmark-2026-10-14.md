@@ -41,7 +41,7 @@
 | 12 | Numero di canali DJ (Xone:464: 6 stereo + 4 mono; Model 1 e Xone:96: 6; rotary: 4) | **4 canali DJ, com'è** (backplane non predisposto per 6) | — |
 | 13 | D4 / I1 — fork del progetto? | **Nessun fork.** Un solo progetto; **tutto predisposto** per aggiungere i moduli discussi senza grosse modifiche (uscite per via, crossfader, EQ grafico, sirena come MONO) | le «versioni» diventano configurazioni dello stesso mixer; ordine di costruzione invariato (fase 1, poi fase 2) |
 
-## Sintesi delle conseguenze (da trasformare in decisioni se Filippo conferma)
+## Sintesi delle conseguenze — RATIFICATA da Filippo il 2026-10-14 → DECISIONE 111
 
 Aggiunte al design:
 - tasto MONO sul master (somma L+R; punti d'azione da definire);

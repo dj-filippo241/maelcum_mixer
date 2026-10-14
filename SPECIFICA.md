@@ -1,6 +1,6 @@
 # SPECIFICA — MAELCUM MIXER (mixer dub modulare analogico, esemplare unico)
 
-> **v0.1 (2026-09-18, rev. 2026-09-28/01-10: decisioni 76-93; REV 2026-10-13: decisioni 97-106 recepite nei §4-6 come note in testa ai punti toccati + esiti simulazioni e sessione decisioni; REV 2026-10-14: decisioni 107-110)** — Compilata da: decisioni 1-110 (`docs/01-decisioni-bloccate.md`; 103 e 104 revocate),
+> **v0.1 (2026-09-18, rev. 2026-09-28/01-10: decisioni 76-93; REV 2026-10-13: decisioni 97-106 recepite nei §4-6 come note in testa ai punti toccati + esiti simulazioni e sessione decisioni; REV 2026-10-14: decisioni 107-111)** — Compilata da: decisioni 1-111 (`docs/01-decisioni-bloccate.md`; 103 e 104 revocate),
 > status doc ChatGPT rev2 (`docs/export-chatgpt/`, corpus chiuso — decisione 58),
 > gain-staging sheet (`docs/fase1/gain-staging-sheet.md`), revisione critica (`docs/03`).
 > Livello: REQUISITI. Il dettaglio circuitale vive nei design doc di `docs/fase1/` e `docs/fase2/`.
@@ -11,7 +11,9 @@
 
 ## 1. Vincoli globali di progetto
 
-- [BLOCCATO] Percorso audio 100% analogico. Nessun ADC/DAC/DSP interno. Il DSP esterno resta responsabile di crossover di sistema, protezione altoparlanti, EQ di sistema, delay, gestione finali.
+- [BLOCCATO] Percorso audio 100% analogico. Nessun ADC/DAC/DSP interno. Il DSP esterno resta responsabile di crossover di sistema, protezione altoparlanti, EQ di sistema, delay, gestione finali. [DEC. 111 (c, f), 2026-10-14: uscita full-range stereo confermata. REQUISITO D'IMPIANTO: il DSP esterno deve proteggere i sub dai contenuti infrasonici del mixer (auto-oscillazione del filtro fino a ~15-30 Hz, giri di feedback FX, GROWL): passa-alto e limiter per via.]
+- [DEC. 111 (e), 2026-10-14] Ambiente: sound system all'aperto. Funzionamento fino a 40 °C ambiente; schede tropicalizzate (vernice protettiva); pot sigillati; connettori robusti; telaio rigido; trasporto in flight case; pannello protetto da polvere e liquidi.
+- [DEC. 111 (b), 2026-10-14] Moduli opzionali PREDISPOSTI (non costruiti): uscite per via (crossover dopo la somma del master), crossfader (loop post-fader dei 4 canali), EQ grafico (inserzione sul master e/o dopo il 5-way), sirena (slot MONO). Backplane e alimentazione li prevedono senza grosse modifiche.
 - [BLOCCATO] Stereo L/R ovunque; no pan; nessun controllo L/R separato; controlli linked; mono-compatibile.
 - [BLOCCATO] Livelli: nominale 0 dBu (0,775 Vrms); programma caldo ~+10 dBu; estremo interno ~+18 dBu; capability d'uscita pulita ≥ +24 dBu (solo stadio finale master). Referenza autorevole: gain-staging sheet.
 - [BLOCCATO, REV decisione 93 2026-10-01] Domini di alimentazione: **raw ±27 V audio · raw ±22 V LN/OTA · raw ±26 V [M] (SOLO stadio HV uscita master)** distribuiti sul backplane + **+5 V control** (regolato nel modulo PSU). Generazione LOCALE per modulo: ±18 V audio di percorso (LM317/337 dal raw ±27) · ±15 V ultra-low-noise (phono, mic, CV, metering, CUE: pre-reg ±16,5 V + LT3045/LT3094 dal raw ±22, dec. 54) · ±15 V switch/kill/assign (78L15/79L15 dal raw ±22, dec. 90c). Nessun raw alimenta mai un op-amp; il raw [M] alimenta solo lo stadio discreto HV master. (Il dominio «±24 V main unico» del consolidamento 2026-09-18 è SUPERATO: attuazione della dec. 90(c) — secondari dedicati audio/OTA/switch-logica.)
@@ -125,11 +127,14 @@ Catena [BLOCCATO]: RCA stereo → protezione → front-end (LINE; PHONO MM v0.1 
 ## 8. Mic e generic mono — requisiti
 
 - [BLOCCATO] MIC: XLR mono bilanciato; preamp 30-60 dB, Z_in ~2 kΩ, low-noise, high CMRR, fast recovery; NO phantom (V1); EQ 2 bande (LOW ~120 / HIGH ~5 kHz, −∞→0→+6, broad); meter warning-only dopo preamp prima di EQ; niente CUE/filtro/5-way/fader; → MASTER SUM.
+- [DEC. 111 (d), 2026-10-14] Il modulo MIC ha in più un tasto MUTE (BBM + ramp 1 ms, dec. 80); il MONO no.
 - [BLOCCATO decisione 97, 2026-10-13] MIC e MONO sono due moduli SEPARATI. Comandi di ciascuno, e nessun altro: GAIN, EQ 2 bande, 4 pot send (uno per bus FX, −∞…0 dB, presa post-EQ, nessun bottone), un LED di metering a tre colori (verde = segnale ok, giallo = vicino al clip, rosso = clip; presa pre-EQ; soglie [PROVVISORIO] −6 / +11 / +17 dBu). MIC: passa-alto fisso a 60 Hz. Massimo 4 moduli MIC/MONO nel sistema, in qualunque combinazione; primo prototipo: 1 MIC + 3 MONO.
 - [ARCHITETTURA v0.1, 2026-10-13 — `docs/fase4/mic-mono-moduli.md`, valori PROVVISORI] MIC: instrumentation amp OPA1612 a 30 dB fissi + stadio 0…+30 dB — EIN −126,5 dBu (150 Ω), CMRR 74 dB con sorgente sbilanciata 10 Ω, overload 300 mV rms. MONO: buffer FET 1 MΩ + pot passivo + make-up +10 dB — rumore modulo −101,3 dBu A-wtd. Entrambi: EQ2 a celle serie, due driver separati verso MASTER SUM L/R (MIC in multidrop su MSUM6, MONO su MSUM7: i contributori restano 7).
 - [BLOCCATO] GENERIC MONO: jack mono; buffer hi-Z ≥100 kΩ; gain −∞→0→+10; tollera +18 dBu; EQ 2 bande come mic; mono→stereo distribuito propriamente (mai hard-short); warning-only; niente CUE/filtro/5-way/fader; → MASTER SUM. Modulo generico, non cucito su uno strumento specifico; numero di varianti [APERTO].
 
 ## 9. Master, Booth, Rec — requisiti
+
+- [DEC. 111 (d), 2026-10-14] Tasto MONO sul master: somma L+R; su quali uscite agisce (master, booth, rec, MON verso il CUE) da definire nel design.
 
 Design circuitale: `docs/fase1/master-out.md` **v0.3 (2026-09-29: stadio finale BOOTSTRAP verificato — suite completa Test 7-12 in `sim/master-out/RISULTATI-composite.md`)**; resto del modulo = v0.2 + addendum REC.
 

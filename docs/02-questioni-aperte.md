@@ -42,6 +42,18 @@ voce porta in testa il suo stato a oggi.
 
 ### C. Ingegneria che resta, ferma su A/B o sul banco
 
+- **Da dec. 111 (2026-10-14, review contro il benchmark)**: (1)
+  predisposizioni nel backplane (S3): loop post-fader dei 4 canali per il
+  crossfader, punti d'inserzione per l'EQ grafico (master e dopo il
+  5-way), presa dopo la somma del master per il modulo uscite per via;
+  margine di corrente nell'alimentatore; (2) circuito del tasto MONO sul
+  master e scelta delle uscite su cui agisce; (3) tasto MUTE del MIC
+  (BBM + ramp 1 ms); (4) bilancio termico dell'alimentatore fanless a
+  40 °C ambiente (S1 §5) e derive di converter e shaper con l'interno più
+  caldo; vernice protettiva sui nodi ad alta impedenza (phono 47k, MONO
+  1 MΩ, servo); (5) protezione dei sub: alternative pronte se servono
+  (RES che cala sotto ~40 Hz, passa-alto ~20 Hz sul master).
+
 - **Da dec. 105 (2026-10-13)**: EQ isolator v0.4-beta SIMULATO
   (`docs/fase1/eq-isolator-v0.4.md` §8): contatto di fondo corsa (−100
   dB a manopole chiuse), servo DC, ritardo, headroom, tolleranze, rumore.
