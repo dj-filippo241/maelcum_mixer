@@ -51,8 +51,9 @@ le risposte alle voci B della fase.
 > contro LTspice ≤ 0,07 dB (incroci A) e ≤ 0,44 dB (B); codice gen~ contro
 > modello ≤ 0,002 dB. FINDING: la banca gira a 4× (oversampling halfband),
 > senza la bilineare sbagliava fino a 3,2 dB. Il «trim» del piano coincide
-> con GAIN: il canale non ha un trim separato. Manca il primo caricamento
-> in Live da parte di Filippo (`proto-max/montaggio.md` §4).]
+> con GAIN: il canale non ha un trim separato. Caricato in Live da Filippo
+> il 2026-10-14: compila, trasparente al centro, silenzio a bande chiuse,
+> CPU 4 % con 4 dispositivi. Resta l'ascolto per B7.]
 
 `MC-CHANNEL` ×4: trim, GAIN (law −∞ … 0 … +10), **isolator a 4 bande**
 (incroci di partenza 150 / 500 / 2500 Hz, +6 dB, law lineare, silenzio a

@@ -66,12 +66,14 @@ frequenza non li vedeva):
 2. Lo stesso errore sul secondo stadio dell'halfband: calo di −0,09 dB
    a 8 kHz con le manopole al centro.
 
-## Non verificato
+## Verifica 3 — in Live (Filippo, 2026-10-14, `montaggio.md` §4)
 
-- **Sintassi gen~ e caricamento in Live**: li controlla solo Max.
-  Primo controllo di Filippo, `montaggio.md` §4.
-- CPU con 4 dispositivi: 240 biquad e 64 sezioni allpass per campione,
-  per dispositivo. Stima: pochi punti percentuali di un core.
+- `MC-CHANNEL.amxd` si apre trascinato su una traccia; gen~ compila.
+- Tutto al 50 %: suono invariato. Quattro bande a 0 %: silenzio.
+- CPU con 4 dispositivi: **4 %** (240 biquad e 64 sezioni allpass per
+  campione, per dispositivo). Margine ampio per P1-P4.
+
+## Non verificato
 - Confronto con LTspice dentro Max (rumore rosa, piano §3): sostituito
   dalle due verifiche sopra, che coprono la stessa catena in modo
   ripetibile.
