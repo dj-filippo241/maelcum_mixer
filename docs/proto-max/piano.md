@@ -156,7 +156,9 @@ proto-max/
    **Ordine delle fasi**: P0 → P1 filtro → P2 5-way → P3 → P4, oppure un
    altro. Raccomandazione: P0 per primo, poi il filtro, perché B1 tiene
    fermo il todo 11.
-2. **Controllo**: solo mouse (dec. 78), oppure un controller MIDI che hai
+2. **[DECISO da Filippo il 2026-10-14: prima il mouse, il controller MIDI
+   dopo]** Le manopole si mappano in Live (MIDI Map) senza toccare le patch.
+   **Controllo**: solo mouse (dec. 78), oppure un controller MIDI che hai
    già. Con un controller senti il gesto vero (due manopole insieme,
    una spazzata veloce); a mouse no.
 3. **Dove ascolti**: cuffie, monitor da studio o un impianto con sub.
