@@ -152,7 +152,8 @@ proto-max/
 
 ## 6. Decisioni di Filippo per partire
 
-1. **Ordine delle fasi**: P0 → P1 filtro → P2 5-way → P3 → P4, oppure un
+1. **[DECISO da Filippo il 2026-10-14: P0 → P1 filtro → P2 5-way → P3 → P4]**
+   **Ordine delle fasi**: P0 → P1 filtro → P2 5-way → P3 → P4, oppure un
    altro. Raccomandazione: P0 per primo, poi il filtro, perché B1 tiene
    fermo il todo 11.
 2. **Controllo**: solo mouse (dec. 78), oppure un controller MIDI che hai
