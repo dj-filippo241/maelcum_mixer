@@ -8,7 +8,7 @@ Il repository non contiene software da compilare né test: contiene documenti di
 
 ## Regole del progetto
 
-1. **Una decisione, un posto solo.** Le decisioni bloccate stanno in `docs/01-decisioni-bloccate.md`; le aperte in `docs/02-questioni-aperte.md`; la specifica consolidata in `SPECIFICA.md` (v0.1, rev. 2026-10-14: decisioni 76-113). Quando una questione si chiude: spostarla da 02 a 01 con data e origine [F]/[R]/[C], e aggiornare la specifica.
+1. **Una decisione, un posto solo.** Le decisioni bloccate stanno in `docs/01-decisioni-bloccate.md`; le aperte in `docs/02-questioni-aperte.md`; la specifica consolidata in `SPECIFICA.md` (v0.1, rev. 2026-10-14: decisioni 76-114). Quando una questione si chiude: spostarla da 02 a 01 con data e origine [F]/[R]/[C], e aggiornare la specifica.
 2. **Non inventare decisioni di design.** Le scelte sonore/ergonomiche sono di Filippo. L'ingegneria (topologie, componenti, simulazioni, calcoli) è di Claude, ma i numeri che vincolano l'uso musicale vanno mostrati e confermati.
 3. **Niente valori congelati prima della topologia.** Regola ereditata dalla review: mai fissare valori di componenti prima di aver scelto il circuito. Distinguere sempre [BLOCCATO] / [PROVVISORIO] / [APERTO] / [SUPERATO].
 4. **Metodo della fase circuitale**: requisito funzionale → funzione di trasferimento → topologia → componenti → simulazione → vincoli PCB → prototipo → misura → revisione.
@@ -59,9 +59,9 @@ Regole di simulazione (ognuna nasce da un errore già pagato; il contesto sta ne
 - `perl -e 'alarm ...'` ferma lo script ma non `LTspice.exe` dentro wine: il processo resta al 300 % di CPU. Controllare con `ps aux | grep -i LTspice.exe` e chiuderlo per PID.
 - Non fermare LTspice con `pkill -f <nome netlist>`: uccide anche lo script. `drive2-chain` a 150 Hz non termina (causa ignota): usare 50 Hz o 1 kHz.
 
-## Stato corrente (2026-10-14, decisioni 1-113)
+## Stato corrente (2026-10-15, decisioni 1-114)
 
-Il design teorico (carta + simulazione) è completo per tutti i moduli. Il prototipo musicale in Max for Live (dec. 78) è in pausa e precede il millefori. Gli acquisti sono sospesi fino al prototipo.
+Il design teorico (carta + simulazione) è completo per tutti i moduli. Il prototipo musicale in Max for Live (dec. 78) precede il millefori: P0 (`MC-CHANNEL`, incroci A/C/D, curva LINEARE/PIONEER, dec. 114) e P1 (`MC-FILTRO`) costruiti e verificati in Python; ascolto di Filippo da fare (`proto-max/RISULTATI-P0.md`, `RISULTATI-P1.md`). Generatori e prove in `proto-max/coefficienti/`: i `.genexpr/.maxpat/.amxd` non si toccano a mano. Gli acquisti sono sospesi fino al prototipo.
 
 | Modulo | Versione corrente | Documento | Simulazioni |
 |---|---|---|---|
@@ -99,7 +99,7 @@ La coda vive in tre posti, non qui:
 
 ```
 SPECIFICA.md                  specifica consolidata
-docs/01-decisioni-bloccate.md cosa è deciso (113 voci; 103 e 104 revocate)
+docs/01-decisioni-bloccate.md cosa è deciso (114 voci; 103 e 104 revocate)
 docs/02-questioni-aperte.md   cosa manca: liste A/B/C in testa, storico delle voci sotto
 docs/03 … 08                  revisione critica, architettura filtro, benchmark, rumore, review
 docs/storico-sessioni.md      cronaca delle sessioni fino al 2026-10-13
