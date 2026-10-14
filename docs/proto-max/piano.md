@@ -1,4 +1,4 @@
-# Prototipo Max for Live — piano v0.2 (2026-10-14) [PROPOSTA — da approvare da Filippo]
+# Prototipo Max for Live — piano v0.2 (2026-10-14) [APPROVATO da Filippo il 2026-10-14: decisioni in §6]
 
 Sostituisce il piano v0.1 del 2026-09-24 (`piano-v0.1.md`, archiviato).
 Todo 1. Base: decisione 78 (prototipo musicale prima del millefori, Ableton
@@ -161,6 +161,9 @@ proto-max/
    **Controllo**: solo mouse (dec. 78), oppure un controller MIDI che hai
    già. Con un controller senti il gesto vero (due manopole insieme,
    una spazzata veloce); a mouse no.
-3. **Dove ascolti**: cuffie, monitor da studio o un impianto con sub.
+3. **[DECISO da Filippo il 2026-10-14: in cuffia]** Conseguenza: le
+   scelte sui bassi prese in P2 (GROWL, banda a ~90 Hz di B3) restano
+   provvisorie fino a un ascolto su un impianto con sub.
+   **Dove ascolti**: cuffie, monitor da studio o un impianto con sub.
    Le decisioni sui bassi (GROWL, banda a ~90 Hz, B3) chiedono un sub
    vero, almeno per la sessione finale di P2.
