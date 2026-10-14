@@ -476,7 +476,7 @@ def five_way():
 # ---------------------------------------------------------------- FILTRO
 def filtro():
     d = Diagram("filtro", 1560, 920, "MODULO FILTRO GLOBALE",
-                "maelcum mixer — design v0.2 + D5 (dec. 109) · stile Sherman: 2 sezioni full-range 10 Hz–35 kHz, 8 core mono, un percorso per canale (dec. 101)",
+                "maelcum mixer — design v0.2 + D5 (dec. 109-110) · stile Sherman: 2 sezioni full-range 10 Hz–35 kHz, 8 core mono, un percorso per canale (dec. 101)",
                 "B1: (a′) OTA o (c-B) pulito — ascolto")
     y = 120
     IN = d.box(40, y, 200, 86, "DAL BACKPLANE", ["4 × send stereo (pre-fader,", "post-EQ canale) + bit di modo",
@@ -492,16 +492,16 @@ def filtro():
     RE = d.box(1400, y, 120, 86, "USCITA", ["R serie 33 Ω", "→ return canale"])
     chain_h(d, [IN, BI, CO, MX, DV, RE])
     d.text(1460, y + 104, "0 dBu nom · max +5,5 dBu", 10.5, AUDIO, "middle")
-    RS = d.box(560, 262, 390, 110, "RISONANZA + LIMITATORE (dec. 109)",
+    RS = d.box(560, 262, 390, 110, "RISONANZA + LIMITATORE (dec. 109-110)",
                ["OTA nel summer: 1/Q = Rf · gm_res (Iabc 221 µA × |gres|)", "!limitatore = perdita non lineare dal buffer BP:",
                 "!4,7k + 2+2 1N4148 → summer (livello uguale a ogni FREQ)",
-                "auto-osc. +4,9 dBu a fine corsa, nota −1,3…−5,7 semitoni"], "purple", lsize=10)
+                "auto-osc. ~+5 dBu (requisito, dec. 110); nota −6 semitoni = carattere"], "purple", lsize=10)
     d.arrow([(700, RS.y), (700, CO.y + CO.h + 2)], "fb")
     d.box(990, 262, 530, 110, "D5: COSA ARRIVA ALL'OVERDRIVE (sim/filtro/RISULTATI-D5.md)",
           ["Il fischio arriva a −1,5…+2 dBu, non a +8: il chip reale lo comprime.",
            "Fine corsa: 15-20 % di THD sul fischio (griglia dec. 99: 31 %), e sale.",
            "Il primo sporco (1,3-2 %) lo fa il core; programma e fischio insieme.",
-           "!Griglia overdrive, law RES e oscillazione da riconfermare (voce A17)."],
+           "!Dec. 110: griglia, law RES e oscillazione ACCETTATE come partenza."],
           "note", align="start", lsize=10.5, tsize=12)
     # sezione controllo
     d.raw(f'  <rect x="40" y="410" width="1480" height="300" rx="10" fill="#EEF3F6" stroke="{CV}" stroke-width="1.2"/>')
@@ -533,11 +533,11 @@ def filtro():
           "note", align="start", lsize=10.5)
     d.box(980, 732, 540, 66, "",
           ["PROTOTIPO MILLEFORI: 1 core + converter + RES + overdrive",
-           "ascolto (a′) contro (c-B): chiude B1, q. 64 e la voce A17."],
+           "ascolto (a′) contro (c-B): chiude B1 e q. 64; rifinitura B6."],
           "amber", align="start", lsize=10.5)
     d.legend(836, [("audio", "audio (send → return)"), ("cv", "controllo CV / Iabc"),
                    ("fb", "risonanza / nota evidenziata")])
-    d.footer("Fonte: docs/fase2/filter-module.md (§2-§5ter, §5quater) + sim/filtro/RISULTATI-D5.md + decisioni 80/89/93/99/101/102/109")
+    d.footer("Fonte: docs/fase2/filter-module.md (§2-§5ter, §5quater) + sim/filtro/RISULTATI-D5.md + decisioni 80/89/93/99/101/102/109/110")
     return d.save()
 
 
@@ -649,8 +649,8 @@ def mic_mono():
 # ---------------------------------------------------------------- SCHEMA TOTALE
 def schema_totale():
     d = Diagram("schema-totale", 1720, 1600, "SCHEMA FUNZIONALE TOTALE",
-                "maelcum mixer — percorso del segnale da tutti gli ingressi a tutte le uscite · stato decisioni 1-109 · un canale DJ disegnato, gli altri tre identici",
-                "decisioni 1-109", FB)
+                "maelcum mixer — percorso del segnale da tutti gli ingressi a tutte le uscite · stato decisioni 1-110 · un canale DJ disegnato, gli altri tre identici",
+                "decisioni 1-110", FB)
     g, p = "jgreen", "jgrey"
 
     def bx(x, y, w, h, t, lines=(), kind=g, ts=12.5, ls=10.5):
