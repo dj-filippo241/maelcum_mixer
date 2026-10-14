@@ -46,6 +46,14 @@ le risposte alle voci B della fase.
 
 ### P0 — Canale (1 sessione mia)
 
+> **[2026-10-14: COSTRUITO e verificato fuori da Max** (`proto-max/RISULTATI-P0.md`):
+> `MC-CHANNEL.amxd` generato da `proto-max/coefficienti/genera.py`; modello
+> contro LTspice ≤ 0,07 dB (incroci A) e ≤ 0,44 dB (B); codice gen~ contro
+> modello ≤ 0,002 dB. FINDING: la banca gira a 4× (oversampling halfband),
+> senza la bilineare sbagliava fino a 3,2 dB. Il «trim» del piano coincide
+> con GAIN: il canale non ha un trim separato. Manca il primo caricamento
+> in Live da parte di Filippo (`proto-max/montaggio.md` §4).]
+
 `MC-CHANNEL` ×4: trim, GAIN (law −∞ … 0 … +10), **isolator a 4 bande**
 (incroci di partenza 150 / 500 / 2500 Hz, +6 dB, law lineare, silenzio a
 fondo corsa), fader.
