@@ -55,6 +55,8 @@ Regole di simulazione (ognuna nasce da un errore già pagato; il contesto sta ne
 - Sallen-Key high-pass: R_fb = R_gnd/2 per Q 0,707.
 - Alimentatori: simulare il trasformatore con EMF a vuoto e resistenza d'avvolgimento, mai ideale (corrente efficace d'avvolgimento ~1,9× la DC).
 - SVF con OTA della RES a Iabc quasi zero: il `.op` non converge (9 minuti a vuoto). Usare `.tran ... uic` e misurare il segnale con `PP`, non `RMS`: col partitore l'offset dell'OTA sale di 1/k.
+- Regolatori in anello (LDO del box, `sim/system/psu-box-*`): mai `uic`; accensione da zero, così il `.op` è banale. Con `uic`, con `limit()` brusco o con diodi a N 0,05, LTspice non termina.
+- `perl -e 'alarm ...'` ferma lo script ma non `LTspice.exe` dentro wine: il processo resta al 300 % di CPU. Controllare con `ps aux | grep -i LTspice.exe` e chiuderlo per PID.
 - Non fermare LTspice con `pkill -f <nome netlist>`: uccide anche lo script. `drive2-chain` a 150 Hz non termina (causa ignota): usare 50 Hz o 1 kHz.
 
 ## Stato corrente (2026-10-14, decisioni 1-113)
