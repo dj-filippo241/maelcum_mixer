@@ -9,7 +9,8 @@ Piano: `docs/proto-max/piano.md` §2 P0 e §3. Generatore:
   metà CCW lineare in dB da −100 a 0, metà CW da 0 a +10.
 - Isolator v0.4 (`eq-isolator-v0.4.md` §3, §9): banca LR4, allpass del
   2° ordine, pot lineare ×2, silenzio a fondo corsa (contatto).
-  Selettore A 150/500/2500 Hz, B 100/630/4000 Hz (B7), dissolvenza
+  Selettore A 150/500/2500 Hz, C 150 dolce/350/3150 Hz (B7; fino al
+  2026-10-14 sera B 100/630/4000, scartata con A, dec. 114), dissolvenza
   20 ms tra due banche che girano entrambe.
 - Fader −∞ … 0, law [PROVVISORIA]: θ², −12 dB a metà corsa.
 - Manopole lisciate a 10 ms.
@@ -77,3 +78,34 @@ frequenza non li vedeva):
 - Confronto con LTspice dentro Max (rumore rosa, piano §3): sostituito
   dalle due verifiche sopra, che coprono la stessa catena in modo
   ripetibile.
+
+## Variante C (2026-10-14 sera, dopo l'ascolto, dec. 114)
+
+Richiesta di Filippo: HI a metà tra A e B; MID-HIGH che scende più in
+basso; LOW e LOW-MID più accavallate. Proposta approvata: **C = 150 Hz
+dolce / 350 / 3150 Hz**. Il primo incrocio è LR2 (12 dB/ott, Q 0,5):
+LP2 − HP2 = allpass del 1° ordine, quindi i rami alti girano di polarità
+e la somma resta piatta senza allpass in più (`canale.PENDENZE`). In
+hardware è lo stesso schema con meno componenti su quell'incrocio; il
+netlist LTspice di C si fa solo se C (o una sua figlia) passa l'ascolto.
+
+Modello (`canale.isolator`, analogico), dB:
+
+| Banda chiusa, punto | A | B | C |
+|---|---|---|---|
+| LOW, 50 Hz | −38,3 | −24,6 | −20,0 |
+| LOW, 80 Hz | −22,5 | −10,7 | −13,1 |
+| LOW, 250 Hz | −1,1 | −0,2 | −2,7 |
+| LOW-MID, buco più profondo | −16,0 (275 Hz) | −26,3 (251) | **−7,8 (229)** |
+| MID-HIGH, buco più profondo | −22,4 (1122) | −26,4 (1585) | −27,5 (1148) |
+| HIGH, 5 kHz | −24,6 | −10,7 | −17,3 |
+| HIGH, 8 kHz | −40,5 | −24,6 | −32,5 |
+
+FINDING: con C la LOW-MID chiusa da sola scava solo −7,8 dB (stima a
+voce prima del calcolo: ~−15). Banda stretta (1,2 ottave) e fianco basso
+dolce: LOW e MID-HIGH la riempiono. È il prezzo dell'accavallamento.
+
+Verifiche: `verifica.py` PASS invariato (A e B contro LTspice, il
+modello LR4 non cambia); `prova_gen.py` PASS con 16 punti di C, scarti
+≤ 0,001 dB. Il selettore ora porta A e C.
+

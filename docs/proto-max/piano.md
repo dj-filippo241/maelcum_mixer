@@ -63,6 +63,9 @@ Chiude a orecchio:
 - **B7**: incroci, boost e law dell'isolator. Il pannello del prototipo
   porta un selettore 150 / 500 / 2500 contro 100 / 630 / 4000 Hz, per il
   confronto con un DJM a memoria.
+  [2026-10-14 sera, dec. 114: +6 e GAIN confermati; A e B scartate; il
+  selettore porta A contro C = 150 dolce / 350 / 3150 Hz,
+  `proto-max/RISULTATI-P0.md` §Variante C. Curva: solo pot di serie.]
 
 Serve anche a montare l'infrastruttura (procedura di montaggio, set di
 prova): le fasi dopo costano meno.

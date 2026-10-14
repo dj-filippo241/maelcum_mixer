@@ -32,8 +32,10 @@ MANOPOLE = [
     ("high", "HIGH", 50.0),
 ]
 FADER = ("fader", "FADER", 100.0)
+# varianti di incroci nel selettore (B scartata all'ascolto, dec. 114)
+VARIANTI = ["A", "C"]
 SELETTORE = ("incroci", "INCROCI",
-             ["A 150/500/2500", "B 100/630/4000"])
+             ["A 150/500/2500", "C 150 dolce/350/3150"])
 BANDE = ["low", "lowmid", "midhigh", "high"]
 
 
@@ -100,7 +102,7 @@ def genexpr():
     r = g.r
     r(f"// {NOME} - prototipo Max P0 del canale maelcum_mixer.")
     r("// GENERATO da proto-max/coefficienti/genera.py: non modificare a mano.")
-    r("// GAIN -inf..0..+10 dB, isolator LR4 a 4 bande (0..+6 dB, silenzio a")
+    r("// GAIN -inf..0..+10 dB, isolator a 4 bande (0..+6 dB, silenzio a")
     r("// fondo corsa), fader. Banca a 4x della frequenza di campionamento.")
     r()
     r("// biquad in forma trasposta II; stato in m[i], m[i+1]")
@@ -145,16 +147,19 @@ def genexpr():
     r("tf = s_fader / 100;")
     r("g_fader = tf * tf;")
     r()
-    r("// coefficienti degli incroci (bilineare con prewarp, Q 0,7071)")
+    r("// coefficienti degli incroci (bilineare con prewarp)")
+    r("// LR4: Q 0,7071 due volte; LR2: Q 0,5 una volta")
     r("sr4 = samplerate * 4;")
-    for chiave, freq in canale.INCROCI.items():
-        for j, f in enumerate(freq, 1):
+    for chiave in VARIANTI:
+        freq, pend = canale.INCROCI[chiave], canale.PENDENZE[chiave]
+        for j, (f, o) in enumerate(zip(freq, pend), 1):
             c = f"{chiave}{j}"
+            inv_q = 1 / (canale.Q_LR2 if o == 2 else canale.Q_BW)
             r(f"{c}_k = tan(pi * {f!r} / sr4);")
             r(f"{c}_kk = {c}_k * {c}_k;")
-            r(f"{c}_n = 1 / (1 + {c}_k * {2 ** 0.5!r} + {c}_kk);")
+            r(f"{c}_n = 1 / (1 + {c}_k * {inv_q!r} + {c}_kk);")
             r(f"{c}_a1 = 2 * ({c}_kk - 1) * {c}_n;")
-            r(f"{c}_a2 = (1 - {c}_k * {2 ** 0.5!r} + {c}_kk) * {c}_n;")
+            r(f"{c}_a2 = (1 - {c}_k * {inv_q!r} + {c}_kk) * {c}_n;")
             r(f"{c}_lb = {c}_kk * {c}_n;")
     r()
     for lato, ingresso, uscita in (("L", "in1", "out1"), ("R", "in2", "out2")):
@@ -168,17 +173,23 @@ def genexpr():
             g.n_st = base_st
             u = f"{lato}_u{k}"
             ys = []
-            for chiave in canale.INCROCI:
+            for chiave in VARIANTI:
                 p = f"{lato}{k}{chiave}"
                 c1, c2, c3 = (f"{chiave}{j}" for j in (1, 2, 3))
-                # LOW = LP4(f1) AP(f2) AP(f3)
+                lr2 = canale.PENDENZE[chiave][0] == 2
+                # LOW = LP4(f1) AP(f2) AP(f3)  (LR2: un solo LP, Q 0,5)
                 g.bq(f"{p}l", u, "lp", c1)
-                g.bq(f"{p}l", f"{p}l", "lp", c1)
+                if not lr2:
+                    g.bq(f"{p}l", f"{p}l", "lp", c1)
                 g.bq(f"{p}l", f"{p}l", "ap", c2)
                 g.bq(f"{p}l", f"{p}l", "ap", c3)
                 # comune ai rami alti: HP4(f1)
+                # (LR2: un solo HP, polarita girata: LP2 - HP2 = allpass)
                 g.bq(f"{p}h1", u, "hp", c1)
-                g.bq(f"{p}h1", f"{p}h1", "hp", c1)
+                if lr2:
+                    g.r(f"{p}h1 = -{p}h1;")
+                else:
+                    g.bq(f"{p}h1", f"{p}h1", "hp", c1)
                 # LOW-MID = HP4(f1) LP4(f2) AP(f3)
                 g.bq(f"{p}lm", f"{p}h1", "lp", c2)
                 g.bq(f"{p}lm", f"{p}lm", "lp", c2)

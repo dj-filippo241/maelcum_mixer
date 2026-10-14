@@ -18,11 +18,24 @@ Python puro: nessun pacchetto da installare.
 import cmath
 import math
 
-# Incroci dell'isolator (B7, da sentire). A = partenza, B = alternativa.
+# Incroci dell'isolator (B7, da sentire). A = partenza, B = alternativa
+# (scartate entrambe all'ascolto, dec. 114), C = proposta dopo l'ascolto.
 INCROCI = {
     "A": (150.0, 500.0, 2500.0),
     "B": (100.0, 630.0, 4000.0),
+    "C": (150.0, 350.0, 3150.0),
 }
+# Pendenza di ogni incrocio: 4 = LR4 (24 dB/ott), 2 = LR2 (12 dB/ott).
+# C: primo incrocio dolce, LOW e LOW-MID si accavallano di piu (dec. 114).
+# LR2 solo sul primo incrocio: LP2 - HP2 (Q 0,5) = allpass del 1o ordine,
+# quindi i rami alti girano di polarita e la somma resta piatta senza
+# allpass in piu sugli altri rami.
+PENDENZE = {
+    "A": (4, 4, 4),
+    "B": (4, 4, 4),
+    "C": (2, 4, 4),
+}
+Q_LR2 = 0.5
 Q_BW = 1.0 / math.sqrt(2.0)   # Butterworth: due in cascata = LR4
 BOOST_MAX = 2.0               # somma x2: pot a fine corsa = +6 dB
 
@@ -74,11 +87,15 @@ def risposta(coef, f, fs):
     return (b0 + b1 * z1 + b2 * z1 * z1) / (1.0 + a1 * z1 + a2 * z1 * z1)
 
 
-def bande(f, fs, incroci):
+def bande(f, fs, incroci, pendenze=(4, 4, 4)):
     """Le quattro strade dell'isolator, come in eq-isolator §3."""
     f1, f2, f3 = incroci
-    h = lambda t, f0: risposta(biquad(t, f0, fs), f, fs)
-    lp1, hp1 = h("lp", f1) ** 2, h("hp", f1) ** 2
+    assert pendenze[1:] == (4, 4), "LR2 solo sul primo incrocio"
+    h = lambda t, f0, q=Q_BW: risposta(biquad(t, f0, fs, q), f, fs)
+    if pendenze[0] == 2:
+        lp1, hp1 = h("lp", f1, Q_LR2), -h("hp", f1, Q_LR2)
+    else:
+        lp1, hp1 = h("lp", f1) ** 2, h("hp", f1) ** 2
     lp2, hp2 = h("lp", f2) ** 2, h("hp", f2) ** 2
     lp3, hp3 = h("lp", f3) ** 2, h("hp", f3) ** 2
     ap2, ap3 = h("ap", f2), h("ap", f3)
@@ -89,8 +106,9 @@ def bande(f, fs, incroci):
     return low, lowmid, midhigh, high
 
 
-def isolator(f, fs, incroci, manopole):
-    return sum(banda_lin(t) * b for t, b in zip(manopole, bande(f, fs, incroci)))
+def isolator(f, fs, incroci, manopole, pendenze=(4, 4, 4)):
+    return sum(banda_lin(t) * b
+               for t, b in zip(manopole, bande(f, fs, incroci, pendenze)))
 
 
 def db(x):
@@ -159,8 +177,9 @@ def risposta_halfband(coefs, f, fs_alto):
     return 0.5 * (a[0] + z1 * a[1])
 
 
-def isolator_os(f, fs, incroci, manopole):
+def isolator_os(f, fs, incroci, manopole, pendenze=(4, 4, 4)):
     """Catena del gen~: su 2x, su 4x, banca a 4fs, giu 4x, giu 2x."""
     h1 = risposta_halfband(coef_halfband(*HALFBAND[1]), f, 2 * fs)
     h2 = risposta_halfband(coef_halfband(*HALFBAND[2]), f, 4 * fs)
-    return h1 * h2 * isolator(f, 4 * fs, incroci, manopole) * h2 * h1
+    return (h1 * h2 * isolator(f, 4 * fs, incroci, manopole, pendenze)
+            * h2 * h1)

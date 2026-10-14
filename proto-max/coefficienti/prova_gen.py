@@ -4,7 +4,7 @@ Uso:  python3 proto-max/coefficienti/prova_gen.py
 Verifica il codice gen~ VERO (non le formule): sinusoidi in ingresso,
 ampiezza in uscita, confronto con la risposta del modello (canale.py), che
 verifica.py ha gia confrontato con LTspice. Prova anche law di GAIN e
-fader, il selettore A/B e la separazione dei due lati.
+fader, il selettore A/C e la separazione dei due lati.
 
 Non prova la sintassi di gen~: quella la controlla Max all'apertura.
 """
@@ -131,16 +131,22 @@ def main():
         ("HIGH a zero", (50, 50, 50, 0), 0, [2500, 5000, 8000]),
         ("tutte al massimo", (100, 100, 100, 100), 0, [150, 5000]),
         ("tutte a zero", (0, 0, 0, 0), 0, [500]),
-        ("B: HIGH a zero", (50, 50, 50, 0), 1, [5000, 8000]),
-        ("B: LOW-MID a zero", (50, 0, 50, 50), 1, [250]),
+        ("C: tutte al centro", (50, 50, 50, 50), 1, [80, 350, 3150]),
+        ("C: LOW a zero", (0, 50, 50, 50), 1, [50, 80, 150]),
+        ("C: LOW-MID a zero", (50, 0, 50, 50), 1, [150, 230, 350]),
+        ("C: MID-HIGH a zero", (50, 50, 0, 50), 1, [1148, 3150]),
+        ("C: HIGH a zero", (50, 50, 50, 0), 1, [5000, 8000]),
+        ("C: LOW al massimo", (100, 50, 50, 50), 1, [50, 300]),
+        ("C: tutte a zero", (0, 0, 0, 0), 1, [150]),
     ]
     for nome, man, sel, freq in casi:
-        inc = canale.INCROCI["AB"[sel]]
+        var = "AC"[sel]
+        inc, pend = canale.INCROCI[var], canale.PENDENZE[var]
         for f in freq:
             p = dict(zip(["low", "lowmid", "midhigh", "high"], man))
             a, _ = suona(testo, f, incroci=sel, **p)
             atteso = canale.db(canale.isolator_os(
-                f, FS, inc, [m / 100 for m in man]))
+                f, FS, inc, [m / 100 for m in man], pend))
             controlla(f"{nome}, {f} Hz", db(a), atteso)
 
     print("GAIN (1 kHz)")
