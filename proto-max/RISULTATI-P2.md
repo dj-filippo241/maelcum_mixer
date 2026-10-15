@@ -338,3 +338,57 @@ lato). Prova gen~ contro modello: **PASS 203/203**.
 Conflitto aperto, come per il GROWL LIBERO: alza il volume, contro la
 dec. 99 (c) (todo 61). Rumore dello stadio di spinta da misurare prima di
 congelare (todo 62).
+
+## 11. Rumore delle versioni in prova (2026-10-15, todo 62)
+
+`sim/five-way/module-noise-p2.cir`: il modulo 5-way intero
+(`module-noise-v04.cir`: banca, celle, make-up) col drive del prototipo,
+circuiti reali (op-amp con rumore, pot veri, buffer, sommatori; il
+selettore NASTRO VER come interruttori). Metodo a 16 punti,
+`sim/mic/noise_total.py`. Uscita del modulo, manopola a fine corsa
+salvo dove scritto; target del modulo −80 dBu A-wtd (dec. 89):
+
+| Caso | dBu flat | dBu A-wtd | guadagno a 50 Hz / 1 kHz / 8 kHz (silenzio) |
+|---|---|---|---|
+| Manopole chiuse | −84,4 | **−85,9** | 0 / 0 / 0 dB |
+| GROWL DEC.99 (47k) | −84,0 | −85,8 | +6,7 / −1,2 / −0,1 |
+| GROWL LIBERO 100 % | −73,2 | **−79,6** | **+27,0** / +5,1 / −0,4 |
+| GROWL LIBERO 50 % | −83,1 | −85,9 | +13,0 / −3,6 / −0,1 |
+| NASTRO OGGI | −84,3 | −85,8 | 0 / 0 / 0 |
+| COMPLETO | −84,1 | −85,7 | +1,6 / +0,1 / 0 |
+| EXCITER | −75,6 | **−78,6** | 0 / −0,6 / **+9,8** |
+| CLASSE A | −85,2 | −86,7 | −0,9 / −0,9 / −0,9 |
+| NASTRO LIBERO 100 % | −73,8 | **−75,3** | **+10,6** / +10,6 / +10,6 |
+| NASTRO LIBERO 50 % | −83,8 | −85,3 | +0,6 / +0,6 / +0,6 |
+| GROWL LIBERO + NASTRO LIBERO | −62,5 | **−69,0** | +37,7 / +15,8 / +10,3 |
+
+Lettura:
+- I circuiti dei saturatori sono silenziosi. Quello che sale è il
+  **guadagno a segnale minimo**: nel silenzio i diodi e il JFET non
+  lavorano, e le versioni LIBERO e l'EXCITER amplificano il fruscio che
+  arriva dalla banca e dalle celle. Il rumore riportato all'ingresso
+  (EIN) resta −84 dBu per i LIBERO; sale solo con l'EXCITER (−75 dBu),
+  perché il suo clipper guadagna +20 dB sugli acuti.
+- **GROWL LIBERO a fine corsa**: +27 dB a 50 Hz nel silenzio (sul basso
+  piano era +15: con la musica i diodi conducono e il guadagno scende).
+  Si sente come un rombo basso tra un pezzo e l'altro; la pesatura A lo
+  nasconde (−79,6 A-wtd contro −73,2 piatto).
+- **NASTRO LIBERO a fine corsa**: +10,6 dB su tutta la banda, cioè il
+  fruscio di fondo sale di 10 dB nelle pause. È lo stesso meccanismo del
+  «+10 dB sul programma piano».
+- **EXCITER**: +10 dB di fruscio sugli acuti.
+- A metà corsa tutte le versioni restano entro 0,6 dB dal modulo chiuso.
+- DEC.99 (47k), OGGI, COMPLETO e CLASSE A non cambiano il rumore del
+  modulo (entro ±0,8 dB).
+
+Per il sistema (dec. 89: −78 dBu A-wtd, con FX e overdrive aperti già
+accettati come condizione d'uso, dec. 95/100): NASTRO LIBERO e le due
+LIBERO insieme a fine corsa stanno sopra; GROWL LIBERO ed EXCITER al
+limite. Non decide niente da solo: è un costo da mettere accanto a
+quello che senti. Leve d'ingegneria, se una LIBERO vince: limitare il
+guadagno a segnale minimo (per il GROWL, Rf più bassa; per il NASTRO,
+meno spinta), al prezzo di un po' di carattere sul programma piano.
+
+Modelli: la bobina del head bump del COMPLETO è ideale (in hardware un
+giratore, qualche op-amp in più); il partitore della CLASSE A è
+dimensionato col carico della base (52,8k / 9,11k, 10k in serie).

@@ -761,6 +761,14 @@ viene amplificato).
 
 Per lato: 1 JFET, 4 diodi, ~4 doppi op-amp, 2 pot (doppi sul pannello).
 
+**[2026-10-15, prototipo P2] Rumore delle versioni in prova**
+(`sim/five-way/module-noise-p2.cir`, modulo intero, A-wtd, fine corsa):
+DEC.99 47k −85,8, NASTRO OGGI −85,8, COMPLETO −85,7, CLASSE A −86,7 (come
+il modulo chiuso, −85,9); GROWL LIBERO −79,6 (+27 dB a 50 Hz nel
+silenzio), EXCITER −78,6, NASTRO LIBERO −75,3 (+10,6 dB a segnale
+minimo), le due LIBERO insieme −69,0. Causa: guadagno a segnale minimo,
+non rumore proprio del drive. Dettagli: `proto-max/RISULTATI-P2.md` §11.
+
 ### 5bis.6 Non fatto
 
 **Servo DC**: FATTO il 2026-10-13, vedi §5bis.7.
