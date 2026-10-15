@@ -42,12 +42,23 @@ class Gen:
 
     def __init__(self, testo, fs):
         self.ns = {"bq": bq, "ap": ap, "tan": math.tan, "exp": math.exp,
-                   "pow": math.pow, "max": max, "abs": abs, "pi": math.pi, "samplerate": fs}
-        corpo, in_funzione = [], False
+                   "pow": math.pow, "max": max, "abs": abs, "pi": math.pi, "samplerate": fs,
+                   "poke": lambda d, v, i: d.__setitem__(int(i), v)}
+        corpo, in_funzione, liv = [], False, 0
         for riga in testo.splitlines():
             riga = riga.split("//")[0].strip()
             if not riga:
                 continue
+            if not in_funzione:
+                # blocchi if del codice principale -> rientri Python
+                m = re.match(r"^if \((.*)\) \{$", riga)
+                if m:
+                    corpo.append("    " * liv + f"if {m.group(1)}:")
+                    liv += 1
+                    continue
+                if riga == "}" and liv > 0:
+                    liv -= 1
+                    continue
             if re.match(r"^\w+\(.*\)\s*\{$", riga):
                 in_funzione = True
                 continue
@@ -64,7 +75,7 @@ class Gen:
                 continue
             if not riga.endswith(";"):
                 raise ValueError(f"riga non tradotta: {riga}")
-            corpo.append(riga[:-1])
+            corpo.append("    " * liv + riga[:-1])
         self.codice = compile("\n".join(corpo), FILE, "exec")
 
     def imposta(self, **p):
@@ -183,6 +194,45 @@ def main():
             a, _ = suona(testo, f, eqtipo=1, incroci=2, curva=1, **p)
             atteso = serie.db(serie.serie_os(f, FS, [m / 100 for m in man]))
             controlla(f"{nome}, {f} Hz", db(a), atteso)
+
+    print("Cambi di selettore (blocchi spenti non calcolati, stati a zero)")
+    # A -> D -> SERIE -> ISOLATOR C, 1 kHz, MID-HIGH a zero: dopo ogni cambio
+    # e 250 ms di assestamento (rampa 20 ms: residuo e^-12) l'uscita deve valere quella del modello.
+    g = Gen(testo, FS)
+    g.imposta(midhigh=0)
+    passi = [(dict(incroci=0, eqtipo=0), ("ACD", 0)),
+             (dict(incroci=2), ("ACD", 2)),
+             (dict(eqtipo=1), ("S", 0)),
+             (dict(incroci=1, eqtipo=0), ("ACD", 1))]
+    n, f, picco, i = int(0.25 * FS), 1000.0, 0.0, 0
+    for cambi, (tipo, sel) in passi:
+        for k, v in cambi.items():
+            g.ns[k] = float(v)          # solo il Param: la rampa gira
+        y = []
+        for _ in range(n):
+            x = math.sin(2 * math.pi * f * i / FS)
+            a, _ = g.campione(x, x)
+            picco = max(picco, abs(a))
+            y.append(a)
+            i += 1
+        man = [0.5, 0.5, 0.0, 0.5]
+        if tipo == "S":
+            atteso = serie.db(serie.serie_os(f, FS, man))
+        else:
+            var = tipo[sel]
+            atteso = canale.db(canale.isolator_os(
+                f, FS, canale.INCROCI[var], man, canale.PENDENZE[var]))
+        # il fit vuole la fase da campione 0: si rifa sugli ultimi 40 ms
+        ss = [math.sin(2 * math.pi * f * (i - n + j) / FS) for j in range(n)]
+        cc = [math.cos(2 * math.pi * f * (i - n + j) / FS) for j in range(n)]
+        j0 = n - int(0.04 * FS)
+        a_ = sum(y[j] * ss[j] for j in range(j0, n)) * 2 / (n - j0)
+        b_ = sum(y[j] * cc[j] for j in range(j0, n)) * 2 / (n - j0)
+        controlla(f"dopo {cambi}", db(math.hypot(a_, b_)), atteso)
+    ok = picco < 1.5
+    errori += not ok
+    print(f"  {'ok  ' if ok else 'FUORI'} picco durante i cambi: {picco:.3f}"
+          " (ingresso 1,0; MID-HIGH a zero)")
 
     print("CURVA PIONEER (D, MID-HIGH, 1514 Hz)")
     inc, pend = canale.INCROCI["D"], canale.PENDENZE["D"]

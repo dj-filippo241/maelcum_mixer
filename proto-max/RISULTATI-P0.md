@@ -188,3 +188,18 @@ Verifiche:
   **PASS**, scarti ≤ 0,001 dB; i punti di prima restano invariati.
 - Non verificato: apertura in Max (sintassi gen~) e CPU con il ramo in
   più (4 biquad × 4 sotto-campioni × 2 lati).
+
+## CPU: solo i blocchi che si sentono (2026-10-15 sera)
+
+Finding in Live (Filippo): con canale, filtro e 5-way sulla stessa traccia,
+muovendo le manopole l'audio «cambia velocità». Causa: Live calcola i
+dispositivi di una traccia in fila su un solo core; il processo Live stava
+a ~80 % di un core (l'indicatore CPU di Live, ~45 %, è la media dei core).
+Il MC-CHANNEL con EQ TIPO non partiva più (Edit compreso). Con i
+dispositivi MC spenti il problema spariva.
+
+Rimedio: MC-CHANNEL calcola solo le varianti con peso > 1e-5 (−100 dB):
+in uso normale una banca su quattro (A, C, D, SERIE), due durante i 20 ms
+di dissolvenza. Gli stati di un blocco spento vanno a zero, così riparte
+pulito. `prova_gen.py` PASS, più una prova nuova dei cambi di selettore
+(A → D → SERIE → C: valore giusto dopo l'assestamento, nessun picco).

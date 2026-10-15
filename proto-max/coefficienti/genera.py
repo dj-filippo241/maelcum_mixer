@@ -41,6 +41,8 @@ CURVA = ("curva", "CURVA", ["LINEARE", "PIONEER"])
 # B5 (Filippo 2026-10-15): EQ in serie archiviato come opzione d'ascolto
 EQTIPO = ("eqtipo", "EQ TIPO", ["ISOLATOR", "SERIE 70/250/1k/5k"])
 BANDE = ["low", "lowmid", "midhigh", "high"]
+# sotto questo peso un blocco non si calcola (-100 dB: inudibile)
+SOGLIA_ON = 1e-5
 
 
 # ---------------------------------------------------------------- gen~ ---
@@ -243,21 +245,35 @@ def genexpr():
     r()
     emetti_serie(g)
     r()
+    # pesi delle varianti e dell'EQ in serie. Una variante con peso nullo
+    # non si calcola (CPU: la traccia gira su un solo core); i suoi stati
+    # si azzerano, cosi riparte pulita alla dissolvenza successiva.
+    r("// pesi: dissolvenza fra varianti vicine (1 - |s_x - i|) e fra isolator e serie")
+    for i, chiave in enumerate(VARIANTI):
+        r(f"w_{chiave} = max(0, 1 - abs(s_x - {i})) * (1 - s_t);")
+        r(f"on_{chiave} = w_{chiave} > {SOGLIA_ON!r};")
+    r("w_S = s_t;")
+    r(f"on_S = w_S > {SOGLIA_ON!r};")
+    r()
     for lato, ingresso, uscita in (("L", "in1", "out1"), ("R", "in2", "out2")):
         r(f"// ===== lato {lato} =====")
         g.su(ingresso, f"{lato}_e", f"{lato}_o", 1, (lato, "su", 1))
         g.su(f"{lato}_e", f"{lato}_u0", f"{lato}_u1", 2, (lato, "su", 2))
         g.su(f"{lato}_o", f"{lato}_u2", f"{lato}_u3", 2, (lato, "su", 2))
         base_st = g.n_st
+        stati = {}   # blocco -> (primo, ultimo + 1) degli stati in st
         for k in range(4):
             # i 4 sotto-campioni passano, in ordine, dagli STESSI filtri
             g.n_st = base_st
             u = f"{lato}_u{k}"
-            ys = []
+            termini = []
             for chiave in VARIANTI:
                 p = f"{lato}{k}{chiave}"
                 c1, c2, c3 = (f"{chiave}{j}" for j in (1, 2, 3))
                 lr2 = canale.PENDENZE[chiave][0] == 2
+                inizio = g.n_st
+                g.r(f"{p} = 0;")
+                g.r(f"if (on_{chiave}) {{")
                 # LOW = LP4(f1) AP(f2) AP(f3)  (LR2: un solo LP, Q 0,5)
                 g.bq(f"{p}l", u, "lp", c1)
                 if not lr2:
@@ -285,13 +301,14 @@ def genexpr():
                 g.bq(f"{p}hi", f"{p}hi", "hp", c3)
                 g.r(f"{p} = g_low * {p}l + g_lowmid * {p}lm"
                     f" + g_midhigh * {p}mh + g_high * {p}hi;")
-                ys.append(p)
-            # dissolvenza tra varianti vicine: peso 1 - |s_x - i|, min 0
-            g.r(f"{lato}_i{k} = " + " + ".join(
-                f"max(0, 1 - abs(s_x - {i})) * {y}" for i, y in enumerate(ys))
-                + ";")
+                g.r("}")
+                stati[chiave] = (inizio, g.n_st)
+                termini.append(f"w_{chiave} * {p}")
             # EQ in serie (B5): LOW -> LOW-MID -> MID-HIGH -> HIGH
             q = f"{lato}{k}s"
+            inizio = g.n_st
+            g.r(f"{q}4 = 0;")
+            g.r("if (on_S) {")
             g.bq_nome(f"{q}1", u, "sl")
             g.bq_nome(f"{q}b", f"{q}1", "slm")
             g.r(f"{q}2 = {q}1 + sr_clm * {q}b;")
@@ -299,8 +316,16 @@ def genexpr():
             g.r(f"{q}3 = {q}2 + sr_cmh * {q}b;")
             g.bq_nome(f"{q}b", f"{q}3", "shi")
             g.r(f"{q}4 = {q}3 - sr_chi * {q}b;")
-            # dissolvenza 20 ms tra isolator e serie
-            g.r(f"{lato}_y{k} = (1 - s_t) * {lato}_i{k} + s_t * {q}4;")
+            g.r("}")
+            stati["S"] = (inizio, g.n_st)
+            termini.append(f"w_S * {q}4")
+            g.r(f"{lato}_y{k} = " + " + ".join(termini) + ";")
+        # stati dei blocchi spenti a zero: ripartono puliti
+        for blocco, (da, a) in stati.items():
+            g.r(f"if (on_{blocco} == 0) {{")
+            for j in range(da, a):
+                g.r(f"poke(st, 0, {j});")
+            g.r("}")
         g.giu(f"{lato}_v0", f"{lato}_y0", f"{lato}_y1", 2, (lato, "giu", 2))
         g.giu(f"{lato}_v1", f"{lato}_y2", f"{lato}_y3", 2, (lato, "giu", 2))
         g.giu(f"{lato}_w", f"{lato}_v0", f"{lato}_v1", 1, (lato, "giu", 1))

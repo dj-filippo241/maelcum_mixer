@@ -38,6 +38,12 @@ CORE = ("core", "CORE", ["OTA (a')", "PULITO (c-B)"], 0)
 PENDENZA = ("pend", "PENDENZA", list(filtro.ALLINEAMENTI), 0)
 
 
+# sotto questo peso un core non si calcola (-100 dB: inudibile)
+SOGLIA_ON = 1e-5
+# overdrive sotto questa quantita: il tosatore non si calcola (-180 dB)
+SOGLIA_OD = 1e-9
+
+
 def funzioni(r):
     vs = filtro.VS
     r("// allpass del 1o ordine del halfband; stato in m[i] (x), m[i+1] (y)")
@@ -48,10 +54,10 @@ def funzioni(r):
     r("\treturn y;")
     r("}")
     r()
-    r("// guadagno a secante dell'OTA: Vs tanh(u/Vs)/u; lin = 1 -> lineare")
-    r("aota(u, lin) {")
+    r("// guadagno a secante dell'OTA: Vs tanh(u/Vs)/u")
+    r("aota(u) {")
     r("\tm = max(abs(u), 0.000001);")
-    r(f"\treturn lin + (1 - lin) * {vs!r} * tanh(m / {vs!r}) / m;")
+    r(f"\treturn {vs!r} * tanh(m / {vs!r}) / m;")
     r("}")
     r()
     r("// softplus limitato (niente overflow)")
@@ -83,24 +89,34 @@ def funzioni(r):
     r("}")
     r()
     r("// sezione SVF 2 poli TPT; stato in m[i..i+3] = s1, s2, hp, bp")
-    r("// d = 1/Q; lin 1 = integratori lineari; lim 1 = limitatore")
-    r("sez(m, i, x, g, d, lin, lim) {")
-    r("\ts1 = peek(m, i);")
-    r("\ts2 = peek(m, i + 1);")
-    r("\tbpv = peek(m, i + 3);")
-    r("\tg1 = g * aota(peek(m, i + 2), lin);")
-    r("\tg2 = g * aota(bpv, lin);")
-    r("\trr = d * aota(bpv, lin) + lim * alim(bpv);")
-    r("\tbp = (g1 * (x - s2) + s1) / (1 + g1 * g2 + g1 * rr);")
-    r("\thp = x - s2 - (g2 + rr) * bp;")
-    r("\tlp = g2 * bp + s2;")
-    r("\tpoke(m, bp + g1 * hp, i);")
-    r("\tpoke(m, lp + g2 * bp, i + 1);")
-    r("\tpoke(m, hp, i + 2);")
-    r("\tpoke(m, bp, i + 3);")
-    r("\treturn hp, lp;")
-    r("}")
-    r()
+    r("// d = 1/Q. Quattro varianti senza rami morti (CPU): a = core OTA")
+    r("// (guadagno a secante), c = integratori lineari; 1 = col limitatore")
+    for nome, ota, lim in (("sez_a0", 1, 0), ("sez_a1", 1, 1),
+                           ("sez_c0", 0, 0), ("sez_c1", 0, 1)):
+        r(f"{nome}(m, i, x, g, d) {{")
+        r("\ts1 = peek(m, i);")
+        r("\ts2 = peek(m, i + 1);")
+        r("\tbpv = peek(m, i + 3);")
+        if ota:
+            r("\tab = aota(bpv);")
+            r("\tg1 = g * aota(peek(m, i + 2));")
+            r("\tg2 = g * ab;")
+            rr = "d * ab"
+        else:
+            r("\tg1 = g;")
+            r("\tg2 = g;")
+            rr = "d"
+        r(f"\trr = {rr}{' + alim(bpv)' if lim else ''};")
+        r("\tbp = (g1 * (x - s2) + s1) / (1 + g1 * g2 + g1 * rr);")
+        r("\thp = x - s2 - (g2 + rr) * bp;")
+        r("\tlp = g2 * bp + s2;")
+        r("\tpoke(m, bp + g1 * hp, i);")
+        r("\tpoke(m, lp + g2 * bp, i + 1);")
+        r("\tpoke(m, hp, i + 2);")
+        r("\tpoke(m, bp, i + 3);")
+        r("\treturn hp, lp;")
+        r("}")
+        r()
 
 
 def genexpr():
@@ -137,6 +153,9 @@ def genexpr():
     r("w_hp = max(0, 1 - abs(s_modo));")
     r("w_off = max(0, 1 - abs(s_modo - 1));")
     r("w_lp = max(0, 1 - abs(s_modo - 2));")
+    r("// si calcola solo il core che si sente (CPU: traccia su un core)")
+    r(f"on_a = 1 - s_core > {SOGLIA_ON!r};")
+    r(f"on_c = s_core > {SOGLIA_ON!r};")
     r()
     r("sr4 = samplerate * 4;")
     r("// PENDENZA: Q e frequenze delle due sezioni, scivolano in 20 ms")
@@ -180,23 +199,35 @@ def genexpr():
             r(f"x = {u} * {filtro.LIV!r} + noise() * 0.00001;")
             i = base
             out = {}
-            for lin, nome_c in ((0, "a"), (1, "c")):
+            for nome_c in ("a", "c"):
+                r(f"{nome_c}hph = 0;")
+                r(f"{nome_c}lpl = 0;")
+                r(f"if (on_{nome_c}) {{")
                 for sez in ("hp", "lp"):
                     p = f"{nome_c}{sez}"
-                    r(f"{p}h, {p}l = sez(st, {i}, x, g_{sez}1, dq1,"
-                      f" {lin}, 0);")
+                    r(f"{p}h, {p}l = sez_{nome_c}0(st, {i}, x, g_{sez}1,"
+                      " dq1);")
                     a = f"{p}h" if sez == "hp" else f"{p}l"
-                    r(f"{p}h, {p}l = sez(st, {i + 4}, {a}, g_{sez}2,"
-                      f" d_{sez}, {lin}, 1);")
+                    r(f"{p}h, {p}l = sez_{nome_c}1(st, {i + 4}, {a},"
+                      f" g_{sez}2, d_{sez});")
                     out[(nome_c, sez)] = f"{p}h" if sez == "hp" else f"{p}l"
                     i += 8
+                r("}")
             for sez in ("hp", "lp"):
                 r(f"o{sez} = (1 - s_core) * {out[('a', sez)]}"
                   f" + s_core * {out[('c', sez)]};")
+                r(f"if (od_{sez} > {SOGLIA_OD!r}) {{")
                 r(f"o{sez} = o{sez} + od_{sez} * ({filtro.OD_K!r}"
                   f" * clipd(2 * o{sez}) - o{sez});")
+                r("}")
             r(f"{lato}_y{k} = (w_off * x + w_hp * ohp + w_lp * olp)"
               f" / {filtro.LIV!r};")
+        # core spento: stati a zero, riparte pulito alla dissolvenza
+        for nome_c, da in (("a", base), ("c", base + 16)):
+            r(f"if (on_{nome_c} == 0) {{")
+            for j in range(da, da + 16):
+                r(f"poke(st, 0, {j});")
+            r("}")
         n_st = base + 32
         g.giu(f"{lato}_v0", f"{lato}_y0", f"{lato}_y1", 2, (lato, "giu", 2))
         g.giu(f"{lato}_v1", f"{lato}_y2", f"{lato}_y3", 2, (lato, "giu", 2))

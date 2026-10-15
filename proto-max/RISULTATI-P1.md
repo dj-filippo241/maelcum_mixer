@@ -164,3 +164,20 @@ Controlli fatti nella stessa sessione, senza altri errori:
   ingressi forti e RES alta l'uscita supera 0 dBFS e satura la scheda
   audio. Il circuito vero arriva più in alto (rail), quindi non è un
   errore del modello, ma va tenuto basso il volume d'ingresso.
+
+## CPU (2026-10-15 sera)
+
+Stesso finding di RISULTATI-P0 §CPU. MC-FILTRO calcolava per ogni
+sotto-campione otto sezioni (due core × HP e LP), ognuna con tre `tanh`
+e il limitatore, più due tosatori a Newton, anche dove il peso era zero.
+Ora (suono invariato):
+- quattro funzioni di sezione senza rami morti: il core pulito non
+  calcola `tanh`, il limitatore solo nella seconda sezione;
+  `aota(bpv)` una volta sola;
+- si calcola solo il core scelto (l'altro solo durante i 20 ms di
+  CORE); gli stati del core spento vanno a zero;
+- il tosatore solo con overdrive > 1e-9.
+Funzioni trascendenti per sotto-campione: ~68 → ~16 (core OTA, DRIVE
+chiuso). HP e LP restano sempre calcolati: al cambio di MODO (rampa
+1 ms, gesto) un ramo ripartito da fermo suonerebbe diverso.
+`prova_filtro.py` PASS invariata.
