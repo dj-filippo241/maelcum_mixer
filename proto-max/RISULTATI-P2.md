@@ -118,3 +118,19 @@ Altri controlli:
 - Law del GAIN: il tratto CCW (−27 dB al 5 %, poi notch) è preso dalle
   shelf di eq-serie §10 [PROVVISORIO]; per le campane il design dice solo
   «accelerazione negli ultimi 5 %». Da sentire.
+
+## 5. Errore trovato in Live: passava solo il SUB (2026-10-15)
+
+Segnalato da Filippo al primo ascolto. Il SUB è l'unica via che non usa
+l'uscita HP della funzione SVF; la spina delle altre quattro sì. La
+prima versione aveva `svf()` con **tre** valori di ritorno (lp, bp, hp,
+la spina usava il terzo) e le variabili esterne con gli stessi nomi dei
+locali della funzione. La traduzione Python gestisce entrambe le cose,
+gen~ no: la prova passava, Live suonava solo il SUB.
+
+Correzione (senza conferma da Max sulla causa esatta, una delle due o
+entrambe): tre funzioni a uscita singola `svlp` / `svbp` / `svhp`;
+nessun nome esterno uguale a un parametro o locale di funzione
+(controllo automatico: nessuno). Regola per i prossimi dispositivi:
+funzioni con un solo valore di ritorno, nomi esterni distinti dai
+locali. Prova di nuovo PASS 155/155. Conferma finale: ascolto.

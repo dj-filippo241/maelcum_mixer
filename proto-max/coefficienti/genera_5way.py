@@ -54,18 +54,23 @@ def funzioni(r):
     r("\treturn y;")
     r("}")
     r()
-    r("// SVF 2 poli TPT lineare; stato in m[i], m[i+1]; k = 1/Q")
-    r("svf(m, i, x, g, k) {")
-    r("\ts1 = peek(m, i);")
-    r("\ts2 = peek(m, i + 1);")
-    r("\thp = (x - (k + g) * s1 - s2) / (1 + g * (k + g));")
-    r("\tbp = g * hp + s1;")
-    r("\tlp = g * bp + s2;")
-    r("\tpoke(m, g * hp + bp, i);")
-    r("\tpoke(m, g * bp + lp, i + 1);")
-    r("\treturn lp, bp, hp;")
-    r("}")
-    r()
+    # Un solo valore di ritorno per funzione: la prima versione usava
+    # svf() con tre ritorni (lp, bp, hp) e in Live passava solo il SUB
+    # (la spina usa il terzo). P1 usa solo funzioni a uno o due ritorni.
+    for nome, uscita in (("svlp", "fl"), ("svbp", "fb"), ("svhp", "fh")):
+        r(f"// SVF 2 poli TPT lineare, uscita {nome[2:].upper()}; stato in "
+          "m[i], m[i+1]; k = 1/Q")
+        r(f"{nome}(m, i, x, g, k) {{")
+        r("\ts1 = peek(m, i);")
+        r("\ts2 = peek(m, i + 1);")
+        r("\tfh = (x - (k + g) * s1 - s2) / (1 + g * (k + g));")
+        r("\tfb = g * fh + s1;")
+        r("\tfl = g * fb + s2;")
+        r("\tpoke(m, g * fh + fb, i);")
+        r("\tpoke(m, g * fb + fl, i + 1);")
+        r(f"\treturn {uscita};")
+        r("}")
+        r()
     r("// passa-alto del 1o ordine TPT (condensatore di accoppiamento)")
     r("hp1(m, i, x, g) {")
     r("\ts = peek(m, i);")
@@ -205,52 +210,49 @@ def genexpr():
         g.su(f"{lato}_o", f"{lato}_u2", f"{lato}_u3", 2, (lato, "su", 2))
         for k in range(4):
             i = b0
-            r(f"x = {lato}_u{k};")
+            r(f"xa = {lato}_u{k};")
             r("// banca: spina HP4 ai 4 crossover")
-            r("p0 = x;")
+            r("p0 = xa;")
             for c in range(4):
                 src = f"p{c}"
                 for s in range(2):
-                    r(f"lp, bp, hp = svf(sv, {i}, {src if s == 0 else f'p{c + 1}'},"
-                      f" gx{c}, {kq!r});")
-                    r(f"p{c + 1} = hp;")
+                    r(f"p{c + 1} = svhp(sv, {i},"
+                      f" {src if s == 0 else f'p{c + 1}'}, gx{c}, {kq!r});")
                     i += 2
             r("// vie: LP4 dalla presa e allpass dei crossover sopra")
             for v in range(4):
-                r(f"y = p{v};")
+                r(f"ya = p{v};")
                 for s in range(2):
-                    r(f"lp, bp, hp = svf(sv, {i}, y, gx{v}, {kq!r});")
-                    r("y = lp;")
+                    r(f"ya = svlp(sv, {i}, ya, gx{v}, {kq!r});")
                     i += 2
                 for c in range(v + 1, 4) if v < 3 else ():
-                    r(f"lp, bp, hp = svf(sv, {i}, y, gx{c}, {kq!r});")
-                    r(f"y = y - {2 * kq!r} * bp;")
+                    r(f"ya = ya - {2 * kq!r} * svbp(sv, {i}, ya, gx{c},"
+                      f" {kq!r});")
                     i += 2
-                r(f"v{v} = y;")
-            r("y = a0 * v0 + a1 * v1 + a2 * v2 + a3 * v3 + a4 * p4;")
+                r(f"v{v} = ya;")
+            r("ya = a0 * v0 + a1 * v1 + a2 * v2 + a3 * v3 + a4 * p4;")
             r("// EQ creativo: 5 campane in serie")
             for n in range(1, 6):
-                r(f"lp, bp, hp = svf(sv, {i}, y, ge{n}, ke{n});")
-                r(f"y = y + b{n} * ke{n} * bp;")
+                r(f"ya = ya + b{n} * ke{n} * svbp(sv, {i}, ya, ge{n}, ke{n});")
                 i += 2
             r("// GROWL (sotto 350 Hz) e NASTRO, volt del dominio interno")
-            r(f"x = y * {liv!r};")
-            r(f"lp, bp, hp = svf(sv, {i}, x, glp, {kq!r});")
+            r(f"xa = ya * {liv!r};")
+            r(f"lw = svlp(sv, {i}, xa, glp, {kq!r});")
             i += 2
-            r(f"dg = {fw.KG!r} * hp1(sa, {sa0}, clipg(lp), ghg) - lp;")
-            r("y1 = x + mg * dg;")
-            r(f"vs2 = {VS20!r} + peek(sa, {sa0 + 1});")
-            r(f"vc = {VD0!r} + peek(sa, {sa0 + 3});")
-            r(f"idd = {ID0!r} + peek(sa, {sa0 + 2});")
+            r(f"dg = {fw.KG!r} * hp1(sa, {sa0}, clipg(lw), ghg) - lw;")
+            r("y1 = xa + mg * dg;")
+            r(f"jvs = {VS20!r} + peek(sa, {sa0 + 1});")
+            r(f"jvc = {VD0!r} + peek(sa, {sa0 + 3});")
+            r(f"jid = {ID0!r} + peek(sa, {sa0 + 2});")
             for _ in range(fw.NEWTON):
-                r("idd = jstep(y1, vs2, vc, idd);")
-            r(f"vd = {fw.J_RP!r} * ({fw.J_VCC / fw.J_RD!r} + vc / "
-              f"{fw.J_RTS!r} - idd);")
-            r("vtac = vd - vc;")
-            r(f"poke(sa, vs2 + kcb * (idd - vs2 / {fw.J_RSB!r}) - {VS20!r},"
+                r("jid = jstep(y1, jvs, jvc, jid);")
+            r(f"vdr = {fw.J_RP!r} * ({fw.J_VCC / fw.J_RD!r} + jvc / "
+              f"{fw.J_RTS!r} - jid);")
+            r("vtac = vdr - jvc;")
+            r(f"poke(sa, jvs + kcb * (jid - jvs / {fw.J_RSB!r}) - {VS20!r},"
               f" {sa0 + 1});")
-            r(f"poke(sa, idd - {ID0!r}, {sa0 + 2});")
-            r(f"poke(sa, vc + kc * vtac - {VD0!r}, {sa0 + 3});")
+            r(f"poke(sa, jid - {ID0!r}, {sa0 + 2});")
+            r(f"poke(sa, jvc + kc * vtac - {VD0!r}, {sa0 + 3});")
             r(f"dt = -{fw.KT!r} * vtac - y1;")
             r(f"{lato}_y{k} = (y1 + mt * dt) / {liv!r};")
             assert i == b0 + 2 * SVF_LATO
