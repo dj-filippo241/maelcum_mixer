@@ -1,0 +1,60 @@
+* ============================================================
+* 5-WAY GROWL LIBERO (prototipo P2, 2026-10-15) — solo prototipo, accanto
+* al GROWL dec. 99. Richiesta di Filippo: «una versione in cui ti dimentichi
+* temporaneamente di dec. 99» (bassi piu grossi, sporchi, incollati).
+*   y = x + th * ( kl*W(gd*LP(x)) - LP(x) ),  gd = 10^(18 th / 20)
+* La spinta sta nella R d'ingresso del clipper (Rin = 10k/gd, da 10k a
+* 1,26k: un tratto del pot doppio come reostato): nessuno stadio di
+* guadagno davanti ai diodi, quindi nessun nodo arriva al rail.
+* Clipper = GROWL a 47k (drive2-chain-g47.cir). kl = 0,6783: +6 dB di basso
+* a fine corsa su 0 dBu interni. Miscela con sorgente B (pot ideale).
+* SINE = PICCO. Modelli [PROVVISORIO].
+* ============================================================
+.model D4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+.subckt OPAMP0 inp inn out
+E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
+.ends OPAMP0
+.param amp=0.549
+.param th=1
+.param f=50
+.param fx=350
+.param kl=0.6783
+.param gd={pow(10,18*th/20)}
+.param ts={1/(f*4000)}
+.param t0={3-10/f}
+V1 x 0 SINE(0 {amp} {f})
+
+* --- split bassi (Sallen-Key 2 poli Butterworth a fx) ---
+Rk1 x n1 10k
+Rk2 n1 n2 10k
+Ck1 n1 low {1.4142/(6.2832*fx*10k)}
+Ck2 n2 0 {0.7071/(6.2832*fx*10k)}
+Xf n2 low low OPAMP0
+* --- clipper asimmetrico, Rin variabile = spinta ---
+Rgi low gn {10k/gd}
+Rgf gn gout 47k
+Dga gn ga1 D4148
+Rga ga1 gout 2.2k
+Dgb1 gout gb1 D4148
+Dgb2 gb1 gb2 D4148
+Dgb3 gb2 gb3 D4148
+Rgb gb3 gn 2.2k
+Xg 0 gn gout OPAMP0
+* --- dg = kl*W - low (sommatore invertente, wet AC-coupled) ---
+Cga gout gac 10u
+Rgs gac dgn {10k/kl}
+Rgl low dgn 10k
+Rgo dgn dg 10k
+Xdg 0 dgn dg OPAMP0
+By y 0 V=V(x)+{th}*V(dg)
+
+.options noopiter
+.tran 0 3 {t0} {ts}
+.step param th LIST 0.25 0.5 1
+.step param amp LIST 0.173 0.549 1.096 3.466
+.meas tran xr RMS V(x)
+.meas tran yr RMS V(y)
+.meas tran gmax MAX V(gout)
+.meas tran gmin MIN V(gout)
+.four {f} 8 V(y)
+.end

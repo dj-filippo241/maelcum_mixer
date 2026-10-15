@@ -177,3 +177,39 @@ caso fa 2,7.
 
 Da fare prima di congelare: rumore del ramo GROWL a 47k
 (`drive2-noise.cir`).
+
+## 7. Secondo ascolto: NASTRO al 70 %, GROWL LIBERO (2026-10-15)
+
+Parole di Filippo: «il nastro è troppo cappato, cappamelo al 70 %»;
+«il growl mi sembra funzioni un po' al opposto di quello che mi
+immaginavo: al posto che ingigantire i bassi distorcendoli e "collandoli"
+mi pare che li indebolisca»; «fammi una versione in cui ti dimentichi
+temporaneamente di dec. 99».
+
+- **NASTRO**: fine corsa al 70 % dell'originale (pot log 10k + 4,3k in
+  serie sopra).
+- **Perché il GROWL dec. 99 indebolisce**: è tarato a pari volume sul
+  nominale; sul materiale di Filippo (~0 dBu interni) comprime: basso
+  −4,5 dB a fine corsa, −9,7 sui picchi caldi.
+- **GROWL LIBERO** (solo prototipo, selettore GROWL VER DEC.99 /
+  LIBERO): pot doppio, un tratto è la R d'ingresso del clipper (10k →
+  1,26k = spinta 0 → +18 dB, lineare in dB), l'altro la miscela che
+  sostituisce il basso pulito; kl 0,6783 = +6 dB di basso a fine corsa
+  su 0 dBu interni. Nessuno stadio di guadagno davanti ai diodi: con uno
+  stadio a +18 dB i picchi caldi andavano al rail (±16 V) e tosavano duro.
+
+**LIBERO, modello contro LTspice** (`sim/five-way/drive2-libero.cir`,
+50 Hz, THD % e variazione del fondamentale):
+
+| GROWL | piano −16 | nominale −6 | 0 dBu (mix di Filippo) | +10 |
+|---|---|---|---|---|
+| 25 % | 11,8 · +3,9 dB | 9,1 · +1,1 | 6,2 · −0,1 | 2,6 · −0,6 |
+| 50 % | 20,2 · +8,0 | 16,9 · +2,9 | 12,4 · +0,7 | 5,8 · −1,5 |
+| 100 % | 26,5 · +14,9 | 20,8 · +8,6 | 15,5 · +5,9 | 7,5 · +3,1 |
+
+LTspice e modello coincidono in tutte le 12 caselle: THD entro 0,1
+punti, livello entro 0,1 dB. Prova gen~ contro modello: **PASS 175/175**.
+
+Conflitto aperto: LIBERO alza il volume del basso (fino a +15 dB sul
+basso piano), contro la dec. 99 (c). Se Filippo sceglie LIBERO, la
+dec. 99 (c) va rivista. Rumore del ramo da misurare prima di congelare.
