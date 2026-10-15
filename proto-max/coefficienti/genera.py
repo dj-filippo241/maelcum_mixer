@@ -128,20 +128,16 @@ def emetti_serie(g):
     r("sk = 2 * sr4;")
     r("sk2 = sk * sk;")
     t = serie.THETA_CUT
-    r("sr_tl = s_low / 100;")
-    r(f"sr_xl = {serie.X_KILL!r} + {serie.X_CUT - serie.X_KILL!r}"
-      f" * min(max(sr_tl / {t!r}, 0), 1)"
-      f" + {serie.X_DETENT - serie.X_CUT!r}"
-      f" * min(max((sr_tl - {t!r}) / {0.5 - t!r}, 0), 1)"
-      f" + {serie.X_BOOST - serie.X_DETENT!r}"
-      f" * min(max((sr_tl - 0.5) / 0.5, 0), 1);")
-    r("sr_th = s_high / 100;")
-    r(f"sr_xh = {serie.X_KILL!r} + {serie.X_CUT - serie.X_KILL!r}"
-      f" * min(max(sr_th / {t!r}, 0), 1)"
-      f" + {serie.X_DETENT - serie.X_CUT!r}"
-      f" * min(max((sr_th - {t!r}) / {0.5 - t!r}, 0), 1)"
-      f" + {serie.X_BOOST - serie.X_DETENT!r}"
-      f" * min(max((sr_th - 0.5) / 0.5, 0), 1);")
+    # x scende a tratti: kill -> cut -> detent -> boost (solo sottrazioni
+    # di costanti positive: niente "+ -" nel codice gen~)
+    for th, xx, man in (("sr_tl", "sr_xl", "s_low"), ("sr_th", "sr_xh", "s_high")):
+        r(f"{th} = {man} / 100;")
+        r(f"{xx} = {serie.X_KILL!r}"
+          f" - {serie.X_KILL - serie.X_CUT:.6f} * min(max({th} / {t!r}, 0), 1)"
+          f" - {serie.X_CUT - serie.X_DETENT:.6f}"
+          f" * min(max(({th} - {t!r}) / {0.5 - t!r}, 0), 1)"
+          f" - {serie.X_DETENT - serie.X_BOOST:.6f}"
+          f" * min(max(({th} - 0.5) / 0.5, 0), 1);")
     R, RP, C = serie.R_LOW, serie.RP_LOW, serie.C_LOW
     r(f"sr_gh = ({R!r} + (1 - sr_xh) * {RP!r}) / ({R!r} + sr_xh * {RP!r});")
     gk, gb = serie.g_shelf(serie.X_KILL), serie.g_shelf(serie.X_BOOST)
