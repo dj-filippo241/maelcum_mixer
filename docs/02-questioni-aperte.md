@@ -34,7 +34,7 @@ voce porta in testa il suo stato a oggi.
 |---|---|---|
 | B1 | Carattere del filtro: core OTA (a′) con partitore 1/30 (dec. 109; valore di lavoro, «a per ora» di Filippo 2026-10-14) o pulito con VCA (c-B). Il core (a) nudo è scartato: non funziona ai livelli di progetto (RISULTATI-D5 §1) | 70 |
 | B2 | Pendenza a 4 poli del filtro: Butterworth, Bessel o Linkwitz-Riley | 64 |
-| B3 | Frequenze delle 5 bande del 5-way (ora ~90 / 350 / 1,2k / 3,5k Hz) | 67 |
+| B3 | Frequenze delle 5 bande del 5-way (ora ~90 / 350 / 1,2k / 3,5k Hz). 2026-10-15: benchmark (tutti tagliano KICK/MID a 180-220 Hz e HIGH/SUPER a 5-8 kHz) e 4 varianti A/B/C/D da ascoltare in MC-5WAY (`proto-max/RISULTATI-P2.md` §1) | 67 |
 | B4 | **[CADUTA con la dec. 105: nell'isolator HIGH a zero fa −39 dB a 8 kHz]** ~~[RIAPERTA dalla dec. 104]~~ Kill della banda HIGH: accettare «scurisce», o cella più profonda | 68 |
 | B5 | Review a orecchio dei centri EQ di canale (70 / 250 / 1k / 5k Hz) | 5 |
 | B7 | **2026-10-14 ascolto P0 → DECISIONE 114: boost +6 e GAIN confermati; curva da rifare con pot di serie; incroci A e B scartati entrambi, restano aperti. Varianti C 150 dolce/350/3150 e D 150 dolce/700/3150 (HI-MID senza kick, come i mixer DJ) nel prototipo; benchmark dei 4 bande in `docs/09`.** Incroci, boost e law dell'EQ isolator dei canali (partenza 150 / 500 / 2500 Hz, +6 dB, lineare; alternativa 100 / 630 / 4000 Hz). **2026-10-14: riferimento di Filippo = i DJM Pioneer recenti, poi ascolto. Pioneer non pubblica gli incroci (solo escursioni: 900NXS2 isolator 3 bande −∞…+6; V10 HI/LOW −∞, medie −26 dB); i soli numeri pubblicati sono i centri EQ del 900nexus, 70 Hz / 1 kHz / 13 kHz. Per copiarli serve misurare un mixer vero. Rinviato.** | dec. 105 |

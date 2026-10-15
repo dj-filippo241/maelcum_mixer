@@ -81,3 +81,27 @@ consegnare: `verifica.py` (modello contro LTspice) e `prova_gen.py`
    carattere col livello: con GAIN di MC-CHANNEL più alto la risonanza
    si schiaccia di più.
 
+
+## MC-5WAY (P2)
+
+1. Il 5-way sta sul DJ BUS, dopo la somma dei canali. In Live: seleziona
+   le tracce dei canali, Cmd+G per raggrupparle, poi trascina
+   `MC-5WAY.amxd` sulla traccia del gruppo. Con una traccia sola va bene
+   anche sulla traccia stessa, dopo MC-FILTRO.
+2. Pannello, da sinistra:
+   - riga in alto: KILL SUB, KICK, MID, HIGH, SUPER (ON = via aperta,
+     KILL = via tagliata di netto, col click come l'interruttore vero);
+   - colonne EQ1-EQ5: GAIN (centro = piatto, destra = boost, sinistra =
+     taglio fino al notch), POS (frequenza della campana), WIDTH
+     Q3 stretta / Q1 media / Q0.5 larga;
+   - a destra: GROWL, NASTRO e il selettore CROSSOVER.
+3. CROSSOVER esiste solo nel prototipo (B3): A = design attuale
+   90/350/1,2k/3,5k; B = Jah Tubbys Devastator 80/200/1,2k/6k; C = JB
+   Audio 75/190/2,2k/8k; D = Speakerplans 80/220/1,5k/7k. Cambia i
+   confini dei KILL, non l'EQ.
+4. Parte trasparente: tutte le vie aperte, GAIN e POS al centro, GROWL
+   e NASTRO a zero.
+5. Livello: 0 dBu = −12 dBFS di picco, come gli altri dispositivi. Con
+   boost forti l'uscita supera 0 dBFS e la scheda audio satura. Abbassa
+   il fader del gruppo, che sta dopo il dispositivo. Non abbassare
+   l'ingresso: GROWL e NASTRO cambiano carattere col livello.

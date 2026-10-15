@@ -43,6 +43,15 @@ LIV = 1.0954 * 10 ** (12 / 20)  # volt per 1,0 digitale (0 dBu = -12 dBFS)
 PAD = 0.5                       # riferimento interno -6 dB (dec. 73)
 
 CROSSOVER = (90.0, 350.0, 1200.0, 3500.0)
+# Varianti per l'ascolto di B3 (q67), scelte da Filippo il 2026-10-15
+# sul benchmark (RISULTATI-P2.md): A attuale (dec. 66), B Jah Tubbys
+# Devastator su misura, C JB Audio Units 5 vie, D Speakerplans.
+VARIANTI_XO = {
+    "A 90/350/1.2k/3.5k": (90.0, 350.0, 1200.0, 3500.0),
+    "B 80/200/1.2k/6k": (80.0, 200.0, 1200.0, 6000.0),
+    "C 75/190/2.2k/8k": (75.0, 190.0, 2200.0, 8000.0),
+    "D 80/220/1.5k/7k": (80.0, 220.0, 1500.0, 7000.0),
+}
 VIE = ("SUB", "KICK", "MID", "HIGH", "SUPER")
 Q_BW = 1.0 / math.sqrt(2.0)
 
@@ -299,6 +308,22 @@ class Saturatori:
         self.vc += self.k_c * vtac
         dt = -KT * vtac - y1
         return y1 + mt * dt, dg, dt
+
+
+class Completo:
+    """Tutto il 5-way a 4x, senza halfband: unita digitali in e out.
+    Banca e celle in unita digitali; saturatori in volt del dominio
+    interno (pad -6 dB, dec. 73); make-up +6 dB in uscita."""
+
+    def __init__(self, fs, crossover=CROSSOVER):
+        self.lin = Modulo(fs, crossover)
+        self.sat = Saturatori(fs)
+
+    def passo(self, x, kill=(1, 1, 1, 1, 1), gain=(0.5,) * 5,
+              pos=(0.5,) * 5, width=(1,) * 5, mg=0.0, mt=0.0):
+        y = self.lin.passo(x, kill, gain, pos, width)
+        v = self.sat.passo(y * LIV * PAD, mg, mt)[0]
+        return v / (LIV * PAD)
 
 
 # ---- risposte analogiche ideali (riferimento delle prove) ----

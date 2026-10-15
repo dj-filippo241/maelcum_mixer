@@ -100,6 +100,12 @@ Chiude a orecchio:
 - **B6**, parte 5-way: carattere e curve di GROWL e NASTRO.
 - **EQ grafico**: le 5 parametriche bastano da sole? (dec. 111)
 
+[2026-10-15: P2 COSTRUITO — `MC-5WAY` con KILL per via, EQ a 5 campane
+(GAIN / POS / WIDTH), GROWL e NASTRO, selettore CROSSOVER A/B/C/D per B3
+(varianti dal benchmark scelte da Filippo); banca piatta esatta, saturatori
+contro drive2-chain (livello ≤ 0,01 dB), gen~ contro modello sui due
+canali; `proto-max/RISULTATI-P2.md`. Manca l'ascolto di Filippo.]
+
 ### P3 — FX e master (2 sessioni)
 
 `MC-FX` (4 bus, ritorno con GAIN, matrice di feedback 16 VCA con
