@@ -192,7 +192,11 @@ def genexpr():
           f" + max(0, 1 - abs(s_w_{n} - 1)) * {wq[1]!r}"
           f" + max(0, 1 - abs(s_w_{n} - 2)) * {wq[2]!r};")
     r(f"mg = s_growl / 100;")
-    r(f"mt = s_nastro / 100;")
+    tn = "s_nastro / 100"
+    r(f"tn = {tn};")
+    r(f"mt = {fw.NASTRO_MAX!r} * ((tn <= 0.5) * {fw.TAPER_A_MID!r} * tn / 0.5"
+      f" + (tn > 0.5) * ({fw.TAPER_A_MID!r} + {1 - fw.TAPER_A_MID!r}"
+      f" * (tn - 0.5) / 0.5));")
     r(f"glp = tan(pi * {fw.FX_GROWL!r} / sr4);")
     r(f"ghg = tan(pi * {fw.F_HP_G!r} / sr4);")
     r(f"kcb = 1 / (sr4 * {fw.J_CB!r});")

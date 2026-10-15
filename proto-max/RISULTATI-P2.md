@@ -46,6 +46,7 @@ formule analogiche; SUB a 40 Hz, SUPER a due volte l'ultimo crossover):
 | B | −24,6 | −11,8 (126 Hz) | −25,4 (490 Hz) | −22,4 (2,7 kHz) | −24,6 |
 | C | −22,5 | −12,0 (119 Hz) | −36,5 (647 Hz) | −17,3 (4,2 kHz) | −24,6 |
 | D | −24,6 | −13,2 (133 Hz) | −27,5 (574 Hz) | −21,3 (3,2 kHz) | −24,6 |
+| E | −20,8 (45 Hz) | −9,6 (117 Hz) | −28,0 (452 Hz) | −22,4 (2,7 kHz) | −24,6 |
 
 Lettura: con 24 dB/ottava una via stretta non si spegne mai del tutto.
 La KICK del benchmark (80-200 Hz, 1,3 ottave) scava ~12 dB; la nostra
@@ -134,3 +135,45 @@ nessun nome esterno uguale a un parametro o locale di funzione
 (controllo automatico: nessuno). Regola per i prossimi dispositivi:
 funzioni con un solo valore di ritorno, nomi esterni distinti dai
 locali. Prova di nuovo PASS 155/155. Conferma finale: ascolto.
+
+## 6. Primo ascolto di Filippo e modifiche (2026-10-15)
+
+Parole di Filippo: «il nastro è troppo aggressivo, mentre growl non
+abbastanza e mi pare funzioni solo con le medie e le alte killate».
+Impianto di Filippo (DSP): 37 / 80 / 170 / 1200 Hz / 20 kHz.
+
+Lettura (mostrata a Filippo prima delle scelte):
+- il materiale masterizzato suona in Live ~6 dB sopra il nominale del
+  prototipo (0 dBu = −12 dBFS di picco): NASTRO al 100 % passa da 5,5 % a
+  19 % di THD; GROWL comprime il basso invece di sporcarlo;
+- le armoniche del GROWL (100-300 Hz) cadono nella zona cassa e medie
+  basse: con il mix pieno si confondono, con MID e HIGH killate si
+  sentono.
+
+Scelte di Filippo [PROVVISORIE, in ascolto]: variante E del CROSSOVER;
+NASTRO pot logaritmico con fine corsa al 30 %; GROWL con più spinta.
+Proposta scartata: manopola LIVELLO di taratura (opzione 1).
+
+- **E 80/170/1,2k/6k** nel selettore (gli incroci dell'impianto +
+  HIGH/SUPER a 6 kHz). KILL KICK al centro −9,6 dB: la via 80-170 Hz è
+  poco più di un'ottava.
+- **NASTRO**: taper A (10 % a metà corsa) × 0,3. Hardware: pot log 10k
+  con 23,3k in serie sopra. Fine corsa al nominale ≈ 1,6 % THD.
+- **GROWL**: Rf 47k, kg 0,4634. LTspice (`sim/five-way/drive2-chain-g47.cir`,
+  `-g47-1k.cir`) contro modello: livello entro 0,00 dB, THD entro
+  1,3 punti (picchi +10 dBu a fine corsa: 18,4 % contro 19,7 %).
+
+| GROWL 100 % | 22k (prima) | 47k (ora) |
+|---|---|---|
+| programma piano −16 dBu (interno) | 4,9 %, +2,1 dB | 18 %, +4,5 dB |
+| nominale −6 dBu | 20 %, −0,3 dB | 25 %, −0,5 dB |
+| spinto 0 dBu | 22 %, −3,2 dB | 26 %, −4,5 dB |
+| medi 1 kHz al nominale | 0,04 %, −0,3 dB | 1,2 %, −1,0 dB |
+
+Prova gen~ contro modello: **PASS 163/163** (con la variante E). Stress:
+nessun valore non finito; i picchi alti (fino a +20 dBFS) nascono dai
+salti istantanei dei comandi su boost Q3: con i comandi fermi lo stesso
+caso fa 2,7.
+
+Da fare prima di congelare: rumore del ramo GROWL a 47k
+(`drive2-noise.cir`).

@@ -66,23 +66,23 @@ clipg(low) {
 	nv = pos * 0.04531548 + (1 - pos) * 0.13594644;
 	vd = nv * log(1 + a / 2.52e-09);
 	ex = exp(vd / nv);
-	f = 2.52e-09 * (ex - 1) * (1 + rr / 22000.0) + vd / 22000.0 - a;
-	df = 2.52e-09 * ex / nv * (1 + rr / 22000.0) + 1 / 22000.0;
+	f = 2.52e-09 * (ex - 1) * (1 + rr / 47000.0) + vd / 47000.0 - a;
+	df = 2.52e-09 * ex / nv * (1 + rr / 47000.0) + 1 / 47000.0;
 	vd = vd - f / df;
 	ex = exp(vd / nv);
-	f = 2.52e-09 * (ex - 1) * (1 + rr / 22000.0) + vd / 22000.0 - a;
-	df = 2.52e-09 * ex / nv * (1 + rr / 22000.0) + 1 / 22000.0;
+	f = 2.52e-09 * (ex - 1) * (1 + rr / 47000.0) + vd / 47000.0 - a;
+	df = 2.52e-09 * ex / nv * (1 + rr / 47000.0) + 1 / 47000.0;
 	vd = vd - f / df;
 	ex = exp(vd / nv);
-	f = 2.52e-09 * (ex - 1) * (1 + rr / 22000.0) + vd / 22000.0 - a;
-	df = 2.52e-09 * ex / nv * (1 + rr / 22000.0) + 1 / 22000.0;
+	f = 2.52e-09 * (ex - 1) * (1 + rr / 47000.0) + vd / 47000.0 - a;
+	df = 2.52e-09 * ex / nv * (1 + rr / 47000.0) + 1 / 47000.0;
 	vd = vd - f / df;
 	ex = exp(vd / nv);
-	f = 2.52e-09 * (ex - 1) * (1 + rr / 22000.0) + vd / 22000.0 - a;
-	df = 2.52e-09 * ex / nv * (1 + rr / 22000.0) + 1 / 22000.0;
+	f = 2.52e-09 * (ex - 1) * (1 + rr / 47000.0) + vd / 47000.0 - a;
+	df = 2.52e-09 * ex / nv * (1 + rr / 47000.0) + 1 / 47000.0;
 	vd = vd - f / df;
 	id = 2.52e-09 * (exp(vd / nv) - 1);
-	return 22000.0 * (a - id) * (pos * 2 - 1);
+	return 47000.0 * (a - id) * (pos * 2 - 1);
 }
 
 // un passo di Newton sulla corrente del JFET (Shichman-Hodges,
@@ -124,7 +124,7 @@ Param w_4(1, min=0, max=2);
 Param w_5(1, min=0, max=2);
 Param growl(0, min=0, max=100);
 Param nastro(0, min=0, max=100);
-Param xo(0, min=0, max=3);
+Param xo(0, min=0, max=4);
 Data sv(112);
 Data sa(8);
 Data hb(128);
@@ -176,10 +176,11 @@ wx0 = max(0, 1 - abs(s_xo - 0));
 wx1 = max(0, 1 - abs(s_xo - 1));
 wx2 = max(0, 1 - abs(s_xo - 2));
 wx3 = max(0, 1 - abs(s_xo - 3));
-gx0 = tan(pi * (wx0 * 90.0 + wx1 * 80.0 + wx2 * 75.0 + wx3 * 80.0) / sr4);
-gx1 = tan(pi * (wx0 * 350.0 + wx1 * 200.0 + wx2 * 190.0 + wx3 * 220.0) / sr4);
-gx2 = tan(pi * (wx0 * 1200.0 + wx1 * 1200.0 + wx2 * 2200.0 + wx3 * 1500.0) / sr4);
-gx3 = tan(pi * (wx0 * 3500.0 + wx1 * 6000.0 + wx2 * 8000.0 + wx3 * 7000.0) / sr4);
+wx4 = max(0, 1 - abs(s_xo - 4));
+gx0 = tan(pi * (wx0 * 90.0 + wx1 * 80.0 + wx2 * 75.0 + wx3 * 80.0 + wx4 * 80.0) / sr4);
+gx1 = tan(pi * (wx0 * 350.0 + wx1 * 200.0 + wx2 * 190.0 + wx3 * 220.0 + wx4 * 170.0) / sr4);
+gx2 = tan(pi * (wx0 * 1200.0 + wx1 * 1200.0 + wx2 * 2200.0 + wx3 * 1500.0 + wx4 * 1200.0) / sr4);
+gx3 = tan(pi * (wx0 * 3500.0 + wx1 * 6000.0 + wx2 * 8000.0 + wx3 * 7000.0 + wx4 * 6000.0) / sr4);
 
 // KILL: 1 = via aperta (interruttore, taglio netto: dec. 88)
 a0 = 1 - k_sub;
@@ -216,9 +217,10 @@ b5 = gl - 1;
 ge5 = tan(pi * 3000.0 * pow(6.666666666666667, s_p_5 / 100) / sr4);
 ke5 = max(0, 1 - abs(s_w_5)) * 0.3333333333333333 + max(0, 1 - abs(s_w_5 - 1)) * 1.0 + max(0, 1 - abs(s_w_5 - 2)) * 2.0;
 mg = s_growl / 100;
-mt = s_nastro / 100;
+tn = s_nastro / 100;
+mt = 0.3 * ((tn <= 0.5) * 0.1 * tn / 0.5 + (tn > 0.5) * (0.1 + 0.9 * (tn - 0.5) / 0.5));
 glp = tan(pi * 350.0 / sr4);
-ghg = tan(pi * 0.9756198011533183 / sr4);
+ghg = tan(pi * 0.7375240062878429 / sr4);
 kcb = 1 / (sr4 * 0.0022);
 kc = 1 / (sr4 * 0.48543689320388356);
 
@@ -294,7 +296,7 @@ ya = ya + b5 * ke5 * svbp(sv, 52, ya, ge5, ke5);
 // GROWL (sotto 350 Hz) e NASTRO, volt del dominio interno
 xa = ya * 2.180432973121504;
 lw = svlp(sv, 54, xa, glp, 1.4142135623730951);
-dg = 0.613 * hp1(sa, 0, clipg(lw), ghg) - lw;
+dg = 0.4634 * hp1(sa, 0, clipg(lw), ghg) - lw;
 y1 = xa + mg * dg;
 jvs = 2.017546946859815 + peek(sa, 1);
 jvc = 14.637421755233643 + peek(sa, 3);
@@ -354,7 +356,7 @@ ya = ya + b5 * ke5 * svbp(sv, 52, ya, ge5, ke5);
 // GROWL (sotto 350 Hz) e NASTRO, volt del dominio interno
 xa = ya * 2.180432973121504;
 lw = svlp(sv, 54, xa, glp, 1.4142135623730951);
-dg = 0.613 * hp1(sa, 0, clipg(lw), ghg) - lw;
+dg = 0.4634 * hp1(sa, 0, clipg(lw), ghg) - lw;
 y1 = xa + mg * dg;
 jvs = 2.017546946859815 + peek(sa, 1);
 jvc = 14.637421755233643 + peek(sa, 3);
@@ -414,7 +416,7 @@ ya = ya + b5 * ke5 * svbp(sv, 52, ya, ge5, ke5);
 // GROWL (sotto 350 Hz) e NASTRO, volt del dominio interno
 xa = ya * 2.180432973121504;
 lw = svlp(sv, 54, xa, glp, 1.4142135623730951);
-dg = 0.613 * hp1(sa, 0, clipg(lw), ghg) - lw;
+dg = 0.4634 * hp1(sa, 0, clipg(lw), ghg) - lw;
 y1 = xa + mg * dg;
 jvs = 2.017546946859815 + peek(sa, 1);
 jvc = 14.637421755233643 + peek(sa, 3);
@@ -474,7 +476,7 @@ ya = ya + b5 * ke5 * svbp(sv, 52, ya, ge5, ke5);
 // GROWL (sotto 350 Hz) e NASTRO, volt del dominio interno
 xa = ya * 2.180432973121504;
 lw = svlp(sv, 54, xa, glp, 1.4142135623730951);
-dg = 0.613 * hp1(sa, 0, clipg(lw), ghg) - lw;
+dg = 0.4634 * hp1(sa, 0, clipg(lw), ghg) - lw;
 y1 = xa + mg * dg;
 jvs = 2.017546946859815 + peek(sa, 1);
 jvc = 14.637421755233643 + peek(sa, 3);
@@ -592,7 +594,7 @@ ya = ya + b5 * ke5 * svbp(sv, 108, ya, ge5, ke5);
 // GROWL (sotto 350 Hz) e NASTRO, volt del dominio interno
 xa = ya * 2.180432973121504;
 lw = svlp(sv, 110, xa, glp, 1.4142135623730951);
-dg = 0.613 * hp1(sa, 4, clipg(lw), ghg) - lw;
+dg = 0.4634 * hp1(sa, 4, clipg(lw), ghg) - lw;
 y1 = xa + mg * dg;
 jvs = 2.017546946859815 + peek(sa, 5);
 jvc = 14.637421755233643 + peek(sa, 7);
@@ -652,7 +654,7 @@ ya = ya + b5 * ke5 * svbp(sv, 108, ya, ge5, ke5);
 // GROWL (sotto 350 Hz) e NASTRO, volt del dominio interno
 xa = ya * 2.180432973121504;
 lw = svlp(sv, 110, xa, glp, 1.4142135623730951);
-dg = 0.613 * hp1(sa, 4, clipg(lw), ghg) - lw;
+dg = 0.4634 * hp1(sa, 4, clipg(lw), ghg) - lw;
 y1 = xa + mg * dg;
 jvs = 2.017546946859815 + peek(sa, 5);
 jvc = 14.637421755233643 + peek(sa, 7);
@@ -712,7 +714,7 @@ ya = ya + b5 * ke5 * svbp(sv, 108, ya, ge5, ke5);
 // GROWL (sotto 350 Hz) e NASTRO, volt del dominio interno
 xa = ya * 2.180432973121504;
 lw = svlp(sv, 110, xa, glp, 1.4142135623730951);
-dg = 0.613 * hp1(sa, 4, clipg(lw), ghg) - lw;
+dg = 0.4634 * hp1(sa, 4, clipg(lw), ghg) - lw;
 y1 = xa + mg * dg;
 jvs = 2.017546946859815 + peek(sa, 5);
 jvc = 14.637421755233643 + peek(sa, 7);
@@ -772,7 +774,7 @@ ya = ya + b5 * ke5 * svbp(sv, 108, ya, ge5, ke5);
 // GROWL (sotto 350 Hz) e NASTRO, volt del dominio interno
 xa = ya * 2.180432973121504;
 lw = svlp(sv, 110, xa, glp, 1.4142135623730951);
-dg = 0.613 * hp1(sa, 4, clipg(lw), ghg) - lw;
+dg = 0.4634 * hp1(sa, 4, clipg(lw), ghg) - lw;
 y1 = xa + mg * dg;
 jvs = 2.017546946859815 + peek(sa, 5);
 jvc = 14.637421755233643 + peek(sa, 7);

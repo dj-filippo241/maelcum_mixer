@@ -696,6 +696,20 @@ Unica salita: il GROWL su un basso molto piano, +2 dB a fine corsa.
 3. ~~La griglia intera come punto di partenza~~ → **CONFERMATA da
    Filippo il 2026-10-13** (dec. 99 i); rifinitura a orecchio (B6).
 
+> **[REV 2026-10-15, ascolto del prototipo P2 — scelte di Filippo,
+> PROVVISORIE fino alla fine dell'ascolto B6]** (`proto-max/RISULTATI-P2.md` §6)
+> 1. **GROWL con più spinta**: Rf 22k → **47k**, kg ritarato a **0,4634**
+>    (pari livello RMS al nominale, stesso metodo che dava 0,613).
+>    LTspice `drive2-chain-g47.cir` / `-g47-1k.cir`: 100 % al nominale
+>    25 % THD (era 20), programma piano 18 % (era 4,9) con il basso a
+>    +4,5 dB (era +2,1); medi a 1 kHz −1,0 dB (era −0,3).
+> 2. **NASTRO**: pot **logaritmico** (taper A, 10 % a metà corsa) e fine
+>    corsa al **30 %** di prima: 23,3k in serie sopra il pot da 10k. Al
+>    nominale, fine corsa ≈ 1,6 % THD invece di 5,5 %. Il circuito del
+>    JFET non cambia.
+> Rumore: il ramo GROWL ha più guadagno (×4,7 invece di ×2,2 prima del
+> kg): da rimisurare con `drive2-noise.cir` prima di congelare.
+
 ### 5bis.5 Rumore MISURATO e conteggi (`sim/five-way/drive2-noise.cir`, 2026-10-13)
 
 Circuito reale (op-amp con rumore, pot 10k veri, buffer dei cursori,

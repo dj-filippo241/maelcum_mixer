@@ -97,8 +97,9 @@ consegnare: `verifica.py` (modello contro LTspice) e `prova_gen.py`
    - a destra: GROWL, NASTRO e il selettore CROSSOVER.
 3. CROSSOVER esiste solo nel prototipo (B3): A = design attuale
    90/350/1,2k/3,5k; B = Jah Tubbys Devastator 80/200/1,2k/6k; C = JB
-   Audio 75/190/2,2k/8k; D = Speakerplans 80/220/1,5k/7k. Cambia i
-   confini dei KILL, non l'EQ.
+   Audio 75/190/2,2k/8k; D = Speakerplans 80/220/1,5k/7k; E = gli
+   incroci del tuo impianto 80/170/1,2k + 6k. Cambia i confini dei
+   KILL, non l'EQ.
 4. Parte trasparente: tutte le vie aperte, GAIN e POS al centro, GROWL
    e NASTRO a zero.
 5. Livello: 0 dBu = −12 dBFS di picco, come gli altri dispositivi. Con

@@ -51,6 +51,9 @@ VARIANTI_XO = {
     "B 80/200/1.2k/6k": (80.0, 200.0, 1200.0, 6000.0),
     "C 75/190/2.2k/8k": (75.0, 190.0, 2200.0, 8000.0),
     "D 80/220/1.5k/7k": (80.0, 220.0, 1500.0, 7000.0),
+    # E: gli incroci dell'impianto di Filippo (DSP 37-80-170-1,2k-20k,
+    # 2026-10-15) + HIGH/SUPER a 6 kHz come nel benchmark
+    "E 80/170/1.2k/6k": (80.0, 170.0, 1200.0, 6000.0),
 }
 VIE = ("SUB", "KICK", "MID", "HIGH", "SUPER")
 Q_BW = 1.0 / math.sqrt(2.0)
@@ -186,10 +189,13 @@ D_IS = 2.52e-9
 D_N = 1.752
 D_RS = 0.568
 FX_GROWL = 350.0                # dec. 99 (g)
-KG = 0.613
+# GROWL con piu spinta (Filippo, ascolto P2, 2026-10-15): Rf 22k -> 47k,
+# kg ritarato a pari livello RMS al nominale (50 Hz, 0,549 Vp) = 0,4634
+# (lo stesso metodo da 0,6134 con 22k). LTspice: drive2-chain-g47*.cir.
+KG = 0.4634
 KT = 0.206
 G_RIN = 10e3
-G_RF = 22e3
+G_RF = 47e3
 G_RA = 2200.0 + D_RS            # ramo 1 diodo
 G_RB = 2200.0 + 3 * D_RS        # ramo 3 diodi
 G_NA = D_N * VT27
@@ -205,6 +211,21 @@ J_CB = 2200e-6
 J_VCC = 18.0
 F_HP_T = 1 / (2 * math.pi * 10e-6 * (10e3 / KT))     # 0,33 Hz
 NEWTON = 4
+
+
+# NASTRO (Filippo, ascolto P2, 2026-10-15): pot logaritmico e fine corsa
+# al 30 % di quello di prima. Hardware: pot a taper A (10 % a meta corsa,
+# pista a due tratti) e 23,3k in serie sopra un pot da 10k (10/33,3 = 0,3).
+NASTRO_MAX = 0.3
+TAPER_A_MID = 0.1
+
+
+def nastro_law(theta):
+    if theta <= 0.5:
+        t = TAPER_A_MID * theta / 0.5
+    else:
+        t = TAPER_A_MID + (1 - TAPER_A_MID) * (theta - 0.5) / 0.5
+    return NASTRO_MAX * t
 
 
 def _ramo(i_in, rr, nvt):
@@ -321,8 +342,9 @@ class Completo:
 
     def passo(self, x, kill=(1, 1, 1, 1, 1), gain=(0.5,) * 5,
               pos=(0.5,) * 5, width=(1,) * 5, mg=0.0, mt=0.0):
+        # mt = rotazione della manopola NASTRO (0-1), la law sta qui
         y = self.lin.passo(x, kill, gain, pos, width)
-        v = self.sat.passo(y * LIV * PAD, mg, mt)[0]
+        v = self.sat.passo(y * LIV * PAD, mg, nastro_law(mt))[0]
         return v / (LIV * PAD)
 
 
