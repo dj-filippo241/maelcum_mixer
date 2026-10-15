@@ -1,0 +1,219 @@
+// MC-MIC - prototipo Max P4 (mic-mono-moduli §2-§5, REV dec. 111).
+// GENERATO da proto-max/coefficienti/genera_mic.py: non modificare.
+// in1 = microfono (scheda audio col preamp al minimo); in2 ignorato.
+// INA +30 dB (rail) -> passa-alto 60 Hz -> GAIN 0...+30 dB (rail) ->
+// PRE (LED) -> EQ2 (rail) -> MUTE (1 ms) -> out1 = out2 (mono
+// centrato); out3..out10 = SEND ai bus 1-4 (L, R); out11 = LED
+// (0 spento, 1 verde, 2 giallo, 3 rosso).
+
+// allpass del 1o ordine del halfband; stato in m[i] (x), m[i+1] (y)
+ap(m, i, x, c) {
+	y = c * (x - peek(m, i + 1)) + peek(m, i);
+	poke(m, x, i);
+	poke(m, y, i + 1);
+	return y;
+}
+
+// polo singolo TPT, uscita passa-basso; stato in m[i]
+op1(m, i, x, g) {
+	s = peek(m, i);
+	v = (x - s) * g / (1 + g);
+	lo = v + s;
+	poke(m, lo + v, i);
+	return lo;
+}
+
+// SVF 2 poli TPT, uscita passa-alto; stato in m[i], m[i+1]; k = 1/Q
+svhp(m, i, x, g, k) {
+	s1 = peek(m, i);
+	s2 = peek(m, i + 1);
+	fh = (x - (k + g) * s1 - s2) / (1 + g * (k + g));
+	fb = g * fh + s1;
+	fl = g * fb + s2;
+	poke(m, g * fh + fb, i);
+	poke(m, g * fb + fl, i + 1);
+	return fh;
+}
+
+Param gain(0, min=0, max=100);
+Param low(50, min=0, max=100);
+Param high(50, min=0, max=100);
+Param snd1(0, min=0, max=100);
+Param snd2(0, min=0, max=100);
+Param snd3(0, min=0, max=100);
+Param snd4(0, min=0, max=100);
+Param mute(0, min=0, max=1);
+History mrm(0);
+History lenv(0);
+History llat(0);
+Data sv(4);
+Data sa(2);
+Data hb(64);
+History s_gain(0.0);
+History s_low(50.0);
+History s_high(50.0);
+History s_snd1(0.0);
+History s_snd2(0.0);
+History s_snd3(0.0);
+History s_snd4(0.0);
+t10 = exp(-1 / (0.010 * samplerate));
+s_gain = gain + t10 * (s_gain - gain);
+s_low = low + t10 * (s_low - low);
+s_high = high + t10 * (s_high - high);
+s_snd1 = snd1 + t10 * (s_snd1 - snd1);
+s_snd2 = snd2 + t10 * (s_snd2 - snd2);
+s_snd3 = snd3 + t10 * (s_snd3 - snd3);
+s_snd4 = snd4 + t10 * (s_snd4 - snd4);
+sr4 = samplerate * 4;
+// GAIN: stadio 2 col pot lineare (mic.g2)
+tgn = s_gain / 100;
+gst = (5360.0 + tgn * 5000.0) / (332.0 + (1 - tgn) * 5000.0);
+// passa-alto Sallen-Key 60 Hz (mic.hpf_w0_q)
+gpa = tan(190.18471790923815 / sr4);
+kpa = 1.414213562373095;
+// EQ2 LOW: dB voluti -> posizione x del pot (fx.low_x)
+ldb = (s_low / 100 >= 0.5) * 12.0 * (s_low / 100 - 0.5) + (s_low / 100 < 0.5) * ((s_low / 100 < 0.2) * (-30.0 + 120.0 * (s_low / 100 - 0.0)) + (s_low / 100 >= 0.2) * (-6.0 + 20.0 * (s_low / 100 - 0.2)));
+lgl = pow(10, ldb / 20);
+lx = (32.0 - lgl) / (31.0 * (lgl + 1));
+// EQ2 HIGH: posizione thh del pot (fx.high_thh)
+hth = (s_high / 100 >= 0.5) * 0.5 * pow(10, 0.6 * (s_high / 100 - 0.5)) + (s_high / 100 < 0.5) * (s_high / 100 >= 0.3) * 0.5 * pow(10, -3.75 * (0.5 - s_high / 100)) + (s_high / 100 < 0.3) * 0.2963799016731538 * s_high / 100;
+lra = 31000.0 * lx + 0.001;
+lrb = 31000.0 * (1 - lx) + 0.001;
+ala = 1000.0 / (1000.0 + lrb);
+gla = 1 / (2 * sr4 * lrb * 5.6e-08);
+alb = (1000.0 + lra) / 1000.0;
+glb = (1000.0 + lra) / (2 * sr4 * 1000.0 * lra * 5.6e-08);
+lgk = (1000.0 + lrb) / (1000.0 + lra);
+hr1 = 10000.0 * hth + 0.001;
+hr2 = 10000.0 * (1 - hth) + 0.001;
+hk = (1 / hr2 - 1 / hr1) / (1 / hr1 + 1 / hr2 + 2.004008016032064e-05);
+ghp = tan(13827.674747047453 / sr4);
+khp = 2.892749557082327;
+// MUTE: rampa 1 ms, lineare in dB fino a -100 dB, poi zero
+pmu = 1 / (0.001 * samplerate);
+mrm = mrm + min(max(mute - mrm, -pmu), pmu);
+gmu = pow(10, -5 * mrm) * (mrm < 1);
+// SEND: pot curva A (fx.level_send)
+ts1 = s_snd1 / 100;
+ls1 = (ts1 <= 0.5) * 0.2 * ts1 + (ts1 > 0.5) * (0.1 + 1.8 * (ts1 - 0.5));
+ts2 = s_snd2 / 100;
+ls2 = (ts2 <= 0.5) * 0.2 * ts2 + (ts2 > 0.5) * (0.1 + 1.8 * (ts2 - 0.5));
+ts3 = s_snd3 / 100;
+ls3 = (ts3 <= 0.5) * 0.2 * ts3 + (ts3 > 0.5) * (0.1 + 1.8 * (ts3 - 0.5));
+ts4 = s_snd4 / 100;
+ls4 = (ts4 <= 0.5) * 0.2 * ts4 + (ts4 > 0.5) * (0.1 + 1.8 * (ts4 - 0.5));
+// ingresso: 1,0 = 3.0873 V al microfono; uscita: 1,0 = 4.3609 V
+M_e = in1;
+M_o = in1;
+M_e = ap(hb, 0, M_e, 0.019059005558478156);
+M_e = ap(hb, 4, M_e, 0.1559582483500435);
+M_e = ap(hb, 8, M_e, 0.3650536901969154);
+M_e = ap(hb, 12, M_e, 0.5755010797915323);
+M_e = ap(hb, 16, M_e, 0.7526447471286863);
+M_e = ap(hb, 20, M_e, 0.8980636464339091);
+M_o = ap(hb, 2, M_o, 0.07350243453590219);
+M_o = ap(hb, 6, M_o, 0.25649919975582064);
+M_o = ap(hb, 10, M_o, 0.47327898479453656);
+M_o = ap(hb, 14, M_o, 0.6688095014357188);
+M_o = ap(hb, 18, M_o, 0.8282265929955738);
+M_o = ap(hb, 22, M_o, 0.9656701590349398);
+M_u0 = M_e;
+M_u1 = M_e;
+M_u0 = ap(hb, 24, M_u0, 0.04245470986526787);
+M_u0 = ap(hb, 28, M_u0, 0.39331989319033134);
+M_u1 = ap(hb, 26, M_u1, 0.17073985049750015);
+M_u1 = ap(hb, 30, M_u1, 0.7457135887202412);
+M_u2 = M_o;
+M_u3 = M_o;
+M_u2 = ap(hb, 24, M_u2, 0.04245470986526787);
+M_u2 = ap(hb, 28, M_u2, 0.39331989319033134);
+M_u3 = ap(hb, 26, M_u3, 0.17073985049750015);
+M_u3 = ap(hb, 30, M_u3, 0.7457135887202412);
+ppk = 0;
+pv = min(max(91.32528313955623 * M_u0, -13.5), 13.5);
+pv = svhp(sv, 2, pv, gpa, kpa);
+pv = min(max(gst * pv, -13.5), 13.5);
+ppk = max(ppk, abs(pv));
+eq = pv / 4.360865946243008;
+eq = ala * eq + (1 - ala) * op1(sa, 0, eq, gla);
+eq = alb * eq + (1 - alb) * op1(sa, 1, eq, glb);
+eq = lgk * eq;
+eq = eq + hk * svhp(sv, 0, eq, ghp, khp);
+M_y0 = min(max(eq, -3.7836521927978892), 3.7836521927978892);
+pv = min(max(91.32528313955623 * M_u1, -13.5), 13.5);
+pv = svhp(sv, 2, pv, gpa, kpa);
+pv = min(max(gst * pv, -13.5), 13.5);
+ppk = max(ppk, abs(pv));
+eq = pv / 4.360865946243008;
+eq = ala * eq + (1 - ala) * op1(sa, 0, eq, gla);
+eq = alb * eq + (1 - alb) * op1(sa, 1, eq, glb);
+eq = lgk * eq;
+eq = eq + hk * svhp(sv, 0, eq, ghp, khp);
+M_y1 = min(max(eq, -3.7836521927978892), 3.7836521927978892);
+pv = min(max(91.32528313955623 * M_u2, -13.5), 13.5);
+pv = svhp(sv, 2, pv, gpa, kpa);
+pv = min(max(gst * pv, -13.5), 13.5);
+ppk = max(ppk, abs(pv));
+eq = pv / 4.360865946243008;
+eq = ala * eq + (1 - ala) * op1(sa, 0, eq, gla);
+eq = alb * eq + (1 - alb) * op1(sa, 1, eq, glb);
+eq = lgk * eq;
+eq = eq + hk * svhp(sv, 0, eq, ghp, khp);
+M_y2 = min(max(eq, -3.7836521927978892), 3.7836521927978892);
+pv = min(max(91.32528313955623 * M_u3, -13.5), 13.5);
+pv = svhp(sv, 2, pv, gpa, kpa);
+pv = min(max(gst * pv, -13.5), 13.5);
+ppk = max(ppk, abs(pv));
+eq = pv / 4.360865946243008;
+eq = ala * eq + (1 - ala) * op1(sa, 0, eq, gla);
+eq = alb * eq + (1 - alb) * op1(sa, 1, eq, glb);
+eq = lgk * eq;
+eq = eq + hk * svhp(sv, 0, eq, ghp, khp);
+M_y3 = min(max(eq, -3.7836521927978892), 3.7836521927978892);
+d0 = M_y1;
+d1 = M_y0;
+d0 = ap(hb, 32, d0, 0.04245470986526787);
+d0 = ap(hb, 36, d0, 0.39331989319033134);
+d1 = ap(hb, 34, d1, 0.17073985049750015);
+d1 = ap(hb, 38, d1, 0.7457135887202412);
+M_v0 = 0.5 * (d0 + d1);
+d0 = M_y3;
+d1 = M_y2;
+d0 = ap(hb, 32, d0, 0.04245470986526787);
+d0 = ap(hb, 36, d0, 0.39331989319033134);
+d1 = ap(hb, 34, d1, 0.17073985049750015);
+d1 = ap(hb, 38, d1, 0.7457135887202412);
+M_v1 = 0.5 * (d0 + d1);
+d0 = M_v1;
+d1 = M_v0;
+d0 = ap(hb, 40, d0, 0.019059005558478156);
+d0 = ap(hb, 44, d0, 0.1559582483500435);
+d0 = ap(hb, 48, d0, 0.3650536901969154);
+d0 = ap(hb, 52, d0, 0.5755010797915323);
+d0 = ap(hb, 56, d0, 0.7526447471286863);
+d0 = ap(hb, 60, d0, 0.8980636464339091);
+d1 = ap(hb, 42, d1, 0.07350243453590219);
+d1 = ap(hb, 46, d1, 0.25649919975582064);
+d1 = ap(hb, 50, d1, 0.47327898479453656);
+d1 = ap(hb, 54, d1, 0.6688095014357188);
+d1 = ap(hb, 58, d1, 0.8282265929955738);
+d1 = ap(hb, 62, d1, 0.9656701590349398);
+M_w = 0.5 * (d0 + d1);
+mo = gmu * M_w;
+// LED al nodo PRE: picco dei 4 campioni, rilascio 0,3 s,
+// rosso con latch 0,5 s (mic.Led)
+lcr = exp(-1 / (0.3 * samplerate));
+lenv = max(ppk, lcr * lenv);
+llat = (ppk >= 7.754838122143846) * 0.5 + (ppk < 7.754838122143846) * max(llat - 1 / samplerate, 0);
+lst = (llat > 0) * 3 + (llat <= 0) * ((lenv >= 0.549000495715314) + (lenv >= 3.886625865664586));
+out1 = mo;
+out2 = mo;
+out3 = ls1 * mo;
+out4 = ls1 * mo;
+out5 = ls2 * mo;
+out6 = ls2 * mo;
+out7 = ls3 * mo;
+out8 = ls3 * mo;
+out9 = ls4 * mo;
+out10 = ls4 * mo;
+out11 = lst;

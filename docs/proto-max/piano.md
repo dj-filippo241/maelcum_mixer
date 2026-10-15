@@ -134,6 +134,12 @@ MC vero sopra il mix.
 Chiude a orecchio: **serve un limiter sul mic?** (idea della review, non
 discussa) e **B6**, parte mic: soglie dei LED.
 
+[2026-10-15: P4 COSTRUITO — `MC-MIC` con GAIN (30-60 dB, pot lineare
+del circuito), passa-alto 60 Hz, EQ2, FX1-FX4 verso i bus di P3, MUTE
+(1 ms) e LED a tre colori; preamp contro `mic-pre-ac` ≤ 0,06 dB, gen~
+PASS 106/106; `proto-max/RISULTATI-P4.md`. Da caricare in Live e
+ascoltare.]
+
 **Totale stimato: ~8 sessioni mie, 5 sessioni d'ascolto tue.** Le fasi
 sono indipendenti dopo P0: l'ordine di P1-P4 si può cambiare.
 

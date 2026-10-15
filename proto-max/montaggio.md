@@ -140,3 +140,22 @@ I pedali sono effetti veri di Live. Ogni bus FX ha una traccia sua.
    Saturator, il loop sale fino al rail del bus (+11,5 dBFS).
 6. Meter di MC-RET e MC-MASTER: 0 in cima = +24 dBu, −24 = 0 dBu. La
    striscia sottile accanto è il clip (latch di mezzo secondo).
+
+## P4 — Mic (MC-MIC)
+
+1. Crea una traccia audio per il microfono. Ingresso: il canale della
+   scheda audio dove è collegato il mic, **mono**. Monitor su **In**.
+   Uscita: Master.
+2. **Preamp della scheda audio al minimo.** Il guadagno lo dà la manopola
+   GAIN di MC-MIC (30-60 dB, come il modulo vero). Se il preamp della scheda
+   è alto, il mic suona più forte di quanto dice la manopola.
+3. Trascina `MC-MIC.amxd` sulla traccia. Comandi: GAIN, EQ LOW, EQ HIGH,
+   FX1-FX4 (quanto mic va a ciascun bus FX di P3), MUTE e il LED.
+4. LED: grigio = niente, verde = segnale ok, giallo = vicino al clip,
+   rosso = clip (resta acceso mezzo secondo). Guarda il segnale prima
+   dell'EQ e prima del MUTE.
+5. MUTE spegne il mic verso il Master e verso i bus FX insieme.
+6. Il fader della traccia non fa parte del modulo (il modulo vero non ha
+   fader): lascialo a 0 dB.
+7. **Cuffie, non casse**: con un mic aperto vicino alle casse parte il
+   larsen. Prova il MUTE proprio lì.
