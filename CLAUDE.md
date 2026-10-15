@@ -61,7 +61,7 @@ Regole di simulazione (ognuna nasce da un errore già pagato; il contesto sta ne
 
 ## Stato corrente (2026-10-15, decisioni 1-114)
 
-Il design teorico (carta + simulazione) è completo per tutti i moduli. Il prototipo musicale in Max for Live (dec. 78) precede il millefori: P0 (`MC-CHANNEL`, incroci A/C/D, curva LINEARE/PIONEER, dec. 114) e P1 (`MC-FILTRO`) costruiti e verificati in Python; ascolto di Filippo da fare (`proto-max/RISULTATI-P0.md`, `RISULTATI-P1.md`). Generatori e prove in `proto-max/coefficienti/`: i `.genexpr/.maxpat/.amxd` non si toccano a mano. Gli acquisti sono sospesi fino al prototipo.
+Il design teorico (carta + simulazione) è completo per tutti i moduli. Il prototipo musicale in Max for Live (dec. 78) precede il millefori: P0 (`MC-CHANNEL`), P1 (`MC-FILTRO`, canale R corretto il 2026-10-15) e P2 (`MC-5WAY`: CROSSOVER A-E con E = impianto di Filippo 80/170/1,2k + 6k, GROWL VER DEC.99/LIBERO, NASTRO VER OGGI/COMPLETO/EXCITER/CLASSE A) costruiti, verificati e in ascolto da Filippo (`proto-max/RISULTATI-P*.md`). Prossimo: P3 (FX e master). Generatori e prove in `proto-max/coefficienti/`: i `.genexpr/.maxpat/.amxd` non si toccano a mano. Gli acquisti sono sospesi fino al prototipo.
 
 | Modulo | Versione corrente | Documento | Simulazioni |
 |---|---|---|---|
@@ -85,6 +85,7 @@ Trappole di lettura:
 - **Superati, non usare come base**: `sim/cdj-eq/` e `sim/eq_analysis.py` (EQ a contribuzione bipolare), `sim/eq-serie/` e `eq-serie-v0.3.md` (EQ in serie, archiviato dalla dec. 105; le dec. 103 e 104 sono revocate), `sim/master-out/compG-*` (VAS discreto), `sim/five-way/drive-*` (drive v0.3, archiviato), filter-module §5bis (overdrive v0.1), griglia drive dec. 87.
 - **Servo DC**: filtro (overdrive §5ter), 5-way (§5bis.7) ed EQ isolator (§8) usano la stessa cella: integratore invertente che entra dal piedino + dello stadio attraverso un partitore. Iniettare nel nodo di somma dà retroazione positiva.
 - **Diagrammi**: gli SVG di 5-way, filtro e mic/mono sono vecchi. Si rigenerano solo su richiesta di Filippo.
+- **Codice gen~ (prototipo)**: la traduzione Python delle prove accetta cose che gen~ non regge. Regole pagate in P1/P2: funzioni con un solo valore di ritorno; nessun nome esterno uguale a un parametro, locale, `Param` o `History` di funzione; `d0`/`d1` sono del downsampling; la prova suona sempre i due canali. Lo stato delle funzioni va in `Data` (peek/poke).
 - Il modulo mic/mono è un precedente: una prima stesura con comandi decisi da Claude è stata bocciata. Pannello, comandi e divisione in moduli li decide Filippo.
 
 ## Prossimo passo
