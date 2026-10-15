@@ -716,6 +716,12 @@ Unica salita: il GROWL su un basso molto piano, +2 dB a fine corsa.
 >    COMPLETO (enfasi + head bump), EXCITER, CLASSE A (2N3904); circuiti e
 >    confronti con LTspice in `proto-max/RISULTATI-P2.md` §9
 >    (`sim/five-way/alt-*.cir`).
+> 5. **NASTRO LIBERO** (solo prototipo, quinta voce di NASTRO VER): il JFET
+>    di oggi con uno stadio di spinta davanti alla 10k del gate (0 → +12 dB
+>    col pot, sotto il rail); kl 0,1977 = +3 dB sul mix di Filippo a fine
+>    corsa, +10 dB sul programma piano (`sim/five-way/nastro-libero.cir`,
+>    RISULTATI-P2 §10). **In conflitto con la dec. 99 (c)**, come il
+>    GROWL LIBERO.
 > Rumore: il ramo GROWL ha più guadagno (×4,7 invece di ×2,2 prima del
 > kg): da rimisurare con `drive2-noise.cir` prima di congelare.
 

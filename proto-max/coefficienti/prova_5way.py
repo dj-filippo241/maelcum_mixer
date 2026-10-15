@@ -146,6 +146,15 @@ def main():
                  toll=0.05, amp=A0 * 10 ** (dbu / 20), durata=0.3, coda=0.1,
                  nastro=100, nver=nver)
 
+    print("NASTRO LIBERO (0 e +10 dBu; 100 e 60 %; con GROWL LIBERO)")
+    for nastro, f, growl, gv in ((100, 1000, 0, 0), (60, 1000, 0, 0),
+                                 (100, 50, 100, 1)):
+        for dbu in (0, 10):
+            caso(f"NASTRO LIBERO {nastro} % {f} Hz GROWL {growl}"
+                 f" {dbu:+d} dBu", f, toll=0.05,
+                 amp=A0 * 10 ** (dbu / 20), durata=0.3, coda=0.1,
+                 nastro=nastro, nver=4, growl=growl, gv=gv)
+
     print("Canali indipendenti: R muto, L intero")
     sl, sr, n0 = suona_gen(testo, 1000, A0, 0.1, 0.03, destra=0.0,
                            growl=50, nastro=50)

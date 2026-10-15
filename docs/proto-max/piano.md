@@ -103,8 +103,8 @@ Chiude a orecchio:
 [2026-10-15: P2 COSTRUITO — `MC-5WAY` con KILL per via, EQ a 5 campane
 (GAIN / POS / WIDTH), GROWL e NASTRO, selettore CROSSOVER A-E per B3
 (benchmark + E = impianto di Filippo 80/170/1,2k + 6k); dopo tre ascolti:
-GROWL VER DEC.99 / LIBERO, NASTRO VER OGGI / COMPLETO / EXCITER / CLASSE A,
-NASTRO log all'85 %; tutto contro LTspice, gen~ PASS 191/191 sui due
+GROWL VER DEC.99 / LIBERO, NASTRO VER OGGI / COMPLETO / EXCITER / CLASSE A /
+LIBERO, NASTRO log all'85 %; tutto contro LTspice, gen~ PASS 203/203 sui due
 canali; `proto-max/RISULTATI-P2.md`. Ascolto di Filippo in corso.]
 
 ### P3 — FX e master (2 sessioni)

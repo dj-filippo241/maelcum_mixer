@@ -1,7 +1,7 @@
 """Alternative al NASTRO: modello (alternative.py) contro LTspice.
 
 Uso:  python3 proto-max/coefficienti/confronto_alt.py
-Legge sim/five-way/alt-*.log (stesse condizioni: partenza dal punto di
+Legge sim/five-way/alt-*.log e nastro-libero.log (stesse condizioni: partenza dal punto di
 lavoro, stessa durata, stessa finestra, 8 armoniche, THD Partial).
 """
 
@@ -68,6 +68,40 @@ def modello(classe, f, dur, amp):
     return out
 
 
+def libero():
+    """NASTRO LIBERO (nastro-libero.cir): la spinta cambia con la
+    manopola, quindi un run per posizione (step amp dentro, th fuori)."""
+    thd, meas = leggi_log("nastro-libero")
+    print("LIBERO 1 kHz: modello | LTspice (THD % . dB), colonne -16/-6/0/+10")
+    p = [0.0, 0.0]
+    for j, pos in enumerate((0.25, 0.5, 0.75, 1.0)):
+        mt = fw.nastro_law(pos)
+        celle = []
+        for k, amp in enumerate(AMP):
+            s = al.Libero(FS)
+            s.gn = 10 ** (al.NL_GMAX_DB * pos / 20)
+            n = int(1.5 * FS)
+            n0 = n - int(0.02 * FS)
+            xs, ys = [], []
+            for i in range(n):
+                x = amp * math.sin(2 * math.pi * 1000 * i / FS)
+                y = x + mt * s.passo(x)
+                if i >= n0:
+                    xs.append(x)
+                    ys.append(y)
+            a = armoniche(ys, 1000, FS, 0)
+            tm = 100 * math.sqrt(sum(t * t for t in a[1:])) / a[0]
+            lm = 20 * math.log10(rms(ys) / rms(xs))
+            st = 4 * j + k
+            tl = thd[("v(m)", st)]
+            ll = 20 * math.log10(meas["rm"][st] / meas["xr"][st])
+            p = [max(p[0], abs(tm - tl)), max(p[1], abs(lm - ll))]
+            celle.append(f"{tm:5.2f} {lm:+5.2f}|{tl:5.2f} {ll:+5.2f}")
+        print(f"  {int(pos * 100):3d} % " + "  ".join(celle))
+    print(f"  scarto massimo: THD {p[0]:.2f} punti, livello {p[1]:.2f} dB")
+    return p
+
+
 def main():
     peggio = {}
     for nome, log, classe, f, dur in CASI:
@@ -86,6 +120,7 @@ def main():
             print(f"  {et:>5} " + "  ".join(celle))
         peggio[nome] = p
         print(f"  scarto massimo: THD {p[0]:.2f} punti, livello {p[1]:.2f} dB")
+    peggio["LIBERO 1 kHz"] = libero()
     return peggio
 
 

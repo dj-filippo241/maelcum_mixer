@@ -1,0 +1,52 @@
+* ============================================================
+* 5-WAY NASTRO LIBERO (prototipo P2, 2026-10-15) — solo prototipo, quinta
+* posizione del selettore NASTRO VER. Richiesta di Filippo: «metti anche
+* nastro con scelta libero» (come il GROWL LIBERO: niente dec. 99).
+* Il JFET del NASTRO (drive2-chain.cir) con uno stadio di spinta davanti
+* alla 10k del gate: gn = 10^(12 th / 20), 0 -> +12 dB (op-amp ideale con
+* rail a 16 V). Il gate conduce (diodo di NJ310, Is 10f) e si appoggia
+* sulla source. Drain caricato come oggi (10k/kt nel nodo virtuale);
+* Rtf = 10k kl/kt: wn = -kl V(tac). Miscela y = y1 + mt (wn - y1), mt =
+* manopola NASTRO (taper A x 0,85). kl = 0,1977: +3 dB a regime sul mix di Filippo
+* (0 dBu interni) a fine corsa. Modello: proto-max/coefficienti/
+* alternative.py (Libero). SINE = PICCO. Modelli [PROVVISORIO].
+* ============================================================
+.model NJ310 NJF(Beta=5m Vto=-3 Lambda=6m Cgs=25p Cgd=4p Is=10f)
+.subckt OPAMP0 inp inn out
+E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
+.ends OPAMP0
+.param amp=0.549
+.param th=1
+.param f=1000
+.param kt=0.206
+.param kl=0.1977
+.param gn={pow(10,12*th/20)}
+.param mt={0.85*if(th<=0.5,0.1*th/0.5,0.1+0.9*(th-0.5)/0.5)}
+.param ts={1/(f*400)}
+.param t0={1.5-max(10/f,0.02)}
+Vcc vcc 0 DC 18
+V1 y1 0 SINE(0 {amp} {f})
+* --- spinta ---
+Bsp pre 0 V=limit({gn}*V(y1),-16,16)
+* --- JFET (NASTRO) ---
+Rtg pre gate 10k
+J1 drain gate s1 NJ310
+Rd vcc drain 1.5k
+Rsu s1 s2 150
+Rsb s2 0 900
+Cb s2 0 2200u
+Cta drain tac 10u
+Rts tac tn {10k/kt}
+Rtf tn wn {10k*kl/kt}
+Xtn 0 tn wn OPAMP0
+* --- miscela ---
+Bm m 0 V=V(y1)+{mt}*(V(wn)-V(y1))
+.options noopiter
+.tran 0 1.5 {t0} {ts}
+.step param amp LIST 0.173 0.549 1.096 3.466
+.step param th LIST 0.25 0.5 0.75 1
+.meas tran xr RMS V(y1)
+.meas tran rm RMS V(m)
+.meas tran gmax MAX V(gate)
+.four {f} 8 V(m)
+.end

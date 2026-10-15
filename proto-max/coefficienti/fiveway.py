@@ -326,14 +326,16 @@ class Saturatori:
         self.k_cb = 1 / (fs * J_CB)
         self.k_c = 1 / (fs * 10e-6 * J_RTS)
 
-    def passo(self, x, mg, mt, libero=0.0, nv=0.0):
+    def passo(self, x, mg, mt, libero=0.0, nv=0.0, gn=1.0):
         """x in volt; restituisce (y2, dg, dt). libero 0 = GROWL dec. 99,
         1 = GROWL LIBERO (in mezzo: dissolvenza del selettore). nv = NASTRO
-        VER: 0 OGGI, 1 COMPLETO, 2 EXCITER, 3 CLASSE A (alternative.py)."""
+        VER: 0 OGGI, 1 COMPLETO, 2 EXCITER, 3 CLASSE A, 4 LIBERO
+        (alternative.py); gn = spinta del NASTRO LIBERO (fattore)."""
         if not hasattr(self, "alt"):
             import alternative as al
             self.alt = [al.Completo(self.fs), al.Exciter(self.fs),
-                        al.ClasseA(self.fs)]
+                        al.ClasseA(self.fs), al.Libero(self.fs)]
+        self.alt[3].gn = gn
         low = self.lp.passo(x, self.g_lp, 1 / Q_BW)[0]
         gg = 1 + libero * (10 ** (LIB_GMAX_DB * mg / 20) - 1)
         kk = KG + libero * (LIB_K - KG)
@@ -344,7 +346,7 @@ class Saturatori:
         self.vs2 += self.k_cb * (self.idd - self.vs2 / J_RSB)
         self.vc += self.k_c * vtac
         dt = -KT * vtac - y1
-        pesi = [max(0.0, 1 - abs(nv - j)) for j in range(4)]
+        pesi = [max(0.0, 1 - abs(nv - j)) for j in range(5)]
         da = [a.passo(y1) for a in self.alt]
         d = pesi[0] * dt + sum(p * v for p, v in zip(pesi[1:], da))
         return y1 + mt * d, dg, d
@@ -364,7 +366,10 @@ class Completo:
               nv=0.0):
         # mt = rotazione della manopola NASTRO (0-1), la law sta qui
         y = self.lin.passo(x, kill, gain, pos, width)
-        v = self.sat.passo(y * LIV * PAD, mg, nastro_law(mt), libero, nv)[0]
+        import alternative as al
+        gn = 10 ** (al.NL_GMAX_DB * mt / 20)       # spinta del NASTRO LIBERO
+        v = self.sat.passo(y * LIV * PAD, mg, nastro_law(mt), libero, nv,
+                           gn)[0]
         return v / (LIV * PAD)
 
 

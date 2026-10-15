@@ -35,7 +35,8 @@ POS = [(f"p_{i + 1}", f"EQ{i + 1} POS") for i in range(5)]
 WID = [(f"w_{i + 1}", f"EQ{i + 1} WIDTH") for i in range(5)]
 SAT = [("growl", "GROWL"), ("nastro", "NASTRO")]
 GV = ("gv", "GROWL VER", ["DEC.99", "LIBERO"])
-NV = ("nver", "NASTRO VER", ["OGGI", "COMPLETO", "EXCITER", "CLASSE A"])
+NV = ("nver", "NASTRO VER", ["OGGI", "COMPLETO", "EXCITER", "CLASSE A",
+                            "LIBERO"])
 XO = ("xo", "CROSSOVER", list(fw.VARIANTI_XO))
 WIDTH_VOCI = ["Q3", "Q1", "Q0.5"]
 KILL_VOCI = ["ON", "KILL"]
@@ -44,7 +45,7 @@ KILL_VOCI = ["ON", "KILL"]
 # GROWL 1 = 28 SVF. Nel Data sa: HP del GROWL (1), HP-JFET non serve
 # (il condensatore e vc), JFET: vs2, idd, vc come scarti dal riposo.
 SVF_LATO = 30                   # + head bump del COMPLETO, passa-alto EXCITER
-SA_LATO = 14                    # + COMPLETO 5, EXCITER 1, CLASSE A 4
+SA_LATO = 18                    # + COMPLETO 5, EXCITER 1, CLASSE A 4, LIBERO 4
 VS20, ID0, VD0 = fw.jfet_riposo()
 _CA = al.ClasseA(48000.0)
 VE20, VCAP0 = _CA.ve2, _CA.vcap
@@ -151,6 +152,19 @@ def funzioni(r):
     r("\treturn min(max(vbe - f / df, 0.3), 0.9);")
     r("}")
     r()
+    vt, rg, gis = fw.VT27, al.NL_RG, al.NL_IS
+    r("// NASTRO LIBERO: gate dietro 10k, diodo gate-source verso gvs;")
+    r("// Newton dall'alto")
+    r("gatev(gin, gvs) {")
+    r(f"\tgvg = gvs + {vt!r} * log(1 + max(gin - gvs, 0) / {rg * gis!r});")
+    for _ in range(al.NL_PASSI_G):
+        r(f"\tgax = exp((gvg - gvs) / {vt!r});")
+        r(f"\tgf = gvg + {rg * gis!r} * (gax - 1) - gin;")
+        r(f"\tgdf = 1 + {rg * gis / vt!r} * gax;")
+        r("\tgvg = gvg - gf / gdf;")
+    r("\treturn gvg;")
+    r("}")
+    r()
     b, vto, lam = fw.J_BETA, fw.J_VTO, fw.J_LAMBDA
     rp, rts, rsu = fw.J_RP, fw.J_RTS, fw.J_RSU
     r("// un passo di Newton sulla corrente del JFET (Shichman-Hodges,")
@@ -252,6 +266,8 @@ def genexpr():
     r(f"mt = {fw.NASTRO_MAX!r} * ((tn <= 0.5) * {fw.TAPER_A_MID!r} * tn / 0.5"
       f" + (tn > 0.5) * ({fw.TAPER_A_MID!r} + {1 - fw.TAPER_A_MID!r}"
       f" * (tn - 0.5) / 0.5));")
+    r(f"// NASTRO LIBERO: spinta 0 -> +{al.NL_GMAX_DB:g} dB con la manopola")
+    r(f"gnl = pow(10, {al.NL_GMAX_DB / 20!r} * tn);")
     r("// GROWL VER: 0 = dec. 99, 1 = LIBERO (spinta 0 -> +18 dB col pot)")
     r(f"gg = 1 + s_gv * (pow(10, {fw.LIB_GMAX_DB / 20!r} * mg) - 1);")
     r(f"kk = {fw.KG!r} + s_gv * {fw.LIB_K - fw.KG!r};")
@@ -259,7 +275,8 @@ def genexpr():
     r(f"ghg = tan(pi * {fw.F_HP_G!r} / sr4);")
     r(f"kcb = 1 / (sr4 * {fw.J_CB!r});")
     r(f"kc = 1 / (sr4 * {10e-6 * fw.J_RTS!r});")
-    r("// NASTRO VER: 0 OGGI, 1 COMPLETO, 2 EXCITER, 3 CLASSE A (20 ms)")
+    r("// NASTRO VER: 0 OGGI, 1 COMPLETO, 2 EXCITER, 3 CLASSE A, 4 LIBERO"
+      " (20 ms)")
     for j in range(len(NV[2])):
         r(f"wn{j} = max(0, 1 - abs(s_nver - {j}));")
     r(f"gcp = tan(pi * {al.EN_FP!r} / sr4);")
@@ -372,7 +389,27 @@ def genexpr():
               f" {sa0 + 10});")
             r(f"poke(sa, cacp + kcc * catac - {VCAP0!r}, {sa0 + 11});")
             r(f"dca = -{al.B_K!r} * catac - y1;")
-            r("dn = wn0 * dt + wn1 * dco + wn2 * dex + wn3 * dca;")
+            r("// NASTRO LIBERO: spinta, gate che conduce, JFET di oggi")
+            r(f"lvin = min(max(gnl * y1, {-al.NL_RAIL!r}), {al.NL_RAIL!r});")
+            r(f"lvs2 = {VS20!r} + peek(sa, {sa0 + 14});")
+            r(f"lid = {ID0!r} + peek(sa, {sa0 + 15});")
+            r(f"lvc = {VD0!r} + peek(sa, {sa0 + 16});")
+            r(f"lig = peek(sa, {sa0 + 17});")
+            for _ in range(fw.NEWTON):
+                r(f"lvg = gatev(lvin, lvs2 + {fw.J_RSU!r} * (lid + lig));")
+                r(f"lig = (lvin - lvg) / {al.NL_RG!r};")
+                for _ in range(fw.NEWTON):
+                    r(f"lid = jstep(lvg, lvs2 + {fw.J_RSU!r} * lig, lvc, lid);")
+            r(f"lvd = {fw.J_RP!r} * ({fw.J_VCC / fw.J_RD!r} + lvc / "
+              f"{fw.J_RTS!r} - lid);")
+            r("ltac = lvd - lvc;")
+            r(f"poke(sa, lvs2 + kcb * (lid + lig - lvs2 / {fw.J_RSB!r})"
+              f" - {VS20!r}, {sa0 + 14});")
+            r(f"poke(sa, lid - {ID0!r}, {sa0 + 15});")
+            r(f"poke(sa, lvc + kc * ltac - {VD0!r}, {sa0 + 16});")
+            r(f"poke(sa, lig, {sa0 + 17});")
+            r(f"dli = -{al.NL_K!r} * ltac - y1;")
+            r("dn = wn0 * dt + wn1 * dco + wn2 * dex + wn3 * dca + wn4 * dli;")
             r(f"{lato}_y{k} = (y1 + mt * dn) / {liv!r};")
             assert i == b0 + 2 * SVF_LATO
         g.giu(f"{lato}_v0", f"{lato}_y0", f"{lato}_y1", 2, (lato, "giu", 2))
@@ -460,7 +497,7 @@ def patch(codice):
     tab(GV[0], GV[1], GV[2], 0, [432, 24, 64, 36])
     boxes[-2]["box"]["num_lines_presentation"] = 2
     boxes[-2]["box"]["num_lines_patching"] = 2
-    tab(NV[0], NV[1], NV[2], 0, [432, 64, 64, 80])
+    tab(NV[0], NV[1], NV[2], 0, [432, 64, 64, 100])
     boxes[-2]["box"]["num_lines_presentation"] = len(NV[2])
     boxes[-2]["box"]["num_lines_patching"] = len(NV[2])
     boxes.append(box("obj-nota", maxclass="live.comment", numinlets=1,

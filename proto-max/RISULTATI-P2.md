@@ -15,7 +15,7 @@ contro LTspice), `prova_5way.py` (codice gen~ contro modello).
 - **GROWL** (sotto 350 Hz) e **NASTRO** in parallelo al pulito (§5bis,
   dec. 99). Stato dopo gli ascolti (§6-9): GROWL lineare, Rf 47k; NASTRO
   taper A × 0,85; selettori GROWL VER (DEC.99 / LIBERO) e NASTRO VER
-  (OGGI / COMPLETO / EXCITER / CLASSE A).
+  (OGGI / COMPLETO / EXCITER / CLASSE A / LIBERO).
 - **CROSSOVER** A-E, solo prototipo, per B3 (§1; E aggiunta in §6).
 - Riferimento interno −6 dB (dec. 73): conta solo per i saturatori.
 - Livelli: 0 dBu = −12 dBFS di picco [PROVVISORIO, come P1]. Tutto a 4×.
@@ -288,3 +288,53 @@ nessuno in comune).
 
 Prova gen~ contro modello: **PASS 191/191** (con le tre alternative su
 entrambi i canali).
+
+## 10. NASTRO LIBERO (2026-10-15)
+
+Richiesta di Filippo: «metti anche nastro con scelta libero in
+mc-5way». Lettura: come il GROWL LIBERO, un NASTRO che si dimentica della
+dec. 99 (può alzare il volume, spinge di più). Quinta voce del selettore
+NASTRO VER, stessa manopola NASTRO (taper A × 0,85). Numeri scelti da
+Claude, da correggere a orecchio: spinta massima +12 dB, +3 dB sul mix a
+fine corsa.
+
+Circuito: il JFET del NASTRO di oggi (Rd 1,5k, Rs 150 + 900 bypassata,
+drain caricato come oggi) con uno stadio di spinta davanti alla 10k del
+gate: op-amp non invertente, un tratto del pot doppio, 0 → +12 dB
+lineare in dB. Con +12 dB i picchi +10 dBu interni arrivano a 13,9 V,
+sotto il rail di 16 V (oltre +12 dB andrebbero al rail). Il gate entra in
+conduzione (diodo gate-source di NJ310, Is 10f) e si appoggia sulla
+source; sul lato negativo il JFET va in interdizione. Sommatore con
+Rto = Rtl = 10k · kl / kt: dl = −kl · vtac − y1, kl = **0,1977** (+3 dB a
+regime sul mix di Filippo, 1 kHz, fine corsa; `taratura_alt.tara_libero`).
+Modello: `alternative.Libero`.
+
+**A regime** (la polarizzazione del JFET, Cb 2200 µF su 900 Ω, si
+assesta in ~4,5 s), 1 kHz, THD % e livello RMS; a 50 Hz identico:
+
+| NASTRO | piano −16 | nominale −6 | 0 dBu (mix di Filippo) | +10 |
+|---|---|---|---|---|
+| 25 % | 0,12 · +0,1 dB | 0,49 · +0,1 | 1,3 · 0,0 | 0,84 · −0,2 |
+| 50 % | 0,48 · +0,7 | 2,5 · +0,5 | 4,0 · +0,1 | 1,8 · −0,4 |
+| 75 % | 3,3 · +5,0 | 19 · +3,3 | 24 · +1,3 | 12 · −2,5 |
+| 100 % | 7,1 · +10,3 | 38 · +7,0 | 39 · +3,0 | 31 · −5,0 |
+
+Cosa fa, a fine corsa contro il NASTRO OGGI (stesso modello, 1 kHz): sul
+tuo mix sporca 2,5 volte tanto (39 % contro 15,5 %) e alza di 3 dB
+invece di abbassare di 1; al nominale 38 % contro 4,6 %; sui picchi forti
+fa come OGGI (31 % contro 30 %, −5 dB tutti e due). Il programma piano
+cresce di 10 dB: le parti deboli salgono, quelle forti si appiattiscono. Fino a metà corsa quasi non si sente
+(taper A: miscela al 10 %), il carattere arriva nell'ultimo terzo.
+
+**Modello contro LTspice** (`sim/five-way/nastro-libero.cir`, 1,5 s dal
+punto di lavoro, 16 caselle, `confronto_alt.py`): THD entro 0,02 punti,
+livello entro 0,00 dB.
+
+Nel codice gen~: funzione `gatev` (un ritorno; locali `gvg`, `gax`,
+`gf`, `gdf`: la prima stesura usava `gex`, che è il passa-alto
+dell'EXCITER, trovato col controllo dei nomi); stato in `sa` (4 per
+lato). Prova gen~ contro modello: **PASS 203/203**.
+
+Conflitto aperto, come per il GROWL LIBERO: alza il volume, contro la
+dec. 99 (c) (todo 61). Rumore dello stadio di spinta da misurare prima di
+congelare (todo 62).

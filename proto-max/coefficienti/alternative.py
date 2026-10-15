@@ -202,3 +202,58 @@ class ClasseA:
         self.ve2 += self.k_ce * (ie - self.ve2 / B_REB)
         self.vcap += self.k_c * vtac
         return -B_K * vtac - y1
+
+
+# ---- LIBERO (Filippo, 2026-10-15: «metti anche nastro con scelta libero») ----
+# Il NASTRO di oggi senza la dec. 99, come il GROWL LIBERO: uno stadio di
+# spinta (op-amp non invertente, un tratto del pot doppio) davanti alla
+# 10k del gate, 0 -> +12 dB lineare in dB con la rotazione. Con +12 dB i
+# picchi +10 dBu interni arrivano a 13,9 V: sotto il rail (16 V). Il gate
+# del JFET va in conduzione (diodo gate-source, Is 10f di NJ310) e si
+# appoggia sulla source: il lato positivo si schiaccia sulla 10k, quello
+# negativo va in interdizione. Drain caricato come oggi (10k/KT); il
+# sommatore ha Rto = Rtl = 10k * kl / KT: dl = -kl * vtac - y1. kl tarato a
+# +3 dB a fine corsa sul mix di Filippo (0 dBu interni, 1 kHz).
+NL_GMAX_DB = 12.0
+NL_K = 0.1977                   # +3 dB a regime sul mix di Filippo, fine corsa (taratura_alt)
+NL_RG = 10e3
+NL_IS = 10e-15
+NL_RAIL = 16.0
+NL_PASSI_G = 4
+
+
+def gate_v(vin, vs):
+    """Tensione di gate: vin dietro 10k, diodo gate-source verso vs.
+    Newton dall'alto (la partenza sta sempre a destra della radice)."""
+    vt = fw.VT27
+    vg = vs + vt * math.log(1 + max(vin - vs, 0.0) / (NL_RG * NL_IS))
+    for _ in range(NL_PASSI_G):
+        ex = math.exp((vg - vs) / vt)
+        f = vg + NL_RG * NL_IS * (ex - 1) - vin
+        df = 1 + NL_RG * NL_IS * ex / vt
+        vg = vg - f / df
+    return vg
+
+
+class Libero:
+    def __init__(self, fs):
+        self.vs2, self.idd, vd = fw.jfet_riposo()
+        self.vc = vd
+        self.ig = 0.0
+        self.k_cb = 1 / (fs * fw.J_CB)
+        self.k_c = 1 / (fs * 10e-6 * fw.J_RTS)
+        self.gn = 1.0           # spinta (fattore), la scrive Saturatori
+
+    def passo(self, y1):
+        vin = min(max(self.gn * y1, -NL_RAIL), NL_RAIL)
+        idd, ig = self.idd, self.ig
+        for _ in range(fw.NEWTON):
+            vg = gate_v(vin, self.vs2 + fw.J_RSU * (idd + ig))
+            ig = (vin - vg) / NL_RG
+            idd, vd = fw.jfet_passo(vg, self.vs2 + fw.J_RSU * ig,
+                                    self.vc, idd)
+        self.idd, self.ig = idd, ig
+        vtac = vd - self.vc
+        self.vs2 += self.k_cb * (idd + ig - self.vs2 / fw.J_RSB)
+        self.vc += self.k_c * vtac
+        return -NL_K * vtac - y1
