@@ -189,6 +189,24 @@ def main():
             controlla(f"{nome_c} fc {fc} Hz nota (semitoni dal taglio)",
                       12 * math.log2(f / fc), 12 * math.log2(f_m / fc), 0.3)
 
+    # Il primo MC-FILTRO usava d1 sia per la Q sia per il downsampling:
+    # il lato R leggeva come Q un campione audio del lato L. Le prove
+    # sopra suonano solo out1; qui out2 deve uguagliare out1, a meno del
+    # seme di rumore, diverso per lato (pochi 1e-6). Il guasto dava 0,25-3,8.
+    print("Canale R uguale al canale L (stesso ingresso, -10 dBu, 1 kHz)")
+    a = 1.0954 * 10 ** (-10 / 20) / liv
+    for p in ({"modo": 2, "res_lp": 85}, {"modo": 0, "res_hp": 85},
+              {"modo": 2, "core": 1, "pend": 2, "drive_lp": 50},
+              {"modo": 0, "core": 1, "pend": 1, "drive_hp": 50}):
+        g = nuovo(testo)
+        g.imposta(freq_lp=theta_freq(1000), freq_hp=theta_freq(1000), **p)
+        dmax = 0.0
+        for i in range(int(0.05 * FS)):
+            x = a * math.sin(2 * math.pi * 1000 * i / FS)
+            l, r = g.campione(x, x)
+            dmax = max(dmax, abs(l - r))
+        controlla(f"R - L {p}, scarto massimo x 1e6", dmax * 1e6, 0.0, 20.0)
+
     print("PASS" if errori == 0 else f"FAIL: {errori} punti fuori")
     return 0 if errori == 0 else 1
 

@@ -135,3 +135,32 @@ perché `prova_gen.Gen` fornisce `ap` e `bq` già pronte. Ora
 `prova_filtro.py` toglie quelle due e traduce in Python le funzioni
 scritte davvero nel `.genexpr`.
 
+
+## 7. Secondo errore: canale destro rotto (2026-10-15)
+
+Segnalato da Filippo all'ascolto («il filtro è rotto»). Il generatore
+chiamava `d1` la Q della prima sezione (`d1 = q1i`), ma il downsampling
+usa `d0`/`d1` come variabili di lavoro. Il lato L sovrascriveva `d1` con
+un proprio campione audio; il lato R lo leggeva come 1/Q della prima
+sezione. Risultato: canale R sbagliato e instabile con filtro inserito
+(LPF a 1 kHz, 0 dBu: L −3,5 dB, R +1,9 dB; HPF: L −1,8 dB, R +8,5 dB).
+In OFF i due lati erano uguali, per questo il guasto non si sentiva
+subito. Il lato L era giusto.
+
+Correzione: la variabile si chiama `dq1`. La prova suonava solo `out1`;
+ora `prova_filtro.py` confronta R con L in 4 casi (HPF/LPF, due core,
+pendenze, DRIVE): scarto ≤ 5·10⁻⁶ (seme di rumore diverso per lato),
+contro 0,25-3,8 del file guasto. PASS.
+
+Controlli fatti nella stessa sessione, senza altri errori:
+
+- Nessun'altra variabile passa da L a R, né in MC-FILTRO né in
+  MC-CHANNEL (controllo automatico sulle letture del lato R).
+- Patch: ogni comando arriva al suo `Param`; codice nella patch uguale
+  al `.genexpr`; struttura del `gen~` uguale a MC-CHANNEL.
+- Stress: comandi mossi a caso ogni 40 ms (RES 100 %, FREQ agli estremi,
+  DRIVE, MODO, CORE, PENDENZA), quadra a 0 dBFS, a 44,1 / 48 / 96 kHz:
+  nessun valore non finito. Picco d'uscita fino a ~2,9 (+9 dBFS): con
+  ingressi forti e RES alta l'uscita supera 0 dBFS e satura la scheda
+  audio. Il circuito vero arriva più in alto (rail), quindi non è un
+  errore del modello, ma va tenuto basso il volume d'ingresso.

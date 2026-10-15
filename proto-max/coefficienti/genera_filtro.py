@@ -149,7 +149,7 @@ def genexpr():
             f"wp{j} * {(1 / a[idx] if inv else a[idx])!r}"
             for j, a in enumerate(al))
         r(f"{nome} = {termini};")
-    r("d1 = q1i;")
+    r("dq1 = q1i;")
     for sez in ("hp", "lp"):
         r(f"// sezione {sez.upper()}: FREQ dec. 102 (a), RES dec. 102 (b)")
         r(f"th = s_freq_{sez} / 100;")
@@ -183,7 +183,7 @@ def genexpr():
             for lin, nome_c in ((0, "a"), (1, "c")):
                 for sez in ("hp", "lp"):
                     p = f"{nome_c}{sez}"
-                    r(f"{p}h, {p}l = sez(st, {i}, x, g_{sez}1, d1,"
+                    r(f"{p}h, {p}l = sez(st, {i}, x, g_{sez}1, dq1,"
                       f" {lin}, 0);")
                     a = f"{p}h" if sez == "hp" else f"{p}l"
                     r(f"{p}h, {p}l = sez(st, {i + 4}, {a}, g_{sez}2,"
