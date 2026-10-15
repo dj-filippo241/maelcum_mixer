@@ -12,14 +12,19 @@ import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
 import alternative as al  # noqa: E402
+import fiveway as fw  # noqa: E402
 from taratura_sat import armoniche, rms  # noqa: E402
 
 QUI = os.path.dirname(os.path.abspath(__file__))
 SIM = os.path.join(QUI, "..", "..", "sim", "five-way")
 FS = 192000.0
 AMP = (0.173, 0.549, 1.096, 3.466)
-MISCELE = (("25 %", "m25", "r25", 0.0425), ("50 %", "m50", "r50", 0.085),
-           ("75 %", "m75", "r75", 0.4675), ("100 %", "m99", "r99", 0.85))
+# miscele della manopola NASTRO: le stesse scritte nei B25-B99 di alt-*.cir
+MISCELE = tuple((f"{p} %", n, r, round(fw.nastro_law(p / 100), 6))
+                for p, n, r in ((25, "m25", "r25"), (50, "m50", "r50"),
+                                (75, "m75", "r75"), (100, "m99", "r99")))
+assert [m[3] for m in MISCELE] == [0.0425, 0.085, 0.4675, 0.85], \
+    "NASTRO_MAX cambiato: aggiornare le miscele B25-B99 in sim/five-way/alt-*.cir"
 CASI = (("COMPLETO 1 kHz", "alt-completo", al.Completo, 1000, 1.5),
         ("COMPLETO 8 kHz", "alt-completo-8000", al.Completo, 8000, 1.5),
         ("COMPLETO 80 Hz", "alt-completo-80", al.Completo, 80, 1.5),

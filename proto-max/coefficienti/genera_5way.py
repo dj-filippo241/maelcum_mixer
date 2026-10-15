@@ -10,7 +10,7 @@ Python e lo fa suonare.
 
 Pannello (five-way §1 e §9, dec. 85/88/99): per ogni via un KILL
 (taglio netto); per ogni banda EQ GAIN, POSITION e WIDTH; GROWL e
-NASTRO. Solo prototipo: CROSSOVER A/B/C/D per B3 (q67).
+NASTRO. Solo prototipo: CROSSOVER A-E per B3 (q67), GROWL VER, NASTRO VER.
 
 Nomi: le variabili d0 e d1 appartengono al downsampling di genera.py
 (Codice.giu). Il P1 le ha usate per altro e ha rotto il canale R.
@@ -212,8 +212,9 @@ def genexpr():
         r(f"s_{nome} = {nome} + {t} * (s_{nome} - {nome});")
     r("sr4 = samplerate * 4;")
     r()
-    r("// CROSSOVER: le 4 varianti di B3, frequenze che scivolano in 20 ms")
     varianti = list(fw.VARIANTI_XO.values())
+    r(f"// CROSSOVER: le {len(varianti)} varianti di B3, frequenze che"
+      " scivolano in 20 ms")
     for j in range(len(varianti)):
         r(f"wx{j} = max(0, 1 - abs(s_xo - {j}));")
     for c in range(4):

@@ -103,7 +103,7 @@ def main():
         for f in (60, 200, 700, 2000, 6000):
             caso(f"KILL {fw.VIE[v]} {f} Hz", f, kill=kill)
 
-    print("CROSSOVER B, C, D: KILL KICK e KILL SUPER")
+    print("CROSSOVER B, C, D, E: KILL KICK e KILL SUPER")
     for xo in (1, 2, 3, 4):
         for v in (1, 4):
             kill = tuple(0 if j == v else 1 for j in range(5))

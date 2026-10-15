@@ -182,7 +182,7 @@ class Modulo:
 # ---- GROWL e NASTRO (five-way §5bis, sim/five-way/drive2-chain.cir) ----
 # Livelli in volt del dominio interno (-6 dBu nominale = 0,549 Vp).
 # y1 = x + mg * (kg * HP(W(LP(x))) - LP(x));  y2 = y1 + mt * dt.
-# Manopole = pot lineari (§5bis.2).
+# GROWL: pot lineare (§5bis.2); NASTRO: taper A x NASTRO_MAX (nastro_law).
 
 VT27 = 0.025865
 D_IS = 2.52e-9

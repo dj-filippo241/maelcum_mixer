@@ -81,7 +81,6 @@ def griglia(nome, classe, freq):
 if __name__ == "__main__":
     print(f"CLASSE A: kc = {tara_classe_a():.4f}")
     print(f"EXCITER: ke = {tara_exciter():.5f}")
-    griglia("OGGI (JFET)", lambda fs: _Oggi(fs), 1000) if False else None
     griglia("COMPLETO", al.Completo, 1000)
     griglia("COMPLETO", al.Completo, 8000)
     griglia("COMPLETO", al.Completo, 80)

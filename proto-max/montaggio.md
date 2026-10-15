@@ -94,7 +94,11 @@ consegnare: `verifica.py` (modello contro LTspice) e `prova_gen.py`
    - colonne EQ1-EQ5: GAIN (centro = piatto, destra = boost, sinistra =
      taglio fino al notch), POS (frequenza della campana), WIDTH
      Q3 stretta / Q1 media / Q0.5 larga;
-   - a destra: GROWL, NASTRO e il selettore CROSSOVER.
+   - a destra: GROWL, NASTRO e il selettore CROSSOVER;
+   - GROWL VER (solo prototipo): DEC.99 = il GROWL del design, LIBERO =
+     spinta e miscela insieme, il basso cresce;
+   - NASTRO VER (solo prototipo): OGGI / COMPLETO / EXCITER / CLASSE A,
+     tutte comandate dalla manopola NASTRO.
 3. CROSSOVER esiste solo nel prototipo (B3): A = design attuale
    90/350/1,2k/3,5k; B = Jah Tubbys Devastator 80/200/1,2k/6k; C = JB
    Audio 75/190/2,2k/8k; D = Speakerplans 80/220/1,5k/7k; E = gli

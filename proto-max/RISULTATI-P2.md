@@ -13,8 +13,10 @@ contro LTspice), `prova_5way.py` (codice gen~ contro modello).
   20-120 / 80-400 / 250-1500 / 800-5000 / 3000-20000 Hz, law
   esponenziale; WIDTH Q3 / Q1 / Q0,5.
 - **GROWL** (sotto 350 Hz) e **NASTRO** in parallelo al pulito (§5bis,
-  dec. 99), pot lineari.
-- **CROSSOVER** A / B / C / D, solo prototipo, per B3 (sotto).
+  dec. 99). Stato dopo gli ascolti (§6-9): GROWL lineare, Rf 47k; NASTRO
+  taper A × 0,85; selettori GROWL VER (DEC.99 / LIBERO) e NASTRO VER
+  (OGGI / COMPLETO / EXCITER / CLASSE A).
+- **CROSSOVER** A-E, solo prototipo, per B3 (§1; E aggiunta in §6).
 - Riferimento interno −6 dB (dec. 73): conta solo per i saturatori.
 - Livelli: 0 dBu = −12 dBFS di picco [PROVVISORIO, come P1]. Tutto a 4×.
 - Non modellati: rumore, clipping dei rail (+21 dBu circa nel dominio
@@ -186,7 +188,7 @@ immaginavo: al posto che ingigantire i bassi distorcendoli e "collandoli"
 mi pare che li indebolisca»; «fammi una versione in cui ti dimentichi
 temporaneamente di dec. 99».
 
-- **NASTRO**: fine corsa al 70 % dell'originale (pot log 10k + 4,3k in
+- **NASTRO**: fine corsa al 70 % dell'originale [SUPERATO da §8: 85 %] (pot log 10k + 4,3k in
   serie sopra).
 - **Perché il GROWL dec. 99 indebolisce**: è tarato a pari volume sul
   nominale; sul materiale di Filippo (~0 dBu interni) comprime: basso
@@ -195,7 +197,7 @@ temporaneamente di dec. 99».
   LIBERO): pot doppio, un tratto è la R d'ingresso del clipper (10k →
   1,26k = spinta 0 → +18 dB, lineare in dB), l'altro la miscela che
   sostituisce il basso pulito; kl 0,6783 = +6 dB di basso a fine corsa
-  su 0 dBu interni. Nessuno stadio di guadagno davanti ai diodi: con uno
+  su 0 dBu interni [SUPERATO da §8: 0,6043 = +5 dB]. Nessuno stadio di guadagno davanti ai diodi: con uno
   stadio a +18 dB i picchi caldi andavano al rail (±16 V) e tosavano duro.
 
 **LIBERO, modello contro LTspice** (`sim/five-way/drive2-libero.cir`,

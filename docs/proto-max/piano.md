@@ -101,10 +101,11 @@ Chiude a orecchio:
 - **EQ grafico**: le 5 parametriche bastano da sole? (dec. 111)
 
 [2026-10-15: P2 COSTRUITO — `MC-5WAY` con KILL per via, EQ a 5 campane
-(GAIN / POS / WIDTH), GROWL e NASTRO, selettore CROSSOVER A/B/C/D per B3
-(varianti dal benchmark scelte da Filippo); banca piatta esatta, saturatori
-contro drive2-chain (livello ≤ 0,01 dB), gen~ contro modello sui due
-canali; `proto-max/RISULTATI-P2.md`. Manca l'ascolto di Filippo.]
+(GAIN / POS / WIDTH), GROWL e NASTRO, selettore CROSSOVER A-E per B3
+(benchmark + E = impianto di Filippo 80/170/1,2k + 6k); dopo tre ascolti:
+GROWL VER DEC.99 / LIBERO, NASTRO VER OGGI / COMPLETO / EXCITER / CLASSE A,
+NASTRO log all'85 %; tutto contro LTspice, gen~ PASS 191/191 sui due
+canali; `proto-max/RISULTATI-P2.md`. Ascolto di Filippo in corso.]
 
 ### P3 — FX e master (2 sessioni)
 

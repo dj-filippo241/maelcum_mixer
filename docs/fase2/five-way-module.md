@@ -703,10 +703,19 @@ Unica salita: il GROWL su un basso molto piano, +2 dB a fine corsa.
 >    LTspice `drive2-chain-g47.cir` / `-g47-1k.cir`: 100 % al nominale
 >    25 % THD (era 20), programma piano 18 % (era 4,9) con il basso a
 >    +4,5 dB (era +2,1); medi a 1 kHz −1,0 dB (era −0,3).
-> 2. **NASTRO**: pot **logaritmico** (taper A, 10 % a metà corsa) e fine
->    corsa al **30 %** di prima: 23,3k in serie sopra il pot da 10k. Al
->    nominale, fine corsa ≈ 1,6 % THD invece di 5,5 %. Il circuito del
->    JFET non cambia.
+>    [SUPERATO dal secondo ascolto: in prova anche il GROWL LIBERO, sotto.]
+> 2. **NASTRO**: pot **logaritmico** (taper A, 10 % a metà corsa); fine
+>    corsa ~~30 %~~ → ~~70 %~~ → **85 %** di prima (1,8k in serie sopra il
+>    pot da 10k). Il circuito del JFET non cambia.
+> 3. **GROWL LIBERO** (solo prototipo, selettore GROWL VER): pot doppio,
+>    un tratto è la R d'ingresso del clipper (10k → 1,26k = +18 dB), l'altro
+>    la miscela; kl 0,6043 = +5 dB di basso sul mix di Filippo
+>    (`sim/five-way/drive2-libero.cir`). **In conflitto con la dec. 99 (c)**
+>    (alza il volume del basso): da decidere (todo 61).
+> 4. **Alternative al NASTRO** (solo prototipo, selettore NASTRO VER):
+>    COMPLETO (enfasi + head bump), EXCITER, CLASSE A (2N3904); circuiti e
+>    confronti con LTspice in `proto-max/RISULTATI-P2.md` §9
+>    (`sim/five-way/alt-*.cir`).
 > Rumore: il ramo GROWL ha più guadagno (×4,7 invece di ×2,2 prima del
 > kg): da rimisurare con `drive2-noise.cir` prima di congelare.
 
