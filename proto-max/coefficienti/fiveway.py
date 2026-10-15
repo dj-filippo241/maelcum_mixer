@@ -211,12 +211,20 @@ J_CB = 2200e-6
 J_VCC = 18.0
 F_HP_T = 1 / (2 * math.pi * 10e-6 * (10e3 / KT))     # 0,33 Hz
 NEWTON = 4
+# GROWL LIBERO (Filippo, ascolto P2, 2026-10-15: «una versione in cui ti
+# dimentichi temporaneamente di dec. 99»): solo prototipo, accanto al
+# GROWL della dec. 99. Pot doppio: un tratto alza la spinta sul clipper
+# (0 -> +18 dB, lineare in dB), l'altro dosa la miscela (sostituisce il
+# basso pulito come il GROWL dec. 99). kl tarato a +6 dB di basso a fine
+# corsa su 0 dBu interni (il materiale masterizzato di Filippo).
+LIB_GMAX_DB = 18.0
+LIB_K = 0.6783
 
 
 # NASTRO (Filippo, ascolto P2, 2026-10-15): pot logaritmico e fine corsa
-# al 30 % di quello di prima. Hardware: pot a taper A (10 % a meta corsa,
-# pista a due tratti) e 23,3k in serie sopra un pot da 10k (10/33,3 = 0,3).
-NASTRO_MAX = 0.3
+# al 70 % di quello di prima (prima prova 30 %). Hardware: pot a taper A (10 % a meta corsa,
+# pista a due tratti) e 4,3k in serie sopra un pot da 10k (10/14,3 = 0,7).
+NASTRO_MAX = 0.7                # 30 % al secondo ascolto: troppo poco (Filippo)
 TAPER_A_MID = 0.1
 
 
@@ -318,10 +326,13 @@ class Saturatori:
         self.k_cb = 1 / (fs * J_CB)
         self.k_c = 1 / (fs * 10e-6 * J_RTS)
 
-    def passo(self, x, mg, mt):
-        """x in volt; restituisce (y2, dg, dt)."""
+    def passo(self, x, mg, mt, libero=0.0):
+        """x in volt; restituisce (y2, dg, dt). libero 0 = GROWL dec. 99,
+        1 = GROWL LIBERO (in mezzo: dissolvenza del selettore)."""
         low = self.lp.passo(x, self.g_lp, 1 / Q_BW)[0]
-        dg = KG * self.hp_g.passo(clipper_growl(low)) - low
+        gg = 1 + libero * (10 ** (LIB_GMAX_DB * mg / 20) - 1)
+        kk = KG + libero * (LIB_K - KG)
+        dg = kk * self.hp_g.passo(clipper_growl(gg * low)) - low
         y1 = x + mg * dg
         self.idd, vd = jfet_passo(y1, self.vs2, self.vc, self.idd)
         vtac = vd - self.vc
@@ -341,10 +352,10 @@ class Completo:
         self.sat = Saturatori(fs)
 
     def passo(self, x, kill=(1, 1, 1, 1, 1), gain=(0.5,) * 5,
-              pos=(0.5,) * 5, width=(1,) * 5, mg=0.0, mt=0.0):
+              pos=(0.5,) * 5, width=(1,) * 5, mg=0.0, mt=0.0, libero=0.0):
         # mt = rotazione della manopola NASTRO (0-1), la law sta qui
         y = self.lin.passo(x, kill, gain, pos, width)
-        v = self.sat.passo(y * LIV * PAD, mg, nastro_law(mt))[0]
+        v = self.sat.passo(y * LIV * PAD, mg, nastro_law(mt), libero)[0]
         return v / (LIV * PAD)
 
 

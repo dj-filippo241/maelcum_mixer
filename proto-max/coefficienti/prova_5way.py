@@ -29,13 +29,13 @@ VIE = [v.lower() for v in fw.VIE]
 
 
 def gen_param(kill=(1,) * 5, gain=(50,) * 5, pos=(50,) * 5, width=(1,) * 5,
-              growl=0, nastro=0, xo=0):
+              growl=0, nastro=0, xo=0, gv=0):
     p = {f"k_{v}": 1 - k for v, k in zip(VIE, kill)}
     for i in range(5):
         p[f"g_{i + 1}"] = gain[i]
         p[f"p_{i + 1}"] = pos[i]
         p[f"w_{i + 1}"] = width[i]
-    p.update(growl=growl, nastro=nastro, xo=xo)
+    p.update(growl=growl, nastro=nastro, xo=xo, gv=gv)
     return p
 
 
@@ -53,7 +53,7 @@ def suona_gen(testo, f, amp, durata, coda, destra=1.0, **kw):
 
 
 def suona_mod(f, amp, durata, coda, kill=(1,) * 5, gain=(50,) * 5,
-              pos=(50,) * 5, width=(1,) * 5, growl=0, nastro=0, xo=0):
+              pos=(50,) * 5, width=(1,) * 5, growl=0, nastro=0, xo=0, gv=0):
     fs4 = 4 * FS
     m = fw.Completo(fs4, list(fw.VARIANTI_XO.values())[xo])
     n = int(durata * fs4)
@@ -62,7 +62,7 @@ def suona_mod(f, amp, durata, coda, kill=(1,) * 5, gain=(50,) * 5,
         x = amp * math.sin(2 * math.pi * f * i / fs4)
         y.append(m.passo(x, kill, [t / 100 for t in gain],
                          [t / 100 for t in pos], width,
-                         growl / 100, nastro / 100))
+                         growl / 100, nastro / 100, gv))
     return y, n - int(coda * fs4)
 
 
@@ -130,6 +130,13 @@ def main():
             caso(f"GROWL {growl} NASTRO {nastro} {dbu:+d} dBu", 50, toll=0.05,
                  amp=A0 * 10 ** (dbu / 20), durata=0.3, coda=0.1,
                  growl=growl, nastro=nastro)
+
+    print("GROWL LIBERO (50 Hz, 0 e +10 dBu; con NASTRO)")
+    for growl, nastro in ((100, 0), (50, 0), (100, 100)):
+        for dbu in (0, 10):
+            caso(f"LIBERO GROWL {growl} NASTRO {nastro} {dbu:+d} dBu", 50,
+                 toll=0.05, amp=A0 * 10 ** (dbu / 20), durata=0.3, coda=0.1,
+                 growl=growl, nastro=nastro, gv=1)
 
     print("Canali indipendenti: R muto, L intero")
     sl, sr, n0 = suona_gen(testo, 1000, A0, 0.1, 0.03, destra=0.0,

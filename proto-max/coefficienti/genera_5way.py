@@ -33,6 +33,7 @@ GAIN = [(f"g_{i + 1}", f"EQ{i + 1} GAIN") for i in range(5)]
 POS = [(f"p_{i + 1}", f"EQ{i + 1} POS") for i in range(5)]
 WID = [(f"w_{i + 1}", f"EQ{i + 1} WIDTH") for i in range(5)]
 SAT = [("growl", "GROWL"), ("nastro", "NASTRO")]
+GV = ("gv", "GROWL VER", ["DEC.99", "LIBERO"])
 XO = ("xo", "CROSSOVER", list(fw.VARIANTI_XO))
 WIDTH_VOCI = ["Q3", "Q1", "Q0.5"]
 KILL_VOCI = ["ON", "KILL"]
@@ -140,11 +141,12 @@ def genexpr():
     for nome, _ in SAT:
         r(f"Param {nome}(0, min=0, max=100);")
     r(f"Param {XO[0]}(0, min=0, max={len(XO[2]) - 1});")
+    r(f"Param {GV[0]}(0, min=0, max=1);")
     r(f"Data sv({2 * 2 * SVF_LATO});")
     r(f"Data sa({2 * SA_LATO});")
     pos_data = len(g.righe)
     r("@@DATA@@")
-    lisci = [n for n, _ in GAIN + POS + WID + SAT] + [XO[0]]
+    lisci = [n for n, _ in GAIN + POS + WID + SAT] + [XO[0], GV[0]]
     for nome in lisci:
         ini = {"w": 1, "g": 50, "p": 50}.get(nome[0], 0)
         r(f"History s_{nome}({ini});")
@@ -155,6 +157,7 @@ def genexpr():
     r("t20 = exp(-1 / (0.020 * samplerate));")
     for nome in lisci:
         t = {"w": "t1", "x": "t20"}.get(nome[0], "t10")
+        t = "t20" if nome == GV[0] else t
         r(f"s_{nome} = {nome} + {t} * (s_{nome} - {nome});")
     r("sr4 = samplerate * 4;")
     r()
@@ -197,6 +200,9 @@ def genexpr():
     r(f"mt = {fw.NASTRO_MAX!r} * ((tn <= 0.5) * {fw.TAPER_A_MID!r} * tn / 0.5"
       f" + (tn > 0.5) * ({fw.TAPER_A_MID!r} + {1 - fw.TAPER_A_MID!r}"
       f" * (tn - 0.5) / 0.5));")
+    r("// GROWL VER: 0 = dec. 99, 1 = LIBERO (spinta 0 -> +18 dB col pot)")
+    r(f"gg = 1 + s_gv * (pow(10, {fw.LIB_GMAX_DB / 20!r} * mg) - 1);")
+    r(f"kk = {fw.KG!r} + s_gv * {fw.LIB_K - fw.KG!r};")
     r(f"glp = tan(pi * {fw.FX_GROWL!r} / sr4);")
     r(f"ghg = tan(pi * {fw.F_HP_G!r} / sr4);")
     r(f"kcb = 1 / (sr4 * {fw.J_CB!r});")
@@ -243,7 +249,7 @@ def genexpr():
             r(f"xa = ya * {liv!r};")
             r(f"lw = svlp(sv, {i}, xa, glp, {kq!r});")
             i += 2
-            r(f"dg = {fw.KG!r} * hp1(sa, {sa0}, clipg(lw), ghg) - lw;")
+            r(f"dg = kk * hp1(sa, {sa0}, clipg(gg * lw), ghg) - lw;")
             r("y1 = xa + mg * dg;")
             r(f"jvs = {VS20!r} + peek(sa, {sa0 + 1});")
             r(f"jvc = {VD0!r} + peek(sa, {sa0 + 3});")
@@ -340,8 +346,11 @@ def patch(codice):
     for j, (ng, nl) in enumerate(SAT):
         dial(ng, nl, 0.0, [312 + 60 * j, 24, 54, 48])
     tab(XO[0], XO[1], XO[2], 0, [312, 78, 114, 66])
-    boxes[-2]["box"]["num_lines_presentation"] = 4
-    boxes[-2]["box"]["num_lines_patching"] = 4
+    boxes[-2]["box"]["num_lines_presentation"] = len(XO[2])
+    boxes[-2]["box"]["num_lines_patching"] = len(XO[2])
+    tab(GV[0], GV[1], GV[2], 0, [432, 24, 64, 36])
+    boxes[-2]["box"]["num_lines_presentation"] = 2
+    boxes[-2]["box"]["num_lines_patching"] = 2
     boxes.append(box("obj-nota", maxclass="live.comment", numinlets=1,
                      numoutlets=0, presentation=1,
                      presentation_rect=[8, 148, 420, 18],
