@@ -16,6 +16,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
 import canale  # noqa: E402
+import serie  # noqa: E402
 
 QUI = os.path.dirname(os.path.abspath(__file__))
 FILE = os.path.join(os.path.dirname(QUI), "MC-CHANNEL.genexpr")
@@ -74,6 +75,8 @@ class Gen:
                 self.ns["s_x"] = float(v)
             elif k == "curva":
                 self.ns["s_c"] = float(v)
+            elif k == "eqtipo":
+                self.ns["s_t"] = float(v)
             else:
                 self.ns[f"s_{k}"] = float(v)
 
@@ -153,6 +156,32 @@ def main():
             a, _ = suona(testo, f, incroci=sel, **p)
             atteso = canale.db(canale.isolator_os(
                 f, FS, inc, [m / 100 for m in man], pend))
+            controlla(f"{nome}, {f} Hz", db(a), atteso)
+
+    print("EQ TIPO = SERIE (gen~ contro serie.serie_os; CURVA e INCROCI "
+          "non agiscono)")
+    casi_s = [
+        ("tutte al centro", (50, 50, 50, 50), [70, 1000, 8000]),
+        ("LOW a zero", (0, 50, 50, 50), [40, 70, 250, 1000]),
+        ("LOW al 5 %", (5, 50, 50, 50), [70]),
+        ("LOW al 30 %", (30, 50, 50, 50), [70]),
+        ("LOW al massimo", (100, 50, 50, 50), [40, 150]),
+        ("LOW-MID a zero", (50, 0, 50, 50), [150, 250, 500]),
+        ("LOW-MID al 20 %", (50, 20, 50, 50), [250]),
+        ("MID-HIGH a zero", (50, 50, 0, 50), [500, 1000, 2500]),
+        ("MID-HIGH al massimo", (50, 50, 100, 50), [1000]),
+        ("HIGH a zero", (50, 50, 50, 0), [5000, 10000, 18000]),
+        ("HIGH al 30 %", (50, 50, 50, 30), [10000]),
+        ("HIGH al massimo", (50, 50, 50, 100), [10000]),
+        ("dub (LOW e HIGH su, medi a zero)", (100, 0, 0, 100),
+         [40, 250, 1000, 10000]),
+        ("tutte a zero", (0, 0, 0, 0), [70, 2500, 5000]),
+    ]
+    for nome, man, freq in casi_s:
+        for f in freq:
+            p = dict(zip(["low", "lowmid", "midhigh", "high"], man))
+            a, _ = suona(testo, f, eqtipo=1, incroci=2, curva=1, **p)
+            atteso = serie.db(serie.serie_os(f, FS, [m / 100 for m in man]))
             controlla(f"{nome}, {f} Hz", db(a), atteso)
 
     print("CURVA PIONEER (D, MID-HIGH, 1514 Hz)")

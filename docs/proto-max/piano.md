@@ -28,7 +28,8 @@ Cambia rispetto al v0.1:
 La voce B5 (centri dell'EQ in serie 70 / 250 / 1k / 5k Hz) non è più
 l'EQ di progetto dopo la dec. 105: la scelta principale è B7 (incroci
 dell'isolator). 2026-10-15, Filippo: B5 resta come opzione d'ascolto,
-possibile variante di MC-CHANNEL.
+in MC-CHANNEL col selettore EQ TIPO = ISOLATOR / SERIE
+(`proto-max/RISULTATI-P0.md`).
 
 ## 1. Cosa valida e cosa no (invariato, dec. 78)
 

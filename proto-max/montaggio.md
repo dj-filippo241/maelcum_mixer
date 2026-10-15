@@ -20,7 +20,7 @@ Se Live segnala un errore, o il suono non passa, vai al §3.
 | Comando | 0 % | 50 % | 100 % |
 |---|---|---|---|
 | GAIN | muto | 0 dB | +10 dB |
-| LOW, LOW-MID, MID-HIGH, HIGH | banda spenta | 0 dB (piatto) | +6 dB |
+| LOW, LOW-MID, MID-HIGH, HIGH | banda spenta (ISOLATOR) o tagliata (SERIE) | 0 dB (piatto) | +6 dB |
 | FADER | muto | −12 dB [PROVVISORIO] | 0 dB |
 
 - Il centro (50 %) di ogni manopola vale il detent del pannello vero.
@@ -28,9 +28,17 @@ Se Live segnala un errore, o il suono non passa, vai al §3.
   riporta al valore iniziale.
 - GAIN scende lineare in dB: a 25 % vale −50 dB. Sul pannello vero il
   GAIN ha la stessa law (shaper del VCA, `cdj-line-channel.md` §3.2).
-- **INCROCI**: A = 150 / 500 / 2500 Hz (partenza), B = 100 / 630 /
-  4000 Hz. Il cambio passa con una dissolvenza di 20 ms, senza click.
+- **INCROCI**: A = 150 / 500 / 2500 Hz (partenza), C = 150 dolce /
+  350 / 3150 Hz, D = 150 dolce / 700 / 3150 Hz (B scartata con A, dec.
+  114). Il cambio passa con una dissolvenza di 20 ms, senza click.
   Serve per la voce B7: confrontali a orecchio.
+- **CURVA**: LINEARE (pot di serie) o PIONEER (curva ideale dei DJM,
+  solo per sentire se la differenza conta).
+- **EQ TIPO** (B5, 2026-10-15): ISOLATOR = l'EQ di progetto (dec. 105).
+  SERIE = l'EQ in serie archiviato, campane a 70 / 250 / 1k / 5k Hz: a
+  0 % LOW taglia ~−29 dB, i medi scavano una buca stretta, HIGH scurisce
+  (−3 dB a 10 kHz, −9 a 20 kHz). Nessuna banda spegne: il silenzio è il
+  fader. INCROCI e CURVA agiscono solo su ISOLATOR. Dissolvenza 20 ms.
 - La law del FADER non è decisa: qui è una curva da pot audio tipico.
 
 Per suonare 4 canali: un `MC-CHANNEL` su ognuna delle 4 tracce.

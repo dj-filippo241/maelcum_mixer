@@ -18,6 +18,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
 import canale  # noqa: E402
+import serie  # noqa: E402
 
 QUI = os.path.dirname(os.path.abspath(__file__))
 USCITA = os.path.dirname(QUI)
@@ -37,6 +38,8 @@ VARIANTI = ["A", "C", "D"]
 SELETTORE = ("incroci", "INCROCI",
              ["A 150/500/2500", "C 150d/350/3150", "D 150d/700/3150"])
 CURVA = ("curva", "CURVA", ["LINEARE", "PIONEER"])
+# B5 (Filippo 2026-10-15): EQ in serie archiviato come opzione d'ascolto
+EQTIPO = ("eqtipo", "EQ TIPO", ["ISOLATOR", "SERIE 70/250/1k/5k"])
 BANDE = ["low", "lowmid", "midhigh", "high"]
 
 
@@ -63,6 +66,25 @@ class Codice:
         else:
             args = f"{c}_a2, {c}_a1, 1, {c}_a1, {c}_a2"
         self.r(f"{uscita} = bq(st, {i}, {ingresso}, {args});")
+
+    def bq_nome(self, uscita, ingresso, p):
+        """Biquad con coefficienti p_b0, p_b1, p_b2, p_a1, p_a2."""
+        i = self.n_st
+        self.n_st += 2
+        self.r(f"{uscita} = bq(st, {i}, {ingresso}, {p}_b0, {p}_b1, {p}_b2,"
+               f" {p}_a1, {p}_a2);")
+
+    def bilineare(self, p, num, den):
+        """Coefficienti digitali da H(s) = (n0 + n1 s + n2 s^2) /
+        (e0 + e1 s + e2 s^2), s = sk (1 - z^-1) / (1 + z^-1), sk = 2 sr4."""
+        n0, n1, n2 = num
+        e0, e1, e2 = den
+        self.r(f"{p}_ai = 1 / ({e0} + ({e1}) * sk + ({e2}) * sk2);")
+        self.r(f"{p}_b0 = ({n0} + ({n1}) * sk + ({n2}) * sk2) * {p}_ai;")
+        self.r(f"{p}_b1 = (2 * ({n0}) - 2 * ({n2}) * sk2) * {p}_ai;")
+        self.r(f"{p}_b2 = ({n0} - ({n1}) * sk + ({n2}) * sk2) * {p}_ai;")
+        self.r(f"{p}_a1 = (2 * ({e0}) - 2 * ({e2}) * sk2) * {p}_ai;")
+        self.r(f"{p}_a2 = ({e0} - ({e1}) * sk + ({e2}) * sk2) * {p}_ai;")
 
     def cammino(self, var, coefs, pari, base):
         """Un ramo del halfband polifase: coefficienti pari o dispari."""
@@ -98,6 +120,56 @@ class Codice:
         self.r(f"{y} = 0.5 * (d0 + d1);")
 
 
+def emetti_serie(g):
+    """Law e coefficienti dell'EQ in serie (serie.py, eq-serie §9-§10)."""
+    r = g.r
+    r("// EQ in serie (B5, archiviato: confronto a orecchio). Law eq-serie §10:")
+    r("// LOW e HIGH a tratti (kill negli ultimi 5 %), medi pot lineare caricato")
+    r("sk = 2 * sr4;")
+    r("sk2 = sk * sk;")
+    t = serie.THETA_CUT
+    r("sr_tl = s_low / 100;")
+    r(f"sr_xl = {serie.X_KILL!r} + {serie.X_CUT - serie.X_KILL!r}"
+      f" * min(max(sr_tl / {t!r}, 0), 1)"
+      f" + {serie.X_DETENT - serie.X_CUT!r}"
+      f" * min(max((sr_tl - {t!r}) / {0.5 - t!r}, 0), 1)"
+      f" + {serie.X_BOOST - serie.X_DETENT!r}"
+      f" * min(max((sr_tl - 0.5) / 0.5, 0), 1);")
+    r("sr_th = s_high / 100;")
+    r(f"sr_xh = {serie.X_KILL!r} + {serie.X_CUT - serie.X_KILL!r}"
+      f" * min(max(sr_th / {t!r}, 0), 1)"
+      f" + {serie.X_DETENT - serie.X_CUT!r}"
+      f" * min(max((sr_th - {t!r}) / {0.5 - t!r}, 0), 1)"
+      f" + {serie.X_BOOST - serie.X_DETENT!r}"
+      f" * min(max((sr_th - 0.5) / 0.5, 0), 1);")
+    R, RP, C = serie.R_LOW, serie.RP_LOW, serie.C_LOW
+    r(f"sr_gh = ({R!r} + (1 - sr_xh) * {RP!r}) / ({R!r} + sr_xh * {RP!r});")
+    gk, gb = serie.g_shelf(serie.X_KILL), serie.g_shelf(serie.X_BOOST)
+    r(f"sr_chi = (sr_th <= 0.5) * (1 - sr_gh) / {1 - gk!r}"
+      f" - (sr_th > 0.5) * (sr_gh - 1) / {gb - 1!r};")
+    k = serie.R_POT / serie.R_SUMMER
+    for nome, b in (("lm", "lowmid"), ("mh", "midhigh")):
+        r(f"sr_t{nome} = s_{b} / 100;")
+        r(f"sr_c{nome} = (1 - 2 * sr_t{nome}) / (1 + {k!r} * sr_t{nome}"
+          f" * (1 - sr_t{nome}));")
+    r("// cella LOW: Baxandall, (R + Zb) / (R + Za)")
+    r(f"sr_ra = {RP!r} * sr_xl + 0.001;")
+    r(f"sr_rb = {RP!r} * (1 - sr_xl) + 0.001;")
+    r(f"sr_na0 = {R!r} + sr_rb;")
+    r(f"sr_na1 = {R * C!r} * sr_rb;")
+    r(f"sr_ta = sr_ra * {C!r};")
+    r(f"sr_nb0 = {R!r} + sr_ra;")
+    r(f"sr_nb1 = {R * C!r} * sr_ra;")
+    r(f"sr_tb = sr_rb * {C!r};")
+    g.bilineare("sl", ("sr_na0", "sr_na1 + sr_na0 * sr_ta", "sr_na1 * sr_ta"),
+                ("sr_nb0", "sr_nb1 + sr_nb0 * sr_tb", "sr_nb1 * sr_tb"))
+    r("// passa-banda MFB dei medi e passa-alto Sallen-Key della HIGH")
+    for p, nd in (("slm", serie.bp_s("lm")), ("smh", serie.bp_s("mh")),
+                  ("shi", serie.hp_s())):
+        g.bilineare(p, tuple(repr(v) for v in nd[0]),
+                    tuple(repr(v) for v in nd[1]))
+
+
 def genexpr():
     g = Codice()
     r = g.r
@@ -126,12 +198,14 @@ def genexpr():
         r(f"Param {nome}({ini}, min=0, max=100);")
     r(f"Param {SELETTORE[0]}(0, min=0, max={len(VARIANTI) - 1});")
     r(f"Param {CURVA[0]}(0, min=0, max=1);")
+    r(f"Param {EQTIPO[0]}(0, min=0, max=1);")
     pos_data = len(g.righe)
     r("@@DATA@@")
     for nome, _, ini in MANOPOLE + [FADER]:
         r(f"History s_{nome}({ini});")
     r("History s_x(0);")
     r("History s_c(0);")
+    r("History s_t(0);")
     r()
     r("// manopole lisciate: 10 ms (selettore 20 ms, dissolvenza A/B)")
     r("t10 = exp(-1 / (0.010 * samplerate));")
@@ -140,6 +214,7 @@ def genexpr():
         r(f"s_{nome} = {nome} + t10 * (s_{nome} - {nome});")
     r(f"s_x = {SELETTORE[0]} + t20 * (s_x - {SELETTORE[0]});")
     r(f"s_c = {CURVA[0]} + t20 * (s_c - {CURVA[0]});")
+    r(f"s_t = {EQTIPO[0]} + t20 * (s_t - {EQTIPO[0]});")
     r()
     r("// GAIN: fondo corsa muto, meta CCW -100..0 dB, meta CW 0..+10 dB")
     r("tg = s_gain / 100;")
@@ -169,6 +244,8 @@ def genexpr():
             r(f"{c}_a1 = 2 * ({c}_kk - 1) * {c}_n;")
             r(f"{c}_a2 = (1 - {c}_k * {inv_q!r} + {c}_kk) * {c}_n;")
             r(f"{c}_lb = {c}_kk * {c}_n;")
+    r()
+    emetti_serie(g)
     r()
     for lato, ingresso, uscita in (("L", "in1", "out1"), ("R", "in2", "out2")):
         r(f"// ===== lato {lato} =====")
@@ -214,9 +291,20 @@ def genexpr():
                     f" + g_midhigh * {p}mh + g_high * {p}hi;")
                 ys.append(p)
             # dissolvenza tra varianti vicine: peso 1 - |s_x - i|, min 0
-            g.r(f"{lato}_y{k} = " + " + ".join(
+            g.r(f"{lato}_i{k} = " + " + ".join(
                 f"max(0, 1 - abs(s_x - {i})) * {y}" for i, y in enumerate(ys))
                 + ";")
+            # EQ in serie (B5): LOW -> LOW-MID -> MID-HIGH -> HIGH
+            q = f"{lato}{k}s"
+            g.bq_nome(f"{q}1", u, "sl")
+            g.bq_nome(f"{q}b", f"{q}1", "slm")
+            g.r(f"{q}2 = {q}1 + sr_clm * {q}b;")
+            g.bq_nome(f"{q}b", f"{q}2", "smh")
+            g.r(f"{q}3 = {q}2 + sr_cmh * {q}b;")
+            g.bq_nome(f"{q}b", f"{q}3", "shi")
+            g.r(f"{q}4 = {q}3 - sr_chi * {q}b;")
+            # dissolvenza 20 ms tra isolator e serie
+            g.r(f"{lato}_y{k} = (1 - s_t) * {lato}_i{k} + s_t * {q}4;")
         g.giu(f"{lato}_v0", f"{lato}_y0", f"{lato}_y1", 2, (lato, "giu", 2))
         g.giu(f"{lato}_v1", f"{lato}_y2", f"{lato}_y3", 2, (lato, "giu", 2))
         g.giu(f"{lato}_w", f"{lato}_v0", f"{lato}_v1", 1, (lato, "giu", 1))
@@ -302,8 +390,10 @@ def patch(codice):
         attr.update(valueof)
         extra = {"numinlets": 1}
         if maxclass == "live.tab":
+            righe = 1 if len(valueof["parameter_enum"]) <= 2 else 2
             extra.update(numoutlets=3, outlettype=["", "", "float"],
-                         num_lines_patching=2, num_lines_presentation=2)
+                         num_lines_patching=righe,
+                         num_lines_presentation=righe)
         else:
             extra.update(numoutlets=2, outlettype=["", "float"])
         boxes.append(box(id_, maxclass=maxclass, parameter_enable=1,
@@ -329,21 +419,26 @@ def patch(codice):
             {"parameter_type": 0, "parameter_mmax": 100.0,
              "parameter_initial": [ini], "parameter_unitstyle": 5})
     ng, nl, voci = SELETTORE
-    comando(6, "obj-sel", ng, nl, "live.tab", [8, 70, 240, 40],
+    comando(6, "obj-sel", ng, nl, "live.tab", [8, 62, 240, 30],
             {"parameter_type": 2, "parameter_enum": voci,
              "parameter_mmax": float(len(voci) - 1),
              "parameter_initial": [0], "parameter_unitstyle": 0})
     ng, nl, voci = CURVA
-    comando(7, "obj-cur", ng, nl, "live.tab", [8, 114, 240, 20],
+    comando(7, "obj-cur", ng, nl, "live.tab", [8, 96, 240, 18],
+            {"parameter_type": 2, "parameter_enum": voci,
+             "parameter_mmax": float(len(voci) - 1),
+             "parameter_initial": [0], "parameter_unitstyle": 0})
+    ng, nl, voci = EQTIPO
+    comando(8, "obj-eqt", ng, nl, "live.tab", [8, 118, 240, 18],
             {"parameter_type": 2, "parameter_enum": voci,
              "parameter_mmax": float(len(voci) - 1),
              "parameter_initial": [0], "parameter_unitstyle": 0})
     boxes.append(box("obj-nota", maxclass="live.comment", numinlets=1,
                      numoutlets=0, presentation=1,
-                     presentation_rect=[8, 138, 250, 30],
+                     presentation_rect=[8, 140, 250, 28],
                      patching_rect=[20, 440, 250, 36], linecount=2,
-                     text="50% = 0 dB (detent). Bande: 0% silenzio, "
-                          "100% +6 dB. GAIN 100% = +10 dB."))
+                     text="50% = 0 dB. SERIE: 0% taglia, non spegne; "
+                          "INCROCI e CURVA solo per ISOLATOR."))
     return {"patcher": {
         "fileversion": 1,
         "appversion": {"major": 9, "minor": 0, "revision": 0,

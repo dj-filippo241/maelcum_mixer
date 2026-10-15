@@ -146,3 +146,45 @@ ascolto). PIONEER: lato taglio (2θ)^1,5, lato boost uguale al lineare.
 `prova_gen.py` PASS (6 punti della curva PIONEER su D). Se PIONEER vince
 all'ascolto, il circuito per costruirla resta da studiare (pot a taper
 con trim, oppure stadio attivo).
+
+## Selettore EQ TIPO (2026-10-15, voce B5)
+
+Filippo tiene B5 aperta come opzione d'ascolto: **EQ TIPO = ISOLATOR /
+SERIE**. SERIE è l'EQ in serie archiviato (v0.3 beta-3,
+`docs/fase1/eq-serie-v0.3.md`): LOW Baxandall a shelf (70 Hz), LOW-MID e
+MID-HIGH a campana sottrattiva (250 Hz Q 0,8 e 1 kHz Q 0,9), HIGH
+sottrattiva con HP2 (~4,9 kHz). L'EQ di progetto resta l'isolator
+(dec. 105). Modello: `coefficienti/serie.py`, ricavato dai componenti di
+`sim/eq-serie/cascade-b3.cir` con op-amp ideali. Gira a 4× come
+l'isolator; dissolvenza di 20 ms tra i due EQ. INCROCI e CURVA agiscono
+solo su ISOLATOR.
+
+Law delle manopole (eq-serie §10): LOW e HIGH a tratti, con il kill
+negli ultimi 5 % di corsa; LOW-MID e MID-HIGH pot lineare col cursore
+caricato dal summer (10k su 49,9k). Per la HIGH il netlist dà solo gli
+estremi: la law intermedia segue quella della LOW in dB, normalizzata
+agli estremi del netlist [PROVVISORIO, solo ascolto].
+
+| Manopola | 0 % | 5 % | 10 % | 20 % | 30 % | 40 % | 50 % | 75 % | 100 % |
+|---|---|---|---|---|---|---|---|---|---|
+| LOW, 20 Hz | −29,2 | −23,6 | −17,9 | −11,3 | −6,9 | −3,3 | 0 | +2,8 | +5,8 |
+| LOW-MID, 250 Hz | −48,3 | −19,2 | −13,3 | −7,5 | −4,2 | −1,8 | 0 | +3,4 | +6,0 |
+| MID-HIGH, 1 kHz | −44,0 | −19,4 | −13,5 | −7,6 | −4,2 | −1,8 | 0 | +3,4 | +6,0 |
+| HIGH, 20 kHz | −9,1 | −9,2 | −9,2 | −8,3 | −6,1 | −3,2 | 0 | +2,8 | +5,9 |
+
+Cosa si sente rispetto all'isolator: nessuna banda spegne. LOW a zero
+lascia la coda del basso (−16 dB a 250 Hz, −5 a 1 kHz); i medi a zero
+scavano una buca stretta (−2 dB a un'ottava dal centro); HIGH a zero
+scurisce invece di togliere (+1,7 dB a 5 kHz, −3 a 10 kHz: il finding
+della questione 68). Tutte a zero: ~−26 dB sotto, ma 2,5-5 kHz restano
+aperti.
+
+Verifiche:
+- `verifica_serie.py`: modello contro `cascade-b3.log`, 10 modi × 12
+  frequenze. **PASS**, scarto massimo 0,24 dB analogico, 0,25 a 48 kHz,
+  0,07 a 44,1, 0,01 a 96 (sotto −40 dB i notch del modello sono più
+  profondi: op-amp ideali).
+- `prova_gen.py`: 37 punti di SERIE in più, gen~ contro modello.
+  **PASS**, scarti ≤ 0,001 dB; i punti di prima restano invariati.
+- Non verificato: apertura in Max (sintassi gen~) e CPU con il ramo in
+  più (4 biquad × 4 sotto-campioni × 2 lati).
