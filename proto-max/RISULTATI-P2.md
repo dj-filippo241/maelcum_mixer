@@ -232,3 +232,57 @@ po' più sciallo (ma ci siamo quasi) e il nastro un po' più aggressivo».
 Domanda aperta a Filippo: alternative al NASTRO da mettere nel
 prototipo (nastro completo con enfasi e head bump, trasformatore,
 exciter, classe A, valvola).
+
+## 9. Alternative al NASTRO: COMPLETO, EXCITER, CLASSE A (2026-10-15)
+
+Domanda di Filippo: «mi chiedevo se ci fossero altre opzioni al posto che
+la distorsione nastro da valutare». Proposte (nastro completo,
+trasformatore, exciter, classe A, valvola; esclusi i compressori =
+dinamica automatica). Scelta di Filippo: «nastro, exciter e transistor».
+Selettore NASTRO VER (solo prototipo): OGGI / COMPLETO / EXCITER /
+CLASSE A, stessa manopola NASTRO (taper A × 0,85). Modello:
+`coefficienti/alternative.py`; taratura `taratura_alt.py`; confronto
+`confronto_alt.py`.
+
+| Versione | Circuito | Taratura |
+|---|---|---|
+| COMPLETO | JFET del NASTRO tra enfasi (non invertente 23,33k / 10k + 3,183n: zero 1,5 kHz, polo 5 kHz, +10,5 dB) e de-enfasi passiva inversa; head bump +3 dB a 80 Hz, Q 1, nel ramo saturato | kt del NASTRO |
+| EXCITER | passa-alto SK 2 poli 3 kHz → clipper Rin 10k, Rf 100k, 1 diodo + 1k / 2 diodi + 1k → passa-alto CR 3 kHz → si somma | ke 0,30509 = +3 dB su 5 kHz a −16 dBu, fine corsa |
+| CLASSE A | NPN 2N3904 a emettitore comune, Rc 3,3k, Re 100 + 900 bypassata, base 2,65 V + 0,4 × ingresso, collettore AC nel sommatore | kc 0,0895 a pari livello al nominale; attenuazione 0,4 = THD del NASTRO OGGI sul mix |
+
+**Modello contro LTspice** (`sim/five-way/alt-completo.cir`,
+`alt-completo-80.cir`, `alt-completo-8000.cir`, `alt-exciter.cir`,
+`alt-classe-a.cir`; 4 livelli × 4 posizioni):
+
+| Caso | scarto THD | scarto livello |
+|---|---|---|
+| COMPLETO 1 kHz | 0,02 punti | 0,00 dB |
+| COMPLETO 8 kHz | 0,80 punti (picchi +10) | 0,02 dB |
+| COMPLETO 80 Hz | 0,11 punti | 0,00 dB |
+| EXCITER 5 kHz | 0,12 punti | 0,04 dB |
+| CLASSE A 1 kHz | ≤ 0,4 punti fino a 0 dBu; 4,2 punti sui picchi +10 a fine corsa (32 % contro 28 %) | 0,46 dB |
+
+Cosa fanno (fine corsa):
+- COMPLETO: al nominale gli acuti a 8 kHz saturano cinque volte i medi
+  (22 % contro 4,4 %); basso a 80 Hz +2,5 dB.
+- EXCITER: +3 dB e 17,5 % sugli acuti piani, quasi niente su quelli forti
+  (2,5 % a +10 dBu): tira fuori il dettaglio, non ingrossa.
+- CLASSE A: pulito al nominale (3,9 %), 19 % sul mix di Filippo, 28 % sui
+  picchi: pulito finché non spingi.
+
+**FINDING del transistor** (tre modelli prima di coincidere): (1) senza
+alta iniezione (IKF) ed Early dentro la giunzione il modello sporca meno
+(fino a 5,5 punti); (2) l'Early va limitato alla zona attiva, se no
+esplode in saturazione; (3) in saturazione la base impone ancora la
+corrente di emettitore: il collettore segue l'emettitore e il
+condensatore di emettitore integra tutta la corrente. Il tetto «a
+corrente» (minimo liscio su Ic) sbagliava in modo insensibile ai
+parametri.
+
+Nel codice gen~: funzioni a un ritorno (`op1`, `clipe`, `bstep` con
+stato in Data); il parametro del selettore si chiama `nver` perché `nv`
+è un locale dei clipper (controllo nomi esteso a Param/History/Data:
+nessuno in comune).
+
+Prova gen~ contro modello: **PASS 191/191** (con le tre alternative su
+entrambi i canali).

@@ -326,9 +326,14 @@ class Saturatori:
         self.k_cb = 1 / (fs * J_CB)
         self.k_c = 1 / (fs * 10e-6 * J_RTS)
 
-    def passo(self, x, mg, mt, libero=0.0):
+    def passo(self, x, mg, mt, libero=0.0, nv=0.0):
         """x in volt; restituisce (y2, dg, dt). libero 0 = GROWL dec. 99,
-        1 = GROWL LIBERO (in mezzo: dissolvenza del selettore)."""
+        1 = GROWL LIBERO (in mezzo: dissolvenza del selettore). nv = NASTRO
+        VER: 0 OGGI, 1 COMPLETO, 2 EXCITER, 3 CLASSE A (alternative.py)."""
+        if not hasattr(self, "alt"):
+            import alternative as al
+            self.alt = [al.Completo(self.fs), al.Exciter(self.fs),
+                        al.ClasseA(self.fs)]
         low = self.lp.passo(x, self.g_lp, 1 / Q_BW)[0]
         gg = 1 + libero * (10 ** (LIB_GMAX_DB * mg / 20) - 1)
         kk = KG + libero * (LIB_K - KG)
@@ -339,7 +344,10 @@ class Saturatori:
         self.vs2 += self.k_cb * (self.idd - self.vs2 / J_RSB)
         self.vc += self.k_c * vtac
         dt = -KT * vtac - y1
-        return y1 + mt * dt, dg, dt
+        pesi = [max(0.0, 1 - abs(nv - j)) for j in range(4)]
+        da = [a.passo(y1) for a in self.alt]
+        d = pesi[0] * dt + sum(p * v for p, v in zip(pesi[1:], da))
+        return y1 + mt * d, dg, d
 
 
 class Completo:
@@ -352,10 +360,11 @@ class Completo:
         self.sat = Saturatori(fs)
 
     def passo(self, x, kill=(1, 1, 1, 1, 1), gain=(0.5,) * 5,
-              pos=(0.5,) * 5, width=(1,) * 5, mg=0.0, mt=0.0, libero=0.0):
+              pos=(0.5,) * 5, width=(1,) * 5, mg=0.0, mt=0.0, libero=0.0,
+              nv=0.0):
         # mt = rotazione della manopola NASTRO (0-1), la law sta qui
         y = self.lin.passo(x, kill, gain, pos, width)
-        v = self.sat.passo(y * LIV * PAD, mg, nastro_law(mt), libero)[0]
+        v = self.sat.passo(y * LIV * PAD, mg, nastro_law(mt), libero, nv)[0]
         return v / (LIV * PAD)
 
 

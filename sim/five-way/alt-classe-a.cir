@@ -1,0 +1,45 @@
+* ============================================================
+* 5-WAY CLASSE A (prototipo P2, 2026-10-15) — alternativa al NASTRO scelta
+* da Filippo («transistor») per il confronto. Modello: alternative.py.
+*   NPN 2N3904 a emettitore comune: Rc 3,3k, Re 100 in serie + 900
+*   bypassata (2200 uF); base = 2,65 V + 0,4 x y1 (partitore e
+*   accoppiamento ideali); collettore AC-coupled (10 uF) nel sommatore
+*   (Rts = 10k/kc): d = -(kc V(tac) + y1). kc 0,0895 = pari livello RMS
+*   al nominale, 1 kHz. Miscele come alt-completo.cir. SINE = PICCO.
+* ============================================================
+.model 2N3904 NPN(IS=6.734f XTI=3 EG=1.11 VAF=74.03 BF=416.4 NE=1.259 ISE=6.734f IKF=66.78m XTB=1.5 BR=.7371 NC=2 ISC=0 IKR=0 RC=1 CJC=3.638p MJC=.3085 VJC=.75 FC=.5 CJE=4.493p MJE=.2593 VJE=.75 TR=239.5n TF=301.2p ITF=.4 VTF=4 XTF=2 RB=10)
+.subckt OPAMP0 inp inn out
+E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
+.ends OPAMP0
+.param amp=0.549
+.param f=1000
+.param kc=0.0895
+.param ts={1/(f*400)}
+.param t0={1.5-10/f}
+Vcc vcc 0 DC 18
+V1 y1 0 SINE(0 {amp} {f})
+Eb b 0 value={2.65+0.4*V(y1)}
+Q1 c b e1 2N3904
+Rc vcc c 3.3k
+Reu e1 e2 100
+Reb e2 0 900
+Ce e2 0 2200u
+Cc c tac 10u
+Rts tac dn {10k/kc}
+Rdl y1 dn 10k
+Rdo dn d 10k
+Xd 0 dn d OPAMP0
+B25 m25 0 V=V(y1)+0.0425*V(d)
+B50 m50 0 V=V(y1)+0.085*V(d)
+B75 m75 0 V=V(y1)+0.4675*V(d)
+B99 m99 0 V=V(y1)+0.85*V(d)
+.options noopiter
+.tran 0 1.5 {t0} {ts}
+.step param amp LIST 0.173 0.549 1.096 3.466
+.meas tran xr RMS V(y1)
+.meas tran r25 RMS V(m25)
+.meas tran r50 RMS V(m50)
+.meas tran r75 RMS V(m75)
+.meas tran r99 RMS V(m99)
+.four {f} 8 V(m25) V(m50) V(m75) V(m99)
+.end

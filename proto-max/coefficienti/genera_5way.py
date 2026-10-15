@@ -22,6 +22,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
 import fiveway as fw  # noqa: E402
+import alternative as al  # noqa: E402
 import genera  # noqa: E402
 from genera import Codice, box, linea, patcher_gen, amxd  # noqa: E402
 
@@ -34,6 +35,7 @@ POS = [(f"p_{i + 1}", f"EQ{i + 1} POS") for i in range(5)]
 WID = [(f"w_{i + 1}", f"EQ{i + 1} WIDTH") for i in range(5)]
 SAT = [("growl", "GROWL"), ("nastro", "NASTRO")]
 GV = ("gv", "GROWL VER", ["DEC.99", "LIBERO"])
+NV = ("nver", "NASTRO VER", ["OGGI", "COMPLETO", "EXCITER", "CLASSE A"])
 XO = ("xo", "CROSSOVER", list(fw.VARIANTI_XO))
 WIDTH_VOCI = ["Q3", "Q1", "Q0.5"]
 KILL_VOCI = ["ON", "KILL"]
@@ -41,9 +43,11 @@ KILL_VOCI = ["ON", "KILL"]
 # stati nel Data sv: 2 per SVF. Per lato: spina 8, LP 8, AP 6, celle 5,
 # GROWL 1 = 28 SVF. Nel Data sa: HP del GROWL (1), HP-JFET non serve
 # (il condensatore e vc), JFET: vs2, idd, vc come scarti dal riposo.
-SVF_LATO = 28
-SA_LATO = 4
+SVF_LATO = 30                   # + head bump del COMPLETO, passa-alto EXCITER
+SA_LATO = 14                    # + COMPLETO 5, EXCITER 1, CLASSE A 4
 VS20, ID0, VD0 = fw.jfet_riposo()
+_CA = al.ClasseA(48000.0)
+VE20, VCAP0 = _CA.ve2, _CA.vcap
 
 
 def funzioni(r):
@@ -101,6 +105,52 @@ def funzioni(r):
     r(f"\treturn {fw.G_RF!r} * (a - id) * (pos * 2 - 1);")
     r("}")
     r()
+    r("// polo singolo TPT, uscita passa-basso; stato in m[i]")
+    r("op1(m, i, x, g) {")
+    r("\ts = peek(m, i);")
+    r("\tv = (x - s) * g / (1 + g);")
+    r("\tlo = v + s;")
+    r("\tpoke(m, lo + v, i);")
+    r("\treturn lo;")
+    r("}")
+    r()
+    r("// clipper dell'EXCITER: 10k in, 100k || (1 diodo + 1k) || (2 diodi + 1k)")
+    r("clipe(h) {")
+    r(f"\tii = h / {al.EX_RIN!r};")
+    r("\tpos = ii >= 0;")
+    r("\ta = abs(ii);")
+    r(f"\trr = pos * {al.EX_RA!r} + (1 - pos) * {al.EX_RB!r};")
+    r(f"\tnv = pos * {al.EX_NA!r} + (1 - pos) * {al.EX_NB!r};")
+    r(f"\tvd = nv * log(1 + a / {fw.D_IS!r});")
+    for _ in range(fw.NEWTON):
+        r("\tex = exp(vd / nv);")
+        r(f"\tf = {fw.D_IS!r} * (ex - 1) * (1 + rr / {al.EX_RF!r})"
+          f" + vd / {al.EX_RF!r} - a;")
+        r(f"\tdf = {fw.D_IS!r} * ex / nv * (1 + rr / {al.EX_RF!r})"
+          f" + 1 / {al.EX_RF!r};")
+        r("\tvd = vd - f / df;")
+    r(f"\tid = {fw.D_IS!r} * (exp(vd / nv) - 1);")
+    r(f"\treturn {al.EX_RF!r} * (a - id) * (pos * 2 - 1);")
+    r("}")
+    r()
+    vt = al.B_N * fw.VT27
+    r("// CLASSE A: un passo di Newton su Vbe (Gummel-Poon ridotto, 2N3904);")
+    r("// m[i] = Vc stimata, m[i+1] = Ic")
+    r("bstep(m, i, vbe, vb, ve2, vth, rp) {")
+    r(f"\tex = exp(vbe / {vt!r});")
+    r(f"\tq1 = 1 / (1 - (vb - peek(m, i)) / {al.B_VAF!r});")
+    r(f"\tq2 = {al.B_IS!r} * (ex - 1) / {al.B_IKF!r};")
+    r("\tsq = sqrt(1 + 4 * q2);")
+    r("\tqb = 0.5 * q1 * (1 + sq);")
+    r(f"\tic = {al.B_IS!r} * (ex - 1) / qb;")
+    r(f"\tie = ic * {1 + 1 / al.B_BF!r};")
+    r(f"\tf = vbe + {al.B_REU!r} * ie + ve2 - vb;")
+    r(f"\tdf = 1 + {al.B_REU!r} * ie / {vt!r} / sq;")
+    r(f"\tpoke(m, max(vth - rp * ic, ve2 + {al.B_REU!r} * ie + {al.B_VSAT!r}), i);")
+    r("\tpoke(m, ic, i + 1);")
+    r("\treturn min(max(vbe - f / df, 0.3), 0.9);")
+    r("}")
+    r()
     b, vto, lam = fw.J_BETA, fw.J_VTO, fw.J_LAMBDA
     rp, rts, rsu = fw.J_RP, fw.J_RTS, fw.J_RSU
     r("// un passo di Newton sulla corrente del JFET (Shichman-Hodges,")
@@ -142,11 +192,12 @@ def genexpr():
         r(f"Param {nome}(0, min=0, max=100);")
     r(f"Param {XO[0]}(0, min=0, max={len(XO[2]) - 1});")
     r(f"Param {GV[0]}(0, min=0, max=1);")
+    r(f"Param {NV[0]}(0, min=0, max={len(NV[2]) - 1});")
     r(f"Data sv({2 * 2 * SVF_LATO});")
     r(f"Data sa({2 * SA_LATO});")
     pos_data = len(g.righe)
     r("@@DATA@@")
-    lisci = [n for n, _ in GAIN + POS + WID + SAT] + [XO[0], GV[0]]
+    lisci = [n for n, _ in GAIN + POS + WID + SAT] + [XO[0], GV[0], NV[0]]
     for nome in lisci:
         ini = {"w": 1, "g": 50, "p": 50}.get(nome[0], 0)
         r(f"History s_{nome}({ini});")
@@ -157,7 +208,7 @@ def genexpr():
     r("t20 = exp(-1 / (0.020 * samplerate));")
     for nome in lisci:
         t = {"w": "t1", "x": "t20"}.get(nome[0], "t10")
-        t = "t20" if nome == GV[0] else t
+        t = "t20" if nome in (GV[0], NV[0]) else t
         r(f"s_{nome} = {nome} + {t} * (s_{nome} - {nome});")
     r("sr4 = samplerate * 4;")
     r()
@@ -207,6 +258,15 @@ def genexpr():
     r(f"ghg = tan(pi * {fw.F_HP_G!r} / sr4);")
     r(f"kcb = 1 / (sr4 * {fw.J_CB!r});")
     r(f"kc = 1 / (sr4 * {10e-6 * fw.J_RTS!r});")
+    r("// NASTRO VER: 0 OGGI, 1 COMPLETO, 2 EXCITER, 3 CLASSE A (20 ms)")
+    for j in range(len(NV[2])):
+        r(f"wn{j} = max(0, 1 - abs(s_nver - {j}));")
+    r(f"gcp = tan(pi * {al.EN_FP!r} / sr4);")
+    r(f"gcz = tan(pi * {al.EN_FZ!r} / sr4);")
+    r(f"ghb = tan(pi * {al.HB_F!r} / sr4);")
+    r(f"gex = tan(pi * {al.EX_F!r} / sr4);")
+    r(f"kce = 1 / (sr4 * {al.B_CE!r});")
+    r(f"kcc = 1 / (sr4 * {10e-6 * al.B_RTS!r});")
     kq = 1 / fw.Q_BW
     liv = fw.LIV * fw.PAD
     r()
@@ -264,7 +324,55 @@ def genexpr():
             r(f"poke(sa, jid - {ID0!r}, {sa0 + 2});")
             r(f"poke(sa, jvc + kc * vtac - {VD0!r}, {sa0 + 3});")
             r(f"dt = -{fw.KT!r} * vtac - y1;")
-            r(f"{lato}_y{k} = (y1 + mt * dt) / {liv!r};")
+            r("// NASTRO COMPLETO: enfasi, JFET, de-enfasi, head bump")
+            r(f"cpl = op1(sa, {sa0 + 4}, y1, gcp);")
+            r(f"cen = cpl + {al.EN_FP / al.EN_FZ!r} * (y1 - cpl);")
+            r(f"cvs = {VS20!r} + peek(sa, {sa0 + 5});")
+            r(f"cvc = {VD0!r} + peek(sa, {sa0 + 7});")
+            r(f"cid = {ID0!r} + peek(sa, {sa0 + 6});")
+            for _ in range(fw.NEWTON):
+                r("cid = jstep(cen, cvs, cvc, cid);")
+            r(f"cvd = {fw.J_RP!r} * ({fw.J_VCC / fw.J_RD!r} + cvc / "
+              f"{fw.J_RTS!r} - cid);")
+            r("ctac = cvd - cvc;")
+            r(f"poke(sa, cvs + kcb * (cid - cvs / {fw.J_RSB!r}) - {VS20!r},"
+              f" {sa0 + 5});")
+            r(f"poke(sa, cid - {ID0!r}, {sa0 + 6});")
+            r(f"poke(sa, cvc + kc * ctac - {VD0!r}, {sa0 + 7});")
+            r(f"cw = -{fw.KT!r} * ctac;")
+            r(f"cdl = op1(sa, {sa0 + 8}, cw, gcz);")
+            r(f"cw2 = cdl + {al.EN_FZ / al.EN_FP!r} * (cw - cdl);")
+            r(f"cw3 = cw2 + {al.HB_A / al.HB_Q!r} * svbp(sv, {i}, cw2, ghb,"
+              f" {1 / al.HB_Q!r});")
+            i += 2
+            r("dco = cw3 - y1;")
+            r("// EXCITER: passa-alto 3 kHz, clipper, passa-alto, si somma")
+            r(f"exh = svhp(sv, {i}, y1, gex, {kq!r});")
+            i += 2
+            r(f"dex = {al.EX_K!r} * hp1(sa, {sa0 + 9}, clipe(exh), gex);")
+            r("// CLASSE A: NPN a emettitore comune")
+            rp = al.B_RC * al.B_RTS / (al.B_RC + al.B_RTS)
+            r(f"cav2 = {VE20!r} + peek(sa, {sa0 + 10});")
+            r(f"cacp = {VCAP0!r} + peek(sa, {sa0 + 11});")
+            r(f"cath = {rp!r} * ({al.B_VCC / al.B_RC!r} + cacp / {al.B_RTS!r});")
+            r(f"cab = {al.B_VB!r} + {al.B_ATT!r} * y1;")
+            r(f"poke(sa, cath - {rp * 2e-3!r}, {sa0 + 12});")
+            r("cabe = 0.66;")
+            for _ in range(6):
+                r(f"cabe = bstep(sa, {sa0 + 12}, cabe, cab, cav2, cath, {rp!r});")
+            r(f"caic = peek(sa, {sa0 + 13});")
+            r(f"caie = caic * {1 + 1 / al.B_BF!r};")
+            r(f"cava = cath - {rp!r} * caic;")
+            r(f"cavs = cav2 + {al.B_REU!r} * caie + {al.B_VSAT!r};")
+            r(f"cavc = 0.5 * (cava + cavs + sqrt((cava - cavs) * (cava - cavs)"
+              f" + {al.B_W * al.B_W!r}));")
+            r("catac = cavc - cacp;")
+            r(f"poke(sa, cav2 + kce * (caie - cav2 / {al.B_REB!r}) - {VE20!r},"
+              f" {sa0 + 10});")
+            r(f"poke(sa, cacp + kcc * catac - {VCAP0!r}, {sa0 + 11});")
+            r(f"dca = -{al.B_K!r} * catac - y1;")
+            r("dn = wn0 * dt + wn1 * dco + wn2 * dex + wn3 * dca;")
+            r(f"{lato}_y{k} = (y1 + mt * dn) / {liv!r};")
             assert i == b0 + 2 * SVF_LATO
         g.giu(f"{lato}_v0", f"{lato}_y0", f"{lato}_y1", 2, (lato, "giu", 2))
         g.giu(f"{lato}_v1", f"{lato}_y2", f"{lato}_y3", 2, (lato, "giu", 2))
@@ -351,6 +459,9 @@ def patch(codice):
     tab(GV[0], GV[1], GV[2], 0, [432, 24, 64, 36])
     boxes[-2]["box"]["num_lines_presentation"] = 2
     boxes[-2]["box"]["num_lines_patching"] = 2
+    tab(NV[0], NV[1], NV[2], 0, [432, 64, 64, 80])
+    boxes[-2]["box"]["num_lines_presentation"] = len(NV[2])
+    boxes[-2]["box"]["num_lines_patching"] = len(NV[2])
     boxes.append(box("obj-nota", maxclass="live.comment", numinlets=1,
                      numoutlets=0, presentation=1,
                      presentation_rect=[8, 148, 420, 18],

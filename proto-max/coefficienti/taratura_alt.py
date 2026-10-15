@@ -1,0 +1,90 @@
+"""Taratura e griglia delle alternative al NASTRO (alternative.py).
+
+Uso:  python3 proto-max/coefficienti/taratura_alt.py
+"""
+
+import math
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(__file__))
+import alternative as al  # noqa: E402
+import fiveway as fw  # noqa: E402
+from taratura_sat import armoniche, rms  # noqa: E402
+
+FS = 192000.0
+LIV = {"piano -16": 0.173, "nominale -6": 0.549, "mix 0": 1.096,
+       "picchi +10": 3.466}
+
+
+def corsa(classe, amp, f, mt, dur=None):
+    dur = dur or max(0.3, 30 / f)
+    s = classe(FS)
+    n = int(dur * FS)
+    n0 = n - int(max(10 / f, 0.02) * FS)
+    xs, ys = [], []
+    for i in range(n):
+        x = amp * math.sin(2 * math.pi * f * i / FS)
+        y = x + mt * s.passo(x)
+        if i >= n0:
+            xs.append(x)
+            ys.append(y)
+    a = armoniche(ys, f, FS, 0)
+    thd = 100 * math.sqrt(sum(t * t for t in a[1:])) / a[0]
+    return thd, 20 * math.log10(rms(ys) / rms(xs))
+
+
+def tara_classe_a():
+    """kc a pari livello RMS del ramo saturato al nominale, 1 kHz."""
+    lo, hi = 0.05, 2.0
+    for _ in range(30):
+        al.B_K = (lo + hi) / 2
+        al.B_RTS = 10e3 / al.B_K
+        s = al.ClasseA(FS)
+        n = int(0.05 * FS)
+        sx = sw = 0.0
+        for i in range(n):
+            x = 0.549 * math.sin(2 * math.pi * 1000 * i / FS)
+            w = s.passo(x) + x
+            if i > n // 2:
+                sx += x * x
+                sw += w * w
+        if sw < sx:
+            lo = al.B_K
+        else:
+            hi = al.B_K
+    return al.B_K
+
+
+def tara_exciter():
+    """+3 dB su un 5 kHz a -16 dBu interni, manopola a fine corsa."""
+    lo, hi = 0.001, 1.0
+    mt = fw.NASTRO_MAX
+    for _ in range(30):
+        al.EX_K = (lo + hi) / 2
+        if corsa(al.Exciter, 0.173, 5000, mt)[1] < 3.0:
+            lo = al.EX_K
+        else:
+            hi = al.EX_K
+    return al.EX_K
+
+
+def griglia(nome, classe, freq):
+    print(f"{nome} a {freq} Hz (THD % . dB)  colonne {list(LIV)}")
+    for pos in (0.25, 0.5, 0.75, 1.0):
+        mt = fw.nastro_law(pos)
+        celle = [corsa(classe, a, freq, mt) for a in LIV.values()]
+        print(f"  {int(pos * 100):3d} % | " + " | ".join(
+            f"{t:5.2f} {d:+5.2f}" for t, d in celle))
+
+
+if __name__ == "__main__":
+    print(f"CLASSE A: kc = {tara_classe_a():.4f}")
+    print(f"EXCITER: ke = {tara_exciter():.5f}")
+    griglia("OGGI (JFET)", lambda fs: _Oggi(fs), 1000) if False else None
+    griglia("COMPLETO", al.Completo, 1000)
+    griglia("COMPLETO", al.Completo, 8000)
+    griglia("COMPLETO", al.Completo, 80)
+    griglia("EXCITER", al.Exciter, 5000)
+    griglia("EXCITER", al.Exciter, 1000)
+    griglia("CLASSE A", al.ClasseA, 1000)

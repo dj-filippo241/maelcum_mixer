@@ -1,0 +1,51 @@
+* ============================================================
+* 5-WAY EXCITER (prototipo P2, 2026-10-15) — alternativa al NASTRO scelta
+* da Filippo per il confronto. Modello: alternative.py (Exciter).
+*   passa-alto Sallen-Key 2 poli 3 kHz (C 10n, R a massa 7,503k, R in
+*   retroazione 3,751k: Q 0,707) -> clipper invertente Rin 10k, Rf 100k,
+*   ramo 1 diodo + 1k / 2 diodi + 1k -> passa-alto CR 10n / 5,305k (3 kHz)
+*   -> e = -ke V(hp1) (il clipper inverte), si SOMMA: y = y1 + m e.
+* ke 0,30509. Miscele come alt-completo.cir. SINE = PICCO.
+* ============================================================
+.model D4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+.subckt OPAMP0 inp inn out
+E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
+.ends OPAMP0
+.param amp=0.173
+.param f=5000
+.param ke=0.30509
+.param ts={1/(f*400)}
+.param t0={0.3-10/f}
+V1 y1 0 SINE(0 {amp} {f})
+* --- passa-alto Sallen-Key 3 kHz ---
+C1 y1 a1 10n
+C2 a1 a2 10n
+Rfb a1 h 3.751k
+Rgn a2 0 7.503k
+Xh a2 h h OPAMP0
+* --- clipper ---
+Rci h cn 10k
+Rcf cn cout 100k
+Dca cn ca1 D4148
+Rca ca1 cout 1k
+Dcb1 cout cb1 D4148
+Dcb2 cb1 cb2 D4148
+Rcb cb2 cn 1k
+Xc 0 cn cout OPAMP0
+* --- passa-alto CR 3 kHz ---
+Ch cout hp 10n
+Rh hp 0 5.305k
+Ee e 0 value={-{ke}*V(hp)}
+B25 m25 0 V=V(y1)+0.0425*V(e)
+B50 m50 0 V=V(y1)+0.085*V(e)
+B75 m75 0 V=V(y1)+0.4675*V(e)
+B99 m99 0 V=V(y1)+0.85*V(e)
+.tran 0 0.3 {t0} {ts}
+.step param amp LIST 0.173 0.549 1.096 3.466
+.meas tran xr RMS V(y1)
+.meas tran r25 RMS V(m25)
+.meas tran r50 RMS V(m50)
+.meas tran r75 RMS V(m75)
+.meas tran r99 RMS V(m99)
+.four {f} 8 V(m25) V(m50) V(m75) V(m99)
+.end

@@ -1,0 +1,65 @@
+* ============================================================
+* 5-WAY NASTRO COMPLETO (prototipo P2, 2026-10-15) — alternativa al NASTRO
+* scelta da Filippo per il confronto. Il JFET del NASTRO (drive2-chain.cir)
+* tra enfasi (prima) e de-enfasi (dopo) degli acuti, + head bump +3 dB a
+* 80 Hz nel ramo saturato. Solo prototipo: modello in
+* proto-max/coefficienti/alternative.py (Completo).
+*   enfasi: non invertente, Rf 23,33k / (Rg 10k + C 3,183n): zero 1,5k, polo 5k
+*   de-enfasi: passivo 23,33k serie, 10k + 3,183n a massa (inversa esatta)
+*   head bump: RLC serie (1k, 1,989 H, 1,989 uF: 80 Hz, Q 1), +0,413 x V(R)
+*   ramo saturato: wn = -kt V(tac) (transimpedenza: il drain vede Rts)
+* Miscele per la manopola (taper A x 0,85): 25 % 0,0425, 50 % 0,085,
+* 75 % 0,4675, 100 % 0,85. SINE = PICCO. Modelli [PROVVISORIO].
+* ============================================================
+.model NJ310 NJF(Beta=5m Vto=-3 Lambda=6m Cgs=25p Cgd=4p Is=10f)
+.subckt OPAMP0 inp inn out
+E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
+.ends OPAMP0
+.param amp=0.549
+.param f=8000
+.param kt=0.206
+.param ts={1/(f*400)}
+.param t0={1.5-max(10/f,0.02)}
+Vcc vcc 0 DC 18
+V1 y1 0 SINE(0 {amp} {f})
+* --- enfasi ---
+Rf1 pre pn 23.33k
+Rg1 pn pc 10k
+Cg1 pc 0 3.183n
+Xpre y1 pn pre OPAMP0
+* --- JFET (NASTRO) ---
+Rtg pre gate 10k
+J1 drain gate s1 NJ310
+Rd vcc drain 1.5k
+Rsu s1 s2 150
+Rsb s2 0 900
+Cb s2 0 2200u
+Cta drain tac 10u
+Rts tac tn {10k/kt}
+Rtf tn wn 10k
+Xtn 0 tn wn OPAMP0
+* --- de-enfasi (passiva) + buffer ---
+Rde1 wn dn 23.33k
+Rde2 dn dc 10k
+Cde dc 0 3.183n
+Ede de 0 dn 0 1
+* --- head bump ---
+Rhb hbr 0 1k
+Lhb de hbl 1.989
+Chb hbl hbr 1.989u
+Ehb w 0 value={V(de)+0.4125*V(hbr)}
+* --- miscele: y = y1 + m (w - y1) ---
+B25 m25 0 V=V(y1)+0.0425*(V(w)-V(y1))
+B50 m50 0 V=V(y1)+0.085*(V(w)-V(y1))
+B75 m75 0 V=V(y1)+0.4675*(V(w)-V(y1))
+B99 m99 0 V=V(y1)+0.85*(V(w)-V(y1))
+.options noopiter
+.tran 0 1.5 {t0} {ts}
+.step param amp LIST 0.173 0.549 1.096 3.466
+.meas tran xr RMS V(y1)
+.meas tran r25 RMS V(m25)
+.meas tran r50 RMS V(m50)
+.meas tran r75 RMS V(m75)
+.meas tran r99 RMS V(m99)
+.four {f} 8 V(m25) V(m50) V(m75) V(m99)
+.end
