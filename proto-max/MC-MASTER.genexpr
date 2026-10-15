@@ -1,0 +1,37 @@
+// MC-MASTER - prototipo Max P3 (master-out §3.2, addendum dec. 111).
+// GENERATO da proto-max/coefficienti/genera_fx.py: non modificare.
+// MONO (M/S, S in un VCA da 0 a -100 dB in 1 ms) -> MASTER LEVEL ->
+// meter L e R (out3-4, 1 = +24 dBu) e clip (out5-6).
+
+Param level(80, min=0, max=100);
+Param mono(0, min=0, max=1);
+History mrp(0);
+History menl(0);
+History menr(0);
+History mlal(0);
+History mlar(0);
+History s_level(80.0);
+t10 = exp(-1 / (0.010 * samplerate));
+s_level = level + t10 * (s_level - level);
+pm = 1 / (0.001 * samplerate);
+mrp = mrp + min(max(mono - mrp, -pm), pm);
+mgs = pow(10, -5 * mrp) * (mrp < 1);
+mmid = 0.5 * (in1 + in2);
+mside = 0.5 * (in1 - in2) * mgs;
+tm = s_level / 100;
+mgl = (tm >= 0.8) * pow(10, 1.5000000000000004 * (tm - 0.8)) + (tm < 0.8) * (tm >= 0.05) * pow(10, -4.0 * (0.8 - tm)) + (tm < 0.05) * 0.02 * tm;
+mol = mgl * (mmid + mside);
+mor = mgl * (mmid - mside);
+mcr = exp(-1 / (0.3 * samplerate));
+ma = abs(mol) * 4.360865946243008;
+menl = max(ma, mcr * menl);
+mlal = (ma >= 15.472936263797646) * 0.479 + (ma < 15.472936263797646) * max(mlal - 1 / samplerate, 0);
+ma = abs(mor) * 4.360865946243008;
+menr = max(ma, mcr * menr);
+mlar = (ma >= 15.472936263797646) * 0.479 + (ma < 15.472936263797646) * max(mlar - 1 / samplerate, 0);
+out1 = mol;
+out2 = mor;
+out3 = menl / 17.360920030219035;
+out4 = menr / 17.360920030219035;
+out5 = mlal > 0;
+out6 = mlar > 0;

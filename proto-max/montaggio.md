@@ -112,3 +112,31 @@ consegnare: `verifica.py` (modello contro LTspice) e `prova_gen.py`
    boost forti l'uscita supera 0 dBFS e la scheda audio satura. Abbassa
    il fader del gruppo, che sta dopo il dispositivo. Non abbassare
    l'ingresso: GROWL e NASTRO cambiano carattere col livello.
+
+## P3 — FX e master (MC-SEND, MC-BUS, MC-RET, MC-MASTER)
+
+I pedali sono effetti veri di Live. Ogni bus FX ha una traccia sua.
+
+1. **Mandate**: su ogni traccia canale trascina `MC-SEND.amxd` **tra**
+   MC-CHANNEL e MC-FILTRO. L'audio del canale passa intatto. Comandi:
+   EQ LOW, EQ HIGH, LEVEL (al pedale) e i quattro bottoni FX1-FX4.
+2. **Tracce FX**: crea 4 tracce audio (non tracce Return), una per bus.
+   Su ciascuna:
+   - `MC-BUS.amxd` per primo, e scegli il suo BUS (FX1 sulla prima
+     traccia, FX2 sulla seconda, e così via);
+   - poi il tuo effetto (Echo, Reverb, quello che vuoi). Per il gesto dub
+     metti l'eco al **100 % wet** e, dopo l'eco, un **Saturator**: fa la
+     parte della saturazione del pedale vero;
+   - per ultimo `MC-RET.amxd`: GAIN, EQ LOW, EQ HIGH, meter e i quattro
+     REROUTE (> FX1 … > FX4: il bus verso cui rimanda, anche se stesso).
+   - Monitor della traccia su **In**, ingresso **No Input**: il suono
+     arriva da MC-BUS, non dalla scheda audio.
+3. Il **fader della traccia FX** è il fader del ritorno. Il reroute sta
+   prima del fader: abbassi il fader e il feedback continua.
+4. **Master**: trascina `MC-MASTER.amxd` sulla traccia Master. MASTER a
+   80 % = 0 dB (detent), MONO somma L e R.
+5. **Protezione per le orecchie** (solo per la prova, non fa parte del
+   design): un Limiter di Live per ultimo sul Master. Sopra unity, senza
+   Saturator, il loop sale fino al rail del bus (+11,5 dBFS).
+6. Meter di MC-RET e MC-MASTER: 0 in cima = +24 dBu, −24 = 0 dBu. La
+   striscia sottile accanto è il clip (latch di mezzo secondo).

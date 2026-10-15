@@ -118,6 +118,14 @@ Verifica: dove parte il feedback rispetto a GAIN e reroute (dec. 108), se
 il loop resta governabile con le mani, e la latenza tra i dispositivi
 (`send~` / `receive~`: un buffer di ritardo, da sentire).
 
+[2026-10-15: P3 COSTRUITO — scelta di Filippo: pedali = effetti veri di
+Live. Quattro dispositivi invece di uno: `MC-SEND` (EQ2, LEVEL, FX1-4 per
+canale), `MC-BUS` → effetto di Live → `MC-RET` (GAIN, EQ2, meter, 4
+REROUTE pre-fader) su 4 tracce FX, `MC-MASTER` (MASTER, MONO, meter).
+EQ2 contro LTspice ≤ 0,13 dB, reroute esatto sulla SPEC, gen~ PASS
+139/139 sui due canali; `proto-max/RISULTATI-P3.md`. Da caricare in
+Live e ascoltare.]
+
 ### P4 — Mic (1 sessione)
 
 `MC-MIC`: il modulo mic con MUTE (rampa 1 ms) e la sua catena. Prova con un
