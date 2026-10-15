@@ -213,3 +213,22 @@ punti, livello entro 0,1 dB. Prova gen~ contro modello: **PASS 175/175**.
 Conflitto aperto: LIBERO alza il volume del basso (fino a +15 dB sul
 basso piano), contro la dec. 99 (c). Se Filippo sceglie LIBERO, la
 dec. 99 (c) va rivista. Rumore del ramo da misurare prima di congelare.
+
+## 8. Terzo ascolto: GROWL LIBERO +5 dB, NASTRO 85 % (2026-10-15)
+
+Parole di Filippo: «al momento mi sembra quasi giusto: farei il growl un
+po' più sciallo (ma ci siamo quasi) e il nastro un po' più aggressivo».
+
+- GROWL LIBERO: spinta invariata (+18 dB), kl 0,6783 → **0,6043** = +5 dB
+  di basso a fine corsa sul mix di Filippo (era +6). Provata anche la
+  spinta a +15 dB: sul mix la THD SALE (15,5 → 18 %) perché serve più
+  miscela per lo stesso volume; scartata. La THD la decide la spinta,
+  il volume la miscela.
+- NASTRO: fine corsa all'**85 %** (pot log 10k + 1,8k in serie sopra).
+- LTspice `drive2-libero.cir` con kl 0,6043, contro modello: tutte le 12
+  caselle entro 0,1 punti di THD e 0,1 dB (fine corsa sul mix: 15,4 %,
+  +4,9 dB di fondamentale). Prova gen~: **PASS 175/175**.
+
+Domanda aperta a Filippo: alternative al NASTRO da mettere nel
+prototipo (nastro completo con enfasi e head bump, trasformatore,
+exciter, classe A, valvola).

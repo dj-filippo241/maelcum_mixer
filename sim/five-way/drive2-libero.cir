@@ -6,7 +6,7 @@
 * La spinta sta nella R d'ingresso del clipper (Rin = 10k/gd, da 10k a
 * 1,26k: un tratto del pot doppio come reostato): nessuno stadio di
 * guadagno davanti ai diodi, quindi nessun nodo arriva al rail.
-* Clipper = GROWL a 47k (drive2-chain-g47.cir). kl = 0,6783: +6 dB di basso
+* Clipper = GROWL a 47k (drive2-chain-g47.cir). kl = 0,6043: +5 dB (era 0,6783 = +6) di basso
 * a fine corsa su 0 dBu interni. Miscela con sorgente B (pot ideale).
 * SINE = PICCO. Modelli [PROVVISORIO].
 * ============================================================
@@ -18,7 +18,7 @@ E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
 .param th=1
 .param f=50
 .param fx=350
-.param kl=0.6783
+.param kl=0.6043
 .param gd={pow(10,18*th/20)}
 .param ts={1/(f*4000)}
 .param t0={3-10/f}

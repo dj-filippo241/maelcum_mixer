@@ -216,15 +216,15 @@ NEWTON = 4
 # GROWL della dec. 99. Pot doppio: un tratto alza la spinta sul clipper
 # (0 -> +18 dB, lineare in dB), l'altro dosa la miscela (sostituisce il
 # basso pulito come il GROWL dec. 99). kl tarato a +6 dB di basso a fine
-# corsa su 0 dBu interni (il materiale masterizzato di Filippo).
+# corsa su 0 dBu interni (il materiale masterizzato di Filippo); poi +5 dB.
 LIB_GMAX_DB = 18.0
-LIB_K = 0.6783
+LIB_K = 0.6043                  # +5 dB (era 0,6783 = +6: «un po piu sciallo», Filippo)
 
 
 # NASTRO (Filippo, ascolto P2, 2026-10-15): pot logaritmico e fine corsa
-# al 70 % di quello di prima (prima prova 30 %). Hardware: pot a taper A (10 % a meta corsa,
-# pista a due tratti) e 4,3k in serie sopra un pot da 10k (10/14,3 = 0,7).
-NASTRO_MAX = 0.7                # 30 % al secondo ascolto: troppo poco (Filippo)
+# all 85 % di quello di prima (prove: 30, 70 %). Hardware: pot a taper A (10 % a meta corsa,
+# pista a due tratti) e 1,8k in serie sopra un pot da 10k (10/11,8 = 0,85).
+NASTRO_MAX = 0.85               # 30 % poco, 70 % «un po piu aggressivo» (Filippo)
 TAPER_A_MID = 0.1
 
 
