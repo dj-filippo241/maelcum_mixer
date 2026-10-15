@@ -85,7 +85,7 @@ Trappole di lettura:
 - **Superati, non usare come base**: `sim/cdj-eq/` e `sim/eq_analysis.py` (EQ a contribuzione bipolare), `sim/eq-serie/` e `eq-serie-v0.3.md` (EQ in serie, archiviato dalla dec. 105; le dec. 103 e 104 sono revocate), `sim/master-out/compG-*` (VAS discreto), `sim/five-way/drive-*` (drive v0.3, archiviato), filter-module §5bis (overdrive v0.1), griglia drive dec. 87.
 - **Servo DC**: filtro (overdrive §5ter), 5-way (§5bis.7) ed EQ isolator (§8) usano la stessa cella: integratore invertente che entra dal piedino + dello stadio attraverso un partitore. Iniettare nel nodo di somma dà retroazione positiva.
 - **Diagrammi**: gli SVG di 5-way, filtro e mic/mono sono vecchi. Si rigenerano solo su richiesta di Filippo.
-- **Codice gen~ (prototipo)**: la traduzione Python delle prove accetta cose che gen~ non regge. Regole pagate in P1/P2: funzioni con un solo valore di ritorno; nessun nome esterno uguale a un parametro, locale, `Param` o `History` di funzione; `d0`/`d1` sono del downsampling; la prova suona sempre i due canali. Lo stato delle funzioni va in `Data` (peek/poke).
+- **Codice gen~ (prototipo)**: la traduzione Python delle prove accetta cose che gen~ non regge. Regole pagate in P1/P2: funzioni con un solo valore di ritorno; nessun nome esterno uguale a un parametro, locale, `Param` o `History` di funzione; `d0`/`d1` sono del downsampling; la prova suona sempre i due canali. Lo stato delle funzioni va in `Data` (peek/poke). A 4× i sotto-campioni passano dagli STESSI stati dei filtri, in ordine (stati separati = incroci divisi per 4).
 - Il modulo mic/mono è un precedente: una prima stesura con comandi decisi da Claude è stata bocciata. Pannello, comandi e divisione in moduli li decide Filippo.
 
 ## Prossimo passo
