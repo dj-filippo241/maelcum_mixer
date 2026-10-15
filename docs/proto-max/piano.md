@@ -25,8 +25,10 @@ Cambia rispetto al v0.1:
 | — | prova richiesta dalla review: le 5 parametriche del 5-way bastano senza EQ grafico? (la prova del crossfader è tolta da Filippo il 2026-10-14; il modulo resta predisposto) | dec. 111 |
 | Patch .maxpat disegnate a mano | **DSP in codice `gen~` testuale** dentro patch minime (§3) | ingegneria |
 
-La voce B5 (centri dell'EQ in serie 70 / 250 / 1k / 5k Hz) cade con la
-dec. 105: al suo posto c'è B7 (incroci dell'isolator).
+La voce B5 (centri dell'EQ in serie 70 / 250 / 1k / 5k Hz) non è più
+l'EQ di progetto dopo la dec. 105: la scelta principale è B7 (incroci
+dell'isolator). 2026-10-15, Filippo: B5 resta come opzione d'ascolto,
+possibile variante di MC-CHANNEL.
 
 ## 1. Cosa valida e cosa no (invariato, dec. 78)
 
