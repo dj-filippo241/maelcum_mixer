@@ -807,7 +807,7 @@ def psu():
          "LDO MOSFET ±22,0 V", ["limite 2,7 A · soft-start 0,3 s", "ripple al mixer ≤ 3 mV pp"],
          ["PSU-IN: TVS · T2,5 A · 2,2 mF", "modulo: LM317/337 → 19,2 V + cap mult. → ±18"],
          ["canali · 5-way · FX · filtro · FX-SEND", "CUE · mic/mono · moduli opzionali",
-          "!1,4 A base · 1,7 A con gli opzionali"]),
+          "!~1,5 A base · ~1,8 A con gli opzionali"]),
         ("W2 2×18 V 1,0 A", ["ponte + bulk 2 × 10 mF", "T1,25 A"],
          "LDO MOSFET ±19 V", ["limite 1,1 A", "ripple al mixer ≤ 1 mV pp"],
          ["PSU-IN: TVS · T1 A · 1 mF", "modulo: pre-reg ±16,5 → LT3045/94 → ±15,0",
