@@ -38,6 +38,8 @@ MANOPOLE = [
 MODO = ("modo", "MODO", ["HPF", "OFF", "LPF"], 1)
 CORE = ("core", "CORE", ["OTA (a')", "PULITO (c-B)"], 0)
 PENDENZA = ("pend", "PENDENZA", list(filtro.ALLINEAMENTI), 0)
+# limitatore del core PULITO (2026-10-21, Filippo: «dopo l'ascolto»)
+LIMIT = ("lim", "LIMITATORE", ["PULITO 2+2", "PULITO 3+3"], 0)
 
 
 # sotto questo peso un core non si calcola (-100 dB: inudibile)
@@ -71,12 +73,11 @@ def funzioni(r):
     r("\treturn log(1 + exp(min(z, 30))) + max(z - 30, 0);")
     r("}")
     r()
-    r("// conduttanza a secante del limitatore a diodi (4,7k + 2+2 1N4148)")
-    r("alim(v) {")
+    r("// conduttanza a secante del limitatore a diodi (4,7k + diodi 1N4148):")
+    r("// lg conduttanza, lk ginocchio, lw morbidezza (volt)")
+    r("alim(v, lg, lk, lw) {")
     r("\tm = max(abs(v), 0.000001);")
-    w, vk, g = filtro.W_LIM, filtro.VK_LIM, filtro.G_LIM
-    r(f"\treturn {g!r} * {w!r} * (spl((m - {vk!r}) / {w!r})"
-      f" - spl({-vk / w!r})) / m;")
+    r("\treturn lg * lw * (spl((m - lk) / lw) - spl(-lk / lw)) / m;")
     r("}")
     r()
     r("// tosatore dell'overdrive: 2,2k + 2+2 1N4148, tre passi di Newton")
@@ -104,7 +105,8 @@ def funzioni(r):
         nome = f"{base}_{usc}"
         if SEMPLICE and nome[4] != SCELTA_CORE:
             continue
-        r(f"{nome}(m, i, x, g, d) {{")
+        par = ", lk, lw" if (lim and not ota) else ""
+        r(f"{nome}(m, i, x, g, d{par}) {{")
         r("\ts1 = peek(m, i);")
         r("\ts2 = peek(m, i + 1);")
         r("\tbpv = peek(m, i + 3);")
@@ -117,7 +119,12 @@ def funzioni(r):
             r("\tg1 = g;")
             r("\tg2 = g;")
             rr = "d"
-        r(f"\trr = {rr}{' + alim(bpv)' if lim else ''};")
+        if lim and ota:
+            lg, lk, lw = filtro.LIM_OTA
+            rr += f" + alim(bpv, {lg!r}, {lk!r}, {lw!r})"
+        elif lim:
+            rr += f" + alim(bpv, {filtro.LIM_PULITO['2+2'][0]!r}, lk, lw)"
+        r(f"\trr = {rr};")
         r("\tbp = (g1 * (x - s2) + s1) / (1 + g1 * g2 + g1 * rr);")
         r("\thp = x - s2 - (g2 + rr) * bp;")
         r("\tlp = g2 * bp + s2;")
@@ -142,6 +149,7 @@ def genexpr():
     for nome, _, ini in MANOPOLE:
         r(f"Param {nome}({ini}, min=0, max=100);")
     r(f"Param {MODO[0]}({MODO[3]}, min=0, max=2);")
+    r(f"Param {LIMIT[0]}({LIMIT[3]}, min=0, max=1);")
     if not SEMPLICE:
         r(f"Param {CORE[0]}({CORE[3]}, min=0, max=1);")
         r(f"Param {PENDENZA[0]}({PENDENZA[3]}, min=0, max=2);")
@@ -150,6 +158,7 @@ def genexpr():
     for nome, _, ini in MANOPOLE:
         r(f"History s_{nome}({ini});")
     r(f"History s_{MODO[0]}({MODO[3]});")
+    r(f"History s_{LIMIT[0]}({LIMIT[3]});")
     if not SEMPLICE:
         r(f"History s_{CORE[0]}({CORE[3]});")
         r(f"History s_{PENDENZA[0]}({PENDENZA[3]});")
@@ -161,6 +170,12 @@ def genexpr():
     for nome, _, _ in MANOPOLE:
         r(f"s_{nome} = {nome} + t10 * (s_{nome} - {nome});")
     r("s_modo = modo + t1 * (s_modo - modo);")
+    r("s_lim = lim + t20 * (s_lim - lim);")
+    a2, a3 = filtro.LIM_PULITO["2+2"], filtro.LIM_PULITO["3+3"]
+    assert a2[0] == a3[0]
+    r("// LIMITATORE del PULITO: 2+2 o 3+3 diodi (RISULTATI-cb-4p §RES), 20 ms")
+    r(f"lim_k = {a2[1]!r} + {a3[1] - a2[1]!r} * s_lim;")
+    r(f"lim_w = {a2[2]!r} + {a3[2] - a2[2]!r} * s_lim;")
     if not SEMPLICE:
         r("s_core = core + t20 * (s_core - core);")
         r("s_pend = pend + t20 * (s_pend - pend);")
@@ -230,8 +245,9 @@ def genexpr():
                     o = f"{p}h" if sez == "hp" else f"{p}l"
                     r(f"{o} = sez_{SCELTA_CORE}0_{sez}(st, {i}, xin,"
                       f" g_{sez}1, dq1);")
+                    lp_ = ", lim_k, lim_w" if SCELTA_CORE == "c" else ""
                     r(f"{o} = sez_{SCELTA_CORE}1_{sez}(st, {i + 4}, {o},"
-                      f" g_{sez}2, d_{sez});")
+                      f" g_{sez}2, d_{sez}{lp_});")
                     r(f"o{sez} = {o};")
                     i += 8
                     r(f"if (od_{sez} > {SOGLIA_OD!r}) {{")
@@ -250,8 +266,9 @@ def genexpr():
                     o = f"{p}h" if sez == "hp" else f"{p}l"
                     r(f"{o} = sez_{nome_c}0_{sez}(st, {i}, xin, g_{sez}1,"
                       " dq1);")
+                    lp_ = ", lim_k, lim_w" if nome_c == "c" else ""
                     r(f"{o} = sez_{nome_c}1_{sez}(st, {i + 4}, {o},"
-                      f" g_{sez}2, d_{sez});")
+                      f" g_{sez}2, d_{sez}{lp_});")
                     out[(nome_c, sez)] = o
                     i += 8
                 r("}")
@@ -334,20 +351,20 @@ def patch(codice):
                 {"parameter_type": 0, "parameter_mmax": 100.0,
                  "parameter_initial": [ini], "parameter_unitstyle": 5})
     for j, (ng, nl, voci, ini) in enumerate(
-            (MODO,) if SEMPLICE else (MODO, CORE, PENDENZA)):
+            (MODO, LIMIT) if SEMPLICE else (MODO, CORE, PENDENZA, LIMIT)):
         comando(6 + j, f"obj-t{j}", ng, nl, "live.tab",
-                [8, 60 + 24 * j, 330, 20],
+                [8, 58 + 22 * j, 330, 18],
                 {"parameter_type": 2, "parameter_enum": voci,
                  "parameter_mmax": float(len(voci) - 1),
                  "parameter_initial": [ini], "parameter_unitstyle": 0})
     boxes.append(box("obj-nota", maxclass="live.comment", numinlets=1,
                      numoutlets=0, presentation=1,
-                     presentation_rect=[8, 134, 330, 30],
+                     presentation_rect=[8, 144, 330, 24],
                      patching_rect=[20, 440, 330, 30], linecount=2,
                      text="FREQ 0-100 % = 10 Hz-35 kHz (Xone:96). RES oltre "
                           "90 % = fischio. 0 dBu = -12 dBFS."
                           + (" Semplice: PULITO (c-B), BUTTERWORTH."
-                             if SEMPLICE else "")))
+                             if SEMPLICE else " LIMITATORE solo per PULITO.")))
     p = {"patcher": {
         "fileversion": 1,
         "appversion": {"major": 9, "minor": 0, "revision": 0,

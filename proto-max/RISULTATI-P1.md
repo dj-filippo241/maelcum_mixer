@@ -193,3 +193,28 @@ posto di `x`. Vale anche per MC-FILTRO-S. La traduzione Python suona
 identica a prima (scarto 0 su 22 casi, manopole in movimento);
 prova_filtro PASS. Possibile causa dei salti in Live (todo 76): da
 verificare all'ascolto.
+
+## LIMITATORE del PULITO (2026-10-21, Filippo: «dopo l'ascolto»)
+
+Nuovo selettore LIMITATORE = PULITO 2+2 / PULITO 3+3 in MC-FILTRO e
+MC-FILTRO-S. Agisce solo sul core PULITO (c-B); l'OTA (a′) tiene il suo.
+Taratura su LTspice (`sim/filtro/RISULTATI-cb-4p.md` §RES), conduttanza
+fisica 10k/4,7k = 2,13:
+
+| | ginocchio · morbidezza | oscillazione a fine corsa | LTspice |
+|---|---|---|---|
+| 2+2 | 0,72 V · 0,06 V | +4,5 dBu | +4,4 dBu |
+| 3+3 | 0,93 V · 0,09 V | +6,7 dBu | +6,8 dBu |
+
+Risonanza sul programma entro 1 dB (2+2) e 1,6 dB (3+3) da LTspice. La
+nota a fine corsa cala di 0,6-0,8 semitoni (LTspice 1,1): il modello a
+secante non coglie tutto il rallentamento dei diodi.
+
+**Prima di oggi il PULITO usava il limitatore tarato sul core (a′) e
+oscillava a +8,0 dBu**, 3,6 dB sopra il circuito progettato. Gli ascolti
+del PULITO precedenti avevano un fischio più forte del vero.
+
+Prove: prova_filtro PASS (2+2, valore di partenza); 3+3 gen~ contro
+modello ≤ 0,01 dB e ≤ 0,01 semitoni su MC-FILTRO e MC-FILTRO-S; regole
+gen~ pulite (un ritorno per funzione, nessun nome in collisione).
+

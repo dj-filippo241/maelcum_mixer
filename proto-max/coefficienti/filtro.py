@@ -15,8 +15,11 @@ Origine dei numeri:
   Vs = 2 VT / k = 1,55 V: il tetto di stato di filter-module §5quater.
   Limitatore: perdita non lineare dal buffer BP al summer (4,7k + 2+2
   1N4148), qui una conduttanza che parte sopra VK; G e VK tarati sul D5.
-- Core (c-B): stesso SVF con integratori lineari (VCA puliti), stesso
-  limitatore. Il D5 non lo ha misurato: il suo fischio e una stima.
+- Core (c-B): stesso SVF con integratori lineari (VCA puliti). Limitatore
+  tarato su `sim/filtro/RISULTATI-cb-4p.md` §RES (2026-10-21): 2+2 o 3+3
+  diodi, selettore LIMITATORE del prototipo (scelta di Filippo
+  all'ascolto). Prima di allora il PULITO usava il limitatore del (a′) e
+  oscillava a +8,0 dBu invece di +4,4.
 - 4 poli: sezione 1 fissa Q 0,541, sezione 2 con la RES (base Q 1,307):
   Butterworth a RES zero. Allineamento [PROVVISORIO]: B2 si sceglie
   nella sessione 2 del P1.
@@ -50,10 +53,16 @@ ALLINEAMENTI = {
     "BESSEL": (0.5219, 1.4192, 0.8055, 1.5912),
 }
 
-# limitatore (tarato sul D5, vedi taratura())
+# limitatore del core (a′) (tarato sul D5, vedi taratura())
 G_LIM = 1.7
 VK_LIM = 0.82
 W_LIM = 0.06                    # ginocchio morbido dei diodi, volt
+LIM_OTA = (G_LIM, VK_LIM, W_LIM)
+# limitatore del core (c-B): (G, VK, W). G = 10k/4,7k, la conduttanza del
+# circuito. Tarato su LTspice cb-4p-res-*.cir / cb-4p-res33-*.cir:
+# oscillazione +4,5 / +6,7 dBu (LTspice +4,4 / +6,8), risonanza sul
+# programma entro 1 dB (2+2) e 1,6 dB (3+3).
+LIM_PULITO = {"2+2": (2.13, 0.72, 0.06), "3+3": (2.13, 0.93, 0.09)}
 
 
 def freq_law(theta):
@@ -86,12 +95,12 @@ def a_ota(u, lineare):
     return VS * math.tanh(m / VS) / m
 
 
-def a_lim(v):
+def a_lim(v, lim=LIM_OTA):
     """Conduttanza a secante del limitatore: L(v) / v."""
+    g, vk, w = lim
     m = max(abs(v), 1e-6)
-    sp = W_LIM * (softplus((m - VK_LIM) / W_LIM)
-                  - softplus(-VK_LIM / W_LIM))
-    return G_LIM * sp / m
+    sp = w * (softplus((m - vk) / w) - softplus(-vk / w))
+    return g * sp / m
 
 
 def softplus(z):
@@ -101,9 +110,10 @@ def softplus(z):
 class Sezione:
     """Una sezione SVF 2 poli TPT con OTA (o lineare) e limitatore."""
 
-    def __init__(self, lineare, limitatore):
+    def __init__(self, lineare, limitatore, lim=LIM_OTA):
         self.lineare = lineare
         self.limitatore = limitatore
+        self.lim = lim
         self.s1 = self.s2 = 0.0
         self.hp = self.bp = 0.0
 
@@ -112,7 +122,7 @@ class Sezione:
         a1 = a_ota(self.hp, self.lineare)
         a2 = a_ota(self.bp, self.lineare)
         ar = a_ota(self.bp, self.lineare)
-        r = d * ar + (a_lim(self.bp) if self.limitatore else 0.0)
+        r = d * ar + (a_lim(self.bp, self.lim) if self.limitatore else 0.0)
         g1, g2 = g * a1, g * a2
         bp = (g1 * (x - self.s2) + self.s1) / (1.0 + g1 * g2 + g1 * r)
         hp = x - self.s2 - (g2 + r) * bp
@@ -126,9 +136,10 @@ class Sezione:
 class Core:
     """4 poli: sezione 1 (Q fissa) poi sezione 2 (RES), pendenza a scelta."""
 
-    def __init__(self, lineare, fs, allineamento="BUTTERWORTH"):
+    def __init__(self, lineare, fs, allineamento="BUTTERWORTH", lim="2+2"):
         self.a = Sezione(lineare, False)
-        self.b = Sezione(lineare, True)
+        self.b = Sezione(lineare, True,
+                         LIM_PULITO[lim] if lineare else LIM_OTA)
         self.fs = fs
         self.al = ALLINEAMENTI[allineamento]
 
