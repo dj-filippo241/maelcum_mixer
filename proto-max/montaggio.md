@@ -190,6 +190,6 @@ ogni copia contro l'originale impostato sulle stesse scelte, con le
 manopole in movimento e a fondo corsa: scarto 0 su 8 casi (picco fino a
 1,5 dBFS).
 
-Attenzione al livello: GROWL LIBERO + NASTRO alti superano 0 dBFS anche
-con l'ingresso a 0 dBu (prova con ingresso +12 dBu: +3,7 dBFS). Sopra 0
-dBFS l'uscita della scheda taglia l'onda.
+Attenzione al livello: GROWL LIBERO + NASTRO alti superano 0 dBFS (prova
+con picchi d'ingresso a circa +8 dBu: uscita +3,7 dBFS). Sopra 0 dBFS
+l'uscita della scheda taglia l'onda.
