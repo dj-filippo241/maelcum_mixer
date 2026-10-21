@@ -74,10 +74,10 @@ def suona(testo, f, amp, durata=0.12, coda=0.04, **p):
 
 
 def modello(f, fc, amp_v, res, modo, lin, durata=0.12, coda=0.04,
-            al="BUTTERWORTH", drive=0.0):
+            al="BUTTERWORTH", drive=0.0, lim="2+2"):
     """Core e overdrive di filtro.py a 4x, senza halfband: volt."""
     fs4 = 4 * FS
-    c = filtro.Core(lin, fs4, al)
+    c = filtro.Core(lin, fs4, al, lim)
     gres = filtro.res_law(res / 100)
     return filtro.sinusoide(
         c, f, fc, fs4, amp_v, durata, coda,
@@ -137,6 +137,20 @@ def main():
                     controlla(f"{nome_c} {nm.upper()} RES {res} % {dbu} dBu",
                               gen_db, mod_db, 0.3)
 
+    print("LIMITATORE 3+3 del PULITO, risonanza: gen~ contro modello")
+    for modo, nm in ((2, "lp"), (0, "hp")):
+        for res in (70, 85):
+            for dbu in (-10, 0, 6):
+                av = 1.0954 * 10 ** (dbu / 20)
+                p = {f"freq_{nm}": theta_freq(1000), f"res_{nm}": res,
+                     "modo": modo, "core": 1, "lim": 1}
+                y, n0 = suona(testo, 1000, av / liv, **p)
+                gen_db = db(ampiezza(y, 1000, FS, n0) * liv / av)
+                mod_db = db(modello(1000, 1000, av, res, nm, 1, lim="3+3")
+                            / av)
+                controlla(f"3+3 {nm.upper()} RES {res} % {dbu} dBu",
+                          gen_db, mod_db, 0.3)
+
     print("PENDENZA a piccolo segnale (-30 dBu, sul taglio, 1 kHz)")
     attesi = {"BUTTERWORTH": -3.01, "LINKWITZ-RILEY": -6.02, "BESSEL": -3.01}
     for j, (al, att) in enumerate(attesi.items()):
@@ -172,14 +186,17 @@ def main():
           f" (tetto overdrive 1,59 V + passante)")
 
     print("Fischio (RES 100 %, senza ingresso): gen~ contro modello")
-    for lin, nome_c in ((0, "OTA (a')"), (1, "PULITO (c-B)")):
+    for lin, nome_c, lim in ((0, "OTA (a')", "2+2"),
+                             (1, "PULITO (c-B) 2+2", "2+2"),
+                             (1, "PULITO (c-B) 3+3", "3+3")):
         for fc in (200, 1000, 5000):
             g = nuovo(testo)
-            g.imposta(freq_lp=theta_freq(fc), res_lp=100, modo=2, core=lin)
+            g.imposta(freq_lp=theta_freq(fc), res_lp=100, modo=2, core=lin,
+                      lim=int(lim == "3+3"))
             n = int(0.35 * FS)
             y = [g.campione(0.0, 0.0)[0] for _ in range(n)]
             rms, f = nota(y, n - int(0.08 * FS), FS)
-            c = filtro.Core(lin, 4 * FS)
+            c = filtro.Core(lin, 4 * FS, lim=lim)
             ym = [c.passo(1e-6 if i < 10 else 0.0, fc, -0.75, "lp")
                   for i in range(int(0.35 * 4 * FS))]
             rms_m, f_m = nota(ym, len(ym) - int(0.08 * 4 * FS), 4 * FS)

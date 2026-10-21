@@ -52,6 +52,11 @@ SCELTA_CORE = "c"               # "a" = OTA (a'), "c" = PULITO (c-B)
 SCELTA_PEND = 0                 # indice in filtro.ALLINEAMENTI: Butterworth
 
 
+def con_limitatore():
+    """Il LIMITATORE serve solo al PULITO: nel -S col core (a') non c'e."""
+    return not SEMPLICE or SCELTA_CORE == "c"
+
+
 def funzioni(r):
     vs = filtro.VS
     r("// allpass del 1o ordine del halfband; stato in m[i] (x), m[i+1] (y)")
@@ -149,7 +154,8 @@ def genexpr():
     for nome, _, ini in MANOPOLE:
         r(f"Param {nome}({ini}, min=0, max=100);")
     r(f"Param {MODO[0]}({MODO[3]}, min=0, max=2);")
-    r(f"Param {LIMIT[0]}({LIMIT[3]}, min=0, max=1);")
+    if con_limitatore():
+        r(f"Param {LIMIT[0]}({LIMIT[3]}, min=0, max=1);")
     if not SEMPLICE:
         r(f"Param {CORE[0]}({CORE[3]}, min=0, max=1);")
         r(f"Param {PENDENZA[0]}({PENDENZA[3]}, min=0, max=2);")
@@ -158,24 +164,28 @@ def genexpr():
     for nome, _, ini in MANOPOLE:
         r(f"History s_{nome}({ini});")
     r(f"History s_{MODO[0]}({MODO[3]});")
-    r(f"History s_{LIMIT[0]}({LIMIT[3]});")
+    if con_limitatore():
+        r(f"History s_{LIMIT[0]}({LIMIT[3]});")
     if not SEMPLICE:
         r(f"History s_{CORE[0]}({CORE[3]});")
         r(f"History s_{PENDENZA[0]}({PENDENZA[3]});")
     r()
-    r("// manopole lisciate 10 ms; MODO 1 ms (rampa, dec. 80); CORE 20 ms")
+    r("// manopole lisciate 10 ms; MODO 1 ms (rampa, dec. 80)"
+      + ("" if SEMPLICE else "; CORE 20 ms"))
     r("t1 = exp(-1 / (0.001 * samplerate));")
     r("t10 = exp(-1 / (0.010 * samplerate));")
     r("t20 = exp(-1 / (0.020 * samplerate));")
     for nome, _, _ in MANOPOLE:
         r(f"s_{nome} = {nome} + t10 * (s_{nome} - {nome});")
     r("s_modo = modo + t1 * (s_modo - modo);")
-    r("s_lim = lim + t20 * (s_lim - lim);")
-    a2, a3 = filtro.LIM_PULITO["2+2"], filtro.LIM_PULITO["3+3"]
-    assert a2[0] == a3[0]
-    r("// LIMITATORE del PULITO: 2+2 o 3+3 diodi (RISULTATI-cb-4p §RES), 20 ms")
-    r(f"lim_k = {a2[1]!r} + {a3[1] - a2[1]!r} * s_lim;")
-    r(f"lim_w = {a2[2]!r} + {a3[2] - a2[2]!r} * s_lim;")
+    if con_limitatore():
+        r("s_lim = lim + t20 * (s_lim - lim);")
+        a2, a3 = filtro.LIM_PULITO["2+2"], filtro.LIM_PULITO["3+3"]
+        assert a2[0] == a3[0]
+        r("// LIMITATORE del PULITO: 2+2 o 3+3 diodi (RISULTATI-cb-4p §RES),"
+          " 20 ms")
+        r(f"lim_k = {a2[1]!r} + {a3[1] - a2[1]!r} * s_lim;")
+        r(f"lim_w = {a2[2]!r} + {a3[2] - a2[2]!r} * s_lim;")
     if not SEMPLICE:
         r("s_core = core + t20 * (s_core - core);")
         r("s_pend = pend + t20 * (s_pend - pend);")
@@ -351,7 +361,8 @@ def patch(codice):
                 {"parameter_type": 0, "parameter_mmax": 100.0,
                  "parameter_initial": [ini], "parameter_unitstyle": 5})
     for j, (ng, nl, voci, ini) in enumerate(
-            (MODO, LIMIT) if SEMPLICE else (MODO, CORE, PENDENZA, LIMIT)):
+            ((MODO, LIMIT) if con_limitatore() else (MODO,)) if SEMPLICE
+            else (MODO, CORE, PENDENZA, LIMIT)):
         comando(6 + j, f"obj-t{j}", ng, nl, "live.tab",
                 [8, 58 + 22 * j, 330, 18],
                 {"parameter_type": 2, "parameter_enum": voci,
@@ -363,7 +374,8 @@ def patch(codice):
                      patching_rect=[20, 440, 330, 30], linecount=2,
                      text="FREQ 0-100 % = 10 Hz-35 kHz (Xone:96). RES oltre "
                           "90 % = fischio. 0 dBu = -12 dBFS."
-                          + (" Semplice: PULITO (c-B), BUTTERWORTH."
+                          + (f" Semplice: {CORE[2][SCELTA_CORE == 'c']}, "
+                             f"{list(filtro.ALLINEAMENTI)[SCELTA_PEND]}."
                              if SEMPLICE else " LIMITATORE solo per PULITO.")))
     p = {"patcher": {
         "fileversion": 1,

@@ -218,3 +218,10 @@ Prove: prova_filtro PASS (2+2, valore di partenza); 3+3 gen~ contro
 modello ≤ 0,01 dB e ≤ 0,01 semitoni su MC-FILTRO e MC-FILTRO-S; regole
 gen~ pulite (un ritorno per funzione, nessun nome in collisione).
 
+Dal 2026-10-21 (todo 119) la prova del 3+3 sta in `prova_filtro.py`:
+risonanza LP/HP a RES 70 e 85 %, -10/0/+6 dBu, gen~ contro modello entro
+0,01 dB; fischio a 200 Hz, 1 kHz, 5 kHz +6,78 / +6,67 / +6,32 dBu (2+2:
++4,54 / +4,47 / +4,11). Il confronto -S contro originali sta in
+`prova_semplice.py`. Nel generatore il LIMITATORE esce dal -S se la
+scelta fissata è il core (a′): lì non serve.
+

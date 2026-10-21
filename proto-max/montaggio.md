@@ -188,7 +188,9 @@ Generatori: `genera.py`, `genera_filtro.py`, `genera_5way.py` con
 `--semplice`. Senza l'opzione i file originali escono identici. Prova:
 ogni copia contro l'originale impostato sulle stesse scelte, con le
 manopole in movimento e a fondo corsa: scarto 0 su 8 casi (picco fino a
-1,5 dBFS).
+1,5 dBFS). La prova sta in `coefficienti/prova_semplice.py` (dal
+2026-10-21): 6 casi per dispositivo, due lati con toni diversi, da -20 a
++12 dBu, manopole che saltano a meta prova; scarto 0 su tutti e tre.
 
 Attenzione al livello: GROWL LIBERO + NASTRO alti superano 0 dBFS (prova
 con picchi d'ingresso a circa +8 dBu: uscita +3,7 dBFS). Sopra 0 dBFS
