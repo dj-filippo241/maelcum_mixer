@@ -27,7 +27,7 @@
 | | EQ LOW / HIGH ritorno | 8 | doppio 10k, taper custom | |
 | | Fader ritorno | 4 | slider stereo | |
 | | Reroute e self-feedback | 16 | singolo lin → CV | cablati rovesci (shaper) |
-| | Meter | 1 | barra 10 LED | |
+| | Meter | 4 | barra 10 LED, una per ritorno | dec. 116 (2026-10-21), era 1 |
 | **Filtro** | HPF freq / res / drive | 3 | singolo lin → CV | |
 | | LPF freq / res / drive | 3 | singolo lin → CV | |
 | **5-way** | GAIN di banda | 5 | doppio 10k, taper custom | rotativi (dec. 85), detent |
@@ -64,7 +64,7 @@ mandata ai pedali, trimmer di taratura.
 | Selettori 3 posizioni | 9 |
 | Selettori 2 posizioni | 4 |
 | Bottoni / levette logici | 25 |
-| Barre LED | 6 da 10 + 2 da 20 |
+| Barre LED | 9 da 10 + 2 da 20 (dec. 116: +3 ritorni FX) |
 | LED tricolore | 4 |
 
 Manopole in tutto: 110 (dec. 99: +1 sul 5-way). Con 4 moduli MIC/MONO al posto di 4 il conto non

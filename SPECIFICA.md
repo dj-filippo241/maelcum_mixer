@@ -1,6 +1,6 @@
 # SPECIFICA — MAELCUM MIXER (mixer dub modulare analogico, esemplare unico)
 
-> **v0.1 (2026-09-18, rev. 2026-09-28/01-10: decisioni 76-93; REV 2026-10-13: decisioni 97-106 recepite nei §4-6 come note in testa ai punti toccati + esiti simulazioni e sessione decisioni; REV 2026-10-14: decisioni 107-114; REV 2026-10-21: decisione 115)** — Compilata da: decisioni 1-115 (`docs/01-decisioni-bloccate.md`; 103 e 104 revocate),
+> **v0.1 (2026-09-18, rev. 2026-09-28/01-10: decisioni 76-93; REV 2026-10-13: decisioni 97-106 recepite nei §4-6 come note in testa ai punti toccati + esiti simulazioni e sessione decisioni; REV 2026-10-14: decisioni 107-114; REV 2026-10-21: decisioni 115-116)** — Compilata da: decisioni 1-116 (`docs/01-decisioni-bloccate.md`; 103 e 104 revocate),
 > status doc ChatGPT rev2 (`docs/export-chatgpt/`, corpus chiuso — decisione 58),
 > gain-staging sheet (`docs/fase1/gain-staging-sheet.md`), revisione critica (`docs/03`).
 > Livello: REQUISITI. Il dettaglio circuitale vive nei design doc di `docs/fase1/` e `docs/fase2/`.
@@ -154,6 +154,7 @@ Design circuitale: `docs/fase1/master-out.md` **v0.3 (2026-09-29: stadio finale 
 [REV dec. 90a 2026-10-01: barre LED a zone; soglie verde ≤+6 / ambra +6…+18 / rosso +18…+24 / purple latch ≥+23 dBu; master 2×20 segmenti, zone 10; detector release ~0,3 s (dec. 81), latch 479 ms — design in `docs/fase3/sistema-metering.md`; la proposta master-out §3.6 per il purple master è SUPERATA/doppio criterio → voce 40]
 
 - [BLOCCATO] Semantica colori universale: BLUE=poco · GREEN=safe · YELLOW=loud · AMBER=hard · RED=extreme · PURPLE=clipping reale (clip detector dedicato, latch ~300-500 ms).
+- [DEC. 116, 2026-10-21] Un meter da 10 segmenti per OGNI ritorno FX (4 barre, come i canali DJ; era 1). `docs/fase3/sistema-metering.md` REV dec. 116.
 - [BLOCCATO] Posizioni: DJ (post-filter/drive, pre-fader; identica calibrazione) · 5-way (post-drive, pre-master-sum) · MASTER (post-level; il più preciso: scala log 20 segmenti ×3 dB/canale, LM3915 in cascata, attacco <1 ms, release ~0,3 s ballistica viva stile Pioneer DJM — decisioni 53/81, costante da affinare a banco 0,2-0,5 s) · FX returns (post-gain/EQ, pre-fader) · mic/generic warning-only. Niente meter per booth/rec/cuffie/send.
 - [PROVVISORIO] Soglie numeriche delle zone (proposta master-out §3.6) — da validare a banco; a 10 Hz leggibilità a zone con ballistica viva (decisione 81, che revisiona la parte metering della decisione 65).
 

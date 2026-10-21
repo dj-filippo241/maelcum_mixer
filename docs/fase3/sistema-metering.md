@@ -21,11 +21,21 @@ saturazione reale del dominio ±18 V; calibrazione identica tra canali
 | MASTER L/R | post-level VCA, pre-stadio HV | 0 / +24 dBu | g = 0,288 (FS→5,00 V hold) |
 | DJ ×4 | post-filter/overdrive, pre-fader (§3.7 cdj) | 0 / +20 (drive inserito) | g = 0,288 (identici tra canali) |
 | 5-way | post-drive, pre-master-sum (rif. interno −6 dB) | −6 / +10 | g = 0,576 (×2 = dominio assoluto post-makeup) |
-| FX return ×1 (mono centrato) | post-gain/EQ2, pre-fader | 0 / +23 (regola K) | g = 0,288 |
+| FX return ×4, uno per ritorno (dec. 116; era ×1), mono centrato | post-gain/EQ2, pre-fader | 0 / +23 (regola K) | g = 0,288 |
 | mic / mono | WARNING-ONLY, nodo PRE (dopo il preamp, prima dell'EQ2) | 0 / +17 | **UN LED a tre colori (dec. 97)**: verde = segnale ok (≥ −6 dBu), giallo = vicino al clip (≥ +11), rosso = clip (≥ +17, latch) — soglie [PROVVISORIO]; rosso a +17 e non +23 perché il front-end mic su ±15 V clippa prima e l'EQ2 aggiunge fino a +6 (`docs/fase4/mic-mono-moduli.md` §5.2) |
 
 Niente meter per booth/rec/cuffie/send (SPEC §11). Barre totali: master 2 +
-DJ 4 + FX 1 + 5-way 1 = 8 barre + warning mic/generic.
+DJ 4 + FX 4 + 5-way 1 = **11 barre** + warning mic/generic (REV dec. 116,
+2026-10-21: era FX 1 = 8 barre).
+
+**REV dec. 116 (2026-10-21)**: un meter da 10 segmenti per ogni ritorno FX.
+Segmenti ~103 → ~133; LM3915 10 → 13; detector 8 → 11 canali (+3 × 3
+sezioni = ~2 quad op-amp in più sul LN, +10-20 mA); comparatori purple
++3 (LM339 2 → 3). Corrente LED: worst case 133 × 5 mA ≈ 0,67 A (era
+0,5): il +5 V sale a ~1,15 A di picco contro 1,25 A di dimensionamento
+(margine 9 %). Con LED alta efficienza a 2 mA: ~0,27 A, nessun problema.
+Raccomandazione: I_LED 2 mA (Rprog), da confermare a banco con la
+leggibilità al sole (ambiente all'aperto, dec. 111 e).
 
 ## 2. Catena per zona (detector ri-tarato dec. 81)
 
@@ -115,10 +125,10 @@ riferimenti su ±15 V LN (LT3045/94, dec. 54): ~8 canali × 3 sezioni +
 
 | Voce | Qtà | Note |
 |---|---|---|
-| LM3915 (o clone/alternativa §7) | 10 | master 4 (2×2 cascata) + zone 6 |
+| LM3915 (o clone/alternativa §7) | 13 | master 4 (2×2 cascata) + zone 9 (REV dec. 116: +3 ritorni FX) |
 | OPA1612-class dual | ~12 (o 6 quad) | detector 3 sez./canale × 8 + ref tree |
-| LM339 quad comparator | 2 | purple zone ×6 + warning mic/generic |
-| LED alta efficienza | ~103 segmenti + 8 purple + warning | colori per §3; voce 40 |
+| LM339 quad comparator | 3 (REV dec. 116) | purple zone ×6 + warning mic/generic |
+| LED alta efficienza | ~133 segmenti + 11 purple + warning (REV dec. 116) | colori per §3; voce 40 |
 | 1N4148, R 0,1%/1%, C hold 100n C0G/PP, trimmer | — | detector/latch |
 
 Stima: ~50-80 € totali. Reperibilità LM3915 → task dedicato (voce 9).

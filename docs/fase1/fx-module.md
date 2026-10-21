@@ -1,5 +1,9 @@
 # FASE 1 — Modulo FX: design v0.3-WIP (2026-10-01)
 
+> **DEC. 116 (2026-10-21)**: un meter da 10 segmenti per OGNI ritorno (4
+> barre, come i canali DJ; era 1). Tap invariato (post-GAIN/EQ2, pre-fader,
+> mono centrato). `docs/fase3/sistema-metering.md` REV dec. 116.
+>
 > **CORREZIONE CONTEGGIO (2026-10-21, todo 114, `docs/fase3/sistema-vca-trim.md` §4)**:
 > il THAT 2181 / V2181L è un VCA SINGOLO. La matrice stereo ha 4 ritorni ×
 > 4 reroute × 2 lati = **32 chip** (non 16), il GAIN dei 4 ritorni stereo

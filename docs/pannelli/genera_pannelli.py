@@ -181,8 +181,7 @@ def filtro(w):
 
 def fx(w):
     p = Pannello("FX — 4 RITORNI", "fx", w)
-    p.meter(w / 2 - 15, p.y + 1, 10, passo=3.0, orizz=True, nome="METER RITORNI")
-    p.y += 7
+    p.y += 2
     col = w / 4
     y0 = p.y
     for r in range(4):
@@ -194,7 +193,8 @@ def fx(w):
         for b in range(4):
             nome = "SELF" if b == r else f"> FX{b + 1}"
             p.manopola(x, y + 7, nome, r=6.0); y += 19
-        p.fader(x, y + 2, 60.0)
+        p.meter(x - 13.5, y + 2, 10, passo=6.0, nome="METER")
+        p.fader(x + 4, y + 2, 60.0)
         p.y = y + 72
     return p.chiudi()
 
@@ -325,7 +325,7 @@ def moduli_singoli():
     larg = max(larg, x + 2)
     alt = y + h2 + 20
     corpo.append(legenda(14, alt - 6))
-    return foglio("Moduli singoli", "Ogni modulo con i comandi dell'inventario (sistema-comandi.md, dec. 108 e 111). "
+    return foglio("Moduli singoli", "Ogni modulo con i comandi dell'inventario (sistema-comandi.md, dec. 108, 111 e 116). "
                   "Strisce da 36 mm.", larg, alt, "\n".join(corpo))
 
 
