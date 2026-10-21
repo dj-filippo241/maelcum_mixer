@@ -32,8 +32,8 @@ sul palco) restano alla sessione hardware (voce 40).
 ```
 BOX ESTERNO                                         CAVO ≤ 2 m       MIXER — modulo PSU-IN
 rete IEC + filtro + interruttore + T2 A + NTC/relè                    connettore
-toroidale ~250 VA, schermo elettrostatico                              │
- W1 2×21 V 3,5 A → T4 A → ponte → 15 mF ×2 → LDO MOSFET ±22,0 V ═══════ TVS → F gruppo → 2,2 mF → backplane «audio»
+toroidale ~270 VA (dec. 115), schermo elettrostatico                  │
+ W1 2×21 V 4,0 A → T5 A → ponte → 15 mF ×2 → LDO MOSFET ±22,0 V ═══════ TVS → F gruppo → 2,2 mF → backplane «audio»
  W2 2×18 V 1,0 A → T1,25 A → ponte → 10 mF ×2 → LDO MOSFET ±19,0 V ══ TVS → F gruppo → 1 mF   → backplane «LN»
  W3 2×20 V 0,4 A → T630 mA → ponte → 4,7 mF ×2 → [M] raw ±27 ════════ TVS → F gruppo → 1 mF   → backplane [M]
  W4 9 V 2,5 A → T3,15 A → ponte → 10 mF → regolatore +5 V ═══════════ TVS → F gruppo → 1 mF   → backplane +5
@@ -47,7 +47,8 @@ toroidale ~250 VA, schermo elettrostatico                              │
 
 ### 2.1 Trasformatore e raddrizzatori
 
-Toroidale ~250 VA, avvolgimenti invariati (dec. 111/112): W1 2×21 V 3,5 A,
+Toroidale ~270 VA (dec. 115, 2026-10-21: W1 da 3,5 a 4,0 A per i 40 VCA
+del modulo FX, `sistema-psu.md` REV 2026-10-21): W1 2×21 V 4,0 A,
 W2 2×18 V 1,0 A, W3 2×20 V 0,4 A, W4 9 V 2,5 A. Schermo elettrostatico tra
 primario e secondari, termofusibile integrato. Ponti da 8-10 A per W1, da
 3 A per gli altri, sulla stessa aletta degli LDO.

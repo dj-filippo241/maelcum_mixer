@@ -226,3 +226,7 @@
 ## Ascolto del prototipo Max P0 (2026-10-14)
 
 114. **[F — 2026-10-14, ascolto di MC-CHANNEL in Live (P0, `proto-max/RISULTATI-P0.md`) — CHIUDE in parte B7/A15; PRECISA la decisione 105 punti (b) e (c)]** (a) **Boost dell'isolator +6 dB: confermato.** (b) **GAIN di canale: law confermata** (−∞ … 0 … +10 dB, metà CCW lineare in dB da −100 a 0, metà CW da 0 a +10, `sim/cdj/vca-law.cir`). (c) **Curva delle manopole dell'isolator: da sistemare**, ma solo con pot commercialmente disponibili: niente taper custom. Le alternative si costruiscono con pot di serie (ed eventuali resistenze) e si provano nel prototipo. (d) **Incroci: né A (150/500/2500 Hz) né B (100/630/4000 Hz) vanno bene.** Restano aperti (B7).
+
+## Sessione 2026-10-21
+
+115. **[F — 2026-10-21 — PRECISA le decisioni 111 e 112 (W1 3,5 A); nasce dalla correzione del conteggio dei VCA, todo 114]** **Avvolgimento audio W1 = 2×21 V 4,0 A** (era 3,5 A), trasformatore **~270 VA** (era ~250). Motivo: il modulo FX ha 40 VCA, non 20 (`docs/fase3/sistema-vca-trim.md` §4); con tutti i moduli opzionali il ramo audio sale a ~1,81 A e il W1 da 3,5 A lavorava al 98-100 % (`sim/system/psu-w1-vca.cir`). Con 4,0 A: 88 %, raw minimo 23,9 V a rete −10 %. Scelta di Filippo fra «tenere 3,5 A» e «4,0 A», su raccomandazione di Claude (un avvolgimento al limite scalda e invecchia). Fusibile del W1 da T4 A a T5 A. Dettagli: `docs/fase3/sistema-psu.md` REV 2026-10-21.

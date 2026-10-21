@@ -8,7 +8,7 @@ Il repository non contiene software da compilare né test: contiene documenti di
 
 ## Regole del progetto
 
-1. **Una decisione, un posto solo.** Le decisioni bloccate stanno in `docs/01-decisioni-bloccate.md`; le aperte in `docs/02-questioni-aperte.md`; la specifica consolidata in `SPECIFICA.md` (v0.1, rev. 2026-10-14: decisioni 76-114). Quando una questione si chiude: spostarla da 02 a 01 con data e origine [F]/[R]/[C], e aggiornare la specifica.
+1. **Una decisione, un posto solo.** Le decisioni bloccate stanno in `docs/01-decisioni-bloccate.md`; le aperte in `docs/02-questioni-aperte.md`; la specifica consolidata in `SPECIFICA.md` (v0.1, rev. 2026-10-21: decisioni 76-115). Quando una questione si chiude: spostarla da 02 a 01 con data e origine [F]/[R]/[C], e aggiornare la specifica.
 2. **Non inventare decisioni di design.** Le scelte sonore/ergonomiche sono di Filippo. L'ingegneria (topologie, componenti, simulazioni, calcoli) è di Claude, ma i numeri che vincolano l'uso musicale vanno mostrati e confermati.
 3. **Niente valori congelati prima della topologia.** Regola ereditata dalla review: mai fissare valori di componenti prima di aver scelto il circuito. Distinguere sempre [BLOCCATO] / [PROVVISORIO] / [APERTO] / [SUPERATO].
 4. **Metodo della fase circuitale**: requisito funzionale → funzione di trasferimento → topologia → componenti → simulazione → vincoli PCB → prototipo → misura → revisione.
@@ -59,7 +59,7 @@ Regole di simulazione (ognuna nasce da un errore già pagato; il contesto sta ne
 - `perl -e 'alarm ...'` ferma lo script ma non `LTspice.exe` dentro wine: il processo resta al 300 % di CPU. Controllare con `ps aux | grep -i LTspice.exe` e chiuderlo per PID.
 - Non fermare LTspice con `pkill -f <nome netlist>`: uccide anche lo script. `drive2-chain` a 150 Hz non termina (causa ignota): usare 50 Hz o 1 kHz.
 
-## Stato corrente (2026-10-21, decisioni 1-114)
+## Stato corrente (2026-10-21, decisioni 1-115)
 
 Il design teorico (carta + simulazione) è completo per tutti i moduli. Il prototipo musicale in Max for Live (dec. 78) precede il millefori: P0 (`MC-CHANNEL`), P1 (`MC-FILTRO`, canale R corretto il 2026-10-15) e P2 (`MC-5WAY`: CROSSOVER A-E con E = impianto di Filippo 80/170/1,2k + 6k, GROWL VER DEC.99/LIBERO, NASTRO VER OGGI/COMPLETO/EXCITER/CLASSE A/LIBERO) costruiti, verificati e in ascolto da Filippo; P3 e P4 costruiti e verificati, da caricare in Live (P4 = `MC-MIC`: GAIN, EQ2, FX1-4 verso i bus di P3, MUTE, LED; pedali = effetti di Live: `MC-SEND` per canale, `MC-BUS` → effetto → `MC-RET` su 4 tracce FX, `MC-MASTER`; bus con `send~`/`receive~` che si sommano) (`proto-max/RISULTATI-P*.md`). Il prototipo è completo ma BLOCCATO (2026-10-15, todo 76): in Live l'audio salta muovendo le manopole, soprattutto il filtro, e a tratti distorce forte. Non è la CPU (salti anche con buffer 2048) né il sample rate. Finché non si ripara, nessun ascolto del gruppo B vale. Prossimo: trovare la causa (ipotesi e prove nell'ultimo handoff). Generatori e prove in `proto-max/coefficienti/`: i `.genexpr/.maxpat/.amxd` non si toccano a mano. Gli acquisti sono sospesi fino al prototipo.
 
@@ -72,7 +72,7 @@ Il design teorico (carta + simulazione) è completo per tutti i moduli. Il proto
 | Filtro | v0.2; un percorso per canale (dec. 101, 8 core); law Xone:96 (dec. 102); overdrive v0.2 §5ter (dec. 99); core OTA (a′) con partitore 1/30 §5quater (dec. 109: il core nudo non funziona col chip reale; B1 aperta); numeri col chip reale accettati (dec. 110: oscillazione ~+5 dBu, calo di nota = carattere) | `docs/fase2/filter-module.md` | `sim/filtro/` |
 | 5-way | v0.3; celle v0.2.1; kill a switch §8.10 (dec. 88); drive v0.4 GROWL + NASTRO §5bis (dec. 99) | `docs/fase2/five-way-module.md` | `sim/five-way/` |
 | Mic e Mono | v0.1, due moduli separati, max 4 (dec. 97) | `docs/fase4/mic-mono-moduli.md` | `sim/mic/` |
-| Sistema | PSU ~250 VA (dec. 93/98/106; W1 3,5 A per i moduli opzionali, dec. 111; alimentatore ESTERNO con pre-regolatori, dec. 113, progettato in `sistema-psu-esterno.md`: LDO discreti ±22,0/±19 V, AC_OK, PSU-IN; ~83-97 W nel mixer, due ventole a termostato, dec. 112), grounding, backplane, metering (dec. 81/90), CUE (dec. 96), shaper, inventario comandi | `docs/fase3/` | `sim/system/` (box: `psu-box-*`, senza `uic`), `sim/meter/`, `sim/shaper/` |
+| Sistema | PSU ~270 VA (dec. 93/98/106; W1 4,0 A per i moduli opzionali e i 40 VCA FX, dec. 111/115; alimentatore ESTERNO con pre-regolatori, dec. 113, progettato in `sistema-psu-esterno.md`: LDO discreti ±22,0/±19 V, AC_OK, PSU-IN; ~83-97 W nel mixer, due ventole a termostato, dec. 112), grounding, backplane, metering (dec. 81/90), CUE (dec. 96), shaper, inventario comandi | `docs/fase3/` | `sim/system/` (box: `psu-box-*`, senza `uic`), `sim/meter/`, `sim/shaper/` |
 
 Review contro il benchmark (dec. 111): ibrido DJ / sound system / live, nessun fork, moduli opzionali predisposti (uscite per via, crossfader, EQ grafico, sirena), tasto MONO master, MUTE mic, ambiente da sound system all'aperto (`docs/07`, `docs/08`).
 
@@ -100,7 +100,7 @@ La coda vive in tre posti, non qui:
 
 ```
 SPECIFICA.md                  specifica consolidata
-docs/01-decisioni-bloccate.md cosa è deciso (114 voci; 103 e 104 revocate)
+docs/01-decisioni-bloccate.md cosa è deciso (115 voci; 103 e 104 revocate)
 docs/02-questioni-aperte.md   cosa manca: liste A/B/C in testa, storico delle voci sotto
 docs/03 … 08                  revisione critica, architettura filtro, benchmark, rumore, review
 docs/storico-sessioni.md      cronaca delle sessioni fino al 2026-10-13

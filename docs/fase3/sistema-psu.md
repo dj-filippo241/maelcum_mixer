@@ -84,7 +84,7 @@ Scelta di Filippo (dec. 113). Architettura proposta da Claude:
 ```
 BOX ESTERNO (alette, senza ventola, all'aria aperta)        CAVO ≤ 2 m        MIXER
  rete IEC + filtro + fusibile + NTC                          connettore         modulo PSU-IN (stella)
- toroidale ~250 VA (W1 2×21 V 3,5 A, W2 2×18 V 1,0 A,        circolare            │
+ toroidale ~270 VA (W1 2×21 V 4,0 A dec. 115, W2 2×18 V 1,0 A,        circolare            │
    W3 2×20 V 0,4 A, W4 9 V 2,5 A)                            metallico,           ├─ backplane riga a
  ponti + bulk (2×10 mF per W1/W2, 2×4,7 mF W3, 10 mF W4)     a vite, IP65,        │   (stessa mappa, valori nuovi)
  PRE-REG ±22,5 V (da W1, 1,7 A, LDO dropout ≤ 1 V)  ───────  ≥ 16 pin ≥ 5 A ──── ├─ LM317/337 locali → ±18 (invariati)
@@ -150,10 +150,9 @@ a +110 mA (5,5 mA/chip di questa tabella, I/V compreso). Ramo audio:
 (`sim/system/psu-w1-vca.cir`, bulk 15 mF, caso peggiore 1,81 A): W1 3,5 A
 al **98 %** a rete −10 % e al **100 %** a rete nominale (era 93 %); raw
 minimo 23,6 V (−0,2 V). Con W1 4,0 A: 88 %, raw minimo 23,9 V. Il calore
-sale di ~4 W. **APERTO**: il W1 3,5 A è della dec. 111/112; con tutti gli
-opzionali resta senza margine. Scelta di Filippo: tenere 3,5 A (margine
-zero solo con tutti gli opzionali e corrente dei chip al massimo) o
-passare a 4,0 A (~270 VA). La valle del raw scende di 0,2 V: margine
+sale di ~4 W. **DECISO → dec. 115 (Filippo, 2026-10-21): W1 2×21 V
+4,0 A, trasformatore ~270 VA**, fusibile del W1 T5 A (corrente efficace
+3,51 A: con T4 A il fusibile lavorerebbe all'88 %). La valle del raw scende di 0,2 V: margine
 dell'LDO ±22,0 V da ricontrollare in `psu-box-*`.
 
 **Bilancio termico rifatto.** La tabella §5 contava solo i regolatori

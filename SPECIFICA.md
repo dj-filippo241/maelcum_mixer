@@ -1,6 +1,6 @@
 # SPECIFICA — MAELCUM MIXER (mixer dub modulare analogico, esemplare unico)
 
-> **v0.1 (2026-09-18, rev. 2026-09-28/01-10: decisioni 76-93; REV 2026-10-13: decisioni 97-106 recepite nei §4-6 come note in testa ai punti toccati + esiti simulazioni e sessione decisioni; REV 2026-10-14: decisioni 107-114)** — Compilata da: decisioni 1-114 (`docs/01-decisioni-bloccate.md`; 103 e 104 revocate),
+> **v0.1 (2026-09-18, rev. 2026-09-28/01-10: decisioni 76-93; REV 2026-10-13: decisioni 97-106 recepite nei §4-6 come note in testa ai punti toccati + esiti simulazioni e sessione decisioni; REV 2026-10-14: decisioni 107-114; REV 2026-10-21: decisione 115)** — Compilata da: decisioni 1-115 (`docs/01-decisioni-bloccate.md`; 103 e 104 revocate),
 > status doc ChatGPT rev2 (`docs/export-chatgpt/`, corpus chiuso — decisione 58),
 > gain-staging sheet (`docs/fase1/gain-staging-sheet.md`), revisione critica (`docs/03`).
 > Livello: REQUISITI. Il dettaglio circuitale vive nei design doc di `docs/fase1/` e `docs/fase2/`.
@@ -159,7 +159,7 @@ Design circuitale: `docs/fase1/master-out.md` **v0.3 (2026-09-29: stadio finale 
 
 ## 12. Alimentazione — requisiti
 
-[REV dec. 90c/92 2026-10-01: PSU toroidale unico da 200 VA [REV dec. 106, 2026-10-13: ~225 VA, avvolgimento audio 2×21 V 3,0 A] (REV dec. 98, 2026-10-13: era ~120 VA; secondari 2×21 V 2,5 A · 2×18 V 1,0 A · 2×20 V 0,4 A · 9 V 2,0 A) multi-avvolgimento + regolazione locale, fanless, protezione corto 3 strati — design in `docs/fase3/sistema-psu.md`; CV VCA resta 6,1 mV/dB + routing curato + test banco (dec. 92; 61 = fallback). Riconciliazione rail raw sul backplane con §3: APERTA (review 01/10)]
+[REV dec. 115, 2026-10-21: toroidale ~270 VA, W1 2×21 V 4,0 A — il modulo FX ha 40 VCA, `docs/fase3/sistema-psu.md` REV 2026-10-21] [REV dec. 90c/92 2026-10-01: PSU toroidale unico da 200 VA [REV dec. 106, 2026-10-13: ~225 VA, avvolgimento audio 2×21 V 3,0 A] (REV dec. 98, 2026-10-13: era ~120 VA; secondari 2×21 V 2,5 A · 2×18 V 1,0 A · 2×20 V 0,4 A · 9 V 2,0 A) multi-avvolgimento + regolazione locale, fanless, protezione corto 3 strati — design in `docs/fase3/sistema-psu.md`; CV VCA resta 6,1 mV/dB + routing curato + test banco (dec. 92; 61 = fallback). Riconciliazione rail raw sul backplane con §3: APERTA (review 01/10)]
 
 - [BLOCCATO] Lineare con toroidale + regolazione locale (decisioni 45/90c); domini §1; backplane porta raw ±27/±22/±26[M] e +5 V regolato nella PSU (REV decisione 93: tabella in `docs/fase3/sistema-psu.md` v0.2); ±18/±15 LN locali per modulo (miglioria §3).
 - [BLOCCATO] Mute power-on/off; sequencing; protezione per ramo di modulo; budget correnti/termico [APERTO — da calcolo a moduli definiti].
