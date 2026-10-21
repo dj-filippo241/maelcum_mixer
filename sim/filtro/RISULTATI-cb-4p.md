@@ -45,8 +45,8 @@ dBu A-wtd, overdrive chiuso. Con f1 ~5-6 kHz il caso peggiore è
 aggiunto, pesa +0,6 dB col floor −98 (`cb-4p-noise.cir`, resn = 1).
 
 **Sistema** (−82,9 a filtri OFF ⊕ 4 canali filtro, f1 6 kHz): **−80,4**
-con l'overdrive chiuso (PASS 2,4 sul −78), −79,8 con DRIVE a metà,
-−77,1 a fondo. Col core (a′) k 1/30: −77,0 / −75,6 / −70,6.
+con l'overdrive chiuso (PASS 2,4 sul −78), −79,5 con DRIVE a metà,
+−75,6 a fondo (stima: core + guadagno dell'overdrive). Col core (a′) k 1/30: −77,0 / −75,6 / −70,6.
 
 ## Lettura
 
