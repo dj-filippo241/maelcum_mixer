@@ -126,3 +126,76 @@ Sistema con 4 filtri in HPF, overdrive chiuso: **(a′) −74,8 (FAIL 3,2)**,
 **(c-B) −79,6 (PASS 1,6)**. In HPF il filtro aperto lascia passare il
 rumore degli integratori su tutta la banda: è il caso peggiore per
 entrambi i core.
+
+## RES del (c-B) a 4 poli (2026-10-21, pomeriggio)
+
+Requisiti: law RES della dec. 102 (gres = 1 − θ/0,9, oltre il 90 %
+auto-oscillazione fino a gres −0,75); oscillazione stabile su tutto il
+campo dei tagli; RES minima silenziosa e pulita.
+
+**Topologia** (sezione 2; la sezione 1 resta a Q 0,541 fissa):
+
+- Q base 1,307 con la resistenza Rq2 dal ramo −bp_b (variante C).
+- La RES TOGLIE smorzamento: un OTA LM13700 dal ramo +bp_b, attraverso
+  il partitore k 1/30 del core (a′), inietta corrente nel summer.
+  Smorzamento tolto: anti = 0,765·(1 − gres) fino al 90 %, poi
+  0,765 + 1,414·|gres|. Iabc = 5,208 uA/k per unità di anti (stessa
+  taratura dell'OTA RES del D5): 0 … 285 uA. A RES minima Iabc ~0.
+- Limitatore = perdita non lineare dal ramo −bp_b al summer (topologia
+  del D5, §2 di RISULTATI-D5), 4,7k + diodi 1N4148 antiparalleli.
+
+Netlist: `cb-4p-res-prog.cir` (tono sul taglio a 1010 Hz),
+`cb-4p-res-osc-g{0.1,0.75}-{101,1010,10100}.cir` (senza ingresso),
+`cb-4p-noise-hp-res.cir` (rumore con l'OTA montato); varianti col
+limitatore 3+3: `cb-4p-res33-*.cir`.
+
+### Auto-oscillazione (limitatore 2+2)
+
+| RES | fc 101 Hz | fc 1010 Hz | fc 10,1 kHz |
+|---|---|---|---|
+| poco oltre 90 % (gres −0,1) | −0,06 st · −2,3 dBu | −0,07 st · −2,3 dBu | −0,10 st · −2,2 dBu |
+| 100 % (gres −0,75) | −1,11 st · +4,4 dBu | −1,11 st · +4,4 dBu | −1,13 st · +4,4 dBu |
+
+Livello e nota uguali su tre decadi (scarto ≤ 0,1 dB, ≤ 0,03 semitoni).
+La nota cala di ~1 semitono a fine corsa, contro 5,7 del core (a′):
+senza il tetto dell'OTA il giro non rallenta. Corrente dei VCA ≤ 0,44 mA.
+
+### Risonanza sul programma (tono sul taglio, guadagno della fondamentale)
+
+| ingresso | RES 0 % | 50 % | 70 % | 85 % | THD a 85 % |
+|---|---|---|---|---|---|
+| −30 dBu | −3,0 | +4,2 | +10,5 | +21,3 | 0,07 % |
+| −10 dBu | −3,0 | +3,7 | +6,8 | +8,2 | 1,0 % |
+| 0 dBu | −3,5 | −0,6 | +0,3 | +1,0 | 2,2 % |
+
+Limitatore 2+2. Disegno uguale al core (a′) (RISULTATI-D5 §6.1): il
+limitatore fa qui il lavoro che lì faceva il tetto dell'OTA. A RES
+minima e 0 dBu il limitatore conduce già: 0,30 % di THD.
+
+### Limitatore 3+3 (soglia ~1,65 V invece di ~1,1 V)
+
+| | 2+2 | 3+3 |
+|---|---|---|
+| RES 0 %, 0 dBu: THD · guadagno | 0,30 % · −3,5 dB | **0,03 % · −3,1 dB** |
+| RES 85 %, −10 dBu | +8,2 dB, 1,0 % | +10,5 dB, 0,64 % |
+| RES 85 %, 0 dBu | +1,0 dB, 2,2 % | +3,2 dB, 1,7 % |
+| oscillazione oltre 90 % (fc 1 kHz) | −2,3 dBu | −0,6 dBu |
+| oscillazione a fine corsa (fc 1 kHz) | +4,4 dBu, −1,11 st | **+6,8 dBu**, −1,15 st |
+
+Il 3+3 tiene pulita la RES minima e porta l'oscillazione dentro il
+requisito originale della SPECIFICA §5 (+6…+10 dBu; la dec. 110 lo aveva
+abbassato a ~+5 per il core (a′)). Scelta sonora di Filippo (A18/B1).
+
+### Rumore con la RES montata
+
+`cb-4p-noise-hp-res.cir` (HPF, caso peggiore, RES minima): −88,4 dBu
+A-wtd, identico a senza RES. L'OTA spento non aggiunge niente.
+
+### Non fatto
+
+- Overdrive v0.2 dietro l'oscillazione a +6,8 dBu (3+3): il tetto
+  d'uscita +5,5 dBu della griglia §5ter va riverificato.
+- Programma a +18 dBu con RES minima: col 3+3 il limitatore conduce
+  sopra ~1,65 V di stato; effetto sul suono da misurare.
+- THD dei VCA contro corrente (modello ideale), clone V2181L a banco.
+

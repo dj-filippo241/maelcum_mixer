@@ -574,6 +574,17 @@ il 2 poli: con 4 filtri inseriti il sistema va a −77,0, FAIL 1,0 sul −78
 (dec. 89).** k 1/20 rientra (−78,9) a prezzo di oscillazione e fischio
 (`docs/02` A18).
 
+### Core PULITO (c-B) a 4 poli (2026-10-21, `sim/filtro/RISULTATI-cb-4p.md`) [PROVVISORIO]
+
+Per B1 alla pari. Due VCA THAT 218x per sezione negli integratori, VCA a
+0 dB a 12 kHz (Cint ≈ 1,33 nF su 10k), Q base con resistenze; RES = OTA
+LM13700 che toglie smorzamento (Iabc 0 … 285 uA, spento a RES minima) +
+limitatore a diodi dal ramo −bp_b. Rumore caso peggiore (HPF) −88,4 dBu
+A-wtd per core: sistema con 4 filtri −79,6 (PASS 1,6) contro −74,8 del
+(a′). Oscillazione stabile su tre decadi, nota −1,1 semitoni a fine corsa;
+livello +4,4 dBu (limitatore 2+2) o +6,8 dBu (3+3, RES minima pulita).
+Corrente dei VCA ≤ 1,84 mA contro 2,5 di datasheet.
+
 ## 6. Simulazione di fattibilità (2026-09-24, `sim/filtro/`)
 
 ### Stato dei modelli — [PROVVISORIO] (regola 3)
