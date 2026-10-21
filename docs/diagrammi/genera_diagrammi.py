@@ -141,8 +141,8 @@ class Diagram:
             self.text(x + 58, y + 4, label, 11.5, "#333")
             x += 58 + int(len(label) * 6.2) + 40
 
-    def footer(self, s):
-        self.text(40, self.h - 22, s + " · " + DATA, 10.5, "#999")
+    def footer(self, s, data=DATA):
+        self.text(40, self.h - 22, s + " · " + data, 10.5, "#999")
         self._chk(s, 10.5, self.w - 60, "footer")
 
     def save(self):
@@ -780,60 +780,97 @@ def schema_totale():
 # ---------------------------------------------------------------- PSU
 def psu():
     d = Diagram("psu", 1560, 960, "SISTEMA PSU — ALIMENTAZIONE",
-                "maelcum mixer — design v0.2 + REV dec. 98/106 · toroidale unico, regolazione LOCALE in ogni modulo, fanless (dec. 90c) · rail ratificati dec. 93",
-                "trasformatore ~225 VA (dec. 106)", GREEN)
-    RE = d.box(40, 130, 150, 90, "RETE 230 V", ["IEC + interruttore", "bipolare"], "dark")
-    IN = d.box(230, 120, 200, 110, "INGRESSO RETE", ["fusibile T2 A [PROVV]", "NTC 10-20 Ω anti-inrush",
-                                                  "filtro EMC (§7)"])
-    TR = d.box(470, 110, 210, 130, "TOROIDALE ~225 VA", ["unico, 4 secondari", "schermo primario/secondari",
-                                                       "termico integrato", "taglia 225 o 250 VA all'acquisto"], "green")
+                "maelcum mixer — alimentatore ESTERNO con pre-regolatori (dec. 113) · regolazione finale nei moduli (dec. 93) · 2 ventole a termostato (dec. 112)",
+                "box esterno · toroidale ~250 VA", GREEN)
+    # i due contenitori: box esterno e mixer, uniti dal cavo
+    for x, w, label in ((20, 885, "BOX ESTERNO (dec. 113) — vicino al banco, a terra su piedini"),
+                        (950, 590, "MIXER — modulo PSU-IN e regolazione nei moduli")):
+        d.raw(f'  <rect x="{x}" y="88" width="{w}" height="792" rx="10" fill="none" '
+              'stroke="#888" stroke-width="1.5" stroke-dasharray="6 4"/>')
+        d.text(x + 12, 104, label, 11, "#555", weight=700)
+    RE = d.box(40, 130, 150, 90, "RETE 230 V", ["IEC + filtro EMC", "interruttore bipolare"], "dark")
+    IN = d.box(220, 120, 210, 110, "INGRESSO RETE", ["fusibile T2 A [PROVV]", "NTC 10-20 Ω anti-inrush",
+                                                  "+ relè di bypass dopo 0,5 s"])
+    TR = d.box(470, 110, 190, 130, "TOROIDALE ~250 VA", ["unico, 4 secondari", "schermo primario/secondari",
+                                                       "termico integrato", "(dec. 106/111)"], "green")
     chain_h(d, [RE, IN, TR])
+    d.box(690, 110, 200, 130, "CALORE NEL BOX (§2.8)", ["~48 W · ~63 W a rete +10 %", "aletta Rθ ≤ 0,6 K/W",
+                                                      "senza ventola", "chiuso: pioggia e polvere"],
+          "note", tsize=12, lsize=10)
+    d.box(965, 110, 560, 130, "CAVO ≤ 2 m E CONNETTORE (§3)",
+          ["20 conduttori da 0,5 mm² + schermo · circolare metallico a vite, IP65, classe 24 poli",
+           "±22 audio 2+2 · ±19 LN 1+1 · ±27 [M] 1+1 · +5 2 · V_FAN 1+1 · AC_OK 1 · PE 1",
+           "ogni 0 V su conduttori propri fino alla stella · cadute ≤ 60 mV · marca: voce 40"],
+          "note", tsize=12, lsize=10.5)
     rows = [
-        ("W1 2×21 V 3,0 A", ["ponte + bulk 2 × 10 mF", "raw min 23,8 V a rete −10 %"], "RAW ±27 V AUDIO",
-         ["LM317/337 locali → 19,2 V", "+ cap multiplier → ±18 V"],
-         ["canali · 5-way · FX · filtro", "FX-SEND · ampli CUE · mic/mono"], "~1,4 A per ramo (dec. 106)"),
-        ("W2 2×18 V 1,0 A", ["ponte + bulk 2 × 10 mF", "raw 20,5 / 24,0 / 27,3 V"], "RAW ±22 V LN / OTA",
-         ["pre-reg ±16,5 → LT3045/94 → ±15,0", "+ 78L15/79L15 ±15 per gli switch"],
-         ["phono · mic · CV · meter · CUE", "OTA filtro · switch kill/assign"], "picco LN ~450 mA, distribuito"),
-        ("W3 2×20 V 0,4 A", ["ponte + bulk 2 × 4,7 mF", "raw 23,3 / 27,1 / 30,3 V"], "RAW ±26 V [M]",
-         ["statici dello stadio HV master", "+ LDO locali del master"],
-         ["solo master out: +24 dBu reali", "(+25,1 dBu a rete −10 %, Test 17)"], "~130-170 mA"),
-        ("W4 9 V 2,0 A", ["ponte + bulk 10 mF", "raw 8,5 / 10,7 / 12,7 V"], "+5 V CONTROL",
-         ["7805 / LM2940 nel modulo PSU", "regolato sul backplane"],
-         ["LED dei meter · logiche", "relay di mute · supervisor"], "worst 1,0 A (LED 0,5)"),
+        ("W1 2×21 V 3,5 A", ["ponte + bulk 2 × 15 mF", "T4 A per ramo"],
+         "LDO MOSFET ±22,0 V", ["limite 2,7 A · soft-start 0,3 s", "ripple al mixer ≤ 3 mV pp"],
+         ["PSU-IN: TVS · T2,5 A · 2,2 mF", "modulo: LM317/337 → 19,2 V + cap mult. → ±18"],
+         ["canali · 5-way · FX · filtro · FX-SEND", "CUE · mic/mono · moduli opzionali",
+          "!1,4 A base · 1,7 A con gli opzionali"]),
+        ("W2 2×18 V 1,0 A", ["ponte + bulk 2 × 10 mF", "T1,25 A"],
+         "LDO MOSFET ±19 V", ["limite 1,1 A", "ripple al mixer ≤ 1 mV pp"],
+         ["PSU-IN: TVS · T1 A · 1 mF", "modulo: pre-reg ±16,5 → LT3045/94 → ±15,0",
+          "+ 78L15/79L15 ±15 per gli switch"],
+         ["phono · mic · CV · meter · CUE", "OTA filtro · switch kill/assign", "!picco LN ~0,48 A"]),
+        ("W3 2×20 V 0,4 A", ["ponte + bulk 2 × 4,7 mF", "T630 mA"],
+         "RAW ±27 V [M]", ["non regolato nel box", "30,3 V a rete +10 %"],
+         ["PSU-IN: TVS · T500 mA · 1 mF", "master: statici HV + LDO locali"],
+         ["solo master out: +24 dBu reali", "!~130-170 mA"]),
+        ("W4 9 V 2,5 A", ["ponte + bulk 10 mF", "T3,15 A"],
+         "+5 V E V_FAN", ["+5: LM1084/LM2940 nel box", "V_FAN: raw W4 non regolato"],
+         ["PSU-IN: TVS · T2 A · 1 mF sul +5", "V_FAN: T500 mA → driver ventole"],
+         ["LED dei meter · logiche · relè", "supervisor · 2 ventole", "!+5 worst 1,3 A · ventole 0,3 A"]),
     ]
+    d.text(790, 280, "pre-regolazione nel box", 10.5, "#777", "middle")
+    d.text(1095, 280, "nel mixer: PSU-IN e modulo", 10.5, "#777", "middle")
+    d.text(1390, 280, "chi lo usa · corrente", 10.5, "#777", "middle")
+    d.arrow([TR.b, (TR.cx, 590 - 14)], head=False)
     y = 290
-    for wn, wl, raw, rl, dest, cur in rows:
-        W = d.box(470, y, 210, 76, wn, wl, tsize=12, lsize=10)
-        R = d.box(730, y, 210, 76, raw, ["sul backplane, a stella"], "dark", tsize=12, lsize=10)
-        L = d.box(990, y, 250, 76, "", rl, "amber", lsize=10.5)
-        D = d.box(1280, y, 240, 76, "", dest + ["!" + cur], "note", lsize=10)
-        d.arrow([(575, y - 14 if y == 290 else y - 14), (W.cx, W.y - 2)], head=False)
-        chain_h(d, [W, R, L, D])
+    for wn, wl, reg, rl, mix, dest in rows:
+        W = d.box(470, y, 190, 76, wn, wl, tsize=12, lsize=10)
+        R = d.box(690, y, 200, 76, reg, rl, "dark", tsize=12, lsize=10)
+        M = d.box(965, y, 260, 76, "", mix, "amber", lsize=10)
+        U = d.box(1255, y, 270, 76, "", dest, "note", lsize=10)
+        d.arrow([(TR.cx, y - 14), (W.cx, W.y - 2)])
+        chain_h(d, [W, R, M, U])
         y += 100
-    d.arrow([TR.b, (TR.cx, 290 - 2)])
-    d.text(1115, 280, "regolazione nel modulo che usa il rail", 10.5, "#777", "middle")
-    d.text(1400, 280, "chi lo usa · corrente", 10.5, "#777", "middle")
-    # protezioni e mute
-    P = d.box(40, 300, 390, 170, "PROTEZIONI (§4)",
-              ["1. corto master: auto-limitato 106 mA, nessuna azione", "2. corto in un modulo: il regolatore locale limita",
-               "   e va in protezione; gli altri moduli non lo vedono", "3. fusibili di ramo sul raw: canali T315 · 5-way T630",
-               "   FX T400 · filtro T315 · master T500 [PROVV]", "+ fusibile secondari + termico del toroidale"],
-              "note", align="start", lsize=10.5, tsize=12)
-    S = d.box(40, 500, 390, 170, "SUPERVISOR E MUTE (§3)",
-              ["comparatori a finestra per avvolgimento (dec. 93)", "fuori finestra > 100 ms → mute generale + LED fault",
-               "relay di mute failsafe: diseccitati = muto", "accensione: relay chiusi dopo 1,5-2 s",
-               "spegnimento: il bulk +5 tiene vivo il supervisor", "~50 ms → relay aperti senza colpi"],
-              "ctrl", align="start", lsize=10.5, tsize=12)
-    d.arrow([(S.x + S.w, 585), (452, 585), (452, 688), (700, 688)], "cv")
-    d.text(710, 692, "GLOBAL_MUTE (c9) e relay [H] [B4] [C3] del master", 10.5, CV)
-    d.box(40, 710, 1480, 110, "CALORE E NUMERI (fanless, dec. 90c)",
-          ["Regolatori ±18 locali: ~18-21 W distribuiti sui moduli (ognuno ≤ 2,5 W su rame) · pre-regolatori LN ~5 W · stadio HV master: rame ≥ 5 cm² per transistor.",
-           "Uscita dei regolatori ±18: 18,00 V, ripple ~7 µVpp stimato al modulo (sim §9a) · hold-up ±18: ~70 ms, più del tempo di rilascio dei relay.",
-           "CV dei VCA a 6,1 mV/dB (dec. 92): l'hum sui CV è quantificato (§6), verifica al banco. Da banco: termografia, soglie del supervisor, PSRR reale."],
+    d.box(40, 290, 390, 176, "PROTEZIONI (§2.7, §4.3)",
+          ["rete: interruttore bipolare · T2 A · NTC + relè di bypass",
+           "secondari: fusibili lenti prima dei ponti",
+           "   (T4 A · T1,25 A · T630 mA · T3,15 A) · termico",
+           "uscite: limite di corrente degli LDO (corto nel cavo)",
+           "nel mixer: TVS + fusibile di gruppo per rail (PSU-IN)",
+           "   + PTC per slot e per rail sul backplane [PROVV]"],
           "note", align="start", lsize=10.5, tsize=12)
-    d.legend(856, [("audio", "potenza / raw"), ("cv", "mute e supervisione"), (AMBER, "regolazione nel modulo")])
-    d.footer("Fonte: docs/fase3/sistema-psu.md v0.2 (REV 2026-10-13, §2-§5, §9) + decisioni 54/90/92/93/98/106 + sim/system/psu-*.cir")
+    d.box(40, 490, 390, 176, "TERRA E 0 V (§3, §4.2)",
+          ["terra di rete → telaio del box",
+           "→ conduttore PE dedicato (chiude per primo) + schermo",
+           "→ telaio del mixer",
+           "nel box gli 0 V non toccano la terra: ogni 0 V",
+           "viaggia separato fino alla stella nel PSU-IN",
+           "(unico bond telaio ↔ AGND, sistema-grounding §2)"],
+          "note", align="start", lsize=10.5, tsize=12)
+    AC = d.box(40, 700, 850, 80, "RIVELATORE AC_OK (§2.5, §2.6)",
+               ["doppia semionda dal W1 · τ 42,7 ms · soglia al 75 % del picco · open-collector, alto = rete presente",
+                "scatta in ≤ 12,7-21,4 ms, prima che i regolatori locali escano (≥ 25,9 ms) · anche sotto ~−21 % di rete"],
+               "ctrl", tsize=12, lsize=10.5)
+    S = d.box(965, 690, 270, 176, "SUPERVISOR E MUTE (§4.4)",
+              ["vive sul +5 del box, sente i rail regolati", "±22 < 21,2 / > 23,5 V · ±19 < 18,3 / > 20,5",
+               "[M] < 22,0 V (5 ms) · +5 < 4,6 / > 5,5 V", "AC_OK basso → mute subito (filtro 1 ms)",
+               "riarmo 1,5-2 s dopo il rientro", "cavo staccato = relè rilasciati, niente pop",
+               "→ GLOBAL_MUTE (c9) + relè del master"],
+              "ctrl", align="start", lsize=10, tsize=12)
+    d.arrow([AC.r, (S.x - 2, AC.cy)], "cv")
+    d.box(1255, 690, 270, 176, "VENTOLE E CALORE (§4.5, §5)",
+          ["2 ventole: NTC sulla barra dei regolatori ±18", "driver lineare da V_FAN, niente PWM",
+           "spente < 35 °C · ~6 V a 35 °C · max a 50 °C", "ventola ferma > 45 °C → LED guasto, no mute",
+           "calore nel mixer ~83 W · ~97 W con opzionali", "aria interna ~+3 K sopra l'ambiente"],
+          "note", align="start", lsize=10, tsize=12)
+    d.legend(910, [("audio", "potenza (rail)"), ("cv", "mute e supervisione"), (AMBER, "regolazione nel mixer"),
+                   ("dashed", "contenitore")])
+    d.footer("Fonte: docs/fase3/sistema-psu-esterno.md v0.1 (§1-§5) + sistema-psu.md REV dec. 113 + decisioni 90/93/106/111/112/113 + sim/system/psu-box-*.cir",
+             "2026-10-21")
     return d.save()
 
 
