@@ -95,3 +95,32 @@ Nota: «locali fuori» non vuol dire pop. Il moltiplicatore di capacità dopo
 ogni LM317 filtra ancora il ripple, e i rail ±18 scendono di 1 V solo ~6 ms
 dopo. È il criterio prudente: il mute arriva prima che l'audio veda
 qualunque cosa.
+
+## 5. REV 2026-10-21 — dec. 115: W1 4,0 A, carico 1,81 A
+
+Il modulo FX ha 40 VCA, non 20 (todo 114): il ramo audio sale a 1,81 A
+per ramo con tutti i moduli opzionali. Netlist: `psu-box-w1-115.cir`
+(come `psu-box-w1.cir`, W1 2×21 V 4,0 A, bulk 15 mF) e
+`psu-box-off-115.cir` (come `psu-box-off15.cir`, W1 4,0 A, 1,81 A).
+
+| Caso | Rete | Carico | Raw min | V_DS min | Al mixer | Ripple | P MOSFET | I avv. eff. |
+|---|---|---|---|---|---|---|---|---|
+| 1 | −10 % | 1,81 A | 23,86 V | 1,56 V | 21,83 V | 2,4 mV | 3,6 W | 3,52 A (88 %) |
+| 2 | nom. | 1,81 A | 26,91 V | 4,57 V | 21,87 V | 1,3 mV | 9,1 W | 3,58 A (90 %) |
+| 3 | +10 % | 1,0 A | 31,36 V | 9,16 V | 21,94 V | 0,6 mV | 9,4 W | 2,22 A |
+| 4 | +10 % | 1,81 A | 29,96 V | 7,60 V | 21,90 V | 0,8 mV | **14,5 W** | 3,64 A (91 %) |
+
+Il MOSFET ha più margine di prima (1,56 V contro 1,26 V): il W1 più
+robusto e il bulk da 15 mF alzano la valle più di quanto la corrente in
+più la abbassi. Il calore peggiore per MOSFET sale da 13,4 a 14,5 W.
+
+Spegnimento (rete staccata sul picco, 15 mF, 1,81 A):
+
+| Rete | LDO del box sotto 21,5 V | Locali fuori | Allarme AC_OK + relè (§4) | Margine |
+|---|---|---|---|---|
+| −10 % | 19,3 ms | **25,3 ms** | ≤ 12,7 ms | ≥ 12,6 ms |
+| nom. | 44,6 ms | 50,6 ms | ≤ 17,3 ms | ≥ 33 ms |
+| +10 % | 70,0 ms | 75,9 ms | ≤ 21,4 ms | ≥ 54 ms |
+
+Il mute arriva sempre prima che i regolatori locali escano di regolazione.
+

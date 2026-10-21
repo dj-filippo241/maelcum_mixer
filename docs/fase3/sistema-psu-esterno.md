@@ -86,6 +86,12 @@ riferimento 2,5 V (shunt) → RC di soft-start (τ ~0,1 s) → amp. d'errore (+)
 
 ### 2.3 Risultati (dettagli in `RISULTATI-psu-box.md`)
 
+**REV 2026-10-21 (dec. 115, `RISULTATI-psu-box.md` §5)**: W1 4,0 A e carico
+1,81 A (40 VCA nel modulo FX). Margine minimo del MOSFET 1,56 V (era 1,26),
+al mixer 21,83-21,94 V, ripple ≤ 2,4 mV, avvolgimento 88-91 %, calore per
+MOSFET 9,1 / **14,5 W**, locali fuori dopo 25,3 ms a rete −10 % (mute a
+≤ 12,7 ms). La tabella sotto è quella del 2026-10-14.
+
 | | W1 ±22,0 V | W2 ±19 V |
 |---|---|---|
 | Al mixer, rete −10 … +10 % | 21,83-21,94 V | 18,84-18,92 V |
@@ -160,6 +166,9 @@ Sull'aletta: ~33 W nominali, ~48 W nel caso peggiore. Obiettivo: aletta
 **Rθ ≤ 0,6 K/W**, cioè una parete alettata del box in estruso
 (ordine di grandezza 300 × 150 mm con alette da 40-50 mm), senza ventola.
 Giunzione del MOSFET più caldo: ~70 + 13,4 × 1,3 ≈ 88 °C (limite 150).
+**REV 2026-10-21 (dec. 115)**: MOSFET W1 2 × 14,5 W = 29,1 W nel caso
+peggiore (era 26,8): sull'aletta ~50 W, serve **Rθ ≤ 0,58 K/W** (stessa
+estrusione, alette un po' più lunghe). Giunzione ~70 + 14,5 × 1,3 ≈ 89 °C.
 
 Ambiente all'aperto (dec. 111 e): box chiuso contro pioggia e polvere,
 alette all'esterno, trasformatore e schede dentro. Le perdite interne
