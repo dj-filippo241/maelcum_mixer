@@ -1,0 +1,77 @@
+* =====================================================================
+* FILTRO — D5 a 4 poli, un caso solo (gres -0.1, Iabc 10.8u): AUTO-OSCILLAZIONE del core
+* (a') k 1/30 a due sezioni, senza ingresso. Come d5a-nl-k30.cir (Rl 4,7k)
+* ma con la sezione 1 (Q 0,541) davanti. fc ~101 / 1010 / 10100 Hz.
+* =====================================================================
+.include ../lib/lm13700.inc
+.include ../lib/opamp-audio.inc
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+.param A=0 k=0.0333333
+.param Ra={100*(1/k-1)} Ci={33n*k}
+* d = 1/Q; Iabc_res = 7,365 uA/k * d/sqrt(2) (7,365 uA/k = Q 0,707 nel D5)
+.param Iq1={7.365u/k*1.847759/1.414214}
+.param Ip={7.365u/k*max(gres,0)*0.765367/1.414214+1n} In={7.365u/k*max(-gres,0)+1n}
+V1 vin 0 DC 0
+* --- sezione 1: Q fissa 0,541 (d = 1,848), RES fissa, niente limitatore ---
+Rvin vin ns1 10k
+Rlp1 lp1_b ns1 10k
+Rf1 ns1 hp1 10k
+Xsum1 0 ns1 hp1 vcc vee OP1654
+Ra11 hp1 hpk1 {Ra}
+Rd11 hpk1 0 100
+Xota11 hpk1 0 bp1 iabc1 a1 a2 vcc vee LM13700
+C11 bp1 0 {Ci}
+Rb11 bp1 0 100Meg
+Xb11 bp1 bp1_b bp1_b vcc vee OP1654
+Ra12 bp1_b bpk1 {Ra}
+Rd12 bpk1 0 100
+Xota12 bpk1 0 lp1 iabc2 a3 a4 vcc vee LM13700
+C12 lp1 0 {Ci}
+Rb12 lp1 0 100Meg
+Xb12 lp1 lp1_b lp1_b vcc vee OP1654
+Xres1 bpk1 0 ns1 iabq1 a5 a6 vcc vee LM13700
+* --- sezione 2: Q 1,307 a RES minima, RES (law dec. 102), limitatore D5 ---
+Rin2 lp1_b ns 10k
+Rlp lp_b ns 10k
+Rf ns hp 10k
+Xsum 0 ns hp vcc vee OP1654
+Ra1 hp hpk {Ra}
+Rd1 hpk 0 100
+Xota1 hpk 0 bp iabc3 d1 d2 vcc vee LM13700
+C1i bp 0 {Ci}
+Rb1 bp 0 100Meg
+Xb1 bp bp_b bp_b vcc vee OP1654
+Ra2 bp_b bpk {Ra}
+Rd2 bpk 0 100
+Xota2 bpk 0 lp iabc4 d3 d4 vcc vee LM13700
+C2i lp 0 {Ci}
+Rb2 lp 0 100Meg
+Xb2 lp lp_b lp_b vcc vee OP1654
+XresP bpk 0 ns iabp d5 d6 vcc vee LM13700
+XresN 0 bpk ns iabn d7 d8 vcc vee LM13700
+Ix1 vcc iabc1 DC {Iab}
+Ix2 vcc iabc2 DC {Iab}
+Ix3 vcc iabc3 DC {Iab}
+Ix4 vcc iabc4 DC {Iab}
+Ixq vcc iabq1 DC {Iq1}
+Ixp vcc iabp DC {Ip}
+Ixn vcc iabn DC {In}
+.model D1N4148 D(Is=2.53n Rs=0.568 N=1.752 Cjo=4p M=0.4 Tt=20n)
+Rnl bp_b nl 4.7k
+Dn1 nl nl1 D1N4148
+Dn2 nl1 ns D1N4148
+Dn3 ns nl2 D1N4148
+Dn4 nl2 nl D1N4148
+.ic V(lp)=0.01
+.tran 0 0.3 0 2u uic
+.param gres=-0.1
+.param Iab=10.8u
+.meas tran t1 WHEN V(lp_b)=0 RISE=40
+.meas tran t2 WHEN V(lp_b)=0 RISE=60
+.meas tran fosc PARAM 20/(t2-t1)
+.meas tran lppp PP V(lp_b) FROM 0.27 TO 0.3
+.meas tran lpdc AVG V(lp_b) FROM 0.27 TO 0.3
+.meas tran lprms RMS V(lp_b) FROM 0.27 TO 0.3
+.meas tran bppp PP V(bp_b) FROM 0.27 TO 0.3
+.end

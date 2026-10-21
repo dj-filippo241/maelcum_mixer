@@ -243,9 +243,120 @@ punto di partenza (k 1/30 già deciso nella 109).
 
 ## 5. Non fatto
 
-- Rumore con l'overdrive aperto (il blocco sale di +7,4 dB a piccolo segnale, §5ter).
-- Core a 4 poli (due sezioni in cascata): tutto qui è su una sezione a 2
-  poli, come le simulazioni v0.2. Allineamento delle due sezioni = q64.
+- ~~Rumore con l'overdrive aperto~~ e ~~core a 4 poli~~: FATTI il
+  2026-10-21, §6.
 - Programma vero (più toni, transitori): solo toni a 1 kHz e 250 Hz.
 - Deriva termica del partitore e degli OTA; offset in continua con Vos
   massimo dentro la catena col servo.
+
+## 6. Core a 4 poli e rumore con l'overdrive aperto (2026-10-21, todo 46)
+
+Core (a′) k 1/30 in due sezioni, allineamento Butterworth: sezione 1 a Q
+0,541 fissa (OTA di smorzamento a Iabc fissa, niente limitatore), sezione 2
+a Q 1,307 con la RES (law dec. 102) e il limitatore del §2. È la struttura
+del prototipo `MC-FILTRO` (sez_a0 + sez_a1). Overdrive v0.2 sull'uscita LP
+come nel §3.
+
+| netlist | cosa misura |
+|---|---|
+| `d5b-4p-chain.cir` | risonanza sul programma e overdrive (tono a 1 kHz sul taglio) |
+| `d5b-4p-osc-g{0.1,0.75}-{1.08u,10.8u,108u}.cir` | auto-oscillazione senza ingresso, un caso per netlist |
+| `d5b-4p-noise-{397u,10.8u}.cir` | rumore core + overdrive v0.2b (od2-noise-b), DRIVE 0 / 50 / 80 / 100 % |
+| `d5b-4p-noise-r1-*`, `-r2-*`, `-k20-*` | varianti per il rumore (sotto) |
+
+`d5b-4p-osc.cir` (sei casi in un netlist, 1 s ciascuno) non termina: dopo
+40 minuti era al quinto caso. Spezzato nei sei netlist sopra, ognuno
+finisce in 1-8 minuti.
+
+### 6.1 Risonanza e overdrive (`d5b-4p-chain.cir`)
+
+THD % · uscita dBu rms, manopola DRIVE 0 / 50 / 80 / 100 %:
+
+| RES · ingresso | 0 % | 50 % | 80 % | 100 % |
+|---|---|---|---|---|
+| 85 % · −30 dBu | 0,1 · −9,2 | 0,2 · −7,4 | 0,5 · −4,4 | 0,8 · −2,0 |
+| 85 % · −10 dBu | 0,9 · −2,5 | 3,2 · −1,5 | 9,2 · +0,5 | 13,6 · +2,2 |
+| 70 % · −10 dBu | 0,6 · −3,5 | 2,8 · −2,3 | 7,8 · −0,1 | 11,2 · +1,8 |
+| 0 % · −10 dBu | 0,1 · −13,1 | 0,0 · −11,3 | 0,0 · −8,2 | 0,0 · −5,8 |
+| 85 % · 0 dBu | 1,6 · −0,4 | 3,5 · +0,2 | 11,4 · +1,6 | 17,9 · +2,9 |
+| 0 % · 0 dBu | 0,5 · −3,7 | 2,7 · −2,5 | 7,5 · −0,2 | 10,7 · +1,7 |
+
+Guadagno sul taglio (fondamentale), contro l'ideale −3,0 / +4,0 / +10,1 /
++22,1 dB a RES 0 / 50 / 70 / 85 %:
+
+| ingresso | 0 % | 50 % | 70 % | 85 % |
+|---|---|---|---|---|
+| −30 dBu | −3,1 | +3,9 | +9,7 | +20,8 |
+| −10 dBu | −3,1 | +3,6 | +6,5 | +7,5 |
+| 0 dBu | −3,7 | −1,4 | −0,8 | −0,4 |
+
+- Stesso disegno del 2 poli (§2, §3): risonanza piena a −30 dBu, tetto a
+  −10 dBu, compressione a 0 dBu. Il fischio sul programma è ~1 dB più
+  debole (85 % a −10 dBu: +7,5 contro +8,5 dB).
+- La sezione 1 resta pulita: 0,26 % di THD con 0 dBu sul taglio (tetto di
+  stato 1,56 V, segnale 0,59 V di picco). Lo sporco nasce nella sezione 2.
+- Uscita massima +2,9 dBu, sotto il tetto di +5,5 dBu.
+
+### 6.2 Auto-oscillazione
+
+| RES | fc 101 Hz | fc 1010 Hz | fc 10,1 kHz |
+|---|---|---|---|
+| poco oltre 90 % (gres −0,1) | −1,2 st · −2,2 dBu | −1,3 st · −1,8 dBu | −1,4 st · −1,7 dBu |
+| 100 % (gres −0,75) | −5,5 st · +4,7 dBu | −5,7 st · +4,9 dBu | −5,7 st · +4,9 dBu |
+
+Nota sotto il taglio in semitoni (st) · livello LP in dBu rms. Identici al
+2 poli k 1/30 (§2): oscilla la sezione 2, la sezione 1 senza ingresso non
+cambia niente. I numeri della dec. 110 valgono anche per il 4 poli.
+
+### 6.3 Rumore (metodo `docs/06`, uscita dopo l'overdrive)
+
+dBu A-wtd, RES al minimo:
+
+| core | DRIVE 0 % | 50 % | 80 % | 100 % |
+|---|---|---|---|---|
+| 4 poli k 1/30, fc max (397 uA) | −84,4 | −82,6 | −79,5 | −77,0 |
+| 4 poli k 1/30, fc 1 kHz (10,8 uA) | −84,3 | −82,5 | −79,4 | −76,9 |
+| 2 poli k 1/30 (§2, riferimento) | −87,4 / −87,9 | — | — | — |
+
+- Il 4 poli fa 3,1-3,6 dB più rumore del 2 poli: due sezioni, due OTA di
+  smorzamento, quattro integratori col partitore.
+- Guadagno a piccolo segnale dell'overdrive: 0 / +1,8 / +4,9 / +7,4 dB,
+  come nel §5ter. Il rumore cresce di pari passo: lo domina il core, non
+  il blocco dell'overdrive.
+
+**Sistema** (metodo `docs/06` §11: −82,9 a filtri OFF ⊕ 4 canali filtro):
+
+| condizione | 2 poli (docs/06 §11) | 4 poli |
+|---|---|---|
+| 4 filtri inseriti, overdrive chiuso | −79,0 | **−77,0 (FAIL 1,0 sul −78)** |
+| 4 filtri, DRIVE a metà | −77,8 | −75,6 |
+| 4 filtri, DRIVE a fondo, in silenzio | −73,4 | −70,6 |
+| 1 filtro inserito, overdrive chiuso | −81,6 | −80,5 |
+
+Le righe con l'overdrive aperto stanno nella condizione d'uso accettata
+dalla dec. 100. La prima riga no: col 4 poli, quattro filtri inseriti a
+manopole ferme superano il target della dec. 89 di 1,0 dB.
+
+### 6.4 Varianti provate per il rumore
+
+| variante | fc max | fc 1 kHz | sistema, 4 filtri (caso peggiore) |
+|---|---|---|---|
+| base k 1/30 | −84,4 | −84,3 | −77,0 |
+| R1: Q fissa della sezione 1 con resistenza (R = 1/(19,2·Iq1·k) = 5,4k) al posto dell'OTA | −86,0 | −84,3 | −77,0 |
+| R2: R1 + base Q 1,307 della sezione 2 con resistenza; la RES toglie smorzamento con l'OTA negativo, spento a RES minima | −86,8 | −84,3 | −77,0 |
+| k 1/20 (partitore della dec. 109 cambiato) | −87,2 | −87,7 | **−78,9 (PASS 0,9)** |
+
+- Con il taglio a 1 kHz domina il rumore degli integratori (OTA a 10,8 uA
+  visti attraverso il partitore ×1/k): R1 e R2 non lo toccano. Aiutano solo
+  col taglio in alto.
+- Solo un partitore più grande rientra nel target. Il prezzo è musicale
+  (§2, k 1/20): oscillazione a fine corsa −8,2 semitoni e +3,8 dBu
+  (contro −5,7 e +4,9), fischio sul programma più debole (85 % a −10 dBu:
+  +6,7 contro +8,5 dB nel 2 poli). Scelta di Filippo (docs/02, A18).
+
+### 6.5 Non fatto
+
+- Rumore in modo HPF (tutte le misure sono sull'uscita LP).
+- Programma vero (più toni, transitori): solo toni a 1 kHz.
+- Core (c-B) a 4 poli: rumore non misurato. Serve per confrontare B1 alla
+  pari.

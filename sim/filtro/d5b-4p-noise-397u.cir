@@ -1,0 +1,115 @@
+* =====================================================================
+* FILTRO — D5 a 4 poli (todo 46, 2026-10-21): RUMORE del core (a') k 1/30
+* a due sezioni (Q 0,541 + Q 1,307, RES al minimo) + OVERDRIVE v0.2b
+* (od2-noise-b.cir, polarita' diritta) a m = 0 / 0,177 / 0,572 / 1
+* (manopola DRIVE 0 / 50 / 80 / 100 %). Iabc integratori 397u.
+* Metodo docs/06: densita' a 16 punti + noise_total.py; macro OPX senza
+* clamp nel core (come d5a-noise-*), OP1654 nell'overdrive; .nodeset.
+* =====================================================================
+.include ../lib/lm13700.inc
+.include ../lib/opamp-audio.inc
+.subckt OPX inp inn out vp vm
+Rn inp inx 1223
+E1 xx 0 inx inn 1e6
+R1 xx p1 5005
+C1 p1 0 1.59u
+E2 out 0 value={V(p1)}
+.ends OPX
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+Vcc8 vcc8 0 DC 18
+Vee8 vee8 0 DC -18
+.param gres=1 k=0.0333333 m=0
+.param Ra={100*(1/k-1)} Ci={33n*k}
+* d = 1/Q; Iabc_res = 7,365 uA/k * d/sqrt(2) (7,365 uA/k = Q 0,707 nel D5)
+.param Iq1={7.365u/k*1.847759/1.414214}
+.param Ip={7.365u/k*max(gres,0)*0.765367/1.414214+1n} In={7.365u/k*max(-gres,0)+1n}
+V1 vin 0 DC 0 AC 1
+* --- sezione 1: Q fissa 0,541 (d = 1,848), RES fissa, niente limitatore ---
+Rvin vin ns1 10k
+Rlp1 lp1_b ns1 10k
+Rf1 ns1 hp1 10k
+Xsum1 0 ns1 hp1 vcc vee OPX
+Ra11 hp1 hpk1 {Ra}
+Rd11 hpk1 0 100
+Xota11 hpk1 0 bp1 iabc1 a1 a2 vcc vee LM13700
+C11 bp1 0 {Ci}
+Rb11 bp1 0 100Meg
+Xb11 bp1 bp1_b bp1_b vcc vee OPX
+Ra12 bp1_b bpk1 {Ra}
+Rd12 bpk1 0 100
+Xota12 bpk1 0 lp1 iabc2 a3 a4 vcc vee LM13700
+C12 lp1 0 {Ci}
+Rb12 lp1 0 100Meg
+Xb12 lp1 lp1_b lp1_b vcc vee OPX
+Xres1 bpk1 0 ns1 iabq1 a5 a6 vcc vee LM13700
+* --- sezione 2: Q 1,307 a RES minima, RES (law dec. 102), limitatore D5 ---
+Rin2 lp1_b ns 10k
+Rlp lp_b ns 10k
+Rf ns hp 10k
+Xsum 0 ns hp vcc vee OPX
+Ra1 hp hpk {Ra}
+Rd1 hpk 0 100
+Xota1 hpk 0 bp iabc3 d1 d2 vcc vee LM13700
+C1i bp 0 {Ci}
+Rb1 bp 0 100Meg
+Xb1 bp bp_b bp_b vcc vee OPX
+Ra2 bp_b bpk {Ra}
+Rd2 bpk 0 100
+Xota2 bpk 0 lp iabc4 d3 d4 vcc vee LM13700
+C2i lp 0 {Ci}
+Rb2 lp 0 100Meg
+Xb2 lp lp_b lp_b vcc vee OPX
+XresP bpk 0 ns iabp d5 d6 vcc vee LM13700
+XresN 0 bpk ns iabn d7 d8 vcc vee LM13700
+Ix1 vcc iabc1 DC {397u}
+Ix2 vcc iabc2 DC {397u}
+Ix3 vcc iabc3 DC {397u}
+Ix4 vcc iabc4 DC {397u}
+Ixq vcc iabq1 DC {Iq1}
+Ixp vcc iabp DC {Ip}
+Ixn vcc iabn DC {In}
+* --- overdrive v0.2b (od2-noise-b.cir) sull'uscita LP ---
+.model D4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+.param kod=1.171
+Ri lp_b gn 10k
+Rfo gn a 20k
+X1 0 gn a vcc8 vee8 OP1654
+R1 a w 2.2k
+D1 w p1 D4148
+D2 p1 0 D4148
+D3 0 q1 D4148
+D4 q1 w D4148
+Xb w wb wb vcc8 vee8 OP1654
+Rvx lp_b vino 10k
+Rvw wb vino {10k/kod}
+Vs vino 0 DC 0
+Fv 0 sn Vs {m}
+Rvn vn 0 120k
+Gvn 0 sn vn 0 1e-4
+Rsa a sn 20k
+Rsf sn y 10k
+Xs 0 sn y vcc8 vee8 OP1654
+.options gmin=1e-9 abstol=1e-11 vntol=1e-8
+.nodeset V(bp1)=0 V(lp1)=0 V(hp1)=0 V(bp1_b)=0 V(lp1_b)=0 V(bp)=0 V(lp)=0 V(hp)=0 V(bp_b)=0 V(lp_b)=0
+.step param m list 0 0.177 0.572 1
+.noise V(y) V1 dec 20 20 20k
+.meas noise on1 FIND V(onoise) AT 20
+.meas noise on2 FIND V(onoise) AT 31.5
+.meas noise on3 FIND V(onoise) AT 50
+.meas noise on4 FIND V(onoise) AT 80
+.meas noise on5 FIND V(onoise) AT 125
+.meas noise on6 FIND V(onoise) AT 200
+.meas noise on7 FIND V(onoise) AT 315
+.meas noise on8 FIND V(onoise) AT 500
+.meas noise on9 FIND V(onoise) AT 800
+.meas noise on10 FIND V(onoise) AT 1250
+.meas noise on11 FIND V(onoise) AT 2000
+.meas noise on12 FIND V(onoise) AT 3150
+.meas noise on13 FIND V(onoise) AT 5000
+.meas noise on14 FIND V(onoise) AT 8000
+.meas noise on15 FIND V(onoise) AT 12500
+.meas noise on16 FIND V(onoise) AT 20000
+.meas noise g1k FIND gain AT 1000
+.meas noise g100 FIND gain AT 100
+.end

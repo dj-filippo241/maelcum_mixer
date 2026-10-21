@@ -564,6 +564,16 @@ THD % · uscita dBu rms, manopola DRIVE 0 / 50 / 100 %:
 risonanza come misurato sopra (Xone-like); oscillazione ~+5 dBu
 (requisito abbassato); calo di nota a fine corsa = carattere.
 
+### Core a 4 poli (2026-10-21, todo 46, RISULTATI-D5 §6)
+
+Due sezioni (a′) k 1/30: Q 0,541 fissa + Q 1,307 con RES e limitatore
+(`d5b-4p-*.cir`). Risonanza e overdrive come nella tabella sopra, fischio
+~1 dB più debole, uscita massima +2,9 dBu. Auto-oscillazione identica al
+2 poli (oscilla la sezione 2). **Rumore −84,3 dBu A-wtd per core, 3 dB sopra
+il 2 poli: con 4 filtri inseriti il sistema va a −77,0, FAIL 1,0 sul −78
+(dec. 89).** k 1/20 rientra (−78,9) a prezzo di oscillazione e fischio
+(`docs/02` A18).
+
 ## 6. Simulazione di fattibilità (2026-09-24, `sim/filtro/`)
 
 ### Stato dei modelli — [PROVVISORIO] (regola 3)

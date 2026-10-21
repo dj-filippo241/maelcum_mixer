@@ -239,3 +239,25 @@ Calcolo: canale filtro = core (+ guadagno a piccolo segnale
 dell'overdrive: 0 / +1,9 / +7,4 dB) ⊕ blocco overdrive (§9); sistema =
 −82,9 ⊕ 4 canali filtro. Le righe con l'overdrive aperto ricadono nella
 condizione d'uso accettata dalla dec. 100.
+
+## 12. Aggiornamento 2026-10-21 (todo 46): core del filtro a 4 poli
+
+Fonte: `sim/filtro/RISULTATI-D5.md` §6. I numeri del §11 sono di una
+sezione a 2 poli. Il core vero ha due sezioni (Q 0,541 fissa + Q 1,307 con
+la RES), misurato con l'overdrive v0.2b reale a valle
+(`d5b-4p-noise-*.cir`): **−84,3 dBu A-wtd** a fc 1 kHz, −84,4 a fc max,
+3,1-3,6 dB sopra il 2 poli.
+
+| Condizione | §11 (2 poli) | 4 poli, k 1/30 |
+|---|---|---|
+| Filtri OFF | −82,9 | −82,9 |
+| 4 filtri inseriti, overdrive chiuso | −79,0 | **−77,0 (FAIL 1,0 sul −78)** |
+| 4 filtri, overdrive a metà | −77,8 | −75,6 |
+| 4 filtri, overdrive tutto aperto, in silenzio | −73,4 | −70,6 |
+
+Il rumore con l'overdrive aperto ora è misurato, non calcolato. Il FAIL
+della prima riga si toglie solo col partitore: k 1/20 dà −78,9 (PASS 0,9),
+con oscillazione e fischio che cambiano (RISULTATI-D5 §6.4). Resistenze al
+posto degli OTA a Q fissa aiutano solo col taglio in alto. Decisione di
+Filippo: `docs/02` A18.
+
