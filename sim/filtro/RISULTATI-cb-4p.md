@@ -48,19 +48,60 @@ aggiunto, pesa +0,6 dB col floor −98 (`cb-4p-noise.cir`, resn = 1).
 con l'overdrive chiuso (PASS 2,4 sul −78), −79,5 con DRIVE a metà,
 −75,6 a fondo (stima: core + guadagno dell'overdrive). Col core (a′) k 1/30: −77,0 / −75,6 / −70,6.
 
+## Variante C: curva di rumore del datasheet e headroom (2026-10-21, pomeriggio)
+
+Letti dal datasheet THAT 2181 (Doc. 600030 Rev 03):
+
+- **Figure 4, rumore contro guadagno** (20 kHz NBW, I/V 20k): piatto a
+  ~−110 dBV sotto −30 dB, −98 dBV a 0 dB, ~−75 dBV a +30 dB. Il floor
+  «piatto a −98/−104» delle righe sopra era 12 dB pessimista proprio in
+  attenuazione. Modello (`cb-4p-noise-c.cir`, I/V 10k): g ≤ 1 →
+  √(floor² + (a·g)²) col floor 12 dB sotto lo 0 dB; g > 1 → g^(2/3).
+- **Recommended Operating Conditions**: Iin + Iout ≤ 2,5 mA (Iset 2,4 mA).
+
+| f1 (VCA a 0 dB) | fc 37 kHz | 10 kHz | 1 kHz | 100 Hz | peggiore | guadagno max del VCA |
+|---|---|---|---|---|---|---|
+| 6 kHz | −91,9 | −94,3 | −97,2 | −100,5 | −91,9 | +15,8 dB |
+| **12 kHz** | −93,9 | −93,6 | −92,1 | −95,1 | **−92,1** | +9,8 dB |
+| 20 kHz | −94,3 | −92,8 | −87,9 | −90,8 | −87,9 | +5,3 dB |
+| 37 kHz | −93,7 | −90,2 | −82,6 | −85,6 | −82,6 | 0 dB |
+
+Headroom (`cb-4p-headroom.cir`): tono a +18 dBu (6,16 Vp) a f = fc e
+fc/2, RES al minimo, corrente Iin + Iout del VCA più carico:
+
+| f1 | fc 20 kHz, f = fc | fc 37 kHz, f = fc | fc/2 (peggiore) |
+|---|---|---|---|
+| 12 kHz | 1,18 mA | 1,84 mA | 1,26 mA |
+| 20 kHz | 0,89 mA | 1,29 mA | 0,88 mA |
+
+Tutti sotto 2,5 mA. Il caso a 1,84 mA è un tono a +18 dBu a 37 kHz,
+fuori dalla banda audio.
+
+**Scelta di ingegneria: f1 = 12 kHz** (Cint = 1/(2π·12 kHz·10k) ≈ 1,33 nF,
+VCA da −42 dB a fc 100 Hz… a +9,8 dB a fc 37 kHz) [PROVVISORIO].
+
+**Sistema** (−82,9 ⊕ 4 canali filtro): **−81,2** con l'overdrive chiuso
+(PASS 3,2 sul −78), −80,5 con DRIVE a metà, −77,3 a fondo (stima: core +
+guadagno dell'overdrive). Core (a′) k 1/30: −77,0 / −75,6 / −70,6.
+
 ## Lettura
 
-- Col floor del datasheet e f1 ben scelto, il PULITO rientra nel target
-  con margine. Il FAIL di A18 riguarda solo il core (a′).
-- Il numero dipende dal floor del VCA in attenuazione (letto piatto) e
-  dalla curva in guadagno (estrapolata oltre +15 dB). Verifica a banco.
+- Col floor del datasheet e f1 = 12 kHz il PULITO a 4 poli fa −92,1 dBu
+  A-wtd nel caso peggiore, 7,8 dB sotto il core (a′). Il sistema con 4
+  filtri passa con 3,2 dB di margine. Il FAIL di A18 riguarda solo il
+  core (a′).
+- La posizione del VCA conta più di tutto: in attenuazione il suo floor
+  resta e il loop lo ricompensa; in guadagno il rumore cresce meno del
+  guadagno, ma serve corrente. 12 kHz bilancia le due cose.
+- La tabella del mattino (righe con f1 3k/6k/12k e floor piatto) è
+  SUPERATA dalla variante C.
 
 ## Non fatto
 
-- **Headroom del VCA in guadagno.** Con f1 6 kHz il VCA arriva a +16 dB
-  (fc 37 kHz): la corrente d'uscita del 218x va controllata contro il
-  programma a +18 dBu. Può chiedere una resistenza d'ingresso più alta,
-  che sposta il rumore. Da fare prima di fissare f1.
-- Risonanza, auto-oscillazione e overdrive del (c-B) col chip: nel
-  modello il VCA è un moltiplicatore ideale.
+- RES alta nel (c-B): gli stati crescono di Q volte e servono un
+  limitatore e un VCA (o OTA) della RES progettati per questo core.
+  Risonanza, auto-oscillazione e overdrive del (c-B) col chip: nel
+  modello il VCA è un moltiplicatore ideale (niente THD vs corrente).
 - Rumore in modo HPF.
+- Verifica a banco della curva di Figure 4 sul clone V2181L (il datasheet
+  è del THAT originale).
