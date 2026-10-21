@@ -1,0 +1,376 @@
+<meta charset="utf-8">
+<title>Prototipo in Live — tutorial e prove</title>
+<style>
+@page { size: A4; margin: 16mm 15mm 18mm 15mm; }
+:root { --ink:#1d1d1b; --soft:#5b5b57; --line:#d9d6cf; --tint:#f4f1ea; --acc:#9a3412; --ok:#166534; }
+body { font: 10.5pt/1.45 -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif; color:var(--ink); background:#fff; margin:0; }
+h1 { font-size:24pt; line-height:1.1; margin:0 0 4pt; letter-spacing:-0.01em; }
+h2 { font-size:15pt; margin:22pt 0 6pt; padding-top:6pt; border-top:2px solid var(--ink); break-after:avoid; }
+h3 { font-size:11.5pt; margin:14pt 0 4pt; break-after:avoid; color:var(--acc); }
+p { margin:0 0 6pt; }
+ul, ol { margin:0 0 7pt; padding-left:17pt; }
+li { margin:0 0 2pt; }
+code { font: 9.5pt ui-monospace, Menlo, monospace; background:var(--tint); padding:0 3px; border-radius:2px; }
+table { border-collapse:collapse; width:100%; margin:4pt 0 9pt; font-size:9.5pt; break-inside:avoid; }
+th, td { text-align:left; vertical-align:top; padding:3.5pt 6pt; border-bottom:1px solid var(--line); }
+th { background:var(--tint); font-weight:600; }
+.sub { color:var(--soft); font-size:11pt; margin-bottom:14pt; }
+.box { border:1px solid var(--line); border-left:4px solid var(--acc); background:var(--tint); padding:7pt 10pt; margin:8pt 0 10pt; break-inside:avoid; }
+.box.ok { border-left-color:var(--ok); }
+.box p:last-child, .box ul:last-child, .box ol:last-child { margin-bottom:0; }
+.test { border:1px solid var(--line); padding:7pt 10pt 4pt; margin:8pt 0; break-inside:avoid; }
+.test h3 { margin-top:0; }
+.tag { display:inline-block; font-size:8pt; font-weight:600; padding:0 5px; border:1px solid var(--soft); border-radius:3px; color:var(--soft); margin-left:4pt; vertical-align:1pt; }
+.lab { font-weight:600; }
+.write { border-bottom:1px solid var(--line); height:16pt; margin:2pt 0; }
+.chain { font: 9.5pt ui-monospace, Menlo, monospace; background:var(--tint); padding:8pt 10pt; white-space:pre; line-height:1.55; margin:6pt 0 10pt; break-inside:avoid; }
+.toc { columns:2; column-gap:20pt; font-size:10pt; }
+.toc li { break-inside:avoid; }
+.page { break-before:page; }
+.keep { break-inside:avoid; }
+td code { white-space:nowrap; }
+.small { font-size:9pt; color:var(--soft); }
+</style>
+
+<h1>Il prototipo in Live</h1>
+<div class="sub">maelcum mixer · come montare i dispositivi Max for Live e quali prove fare · 21 ottobre 2026</div>
+
+<div class="box">
+<p><span class="lab">A cosa serve.</span> Il prototipo fa suonare il mixer prima di saldare un solo componente. Ogni dispositivo <code>MC-…</code> imita un modulo vero, con le sue manopole e i suoi numeri. Le prove di questo libretto servono a prendere le decisioni che vogliono l'orecchio. Sono le voci B di <code>docs/02</code>.</p>
+</div>
+
+<ol class="toc">
+<li>Prima di cominciare</li>
+<li>La mappa del set</li>
+<li>Montaggio passo per passo</li>
+<li>I dispositivi, comando per comando</li>
+<li>Versioni complete e versioni «-S»</li>
+<li>Prova 0: i salti (da fare per prima)</li>
+<li>Prove del canale</li>
+<li>Prove del filtro</li>
+<li>Prove del 5-way</li>
+<li>Prove di effetti e master</li>
+<li>Prove del microfono</li>
+<li>Se qualcosa non va</li>
+</ol>
+
+<h2>1. Prima di cominciare</h2>
+<ul>
+<li><span class="lab">Programma:</span> Ableton Live 12 Suite. Max for Live è già dentro.</li>
+<li><span class="lab">File:</span> stanno nella cartella <code>maelcum_mixer/proto-max/</code>. Si usano solo i file <code>.amxd</code>. Gli altri (<code>.genexpr</code>, <code>.maxpat</code>) li rigenera Claude: non aprirli e non salvarli.</li>
+<li><span class="lab">Livello:</span> 0 dBu del mixer vero = −12 dBFS di picco in Live. Una traccia normale, ben livellata, è già nel posto giusto. Filtro, GROWL e NASTRO cambiano carattere col livello: non abbassare l'ingresso per «pulire», abbassa il fader dopo.</li>
+<li><span class="lab">Orecchie:</span> metti un <b>Limiter</b> di Live per ultimo sulla traccia Master. Non fa parte del design. Ti protegge quando il feedback degli effetti scappa.</li>
+<li><span class="lab">Cuffie</span> per le prove del microfono, così non parte il larsen.</li>
+<li><span class="lab">Buffer:</span> in Preferenze → Audio. Per le prove va bene 512. Il 15/10 era rimasto a 2048: con 2048 il gesto sulle manopole arriva in ritardo (~96 ms).</li>
+</ul>
+
+<h2>2. La mappa del set</h2>
+<p>Il set completo ha 10 tracce. Ogni riga qui sotto è una traccia di Live; le frecce sono l'ordine dei dispositivi da sinistra a destra.</p>
+<div class="chain">Canale 1-4 (audio)   MC-CHANNEL → MC-SEND → MC-FILTRO
+Gruppo DJ (Cmd+G)    MC-5WAY                     ← somma dei 4 canali
+FX1-FX4 (audio)      MC-BUS → tuo effetto → Saturator → MC-RET
+Mic (audio, mono)    MC-MIC
+Master               MC-MASTER → Limiter (solo protezione)</div>
+<p>Il percorso del suono: il canale passa dall'EQ, manda agli effetti, poi entra nel filtro. I quattro canali si sommano nel gruppo, dove sta il 5-way. Gruppo, ritorni degli effetti e mic arrivano al Master.</p>
+<div class="box"><p><span class="lab">Non serve montare tutto subito.</span> Per le prove del canale basta una traccia. Il set completo serve solo per le prove degli effetti.</p></div>
+
+<h2>3. Montaggio passo per passo</h2>
+<h3>Una traccia canale</h3>
+<ol>
+<li>Apri un set nuovo e metti un brano su una traccia audio.</li>
+<li>Dal Finder trascina <code>MC-CHANNEL.amxd</code> sulla traccia.</li>
+<li>Se ti servono gli effetti: trascina <code>MC-SEND.amxd</code> subito dopo.</li>
+<li>Trascina <code>MC-FILTRO.amxd</code> per ultimo.</li>
+<li>Ripeti sulle altre tracce, fino a quattro.</li>
+</ol>
+<h3>Il gruppo del 5-way</h3>
+<ol>
+<li>Seleziona le tracce dei canali e premi <b>Cmd+G</b>: Live crea un gruppo.</li>
+<li>Trascina <code>MC-5WAY.amxd</code> sulla traccia del gruppo.</li>
+<li>Con una traccia sola puoi metterlo sulla traccia stessa, dopo MC-FILTRO.</li>
+</ol>
+<h3>Le quattro tracce degli effetti</h3>
+<ol>
+<li>Crea 4 tracce <b>audio</b>, non tracce Return.</li>
+<li>Su ognuna: ingresso <b>No Input</b>, Monitor su <b>In</b>.</li>
+<li>Primo dispositivo: <code>MC-BUS.amxd</code>. Scegli il suo BUS: FX1 sulla prima traccia, FX2 sulla seconda, e così via.</li>
+<li>Poi il tuo effetto. Per il dub: Echo al <b>100 % wet</b>, poi un <b>Saturator</b>. Il Saturator fa la parte del pedale vero, che satura quando il feedback sale.</li>
+<li>Ultimo dispositivo: <code>MC-RET.amxd</code>.</li>
+<li>Il fader della traccia FX è il fader del ritorno.</li>
+</ol>
+<h3>Microfono e master</h3>
+<ol>
+<li>Traccia audio per il mic: ingresso = canale della scheda, <b>mono</b>; Monitor su <b>In</b>.</li>
+<li>Preamp della scheda audio <b>al minimo</b>: il guadagno lo dà la manopola GAIN di MC-MIC.</li>
+<li>Trascina <code>MC-MIC.amxd</code>. Lascia il fader della traccia a 0 dB: il modulo vero non ha fader.</li>
+<li>Sulla traccia Master: <code>MC-MASTER.amxd</code>, poi il Limiter.</li>
+</ol>
+
+<h2 class="page">4. I dispositivi, comando per comando</h2>
+<p class="small">Il centro delle manopole (50 %) corrisponde al detent del pannello vero. Per tornarci: clic sulla manopola, poi tasto Canc. Le voci [PROVVISORIO] sono law scritte da Claude e aspettano il tuo orecchio.</p>
+
+<h3>MC-CHANNEL — il canale</h3>
+<table>
+<tr><th>Comando</th><th>Cosa fa</th></tr>
+<tr><td>GAIN</td><td>0 % muto · 50 % 0 dB · 100 % +10 dB. La metà sinistra scende lineare in dB.</td></tr>
+<tr><td>LOW, LOW-MID, MID-HIGH, HIGH</td><td>0 % banda spenta · 50 % piatto · 100 % +6 dB.</td></tr>
+<tr><td>FADER</td><td>0 % muto · 100 % 0 dB. Law non decisa: oggi è un pot audio tipico.</td></tr>
+<tr><td>INCROCI</td><td>A 150/500/2500 Hz · C 150 dolce/350/3150 · D 150 dolce/700/3150. Cambio con dissolvenza 20 ms.</td></tr>
+<tr><td>CURVA</td><td>LINEARE (pot di serie) o PIONEER (curva dei DJM).</td></tr>
+<tr><td>EQ TIPO</td><td>ISOLATOR (l'EQ di progetto) o SERIE (il vecchio EQ a campane 70/250/1k/5k, archiviato). In SERIE nessuna banda spegne del tutto.</td></tr>
+</table>
+
+<h3>MC-SEND — le mandate di un canale</h3>
+<table>
+<tr><th>Comando</th><th>Cosa fa</th></tr>
+<tr><td>EQ LOW, EQ HIGH</td><td>Colore del suono che va agli effetti. Il canale passa intatto. [PROVVISORIO]</td></tr>
+<tr><td>LEVEL</td><td>Quanto suono va al pedale. Curva A: −20 dB a metà, 0 dB a fine corsa.</td></tr>
+<tr><td>FX1-FX4</td><td>Bottoni: a quale bus va la mandata. Rampa 1 ms, niente click.</td></tr>
+</table>
+
+<h3>MC-FILTRO — il filtro di canale</h3>
+<table>
+<tr><th>Comando</th><th>Cosa fa</th></tr>
+<tr><td>MODO</td><td>HPF / OFF / LPF. Parte in OFF: suono invariato.</td></tr>
+<tr><td>HPF e LPF: FREQ</td><td>Frequenza del taglio, law Xone:96.</td></tr>
+<tr><td>HPF e LPF: RES</td><td>Risonanza. Oltre il 90 % il filtro fischia da solo, anche senza musica.</td></tr>
+<tr><td>HPF e LPF: DRIVE</td><td>Overdrive dopo il filtro: morde a fine corsa.</td></tr>
+<tr><td>CORE</td><td>OTA (a′), che si schiaccia col livello, o PULITO (c-B).</td></tr>
+<tr><td>PENDENZA</td><td>Butterworth / Linkwitz-Riley / Bessel.</td></tr>
+</table>
+
+<h3>MC-5WAY — il performance EQ sul DJ bus</h3>
+<table>
+<tr><th>Comando</th><th>Cosa fa</th></tr>
+<tr><td>KILL SUB, KICK, MID, HIGH, SUPER</td><td>ON = via aperta · KILL = via tagliata di netto, col click dell'interruttore vero.</td></tr>
+<tr><td>EQ1-EQ5: GAIN, POS, WIDTH</td><td>Campana per via: GAIN (centro piatto, destra boost, sinistra taglio fino al notch), POS (frequenza), WIDTH (Q3 stretta, Q1 media, Q0.5 larga).</td></tr>
+<tr><td>GROWL</td><td>Sporco sul basso.</td></tr>
+<tr><td>NASTRO</td><td>Saturazione tipo nastro su tutto il bus.</td></tr>
+<tr><td>CROSSOVER</td><td>Solo prototipo. A 90/350/1,2k/3,5k · B Jah Tubbys 80/200/1,2k/6k · C JB Audio 75/190/2,2k/8k · D Speakerplans 80/220/1,5k/7k · E il tuo impianto 80/170/1,2k/6k.</td></tr>
+<tr><td>GROWL VER, NASTRO VER</td><td>Solo prototipo. Versioni a confronto: GROWL DEC.99 / LIBERO; NASTRO OGGI / COMPLETO / EXCITER / CLASSE A / LIBERO.</td></tr>
+</table>
+<p class="small">Con boost forti, GROWL o NASTRO alti l'uscita supera 0 dBFS e la scheda taglia l'onda. Abbassa il fader del gruppo, non l'ingresso.</p>
+
+<h3>MC-BUS e MC-RET — un bus degli effetti</h3>
+<table>
+<tr><th>Comando</th><th>Cosa fa</th></tr>
+<tr><td>BUS (MC-BUS)</td><td>Quale bus raccoglie questa traccia: FX1-FX4.</td></tr>
+<tr><td>GAIN (MC-RET)</td><td>−40 → 0 dB tra 5 e 50 %; 0 → +20 dB nella metà destra; silenzio a fondo corsa. [PROVVISORIO]</td></tr>
+<tr><td>EQ LOW, EQ HIGH</td><td>Come in MC-SEND. HIGH a fondo corsa scurisce, non spegne. [PROVVISORIO]</td></tr>
+<tr><td>REROUTE &gt; FX1 … &gt; FX4</td><td>Rimanda il ritorno verso un bus, anche se stesso: è il feedback del dub. Sta prima del fader: abbassi il fader e il feedback continua.</td></tr>
+<tr><td>Meter</td><td>0 in cima = +24 dBu; −24 = 0 dBu. La striscia sottile è il clip.</td></tr>
+</table>
+
+<h3>MC-MASTER e MC-MIC</h3>
+<table>
+<tr><th>Comando</th><th>Cosa fa</th></tr>
+<tr><td>MASTER</td><td>−∞ a fondo corsa · 0 dB all'80 % (detent) · +6 dB a fine corsa. [PROVVISORIO]</td></tr>
+<tr><td>MONO</td><td>Somma L e R, rampa 1 ms.</td></tr>
+<tr><td>GAIN (mic)</td><td>30-60 dB, pot lineare come il circuito: l'ultimo 10 % fa 8,4 dB.</td></tr>
+<tr><td>EQ LOW, EQ HIGH (mic)</td><td>Come quelle degli effetti. Passa-alto fisso a 60 Hz.</td></tr>
+<tr><td>FX1-FX4 (mic)</td><td>Quanto mic va a ciascun bus degli effetti. Curva A.</td></tr>
+<tr><td>MUTE</td><td>Spegne il mic verso Master e bus insieme, in 1 ms.</td></tr>
+<tr><td>LED</td><td>Grigio niente · verde ok · giallo vicino al clip · rosso clip (resta mezzo secondo).</td></tr>
+</table>
+
+<div class="keep"><h2>5. Versioni complete e versioni «-S»</h2>
+<p>Il 21 ottobre hai scelto le prime versioni a orecchio. Ora tre dispositivi esistono in due forme:</p>
+<table>
+<tr><th>Versione</th><th>Cosa contiene</th><th>Quando usarla</th></tr>
+<tr><td><code>MC-CHANNEL-S</code></td><td>ISOLATOR, incroci A, curva PIONEER, senza selettori</td><td rowspan="3">Per suonare e per le prove di uso: pesa meno sul computer.</td></tr>
+<tr><td><code>MC-FILTRO-S</code></td><td>core PULITO, BUTTERWORTH</td></tr>
+<tr><td><code>MC-5WAY-S</code></td><td>crossover E, GROWL LIBERO, NASTRO EXCITER</td></tr>
+<tr><td>Versioni complete</td><td>tutti i selettori</td><td>Per confrontare le alternative.</td></tr>
+</table>
+<p>Si montano nello stesso posto degli originali. Non mettere sulla stessa traccia la versione completa e la «-S» dello stesso dispositivo.</p>
+</div>
+
+<h2>6. Prova 0: i salti <span class="tag">DA FARE PER PRIMA · todo 76</span></h2>
+<p>Il 15 ottobre il prototipo saltava e distorceva quando muovevi le manopole, soprattutto il filtro. Finché i salti restano, le altre prove non valgono: non sai se senti il design o il guasto.</p>
+<div class="box ok"><p><span class="lab">Novità del 21 ottobre.</span> Il codice del filtro violava due regole del gen~ già note. È stato corretto (commit <code>bf4431c</code>). È il sospetto più forte: questa prova dice se bastava.</p></div>
+<div class="test">
+<h3>0.1 Il filtro da solo</h3>
+<ol>
+<li>Set nuovo. Una traccia con un brano. Solo <code>MC-FILTRO-S.amxd</code>.</li>
+<li>MODO su LPF. Muovi LPF FREQ avanti e indietro per 30 secondi, prima piano, poi veloce.</li>
+<li>Ripeti con RES a metà.</li>
+</ol>
+<p><span class="lab">Cosa ascolti:</span> buchi nel suono, scatti, crepitii, distorsione improvvisa.</p>
+<div class="write"></div>
+</div>
+<div class="test">
+<h3>0.2 Aggiungi un pezzo alla volta</h3>
+<p>Se 0.1 è pulita, aggiungi un dispositivo e ripeti il movimento delle manopole. Ordine: <code>MC-CHANNEL-S</code> → <code>MC-5WAY-S</code> → un secondo canale → tracce FX con <code>MC-BUS</code>/<code>MC-RET</code> → <code>MC-MIC</code>.</p>
+<p><span class="lab">Cosa mi dici:</span> il primo pezzo che riporta i salti.</p>
+<div class="write"></div>
+</div>
+<div class="test">
+<h3>0.3 Se salta già al primo passo</h3>
+<ol>
+<li>Clicca l'icona di modifica (Edit) del dispositivo: si apre Max.</li>
+<li>Menu Window → Max Console.</li>
+<li>Copia o fotografa le righe rosse e mandamele.</li>
+<li>Guarda anche l'indicatore CPU in alto a destra in Live: dimmi il numero mentre muovi la manopola.</li>
+</ol>
+<div class="write"></div>
+</div>
+
+<h2>7. Prove del canale <span class="tag">B5 · B7 · todo 40</span></h2>
+<div class="test">
+<h3>7.1 Primo controllo (2 minuti)</h3>
+<ol>
+<li>Tutte le manopole al 50 %, fader al 100 %. Accendi e spegni il dispositivo col pallino giallo: il suono deve restare identico.</li>
+<li>Le quattro bande a 0 %: deve sparire tutto.</li>
+</ol>
+</div>
+<div class="test">
+<h3>7.2 Gli incroci <span class="tag">B7</span></h3>
+<p><span class="lab">Cosa fai:</span> con la versione completa, chiudi una banda alla volta e cambia INCROCI fra A, C e D. Prova soprattutto LOW-MID e MID-HIGH chiuse da sole.</p>
+<p><span class="lab">Cosa ascolti:</span> quale incrocio lascia il kick intatto quando chiudi i medi. Quale fa sparire la voce in modo pulito.</p>
+<p><span class="lab">Cosa mi dici:</span> A, C o D, e in quale gesto si sente la differenza.</p>
+<div class="write"></div>
+</div>
+<div class="test">
+<h3>7.3 La curva <span class="tag">B7</span></h3>
+<p><span class="lab">Cosa fai:</span> gira lentamente una banda da 50 % a 0 %, con CURVA su LINEARE e poi su PIONEER.</p>
+<p><span class="lab">Cosa ascolti:</span> dove la banda comincia a sparire davvero. Se il tratto utile della manopola è comodo sotto la mano.</p>
+<div class="write"></div>
+</div>
+<div class="test">
+<h3>7.4 ISOLATOR contro SERIE <span class="tag">B5</span></h3>
+<p><span class="lab">Cosa fai:</span> stesso brano, stessi gesti, EQ TIPO su ISOLATOR e poi su SERIE.</p>
+<p><span class="lab">Cosa ascolti:</span> ISOLATOR spegne le bande; SERIE scava e lascia sempre qualcosa. Quale ti serve per il dub che suoni.</p>
+<div class="write"></div>
+</div>
+
+<h2>8. Prove del filtro <span class="tag">B1 · B2 · B6 · todo 59</span></h2>
+<div class="test">
+<h3>8.1 Il carattere del core <span class="tag">B1</span></h3>
+<p><span class="lab">Cosa fai:</span> versione completa. LPF, RES al 70 %, sweep di FREQ. Alterna CORE fra OTA e PULITO. Poi alza il GAIN del canale di qualche dB e ripeti.</p>
+<p><span class="lab">Cosa ascolti:</span> OTA si schiaccia col livello e cambia colore; PULITO resta uguale a ogni livello. Hai scelto PULITO il 21/10: questa prova lo conferma o no.</p>
+<div class="write"></div>
+</div>
+<div class="test">
+<h3>8.2 La pendenza <span class="tag">B2</span></h3>
+<p><span class="lab">Cosa fai:</span> HPF su un brano col basso pieno, sweep lento. Alterna Butterworth, Linkwitz-Riley, Bessel.</p>
+<p><span class="lab">Cosa ascolti:</span> quanto è netto il taglio e quanto «suona» la zona dell'incrocio.</p>
+<div class="write"></div>
+</div>
+<div class="test">
+<h3>8.3 Risonanza e fischio</h3>
+<p><span class="lab">Cosa fai:</span> RES oltre il 90 %, poi muovi FREQ. Ferma la musica: il filtro deve fischiare da solo.</p>
+<p><span class="lab">Cosa ascolti:</span> se il fischio è usabile come gesto, e quanto forte arriva (circa +5 dBu nel design).</p>
+<div class="write"></div>
+</div>
+<div class="test">
+<h3>8.4 Il DRIVE <span class="tag">B6</span></h3>
+<p><span class="lab">Cosa fai:</span> DRIVE da 0 a 100 % con il filtro a metà corsa.</p>
+<p><span class="lab">Cosa ascolti:</span> il morso deve arrivare a fine corsa, meno aggressivo dello Sherman.</p>
+<div class="write"></div>
+</div>
+
+<h2>9. Prove del 5-way <span class="tag">B3 · B6 · todo 60, 61</span></h2>
+<div class="test">
+<h3>9.1 Il crossover <span class="tag">B3</span></h3>
+<p><span class="lab">Cosa fai:</span> versione completa. Kill alternati di KICK e MID con CROSSOVER su A, B, C, D, E.</p>
+<p><span class="lab">Cosa ascolti:</span> dove si divide il basso fra SUB e KICK. Se E, gli incroci del tuo impianto, suona coerente con le casse.</p>
+<div class="write"></div>
+</div>
+<div class="test">
+<h3>9.2 GROWL <span class="tag">B6 · dec. 99</span></h3>
+<p><span class="lab">Cosa fai:</span> GROWL da 0 a 100 %, prima con tutte le vie aperte, poi con MID e HIGH killate. Alterna DEC.99 e LIBERO.</p>
+<p><span class="lab">Cosa ascolti:</span> se il GROWL si sente anche con tutto aperto. LIBERO fa crescere il basso: se vince LIBERO, va rivista la dec. 99 (todo 61).</p>
+<div class="write"></div>
+</div>
+<div class="test">
+<h3>9.3 NASTRO <span class="tag">B6</span></h3>
+<p><span class="lab">Cosa fai:</span> NASTRO da 0 a 100 % con ogni versione: OGGI, COMPLETO, EXCITER, CLASSE A, LIBERO.</p>
+<p><span class="lab">Cosa ascolti:</span> quanto è aggressivo, e se il programma piano cresce di volume.</p>
+<div class="write"></div>
+</div>
+<div class="test">
+<h3>9.4 I kill</h3>
+<p><span class="lab">Cosa fai:</span> kill rapidi a tempo su ogni via.</p>
+<p><span class="lab">Cosa ascolti:</span> il click dell'interruttore. È voluto, come sul pannello vero: dimmi se è troppo.</p>
+<div class="write"></div>
+</div>
+
+<h2 class="page">10. Prove di effetti e master <span class="tag">B8 · todo 68</span></h2>
+<p>Il feedback nasce dal REROUTE. Con GAIN del ritorno al centro (0 dB), tutto il gesto del dub sta nell'ultimo terzo della corsa:</p>
+<table>
+<tr><th>REROUTE</th><th>Ripetizioni dell'eco</th></tr>
+<tr><td>70 %</td><td>circa 6</td></tr>
+<tr><td>85 %</td><td>circa 15</td></tr>
+<tr><td>95 %</td><td>circa 60</td></tr>
+<tr><td>100 %</td><td>infinite: l'eco si sostiene da sola</td></tr>
+</table>
+<p class="small">Se alzi il GAIN del ritorno, il punto d'innesco scende: a +10 dB (75 %) il loop parte già al 70 %. Senza Saturator dopo l'eco, sopra unity il loop sale fino a +11,5 dBFS e tosa duro: non è il suono del pedale vero.</p>
+<div class="test">
+<h3>10.1 L'innesco del feedback</h3>
+<p><span class="lab">Cosa fai:</span> manda un canale a FX1 (LEVEL a fine corsa). Su FX1, REROUTE &gt; FX1 da 0 a 100 %, lentamente.</p>
+<p><span class="lab">Cosa ascolti:</span> dove parte il loop. Se lo governi con le mani, cioè se lo fai crescere e lo riprendi senza che scappi.</p>
+<div class="write"></div>
+</div>
+<div class="test">
+<h3>10.2 Il feedback incrociato</h3>
+<p><span class="lab">Cosa fai:</span> FX1 rimanda a FX2, FX2 rimanda a FX1. Prova con due effetti diversi (eco e riverbero).</p>
+<p><span class="lab">Cosa ascolti:</span> se il gioco fra i due bus è controllabile.</p>
+<div class="write"></div>
+</div>
+<div class="test">
+<h3>10.3 Le law degli effetti <span class="tag">PROVVISORIE</span></h3>
+<p><span class="lab">Cosa fai:</span> gira EQ LOW, EQ HIGH e GAIN del ritorno su tutta la corsa.</p>
+<p><span class="lab">Cosa ascolti:</span> se il tratto utile cade dove la mano se lo aspetta.</p>
+<div class="write"></div>
+</div>
+<div class="test">
+<h3>10.4 La latenza del giro</h3>
+<p><span class="lab">Cosa fai:</span> eco con tempo corto, feedback alto.</p>
+<p><span class="lab">Cosa ascolti:</span> se il giro fra le tracce allunga l'eco in modo che si sente, fuori tempo.</p>
+<div class="write"></div>
+</div>
+<div class="test">
+<h3>10.5 Master e MONO</h3>
+<p><span class="lab">Cosa fai:</span> MASTER all'80 % (0 dB), poi su tutta la corsa. Premi MONO più volte su un brano stereo largo.</p>
+<p><span class="lab">Cosa ascolti:</span> la law del MASTER; se il tasto MONO suona pulito, senza click.</p>
+<div class="write"></div>
+</div>
+
+<h2>11. Prove del microfono <span class="tag">B9 · todo 73</span></h2>
+<div class="box"><p>Il livello del mic dipende dalla tua scheda audio. Il prototipo assume +9 dBu = 0 dBFS col preamp al minimo [PROVVISORIO]. Dimmi il modello della scheda: correggo il numero.</p></div>
+<div class="test">
+<h3>11.1 GAIN e LED</h3>
+<p><span class="lab">Cosa fai:</span> parla, poi urla, girando il GAIN.</p>
+<p><span class="lab">Cosa ascolti e guardi:</span> se il GAIN si regola bene a mano (l'ultimo 10 % fa 8,4 dB). Se verde, giallo e rosso si accendono nel punto giusto.</p>
+<div class="write"></div>
+</div>
+<div class="test">
+<h3>11.2 MUTE</h3>
+<p><span class="lab">Cosa fai:</span> premi MUTE mentre parli, più volte.</p>
+<p><span class="lab">Cosa ascolti:</span> nessun click.</p>
+<div class="write"></div>
+</div>
+<div class="test">
+<h3>11.3 La voce negli effetti</h3>
+<p><span class="lab">Cosa fai:</span> manda il mic a FX1 con l'eco, girando FX1.</p>
+<p><span class="lab">Cosa ascolti:</span> se la curva della mandata è comoda per il gesto dub sulla voce.</p>
+<div class="write"></div>
+</div>
+<div class="test">
+<h3>11.4 Serve un limiter?</h3>
+<p><span class="lab">Cosa fai:</span> urla vicino al mic, con GAIN alto.</p>
+<p><span class="lab">Cosa mi dici:</span> se senti il bisogno di un limiter sul mic. Oggi non c'è: è una tua decisione.</p>
+<div class="write"></div>
+</div>
+
+<h2>12. Se qualcosa non va</h2>
+<table>
+<tr><th>Cosa succede</th><th>Cosa fai</th></tr>
+<tr><td>Il dispositivo non si apre o Live dà errore</td><td>Usa la patch di riserva: <code>proto-max/montaggio.md</code> §3. Poi mandami l'errore.</td></tr>
+<tr><td>Non passa suono</td><td>Edit del dispositivo → Max Console: mandami le righe rosse.</td></tr>
+<tr><td>La traccia FX resta muta</td><td>Controlla ingresso No Input, Monitor su In, e che MC-BUS abbia il bus giusto.</td></tr>
+<tr><td>Il feedback scappa</td><td>Abbassa il REROUTE, non il fader: il fader sta dopo il loop. Il Limiter sul Master ti protegge.</td></tr>
+<tr><td>L'uscita distorce sempre</td><td>Guarda i meter: sopra 0 dBFS taglia la scheda, non il design. Abbassa il fader dopo il dispositivo.</td></tr>
+<tr><td>Salti e scatti</td><td>Torna alla Prova 0 e dimmi a quale passo ricompaiono.</td></tr>
+</table>
+<p class="small">Fonti: <code>proto-max/montaggio.md</code>, <code>proto-max/RISULTATI-P0…P4.md</code>, <code>docs/02-questioni-aperte.md</code> (liste B). Se questo libretto e quei file non coincidono, valgono quei file.</p>
