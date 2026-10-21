@@ -95,10 +95,13 @@ def funzioni(r):
     r("}")
     r()
     r("// sezione SVF 2 poli TPT; stato in m[i..i+3] = s1, s2, hp, bp")
-    r("// d = 1/Q. Quattro varianti senza rami morti (CPU): a = core OTA")
-    r("// (guadagno a secante), c = integratori lineari; 1 = col limitatore")
-    for nome, ota, lim in (("sez_a0", 1, 0), ("sez_a1", 1, 1),
+    r("// d = 1/Q. Varianti senza rami morti (CPU): a = core OTA")
+    r("// (guadagno a secante), c = integratori lineari; 1 = col limitatore.")
+    r("// Un solo valore di ritorno per funzione (regola gen~): _hp o _lp")
+    for base, ota, lim in (("sez_a0", 1, 0), ("sez_a1", 1, 1),
                            ("sez_c0", 0, 0), ("sez_c1", 0, 1)):
+      for usc in ("hp", "lp"):
+        nome = f"{base}_{usc}"
         if SEMPLICE and nome[4] != SCELTA_CORE:
             continue
         r(f"{nome}(m, i, x, g, d) {{")
@@ -122,7 +125,7 @@ def funzioni(r):
         r("\tpoke(m, lp + g2 * bp, i + 1);")
         r("\tpoke(m, hp, i + 2);")
         r("\tpoke(m, bp, i + 3);")
-        r("\treturn hp, lp;")
+        r(f"\treturn {usc};")
         r("}")
         r()
 
@@ -217,25 +220,25 @@ def genexpr():
         for k in range(4):
             u = f"{lato}_u{k}"
             # i 4 sotto-campioni passano, in ordine, dagli STESSI stati
-            r(f"x = {u} * {filtro.LIV!r} + noise() * 0.00001;")
+            # xin, non x: x e un parametro delle funzioni (regola gen~)
+            r(f"xin = {u} * {filtro.LIV!r} + noise() * 0.00001;")
             i = base
             out = {}
             if SEMPLICE:
                 for sez in ("hp", "lp"):
                     p = f"{SCELTA_CORE}{sez}"
-                    r(f"{p}h, {p}l = sez_{SCELTA_CORE}0(st, {i}, x,"
-                      f" g_{sez}1, dq1);")
-                    a = f"{p}h" if sez == "hp" else f"{p}l"
-                    r(f"{p}h, {p}l = sez_{SCELTA_CORE}1(st, {i + 4}, {a},"
-                      f" g_{sez}2, d_{sez});")
                     o = f"{p}h" if sez == "hp" else f"{p}l"
+                    r(f"{o} = sez_{SCELTA_CORE}0_{sez}(st, {i}, xin,"
+                      f" g_{sez}1, dq1);")
+                    r(f"{o} = sez_{SCELTA_CORE}1_{sez}(st, {i + 4}, {o},"
+                      f" g_{sez}2, d_{sez});")
                     r(f"o{sez} = {o};")
                     i += 8
                     r(f"if (od_{sez} > {SOGLIA_OD!r}) {{")
                     r(f"o{sez} = o{sez} + od_{sez} * ({filtro.OD_K!r}"
                       f" * clipd(2 * o{sez}) - o{sez});")
                     r("}")
-                r(f"{lato}_y{k} = (w_off * x + w_hp * ohp + w_lp * olp)"
+                r(f"{lato}_y{k} = (w_off * xin + w_hp * ohp + w_lp * olp)"
                   f" / {filtro.LIV!r};")
                 continue
             for nome_c in ("a", "c"):
@@ -244,12 +247,12 @@ def genexpr():
                 r(f"if (on_{nome_c}) {{")
                 for sez in ("hp", "lp"):
                     p = f"{nome_c}{sez}"
-                    r(f"{p}h, {p}l = sez_{nome_c}0(st, {i}, x, g_{sez}1,"
+                    o = f"{p}h" if sez == "hp" else f"{p}l"
+                    r(f"{o} = sez_{nome_c}0_{sez}(st, {i}, xin, g_{sez}1,"
                       " dq1);")
-                    a = f"{p}h" if sez == "hp" else f"{p}l"
-                    r(f"{p}h, {p}l = sez_{nome_c}1(st, {i + 4}, {a},"
+                    r(f"{o} = sez_{nome_c}1_{sez}(st, {i + 4}, {o},"
                       f" g_{sez}2, d_{sez});")
-                    out[(nome_c, sez)] = f"{p}h" if sez == "hp" else f"{p}l"
+                    out[(nome_c, sez)] = o
                     i += 8
                 r("}")
             for sez in ("hp", "lp"):
@@ -259,7 +262,7 @@ def genexpr():
                 r(f"o{sez} = o{sez} + od_{sez} * ({filtro.OD_K!r}"
                   f" * clipd(2 * o{sez}) - o{sez});")
                 r("}")
-            r(f"{lato}_y{k} = (w_off * x + w_hp * ohp + w_lp * olp)"
+            r(f"{lato}_y{k} = (w_off * xin + w_hp * ohp + w_lp * olp)"
               f" / {filtro.LIV!r};")
         if SEMPLICE:
             n_st = base + 16

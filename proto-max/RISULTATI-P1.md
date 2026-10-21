@@ -181,3 +181,15 @@ Funzioni trascendenti per sotto-campione: ~68 → ~16 (core OTA, DRIVE
 chiuso). HP e LP restano sempre calcolati: al cambio di MODO (rampa
 1 ms, gesto) un ramo ripartito da fermo suonerebbe diverso.
 `prova_filtro.py` PASS invariata.
+
+## Regole gen~ (2026-10-21, segnalazione della sessione maelcum-mixer-bd)
+
+MC-FILTRO violava due regole del codice gen~ dalla prima versione:
+le funzioni di sezione `sez_*` avevano due valori di ritorno (`return hp, lp`,
+lo stesso errore del 5-way, RISULTATI-P2 §5) e il codice principale usava
+`x`, che è anche parametro delle funzioni. Correzione in `genera_filtro.py`:
+otto funzioni a uscita singola (`sez_a0_hp`, `sez_a0_lp`, ...) e `xin` al
+posto di `x`. Vale anche per MC-FILTRO-S. La traduzione Python suona
+identica a prima (scarto 0 su 22 casi, manopole in movimento);
+prova_filtro PASS. Possibile causa dei salti in Live (todo 76): da
+verificare all'ascolto.

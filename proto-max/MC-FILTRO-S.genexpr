@@ -49,9 +49,10 @@ clipd(v) {
 }
 
 // sezione SVF 2 poli TPT; stato in m[i..i+3] = s1, s2, hp, bp
-// d = 1/Q. Quattro varianti senza rami morti (CPU): a = core OTA
-// (guadagno a secante), c = integratori lineari; 1 = col limitatore
-sez_c0(m, i, x, g, d) {
+// d = 1/Q. Varianti senza rami morti (CPU): a = core OTA
+// (guadagno a secante), c = integratori lineari; 1 = col limitatore.
+// Un solo valore di ritorno per funzione (regola gen~): _hp o _lp
+sez_c0_hp(m, i, x, g, d) {
 	s1 = peek(m, i);
 	s2 = peek(m, i + 1);
 	bpv = peek(m, i + 3);
@@ -65,10 +66,27 @@ sez_c0(m, i, x, g, d) {
 	poke(m, lp + g2 * bp, i + 1);
 	poke(m, hp, i + 2);
 	poke(m, bp, i + 3);
-	return hp, lp;
+	return hp;
 }
 
-sez_c1(m, i, x, g, d) {
+sez_c0_lp(m, i, x, g, d) {
+	s1 = peek(m, i);
+	s2 = peek(m, i + 1);
+	bpv = peek(m, i + 3);
+	g1 = g;
+	g2 = g;
+	rr = d;
+	bp = (g1 * (x - s2) + s1) / (1 + g1 * g2 + g1 * rr);
+	hp = x - s2 - (g2 + rr) * bp;
+	lp = g2 * bp + s2;
+	poke(m, bp + g1 * hp, i);
+	poke(m, lp + g2 * bp, i + 1);
+	poke(m, hp, i + 2);
+	poke(m, bp, i + 3);
+	return lp;
+}
+
+sez_c1_hp(m, i, x, g, d) {
 	s1 = peek(m, i);
 	s2 = peek(m, i + 1);
 	bpv = peek(m, i + 3);
@@ -82,7 +100,24 @@ sez_c1(m, i, x, g, d) {
 	poke(m, lp + g2 * bp, i + 1);
 	poke(m, hp, i + 2);
 	poke(m, bp, i + 3);
-	return hp, lp;
+	return hp;
+}
+
+sez_c1_lp(m, i, x, g, d) {
+	s1 = peek(m, i);
+	s2 = peek(m, i + 1);
+	bpv = peek(m, i + 3);
+	g1 = g;
+	g2 = g;
+	rr = d + alim(bpv);
+	bp = (g1 * (x - s2) + s1) / (1 + g1 * g2 + g1 * rr);
+	hp = x - s2 - (g2 + rr) * bp;
+	lp = g2 * bp + s2;
+	poke(m, bp + g1 * hp, i);
+	poke(m, lp + g2 * bp, i + 1);
+	poke(m, hp, i + 2);
+	poke(m, bp, i + 3);
+	return lp;
 }
 
 Param freq_hp(0.0, min=0, max=100);
@@ -171,62 +206,62 @@ L_u2 = ap(hb, 24, L_u2, 0.04245470986526787);
 L_u2 = ap(hb, 28, L_u2, 0.39331989319033134);
 L_u3 = ap(hb, 26, L_u3, 0.17073985049750015);
 L_u3 = ap(hb, 30, L_u3, 0.7457135887202412);
-x = L_u0 * 4.360865946243008 + noise() * 0.00001;
-chph, chpl = sez_c0(st, 0, x, g_hp1, dq1);
-chph, chpl = sez_c1(st, 4, chph, g_hp2, d_hp);
+xin = L_u0 * 4.360865946243008 + noise() * 0.00001;
+chph = sez_c0_hp(st, 0, xin, g_hp1, dq1);
+chph = sez_c1_hp(st, 4, chph, g_hp2, d_hp);
 ohp = chph;
 if (od_hp > 1e-09) {
 ohp = ohp + od_hp * (1.171 * clipd(2 * ohp) - ohp);
 }
-clph, clpl = sez_c0(st, 8, x, g_lp1, dq1);
-clph, clpl = sez_c1(st, 12, clpl, g_lp2, d_lp);
+clpl = sez_c0_lp(st, 8, xin, g_lp1, dq1);
+clpl = sez_c1_lp(st, 12, clpl, g_lp2, d_lp);
 olp = clpl;
 if (od_lp > 1e-09) {
 olp = olp + od_lp * (1.171 * clipd(2 * olp) - olp);
 }
-L_y0 = (w_off * x + w_hp * ohp + w_lp * olp) / 4.360865946243008;
-x = L_u1 * 4.360865946243008 + noise() * 0.00001;
-chph, chpl = sez_c0(st, 0, x, g_hp1, dq1);
-chph, chpl = sez_c1(st, 4, chph, g_hp2, d_hp);
+L_y0 = (w_off * xin + w_hp * ohp + w_lp * olp) / 4.360865946243008;
+xin = L_u1 * 4.360865946243008 + noise() * 0.00001;
+chph = sez_c0_hp(st, 0, xin, g_hp1, dq1);
+chph = sez_c1_hp(st, 4, chph, g_hp2, d_hp);
 ohp = chph;
 if (od_hp > 1e-09) {
 ohp = ohp + od_hp * (1.171 * clipd(2 * ohp) - ohp);
 }
-clph, clpl = sez_c0(st, 8, x, g_lp1, dq1);
-clph, clpl = sez_c1(st, 12, clpl, g_lp2, d_lp);
+clpl = sez_c0_lp(st, 8, xin, g_lp1, dq1);
+clpl = sez_c1_lp(st, 12, clpl, g_lp2, d_lp);
 olp = clpl;
 if (od_lp > 1e-09) {
 olp = olp + od_lp * (1.171 * clipd(2 * olp) - olp);
 }
-L_y1 = (w_off * x + w_hp * ohp + w_lp * olp) / 4.360865946243008;
-x = L_u2 * 4.360865946243008 + noise() * 0.00001;
-chph, chpl = sez_c0(st, 0, x, g_hp1, dq1);
-chph, chpl = sez_c1(st, 4, chph, g_hp2, d_hp);
+L_y1 = (w_off * xin + w_hp * ohp + w_lp * olp) / 4.360865946243008;
+xin = L_u2 * 4.360865946243008 + noise() * 0.00001;
+chph = sez_c0_hp(st, 0, xin, g_hp1, dq1);
+chph = sez_c1_hp(st, 4, chph, g_hp2, d_hp);
 ohp = chph;
 if (od_hp > 1e-09) {
 ohp = ohp + od_hp * (1.171 * clipd(2 * ohp) - ohp);
 }
-clph, clpl = sez_c0(st, 8, x, g_lp1, dq1);
-clph, clpl = sez_c1(st, 12, clpl, g_lp2, d_lp);
+clpl = sez_c0_lp(st, 8, xin, g_lp1, dq1);
+clpl = sez_c1_lp(st, 12, clpl, g_lp2, d_lp);
 olp = clpl;
 if (od_lp > 1e-09) {
 olp = olp + od_lp * (1.171 * clipd(2 * olp) - olp);
 }
-L_y2 = (w_off * x + w_hp * ohp + w_lp * olp) / 4.360865946243008;
-x = L_u3 * 4.360865946243008 + noise() * 0.00001;
-chph, chpl = sez_c0(st, 0, x, g_hp1, dq1);
-chph, chpl = sez_c1(st, 4, chph, g_hp2, d_hp);
+L_y2 = (w_off * xin + w_hp * ohp + w_lp * olp) / 4.360865946243008;
+xin = L_u3 * 4.360865946243008 + noise() * 0.00001;
+chph = sez_c0_hp(st, 0, xin, g_hp1, dq1);
+chph = sez_c1_hp(st, 4, chph, g_hp2, d_hp);
 ohp = chph;
 if (od_hp > 1e-09) {
 ohp = ohp + od_hp * (1.171 * clipd(2 * ohp) - ohp);
 }
-clph, clpl = sez_c0(st, 8, x, g_lp1, dq1);
-clph, clpl = sez_c1(st, 12, clpl, g_lp2, d_lp);
+clpl = sez_c0_lp(st, 8, xin, g_lp1, dq1);
+clpl = sez_c1_lp(st, 12, clpl, g_lp2, d_lp);
 olp = clpl;
 if (od_lp > 1e-09) {
 olp = olp + od_lp * (1.171 * clipd(2 * olp) - olp);
 }
-L_y3 = (w_off * x + w_hp * ohp + w_lp * olp) / 4.360865946243008;
+L_y3 = (w_off * xin + w_hp * ohp + w_lp * olp) / 4.360865946243008;
 d0 = L_y1;
 d1 = L_y0;
 d0 = ap(hb, 32, d0, 0.04245470986526787);
@@ -285,62 +320,62 @@ R_u2 = ap(hb, 88, R_u2, 0.04245470986526787);
 R_u2 = ap(hb, 92, R_u2, 0.39331989319033134);
 R_u3 = ap(hb, 90, R_u3, 0.17073985049750015);
 R_u3 = ap(hb, 94, R_u3, 0.7457135887202412);
-x = R_u0 * 4.360865946243008 + noise() * 0.00001;
-chph, chpl = sez_c0(st, 16, x, g_hp1, dq1);
-chph, chpl = sez_c1(st, 20, chph, g_hp2, d_hp);
+xin = R_u0 * 4.360865946243008 + noise() * 0.00001;
+chph = sez_c0_hp(st, 16, xin, g_hp1, dq1);
+chph = sez_c1_hp(st, 20, chph, g_hp2, d_hp);
 ohp = chph;
 if (od_hp > 1e-09) {
 ohp = ohp + od_hp * (1.171 * clipd(2 * ohp) - ohp);
 }
-clph, clpl = sez_c0(st, 24, x, g_lp1, dq1);
-clph, clpl = sez_c1(st, 28, clpl, g_lp2, d_lp);
+clpl = sez_c0_lp(st, 24, xin, g_lp1, dq1);
+clpl = sez_c1_lp(st, 28, clpl, g_lp2, d_lp);
 olp = clpl;
 if (od_lp > 1e-09) {
 olp = olp + od_lp * (1.171 * clipd(2 * olp) - olp);
 }
-R_y0 = (w_off * x + w_hp * ohp + w_lp * olp) / 4.360865946243008;
-x = R_u1 * 4.360865946243008 + noise() * 0.00001;
-chph, chpl = sez_c0(st, 16, x, g_hp1, dq1);
-chph, chpl = sez_c1(st, 20, chph, g_hp2, d_hp);
+R_y0 = (w_off * xin + w_hp * ohp + w_lp * olp) / 4.360865946243008;
+xin = R_u1 * 4.360865946243008 + noise() * 0.00001;
+chph = sez_c0_hp(st, 16, xin, g_hp1, dq1);
+chph = sez_c1_hp(st, 20, chph, g_hp2, d_hp);
 ohp = chph;
 if (od_hp > 1e-09) {
 ohp = ohp + od_hp * (1.171 * clipd(2 * ohp) - ohp);
 }
-clph, clpl = sez_c0(st, 24, x, g_lp1, dq1);
-clph, clpl = sez_c1(st, 28, clpl, g_lp2, d_lp);
+clpl = sez_c0_lp(st, 24, xin, g_lp1, dq1);
+clpl = sez_c1_lp(st, 28, clpl, g_lp2, d_lp);
 olp = clpl;
 if (od_lp > 1e-09) {
 olp = olp + od_lp * (1.171 * clipd(2 * olp) - olp);
 }
-R_y1 = (w_off * x + w_hp * ohp + w_lp * olp) / 4.360865946243008;
-x = R_u2 * 4.360865946243008 + noise() * 0.00001;
-chph, chpl = sez_c0(st, 16, x, g_hp1, dq1);
-chph, chpl = sez_c1(st, 20, chph, g_hp2, d_hp);
+R_y1 = (w_off * xin + w_hp * ohp + w_lp * olp) / 4.360865946243008;
+xin = R_u2 * 4.360865946243008 + noise() * 0.00001;
+chph = sez_c0_hp(st, 16, xin, g_hp1, dq1);
+chph = sez_c1_hp(st, 20, chph, g_hp2, d_hp);
 ohp = chph;
 if (od_hp > 1e-09) {
 ohp = ohp + od_hp * (1.171 * clipd(2 * ohp) - ohp);
 }
-clph, clpl = sez_c0(st, 24, x, g_lp1, dq1);
-clph, clpl = sez_c1(st, 28, clpl, g_lp2, d_lp);
+clpl = sez_c0_lp(st, 24, xin, g_lp1, dq1);
+clpl = sez_c1_lp(st, 28, clpl, g_lp2, d_lp);
 olp = clpl;
 if (od_lp > 1e-09) {
 olp = olp + od_lp * (1.171 * clipd(2 * olp) - olp);
 }
-R_y2 = (w_off * x + w_hp * ohp + w_lp * olp) / 4.360865946243008;
-x = R_u3 * 4.360865946243008 + noise() * 0.00001;
-chph, chpl = sez_c0(st, 16, x, g_hp1, dq1);
-chph, chpl = sez_c1(st, 20, chph, g_hp2, d_hp);
+R_y2 = (w_off * xin + w_hp * ohp + w_lp * olp) / 4.360865946243008;
+xin = R_u3 * 4.360865946243008 + noise() * 0.00001;
+chph = sez_c0_hp(st, 16, xin, g_hp1, dq1);
+chph = sez_c1_hp(st, 20, chph, g_hp2, d_hp);
 ohp = chph;
 if (od_hp > 1e-09) {
 ohp = ohp + od_hp * (1.171 * clipd(2 * ohp) - ohp);
 }
-clph, clpl = sez_c0(st, 24, x, g_lp1, dq1);
-clph, clpl = sez_c1(st, 28, clpl, g_lp2, d_lp);
+clpl = sez_c0_lp(st, 24, xin, g_lp1, dq1);
+clpl = sez_c1_lp(st, 28, clpl, g_lp2, d_lp);
 olp = clpl;
 if (od_lp > 1e-09) {
 olp = olp + od_lp * (1.171 * clipd(2 * olp) - olp);
 }
-R_y3 = (w_off * x + w_hp * ohp + w_lp * olp) / 4.360865946243008;
+R_y3 = (w_off * xin + w_hp * ohp + w_lp * olp) / 4.360865946243008;
 d0 = R_y1;
 d1 = R_y0;
 d0 = ap(hb, 96, d0, 0.04245470986526787);
