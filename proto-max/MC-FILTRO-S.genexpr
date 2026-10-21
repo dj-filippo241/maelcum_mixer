@@ -29,6 +29,13 @@ alim(v, lg, lk, lw) {
 	return lg * lw * (spl((m - lk) / lw) - spl(-lk / lw)) / m;
 }
 
+// guadagno a secante dell'OTA della RES (voce PULITO OTA):
+// partitore 1/15, Vs tanh(u/Vs)/u
+ares(u) {
+	m = max(abs(u), 0.000001);
+	return 0.77556 * tanh(m / 0.77556) / m;
+}
+
 // tosatore dell'overdrive: 2,2k + 2+2 1N4148, tre passi di Newton
 clipd(v) {
 	a = abs(v);
@@ -87,13 +94,13 @@ sez_c0_lp(m, i, x, g, d) {
 	return lp;
 }
 
-sez_c1_hp(m, i, x, g, d, lk, lw) {
+sez_c1_hp(m, i, x, g, d, lk, lw, lo, qb) {
 	s1 = peek(m, i);
 	s2 = peek(m, i + 1);
 	bpv = peek(m, i + 3);
 	g1 = g;
 	g2 = g;
-	rr = d + alim(bpv, 2.13, lk, lw);
+	rr = d + (1 - lo) * alim(bpv, 2.13, lk, lw) + lo * (qb - d) * (1 - ares(bpv));
 	bp = (g1 * (x - s2) + s1) / (1 + g1 * g2 + g1 * rr);
 	hp = x - s2 - (g2 + rr) * bp;
 	lp = g2 * bp + s2;
@@ -104,13 +111,13 @@ sez_c1_hp(m, i, x, g, d, lk, lw) {
 	return hp;
 }
 
-sez_c1_lp(m, i, x, g, d, lk, lw) {
+sez_c1_lp(m, i, x, g, d, lk, lw, lo, qb) {
 	s1 = peek(m, i);
 	s2 = peek(m, i + 1);
 	bpv = peek(m, i + 3);
 	g1 = g;
 	g2 = g;
-	rr = d + alim(bpv, 2.13, lk, lw);
+	rr = d + (1 - lo) * alim(bpv, 2.13, lk, lw) + lo * (qb - d) * (1 - ares(bpv));
 	bp = (g1 * (x - s2) + s1) / (1 + g1 * g2 + g1 * rr);
 	hp = x - s2 - (g2 + rr) * bp;
 	lp = g2 * bp + s2;
@@ -128,7 +135,7 @@ Param freq_lp(100.0, min=0, max=100);
 Param res_lp(0.0, min=0, max=100);
 Param drive_lp(0.0, min=0, max=100);
 Param modo(1, min=0, max=2);
-Param lim(0, min=0, max=1);
+Param lim(0, min=0, max=2);
 Data st(32);
 Data hb(128);
 History s_freq_hp(0.0);
@@ -152,9 +159,11 @@ s_res_lp = res_lp + t10 * (s_res_lp - res_lp);
 s_drive_lp = drive_lp + t10 * (s_drive_lp - drive_lp);
 s_modo = modo + t1 * (s_modo - modo);
 s_lim = lim + t20 * (s_lim - lim);
-// LIMITATORE del PULITO: 2+2 o 3+3 diodi (RISULTATI-cb-4p §RES), 20 ms
-lim_k = 0.72 + 0.21000000000000008 * s_lim;
-lim_w = 0.06 + 0.03 * s_lim;
+// LIMITATORE del PULITO: 2+2 o 3+3 diodi (RISULTATI-cb-4p §RES), poi OTA della RES senza diodi, 20 ms
+lim_d = min(s_lim, 1);
+lim_o = max(s_lim - 1, 0);
+lim_k = 0.72 + 0.21000000000000008 * lim_d;
+lim_w = 0.06 + 0.03 * lim_d;
 w_hp = max(0, 1 - abs(s_modo));
 w_off = max(0, 1 - abs(s_modo - 1));
 w_lp = max(0, 1 - abs(s_modo - 2));
@@ -215,13 +224,13 @@ L_u3 = ap(hb, 26, L_u3, 0.17073985049750015);
 L_u3 = ap(hb, 30, L_u3, 0.7457135887202412);
 xin = L_u0 * 4.360865946243008 + noise() * 0.00001;
 chph = sez_c0_hp(st, 0, xin, g_hp1, dq1);
-chph = sez_c1_hp(st, 4, chph, g_hp2, d_hp, lim_k, lim_w);
+chph = sez_c1_hp(st, 4, chph, g_hp2, d_hp, lim_k, lim_w, lim_o, q2i);
 ohp = chph;
 if (od_hp > 1e-09) {
 ohp = ohp + od_hp * (1.171 * clipd(2 * ohp) - ohp);
 }
 clpl = sez_c0_lp(st, 8, xin, g_lp1, dq1);
-clpl = sez_c1_lp(st, 12, clpl, g_lp2, d_lp, lim_k, lim_w);
+clpl = sez_c1_lp(st, 12, clpl, g_lp2, d_lp, lim_k, lim_w, lim_o, q2i);
 olp = clpl;
 if (od_lp > 1e-09) {
 olp = olp + od_lp * (1.171 * clipd(2 * olp) - olp);
@@ -229,13 +238,13 @@ olp = olp + od_lp * (1.171 * clipd(2 * olp) - olp);
 L_y0 = (w_off * xin + w_hp * ohp + w_lp * olp) / 4.360865946243008;
 xin = L_u1 * 4.360865946243008 + noise() * 0.00001;
 chph = sez_c0_hp(st, 0, xin, g_hp1, dq1);
-chph = sez_c1_hp(st, 4, chph, g_hp2, d_hp, lim_k, lim_w);
+chph = sez_c1_hp(st, 4, chph, g_hp2, d_hp, lim_k, lim_w, lim_o, q2i);
 ohp = chph;
 if (od_hp > 1e-09) {
 ohp = ohp + od_hp * (1.171 * clipd(2 * ohp) - ohp);
 }
 clpl = sez_c0_lp(st, 8, xin, g_lp1, dq1);
-clpl = sez_c1_lp(st, 12, clpl, g_lp2, d_lp, lim_k, lim_w);
+clpl = sez_c1_lp(st, 12, clpl, g_lp2, d_lp, lim_k, lim_w, lim_o, q2i);
 olp = clpl;
 if (od_lp > 1e-09) {
 olp = olp + od_lp * (1.171 * clipd(2 * olp) - olp);
@@ -243,13 +252,13 @@ olp = olp + od_lp * (1.171 * clipd(2 * olp) - olp);
 L_y1 = (w_off * xin + w_hp * ohp + w_lp * olp) / 4.360865946243008;
 xin = L_u2 * 4.360865946243008 + noise() * 0.00001;
 chph = sez_c0_hp(st, 0, xin, g_hp1, dq1);
-chph = sez_c1_hp(st, 4, chph, g_hp2, d_hp, lim_k, lim_w);
+chph = sez_c1_hp(st, 4, chph, g_hp2, d_hp, lim_k, lim_w, lim_o, q2i);
 ohp = chph;
 if (od_hp > 1e-09) {
 ohp = ohp + od_hp * (1.171 * clipd(2 * ohp) - ohp);
 }
 clpl = sez_c0_lp(st, 8, xin, g_lp1, dq1);
-clpl = sez_c1_lp(st, 12, clpl, g_lp2, d_lp, lim_k, lim_w);
+clpl = sez_c1_lp(st, 12, clpl, g_lp2, d_lp, lim_k, lim_w, lim_o, q2i);
 olp = clpl;
 if (od_lp > 1e-09) {
 olp = olp + od_lp * (1.171 * clipd(2 * olp) - olp);
@@ -257,13 +266,13 @@ olp = olp + od_lp * (1.171 * clipd(2 * olp) - olp);
 L_y2 = (w_off * xin + w_hp * ohp + w_lp * olp) / 4.360865946243008;
 xin = L_u3 * 4.360865946243008 + noise() * 0.00001;
 chph = sez_c0_hp(st, 0, xin, g_hp1, dq1);
-chph = sez_c1_hp(st, 4, chph, g_hp2, d_hp, lim_k, lim_w);
+chph = sez_c1_hp(st, 4, chph, g_hp2, d_hp, lim_k, lim_w, lim_o, q2i);
 ohp = chph;
 if (od_hp > 1e-09) {
 ohp = ohp + od_hp * (1.171 * clipd(2 * ohp) - ohp);
 }
 clpl = sez_c0_lp(st, 8, xin, g_lp1, dq1);
-clpl = sez_c1_lp(st, 12, clpl, g_lp2, d_lp, lim_k, lim_w);
+clpl = sez_c1_lp(st, 12, clpl, g_lp2, d_lp, lim_k, lim_w, lim_o, q2i);
 olp = clpl;
 if (od_lp > 1e-09) {
 olp = olp + od_lp * (1.171 * clipd(2 * olp) - olp);
@@ -329,13 +338,13 @@ R_u3 = ap(hb, 90, R_u3, 0.17073985049750015);
 R_u3 = ap(hb, 94, R_u3, 0.7457135887202412);
 xin = R_u0 * 4.360865946243008 + noise() * 0.00001;
 chph = sez_c0_hp(st, 16, xin, g_hp1, dq1);
-chph = sez_c1_hp(st, 20, chph, g_hp2, d_hp, lim_k, lim_w);
+chph = sez_c1_hp(st, 20, chph, g_hp2, d_hp, lim_k, lim_w, lim_o, q2i);
 ohp = chph;
 if (od_hp > 1e-09) {
 ohp = ohp + od_hp * (1.171 * clipd(2 * ohp) - ohp);
 }
 clpl = sez_c0_lp(st, 24, xin, g_lp1, dq1);
-clpl = sez_c1_lp(st, 28, clpl, g_lp2, d_lp, lim_k, lim_w);
+clpl = sez_c1_lp(st, 28, clpl, g_lp2, d_lp, lim_k, lim_w, lim_o, q2i);
 olp = clpl;
 if (od_lp > 1e-09) {
 olp = olp + od_lp * (1.171 * clipd(2 * olp) - olp);
@@ -343,13 +352,13 @@ olp = olp + od_lp * (1.171 * clipd(2 * olp) - olp);
 R_y0 = (w_off * xin + w_hp * ohp + w_lp * olp) / 4.360865946243008;
 xin = R_u1 * 4.360865946243008 + noise() * 0.00001;
 chph = sez_c0_hp(st, 16, xin, g_hp1, dq1);
-chph = sez_c1_hp(st, 20, chph, g_hp2, d_hp, lim_k, lim_w);
+chph = sez_c1_hp(st, 20, chph, g_hp2, d_hp, lim_k, lim_w, lim_o, q2i);
 ohp = chph;
 if (od_hp > 1e-09) {
 ohp = ohp + od_hp * (1.171 * clipd(2 * ohp) - ohp);
 }
 clpl = sez_c0_lp(st, 24, xin, g_lp1, dq1);
-clpl = sez_c1_lp(st, 28, clpl, g_lp2, d_lp, lim_k, lim_w);
+clpl = sez_c1_lp(st, 28, clpl, g_lp2, d_lp, lim_k, lim_w, lim_o, q2i);
 olp = clpl;
 if (od_lp > 1e-09) {
 olp = olp + od_lp * (1.171 * clipd(2 * olp) - olp);
@@ -357,13 +366,13 @@ olp = olp + od_lp * (1.171 * clipd(2 * olp) - olp);
 R_y1 = (w_off * xin + w_hp * ohp + w_lp * olp) / 4.360865946243008;
 xin = R_u2 * 4.360865946243008 + noise() * 0.00001;
 chph = sez_c0_hp(st, 16, xin, g_hp1, dq1);
-chph = sez_c1_hp(st, 20, chph, g_hp2, d_hp, lim_k, lim_w);
+chph = sez_c1_hp(st, 20, chph, g_hp2, d_hp, lim_k, lim_w, lim_o, q2i);
 ohp = chph;
 if (od_hp > 1e-09) {
 ohp = ohp + od_hp * (1.171 * clipd(2 * ohp) - ohp);
 }
 clpl = sez_c0_lp(st, 24, xin, g_lp1, dq1);
-clpl = sez_c1_lp(st, 28, clpl, g_lp2, d_lp, lim_k, lim_w);
+clpl = sez_c1_lp(st, 28, clpl, g_lp2, d_lp, lim_k, lim_w, lim_o, q2i);
 olp = clpl;
 if (od_lp > 1e-09) {
 olp = olp + od_lp * (1.171 * clipd(2 * olp) - olp);
@@ -371,13 +380,13 @@ olp = olp + od_lp * (1.171 * clipd(2 * olp) - olp);
 R_y2 = (w_off * xin + w_hp * ohp + w_lp * olp) / 4.360865946243008;
 xin = R_u3 * 4.360865946243008 + noise() * 0.00001;
 chph = sez_c0_hp(st, 16, xin, g_hp1, dq1);
-chph = sez_c1_hp(st, 20, chph, g_hp2, d_hp, lim_k, lim_w);
+chph = sez_c1_hp(st, 20, chph, g_hp2, d_hp, lim_k, lim_w, lim_o, q2i);
 ohp = chph;
 if (od_hp > 1e-09) {
 ohp = ohp + od_hp * (1.171 * clipd(2 * ohp) - ohp);
 }
 clpl = sez_c0_lp(st, 24, xin, g_lp1, dq1);
-clpl = sez_c1_lp(st, 28, clpl, g_lp2, d_lp, lim_k, lim_w);
+clpl = sez_c1_lp(st, 28, clpl, g_lp2, d_lp, lim_k, lim_w, lim_o, q2i);
 olp = clpl;
 if (od_lp > 1e-09) {
 olp = olp + od_lp * (1.171 * clipd(2 * olp) - olp);

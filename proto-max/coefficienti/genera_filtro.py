@@ -39,7 +39,9 @@ MODO = ("modo", "MODO", ["HPF", "OFF", "LPF"], 1)
 CORE = ("core", "CORE", ["OTA (a')", "PULITO (c-B)"], 0)
 PENDENZA = ("pend", "PENDENZA", list(filtro.ALLINEAMENTI), 0)
 # limitatore del core PULITO (2026-10-21, Filippo: «dopo l'ascolto»)
-LIMIT = ("lim", "LIMITATORE", ["PULITO 2+2", "PULITO 3+3"], 0)
+# terza voce PULITO OTA (todo 126, Filippo 2026-10-21): niente diodi, si
+# spegne con la RES
+LIMIT = ("lim", "LIMITATORE", ["PULITO 2+2", "PULITO 3+3", "PULITO OTA"], 0)
 
 
 # sotto questo peso un core non si calcola (-100 dB: inudibile)
@@ -85,6 +87,13 @@ def funzioni(r):
     r("\treturn lg * lw * (spl((m - lk) / lw) - spl(-lk / lw)) / m;")
     r("}")
     r()
+    r("// guadagno a secante dell'OTA della RES (voce PULITO OTA):")
+    r("// partitore 1/15, Vs tanh(u/Vs)/u")
+    r("ares(u) {")
+    r("\tm = max(abs(u), 0.000001);")
+    r(f"\treturn {filtro.VS_RES!r} * tanh(m / {filtro.VS_RES!r}) / m;")
+    r("}")
+    r()
     r("// tosatore dell'overdrive: 2,2k + 2+2 1N4148, tre passi di Newton")
     r("clipd(v) {")
     r("\ta = abs(v);")
@@ -110,7 +119,7 @@ def funzioni(r):
         nome = f"{base}_{usc}"
         if SEMPLICE and nome[4] != SCELTA_CORE:
             continue
-        par = ", lk, lw" if (lim and not ota) else ""
+        par = ", lk, lw, lo, qb" if (lim and not ota) else ""
         r(f"{nome}(m, i, x, g, d{par}) {{")
         r("\ts1 = peek(m, i);")
         r("\ts2 = peek(m, i + 1);")
@@ -128,7 +137,10 @@ def funzioni(r):
             lg, lk, lw = filtro.LIM_OTA
             rr += f" + alim(bpv, {lg!r}, {lk!r}, {lw!r})"
         elif lim:
-            rr += f" + alim(bpv, {filtro.LIM_PULITO['2+2'][0]!r}, lk, lw)"
+            # diodi (2+2/3+3) con peso 1 - lo; voce OTA con peso lo: lo
+            # smorzamento fisso qb meno quello che toglie l'OTA della RES
+            rr += (f" + (1 - lo) * alim(bpv, {filtro.LIM_PULITO['2+2'][0]!r},"
+                   " lk, lw) + lo * (qb - d) * (1 - ares(bpv))")
         r(f"\trr = {rr};")
         r("\tbp = (g1 * (x - s2) + s1) / (1 + g1 * g2 + g1 * rr);")
         r("\thp = x - s2 - (g2 + rr) * bp;")
@@ -155,7 +167,7 @@ def genexpr():
         r(f"Param {nome}({ini}, min=0, max=100);")
     r(f"Param {MODO[0]}({MODO[3]}, min=0, max=2);")
     if con_limitatore():
-        r(f"Param {LIMIT[0]}({LIMIT[3]}, min=0, max=1);")
+        r(f"Param {LIMIT[0]}({LIMIT[3]}, min=0, max={len(LIMIT[2]) - 1});")
     if not SEMPLICE:
         r(f"Param {CORE[0]}({CORE[3]}, min=0, max=1);")
         r(f"Param {PENDENZA[0]}({PENDENZA[3]}, min=0, max=2);")
@@ -183,9 +195,11 @@ def genexpr():
         a2, a3 = filtro.LIM_PULITO["2+2"], filtro.LIM_PULITO["3+3"]
         assert a2[0] == a3[0]
         r("// LIMITATORE del PULITO: 2+2 o 3+3 diodi (RISULTATI-cb-4p §RES),"
-          " 20 ms")
-        r(f"lim_k = {a2[1]!r} + {a3[1] - a2[1]!r} * s_lim;")
-        r(f"lim_w = {a2[2]!r} + {a3[2] - a2[2]!r} * s_lim;")
+          " poi OTA della RES senza diodi, 20 ms")
+        r("lim_d = min(s_lim, 1);")
+        r("lim_o = max(s_lim - 1, 0);")
+        r(f"lim_k = {a2[1]!r} + {a3[1] - a2[1]!r} * lim_d;")
+        r(f"lim_w = {a2[2]!r} + {a3[2] - a2[2]!r} * lim_d;")
     if not SEMPLICE:
         r("s_core = core + t20 * (s_core - core);")
         r("s_pend = pend + t20 * (s_pend - pend);")
@@ -255,7 +269,7 @@ def genexpr():
                     o = f"{p}h" if sez == "hp" else f"{p}l"
                     r(f"{o} = sez_{SCELTA_CORE}0_{sez}(st, {i}, xin,"
                       f" g_{sez}1, dq1);")
-                    lp_ = ", lim_k, lim_w" if SCELTA_CORE == "c" else ""
+                    lp_ = ", lim_k, lim_w, lim_o, q2i" if SCELTA_CORE == "c" else ""
                     r(f"{o} = sez_{SCELTA_CORE}1_{sez}(st, {i + 4}, {o},"
                       f" g_{sez}2, d_{sez}{lp_});")
                     r(f"o{sez} = {o};")
@@ -276,7 +290,7 @@ def genexpr():
                     o = f"{p}h" if sez == "hp" else f"{p}l"
                     r(f"{o} = sez_{nome_c}0_{sez}(st, {i}, xin, g_{sez}1,"
                       " dq1);")
-                    lp_ = ", lim_k, lim_w" if nome_c == "c" else ""
+                    lp_ = ", lim_k, lim_w, lim_o, q2i" if nome_c == "c" else ""
                     r(f"{o} = sez_{nome_c}1_{sez}(st, {i + 4}, {o},"
                       f" g_{sez}2, d_{sez}{lp_});")
                     out[(nome_c, sez)] = o

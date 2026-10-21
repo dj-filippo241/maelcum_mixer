@@ -176,7 +176,7 @@ selettori non ci sono più; i comandi del pannello vero restano.
 | Dispositivo | Scelte fissate | Comandi |
 |---|---|---|
 | `MC-CHANNEL-S` | ISOLATOR, INCROCI A 150/500/2500, CURVA PIONEER | GAIN, 4 bande, FADER |
-| `MC-FILTRO-S` | CORE PULITO (c-B), PENDENZA BUTTERWORTH | FREQ, RES, DRIVE ×2, MODO, LIMITATORE (2+2 / 3+3, da ascoltare) |
+| `MC-FILTRO-S` | CORE PULITO (c-B), PENDENZA BUTTERWORTH | FREQ, RES, DRIVE ×2, MODO, LIMITATORE (2+2 / 3+3 / OTA, da ascoltare) |
 | `MC-5WAY-S` | CROSSOVER E 80/170/1,2k/6k, GROWL LIBERO, NASTRO EXCITER | KILL, GAIN, POS, WIDTH ×5, GROWL, NASTRO |
 
 Si montano come gli originali: al posto di MC-CHANNEL, MC-FILTRO e
