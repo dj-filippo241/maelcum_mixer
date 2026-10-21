@@ -1,0 +1,127 @@
+* =====================================================================
+* FILTRO — core PULITO (c-B) 4 poli, LIMITATORE 2+2: PROGRAMMA FORTE a RES minima (0 / +10 / +15 / +18 dBu, tono 1010 Hz, fc 4x/2x/1x/0,5x del tono), OVERDRIVE v0.2 a valle (todo 118)
+* Circuito di cb-4p-noise-c.cir (f1 12 kHz, Butterworth 0,541 + 1,307) +
+* RES con OTA a partitore + limitatore a diodi del D5. VCA ideali (THD e
+* rumore assenti nel modello).
+* =====================================================================
+.include ../lib/that2181.inc
+.include ../lib/lm13700.inc
+.include ../lib/opamp-audio.inc
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+.param f1=12k fc=1010 gres=1 k=0.0333333
+.param ft=1010
+.param Cint={1/(2*pi*f1*10k)} Vc={0.122*log10(fc/f1)} gg={fc/f1}
+.param kn={1e-4*if(gg<=1, sqrt(0.063+0.937*gg*gg), pwr(gg,2/3))}
+Vctl ecp 0 DC {Vc}
+V1 vin 0 SINE(0 {A} {ft})
+* --- sezione 1: Q 0.541196 con resistenza dal ramo -bp_b (invertitore reale) ---
+Rvin1 vin ns1 10k
+Rlp1 lp1_b ns1 10k
+Rq1 nbp1 ns1 {0.541196*10k}
+Rf1 ns1 hp1 10k
+Xsum1 0 ns1 hp1 vcc vee OP1654
+Rii1 bp1_b ninv1 10k
+Rio1 ninv1 nbp1 10k
+Xinv1 0 ninv1 nbp1 vcc vee OP1654
+Xg1a hp1 hpg1 ecp 0 vcc vee THAT2181
+Rint1a hpg1 nint1a 10k
+Cint1a nint1a bp1 {Cint}
+Xint1a 0 nint1a bp1 vcc vee OP1654
+Rb1a bp1 0 1G
+Xb1a bp1 bp1_b bp1_b vcc vee OP1654
+Xg1b bp1_b bpg1 ecp 0 vcc vee THAT2181
+Rint1b bpg1 nint1b 10k
+Cint1b nint1b lp1 {Cint}
+Xint1b 0 nint1b lp1 vcc vee OP1654
+Rb1b lp1 0 1G
+Xb1b lp1 lp1_b lp1_b vcc vee OP1654
+* rumore dei due VCA: -98 dBV su I/V 10k = 89 nV/rtHz -> 8,9 pA/rtHz nel nodo
+Rn1a vn1a 0 120k
+Gn1a 0 nint1a vn1a 0 {kn}
+Rn1b vn1b 0 120k
+Gn1b 0 nint1b vn1b 0 {kn}
+* --- sezione 2: Q 1.306563 con resistenza dal ramo -bp_b (invertitore reale) ---
+Rvin2 lp1_b ns2 10k
+Rlp2 lp2_b ns2 10k
+Rq2 nbp2 ns2 {1.306563*10k}
+Rf2 ns2 hp2 10k
+Xsum2 0 ns2 hp2 vcc vee OP1654
+Rii2 bp2_b ninv2 10k
+Rio2 ninv2 nbp2 10k
+Xinv2 0 ninv2 nbp2 vcc vee OP1654
+Xg2a hp2 hpg2 ecp 0 vcc vee THAT2181
+Rint2a hpg2 nint2a 10k
+Cint2a nint2a bp2 {Cint}
+Xint2a 0 nint2a bp2 vcc vee OP1654
+Rb2a bp2 0 1G
+Xb2a bp2 bp2_b bp2_b vcc vee OP1654
+Xg2b bp2_b bpg2 ecp 0 vcc vee THAT2181
+Rint2b bpg2 nint2b 10k
+Cint2b nint2b lp2 {Cint}
+Xint2b 0 nint2b lp2 vcc vee OP1654
+Rb2b lp2 0 1G
+Xb2b lp2 lp2_b lp2_b vcc vee OP1654
+* rumore dei due VCA: -98 dBV su I/V 10k = 89 nV/rtHz -> 8,9 pA/rtHz nel nodo
+Rn2a vn2a 0 120k
+Gn2a 0 nint2a vn2a 0 {kn}
+Rn2b vn2b 0 120k
+Gn2b 0 nint2b vn2b 0 {kn}
+* --- RES della sezione 2 (2026-10-21) ---
+* Q base 1,307 = Rq2 (resistenza, silenziosa). La RES TOGLIE smorzamento
+* con un OTA LM13700 dal ramo +bp2_b attraverso il partitore k 1/30 (come il
+* core (a')): anti = 0,765*(1-gres) per gres > 0, 0,765 + 1,414*|gres| oltre
+* il 90 % (law dec. 102). Iabc = 5,208 uA/k per unita' di anti (stessa
+* taratura dell'OTA RES di d5a: 7,365 uA/k = 1/Q 1,414). A RES minima
+* Iabc ~0: niente rumore dall'OTA.
+.param anti={if(gres>0, 0.765367*(1-gres), 0.765367+1.414214*(-gres))}
+.param Ir={5.208u/k*anti+1n}
+Vcco vcco 0 DC 15
+Veeo veeo 0 DC -15
+Rra bp2_b bpkr {100*(1/k-1)}
+Rrd bpkr 0 100
+Ixr vcco iabr DC {Ir}
+Xres bpkr 0 ns2 iabr r1 r2 vcco veeo LM13700
+* limitatore = perdita non lineare dal ramo -bp2_b (polarita' dello
+* smorzamento nel (c-B)) al summer: 4,7k + 2+2 1N4148, come il D5
+.model D1N4148 D(Is=2.53n Rs=0.568 N=1.752 Cjo=4p M=0.4 Tt=20n)
+Rnl nbp2 nl 4.7k
+Dn1 nl nl1 D1N4148
+Dn2 nl1 ns2 D1N4148
+Dn3 ns2 nl2 D1N4148
+Dn4 nl2 nl D1N4148
+* --- overdrive v0.2 a valle (filter-module §5ter, od2-chain.cir) ---
+* y = x + m*(k*CLIP(2x) - x), k 1,171, tosatore 2,2k + diodi 2+2 a massa;
+* m = theta^2,5: DRIVE 0 / 50 / 80 / 100 % = m 0 / 0,177 / 0,572 / 1.
+* VCA ideale (sorgenti B), come la griglia di §5ter.
+.model D4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+Eoa oda 0 value={limit(2*V(lp2_b),-16,16)}
+Rod oda odw 2.2k
+Dod1 odw odp1 D4148
+Dod2 odp1 0 D4148
+Dod3 0 odn1 D4148
+Dod4 odn1 odw D4148
+Rodl odw 0 1Meg
+Bodd odd 0 V=1.171*V(odw)-V(lp2_b)
+Bt50 t50 0 V=V(lp2_b)+0.177*V(odd)
+Bt80 t80 0 V=V(lp2_b)+0.572*V(odd)
+Bt99 t99 0 V=V(lp2_b)+1.000*V(odd)
+.param A=0.346 T=80m
+.ic V(lp2)=0.01
+.tran 0 {T} 0 5u uic
+.step param fc LIST 4040 2020 1010 505
+.step param A LIST 1.096 3.466 6.16 8.70
+* picchi: 0 / +10 / +15 / +18 dBu (6,16 Vp = +15 dBu: 6,16 V e il valore EFFICACE di +18 dBu)
+.meas tran iva MAX (abs(V(hp2))+abs(V(hpg2)))/10k FROM {T*0.7} TO {T}
+.meas tran ivb MAX (abs(V(bp2_b))+abs(V(bpg2)))/10k FROM {T*0.7} TO {T}
+.meas tran ivc MAX (abs(V(hp1))+abs(V(hpg1)))/10k FROM {T*0.7} TO {T}
+.meas tran lprms RMS V(lp2_b) FROM {T*0.7} TO {T}
+.meas tran lppp PP V(lp2_b) FROM {T*0.7} TO {T}
+.meas tran bppp PP V(bp2_b) FROM {T*0.7} TO {T}
+.meas tran t50r RMS V(t50) FROM {T*0.7} TO {T}
+.meas tran t80r RMS V(t80) FROM {T*0.7} TO {T}
+.meas tran t99r RMS V(t99) FROM {T*0.7} TO {T}
+.meas tran t99pk MAX abs(V(t99)) FROM {T*0.7} TO {T}
+.meas tran lppk MAX abs(V(lp2_b)) FROM {T*0.7} TO {T}
+.four 1010 V(lp2_b) V(t50) V(t80) V(t99)
+.end

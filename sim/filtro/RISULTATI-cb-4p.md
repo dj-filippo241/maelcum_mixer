@@ -67,15 +67,28 @@ Letti dal datasheet THAT 2181 (Doc. 600030 Rev 03):
 | 37 kHz | −93,7 | −90,2 | −82,6 | −85,6 | −82,6 | 0 dB |
 
 Headroom (`cb-4p-headroom.cir`): tono a +18 dBu (6,16 Vp) a f = fc e
-fc/2, RES al minimo, corrente Iin + Iout del VCA più carico:
+fc/2, RES al minimo, corrente Iin + Iout del VCA più carico.
+**[CORRETTO 2026-10-21, todo 118]** 6,16 V è il valore EFFICACE di
++18 dBu: di picco è +15 dBu. La tabella sotto vale a +15 dBu; quella a
++18 dBu veri (8,70 Vp) sta subito dopo.
 
 | f1 | fc 20 kHz, f = fc | fc 37 kHz, f = fc | fc/2 (peggiore) |
 |---|---|---|---|
 | 12 kHz | 1,18 mA | 1,84 mA | 1,26 mA |
 | 20 kHz | 0,89 mA | 1,29 mA | 0,88 mA |
 
-Tutti sotto 2,5 mA. Il caso a 1,84 mA è un tono a +18 dBu a 37 kHz,
+Tutti sotto 2,5 mA. Il caso a 1,84 mA è un tono a +15 dBu a 37 kHz,
 fuori dalla banda audio.
+
+A +18 dBu veri (`cb-4p-headroom-18.cir`, 8,70 Vp):
+
+| f1 | fc 20 kHz, f = fc | fc 37 kHz, f = fc | fc/2 (peggiore) |
+|---|---|---|---|
+| 12 kHz | 1,67 mA | 2,36 mA | 1,78 mA |
+| 20 kHz | 1,25 mA | 1,82 mA | 1,25 mA |
+
+Ancora sotto 2,5 mA, ma il caso a 37 kHz con f1 12 kHz ha solo il 6 %
+di margine (fuori banda audio). Nella banda audio il peggiore è 1,78 mA.
 
 **Scelta di ingegneria: f1 = 12 kHz** (Cint = 1/(2π·12 kHz·10k) ≈ 1,33 nF,
 VCA da −42 dB a fc 100 Hz… a +9,8 dB a fc 37 kHz) [PROVVISORIO].
@@ -191,11 +204,53 @@ abbassato a ~+5 per il core (a′)). Scelta sonora di Filippo (A18/B1).
 `cb-4p-noise-hp-res.cir` (HPF, caso peggiore, RES minima): −88,4 dBu
 A-wtd, identico a senza RES. L'OTA spento non aggiunge niente.
 
+### Overdrive e programma forte (2026-10-21, todo 118)
+
+Overdrive v0.2 a valle (y = x + m·(k·CLIP(2x) − x), come `od2-chain.cir`),
+DRIVE 0 / 50 / 80 / 100 % = m 0 / 0,177 / 0,572 / 1. VCA ideali.
+
+**Fischio del 3+3 nell'overdrive** (`cb-4p-res33-osc-od.cir`, fc 1010 Hz,
+RES 100 %, nota 944 Hz):
+
+| DRIVE | 0 % | 50 % | 80 % | 100 % |
+|---|---|---|---|---|
+| uscita dBu rms | +6,8 | +6,4 | +5,4 | +4,4 (picco 1,42 V) |
+
+Il tetto regge: l'overdrive aperto frena il fischio sotto +5,5 dBu, come
+nella griglia di §5ter (lì +4,6 da +8).
+
+**Programma forte a RES minima** (`cb-4p-res33-p18.cir` e
+`cb-4p-res-p18.cir`): tono 1010 Hz, LPF con il taglio a 4×, 2×, 1× e
+0,5× del tono. Scarto dal filtro lineare in dB · THD:
+
+| ingresso | limitatore | fc 4× | fc 2× | fc 1× (sul taglio) | fc 0,5× |
+|---|---|---|---|---|---|
+| 0 dBu | 3+3 | 0,0 · 0,00 % | 0,0 · 0,02 % | 0,0 · 0,03 % | 0,0 · 0,01 % |
+| 0 dBu | 2+2 | 0,0 · 0,01 % | 0,0 · 0,15 % | −0,5 · 0,30 % | 0,0 · 0,01 % |
+| +10 dBu | 3+3 | 0,0 · 0,17 % | −0,5 · 2,4 % | −2,8 · 1,6 % | 0,0 · 0,00 % |
+| +10 dBu | 2+2 | −0,1 · 1,6 % | −1,3 · 3,5 % | −4,5 · 2,1 % | 0,0 · 0,01 % |
+| +18 dBu | 3+3 | −0,3 · 3,8 % | −2,4 · 3,4 % | −6,2 · 2,3 % | −0,1 · 0,09 % |
+| +18 dBu | 2+2 | −0,6 · 3,8 % | −3,2 · 2,8 % | −7,6 · 2,1 % | −0,6 · 0,60 % |
+
+Armoniche solo dispari (terza dominante). Corrente dei VCA ≤ 0,76 mA.
+Uscita dell'overdrive a DRIVE 100 % con +18 dBu: +5,6 dBu rms, picco
+1,58 V: tetto rispettato (+0,1 dB sul +5,5 di §5ter).
+
+Lettura:
+
+- A livello nominale il PULITO col 3+3 è davvero pulito (≤ 0,03 %).
+- Con programma forte il limitatore conduce anche a RES zero: frena le
+  frequenze vicine al taglio fino a −6 dB (3+3) o −7,6 dB (2+2), con
+  2-4 % di terza armonica. Da +10 dBu in su si sente come un taglio che
+  «schiaccia» e raschia leggermente la zona del taglio.
+- La causa: lo stato passa-banda della sezione 2 supera la soglia dei
+  diodi (~1,65 V col 3+3) quando il programma è forte, anche senza RES.
+- Se Filippo non lo vuole, la strada di ingegneria è un limitatore che
+  si spegne con la RES (agisce sulla corrente iniettata dall'OTA, non
+  sullo smorzamento fisso). Da progettare e simulare: non fatto.
+
 ### Non fatto
 
-- Overdrive v0.2 dietro l'oscillazione a +6,8 dBu (3+3): il tetto
-  d'uscita +5,5 dBu della griglia §5ter va riverificato.
-- Programma a +18 dBu con RES minima: col 3+3 il limitatore conduce
-  sopra ~1,65 V di stato; effetto sul suono da misurare.
 - THD dei VCA contro corrente (modello ideale), clone V2181L a banco.
+- Limitatore che si spegne con la RES: solo se Filippo lo chiede.
 

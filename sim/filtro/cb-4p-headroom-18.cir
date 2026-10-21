@@ -1,0 +1,103 @@
+* =====================================================================
+* FILTRO — core PULITO (c-B) a 4 poli: HEADROOM DEI VCA (todo 116, 2026-10-21)
+* Stesso circuito di cb-4p-noise-c.cir. Datasheet THAT 2181: Iin + Iout
+* <= 2,5 mA (Recommended Operating Conditions, Iset 2,4 mA). Nel modello il
+* VCA e' in tensione su 10k: Iin = V(ingresso)/10k, Iout = V(uscita)/10k.
+* Tono a +18 dBu (8,70 Vp; la prima stesura usava 6,16 Vp = +15 dBu) a f = fc e a f = fc/2, RES al minimo, uscita LP.
+* =====================================================================
+.include ../lib/that2181.inc
+.include ../lib/opamp-audio.inc
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+.param f1=37k fc=37k m=0 resn=0
+.param Cint={1/(2*pi*f1*10k)} Vc={0.122*log10(fc/f1)} gg={fc/f1}
+.param kn={1e-4*if(gg<=1, sqrt(0.063+0.937*gg*gg), pwr(gg,2/3))}
+Vctl ecp 0 DC {Vc}
+V1 vin 0 SINE(0 8.70 {ft})
+* --- sezione 1: Q 0.541196 con resistenza dal ramo -bp_b (invertitore reale) ---
+Rvin1 vin ns1 10k
+Rlp1 lp1_b ns1 10k
+Rq1 nbp1 ns1 {0.541196*10k}
+Rf1 ns1 hp1 10k
+Xsum1 0 ns1 hp1 vcc vee OP1654
+Rii1 bp1_b ninv1 10k
+Rio1 ninv1 nbp1 10k
+Xinv1 0 ninv1 nbp1 vcc vee OP1654
+Xg1a hp1 hpg1 ecp 0 vcc vee THAT2181
+Rint1a hpg1 nint1a 10k
+Cint1a nint1a bp1 {Cint}
+Xint1a 0 nint1a bp1 vcc vee OP1654
+Rb1a bp1 0 1G
+Xb1a bp1 bp1_b bp1_b vcc vee OP1654
+Xg1b bp1_b bpg1 ecp 0 vcc vee THAT2181
+Rint1b bpg1 nint1b 10k
+Cint1b nint1b lp1 {Cint}
+Xint1b 0 nint1b lp1 vcc vee OP1654
+Rb1b lp1 0 1G
+Xb1b lp1 lp1_b lp1_b vcc vee OP1654
+* rumore dei due VCA: -98 dBV su I/V 10k = 89 nV/rtHz -> 8,9 pA/rtHz nel nodo
+Rn1a vn1a 0 120k
+Gn1a 0 nint1a vn1a 0 {kn}
+Rn1b vn1b 0 120k
+Gn1b 0 nint1b vn1b 0 {kn}
+* --- sezione 2: Q 1.306563 con resistenza dal ramo -bp_b (invertitore reale) ---
+Rvin2 lp1_b ns2 10k
+Rlp2 lp2_b ns2 10k
+Rq2 nbp2 ns2 {1.306563*10k}
+Rf2 ns2 hp2 10k
+Xsum2 0 ns2 hp2 vcc vee OP1654
+Rii2 bp2_b ninv2 10k
+Rio2 ninv2 nbp2 10k
+Xinv2 0 ninv2 nbp2 vcc vee OP1654
+Xg2a hp2 hpg2 ecp 0 vcc vee THAT2181
+Rint2a hpg2 nint2a 10k
+Cint2a nint2a bp2 {Cint}
+Xint2a 0 nint2a bp2 vcc vee OP1654
+Rb2a bp2 0 1G
+Xb2a bp2 bp2_b bp2_b vcc vee OP1654
+Xg2b bp2_b bpg2 ecp 0 vcc vee THAT2181
+Rint2b bpg2 nint2b 10k
+Cint2b nint2b lp2 {Cint}
+Xint2b 0 nint2b lp2 vcc vee OP1654
+Rb2b lp2 0 1G
+Xb2b lp2 lp2_b lp2_b vcc vee OP1654
+* rumore dei due VCA: -98 dBV su I/V 10k = 89 nV/rtHz -> 8,9 pA/rtHz nel nodo
+Rn2a vn2a 0 120k
+Gn2a 0 nint2a vn2a 0 {kn}
+Rn2b vn2b 0 120k
+Gn2b 0 nint2b vn2b 0 {kn}
+* VCA della RES (solo il suo rumore, resn = 1)
+Rnr vnr 0 120k
+Gnr 0 ns2 vnr 0 {resn*1e-4}
+* --- overdrive v0.2b sull'uscita LP ---
+.model D4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+.param kod=1.171
+Ri lp2_b gn 10k
+Rfo gn a 20k
+X1 0 gn a vcc vee OP1654
+R1 a w 2.2k
+D1 w p1 D4148
+D2 p1 0 D4148
+D3 0 q1 D4148
+D4 q1 w D4148
+Xb w wb wb vcc vee OP1654
+Rvx lp2_b vino 10k
+Rvw wb vino {10k/kod}
+Vs vino 0 DC 0
+Fv 0 sn Vs {m}
+Rvn vn 0 120k
+Gvn 0 sn vn 0 {kn}
+Rsa a sn 20k
+Rsf sn y 10k
+Xs 0 sn y vcc vee OP1654
+.param ft={fc*fr}
+.tran 0 {12/ft} 0 {0.01/ft}
+.step param f1 list 12k 20k
+.step param fc list 20k 37k
+.step param fr list 1 0.5
+.meas tran i1a MAX (abs(V(hp1))+abs(V(hpg1)))/10k FROM {6/ft} TO {12/ft}
+.meas tran i1b MAX (abs(V(bp1_b))+abs(V(bpg1)))/10k FROM {6/ft} TO {12/ft}
+.meas tran i2a MAX (abs(V(hp2))+abs(V(hpg2)))/10k FROM {6/ft} TO {12/ft}
+.meas tran i2b MAX (abs(V(bp2_b))+abs(V(bpg2)))/10k FROM {6/ft} TO {12/ft}
+.meas tran vout PP V(lp2_b) FROM {6/ft} TO {12/ft}
+.end
