@@ -1,0 +1,37 @@
+* vca-trim-casi.cir — GENERATO da sim/system/vca_trim.py: non modificare.
+* Trim di law di una coppia stereo di VCA 2181 / V2181L (todo 17,
+* docs/fase3/sistema-vca-trim.md). Lato L fisso, lato R con trimmer di
+* scala (Rs) e di offset (cursore su ROFF). tr=0: trimmer a meta corsa;
+* tr=1: trimmer ai valori calcolati. Misura L e R a 1 kHz per ogni g.
+* Chip: legge del datasheet THAT 2181 con k, d0 e linearita per chip
+* (macro comportamentale, stessa forma di sim/lib/that2181.inc).
+.param g=-40 caso=1 tr=0
+.param cv={-g*0.0061/0.5}
+.param kL={table(caso, 1, 0.006, 2, 0.0062, 3, 0.0058, 4, 0.006, 5, 0.006)}
+.param kR={table(caso, 1, 0.0062, 2, 0.006, 3, 0.0063, 4, 0.0062, 5, 0.0062)}
+.param dL={table(caso, 1, -0.2, 2, 0.2, 3, -0.2, 4, -0.2, 5, -0.2)}
+.param dR={table(caso, 1, 0.2, 2, -0.2, 3, 0.2, 4, 0.2, 5, 0.2)}
+.param cL={table(caso, 1, 0, 2, 0, 3, 0, 4, 0, 5, 0)}
+.param cR={table(caso, 1, 0, 2, 0, 3, 0, 4, 8.333333333333333e-05, 5, 0.0003333333333333333)}
+.param rsT={table(caso, 1, 934.8606313237901, 2, 1065.9560287557683, 3, 900.0, 4, 928.1541041251367, 5, 907.7530160618501)}
+.param vwT={table(caso, 1, 7.701683069625092, 2, -6.979650187310064, 3, 7.982519999999999, 4, 7.73069317825861, 5, 7.821554493294608)}
+.param rsR={if(tr, rsT, 1000.0)}
+.param vwR={if(tr, vwT, 0)}
+Vcv cv 0 DC {cv}
+Vw w 0 DC {vwR}
+Vin in 0 DC 0 AC 1
+RsL cv pl 1000.0
+RgL pl 0 1000.0
+RsR cv pr {rsR}
+RgR pr 0 1000.0
+RoR w pr 1500000.0
+* chip: guadagno in dB dal pin EC-, ingresso ad alta impedenza (I bias trascurata)
+Bl outl 0 V={V(in)*10**((-V(pl)/kL + dL + cL*(V(pl)/kL)**2)/20)}
+Br outr 0 V={V(in)*10**((-V(pr)/kR + dR + cR*(V(pr)/kR)**2)/20)}
+.step param tr LIST 0 1
+.step param caso 1 5 1
+.step param g LIST 10 0 -10 -20 -40 -60 -80
+.ac lin 3 900 1.1k
+.meas ac gl FIND mag(V(outl)) AT 1k
+.meas ac gr FIND mag(V(outr)) AT 1k
+.end
