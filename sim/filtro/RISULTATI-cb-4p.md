@@ -102,6 +102,27 @@ guadagno dell'overdrive). Core (a′) k 1/30: −77,0 / −75,6 / −70,6.
   limitatore e un VCA (o OTA) della RES progettati per questo core.
   Risonanza, auto-oscillazione e overdrive del (c-B) col chip: nel
   modello il VCA è un moltiplicatore ideale (niente THD vs corrente).
-- Rumore in modo HPF.
+- ~~Rumore in modo HPF~~: fatto, sotto.
 - Verifica a banco della curva di Figure 4 sul clone V2181L (il datasheet
   è del THAT originale).
+
+## Modo HPF (2026-10-21, pomeriggio)
+
+dBu A-wtd, uscita HP del core a 4 poli (sezione 2 da hp1), overdrive a
+valle; DRIVE chiuso / aperto:
+
+| fc | (a′) k 1/30 (`d5b-4p-noise-hp.cir`) | (c-B) f1 12 kHz (`cb-4p-noise-hp.cir`) |
+|---|---|---|
+| 37 kHz | −93,6 / −86,6 | −96,5 / −93,9 |
+| 1 kHz | **−81,6** / −74,2 | −90,2 / −82,8 |
+| 100 Hz | −85,6 / −78,3 | **−88,4** / −81,0 |
+| 10 Hz | −87,2 / (*) | −88,6 / −81,2 |
+
+(*) (a′) a Iabc 114 nA con DRIVE aperto: guadagno 0,39 invece di 2,34.
+Nel punto di lavoro l'offset del core (×1/k) polarizza il tosatore; il
+netlist non ha il servo dell'overdrive (§5ter). Riga scartata.
+
+Sistema con 4 filtri in HPF, overdrive chiuso: **(a′) −74,8 (FAIL 3,2)**,
+**(c-B) −79,6 (PASS 1,6)**. In HPF il filtro aperto lascia passare il
+rumore degli integratori su tutta la banda: è il caso peggiore per
+entrambi i core.

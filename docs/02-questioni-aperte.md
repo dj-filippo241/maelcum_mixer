@@ -20,7 +20,7 @@ Le voci chiuse di A e B stanno in fondo a C («Voci chiuse delle liste A e B»).
 | A11 | **RINVIATA da Filippo il 2026-10-14** (acquisti sospesi fino al prototipo). Strumenti di misura da avere per il banco | — | 30 |
 | A12 | Acquisto VCA: resta sospeso fino al prototipo (già deciso). **Conteggio corretto 2026-10-21 (todo 114): ~62 chip** (+8 col crossfader), lotto ~75-85 pz con scarti dell'abbinamento e scorte (`docs/fase3/sistema-vca-trim.md` §4, §6). [Superato: ~36-38 chip, lotto ~52-60] | voce 37 | 37 |
 | A13 | Sessione hardware: marca e modello di manopole, slider, bottoni; taper dei pot | `docs/fase3/sistema-comandi.md`: 109 manopole, 8 slider, 25 bottoni | 40 |
-| A18 | **NUOVA 2026-10-21 (todo 46).** Rumore del filtro a 4 poli: col core (a′) k 1/30 quattro filtri inseriti portano il sistema a −77,0 dBu A-wtd, 1,0 dB oltre il target −78 (dec. 89). Strade: (1) accettarlo come condizione d'uso, come le dec. 95/100; (2) partitore k 1/20: −78,9 (PASS 0,9), ma oscillazione a fine corsa −8,2 semitoni e +3,8 dBu (ora −5,7 e +4,9) e fischio sul programma ~2 dB più debole; (3) attendere B1. **Filippo 2026-10-21: (3).** Misura del (c-B) a 4 poli fatta lo stesso giorno (`sim/filtro/RISULTATI-cb-4p.md`): −92,1 dBu A-wtd nel caso peggiore, sistema −81,2 (PASS 3,2), con la curva di rumore del datasheet (Figure 4) e il VCA a 0 dB a 12 kHz; headroom verificato (≤ 1,84 mA contro 2,5 a +18 dBu). Restano la RES alta del (c-B) e la curva del clone V2181L. Il FAIL riguarda solo il core (a′) | `sim/filtro/RISULTATI-D5.md` §6.3-§6.4, `RISULTATI-cb-4p.md`, `docs/06` §12 | 70, 89 |
+| A18 | **NUOVA 2026-10-21 (todo 46).** Rumore del filtro a 4 poli: col core (a′) k 1/30 quattro filtri inseriti portano il sistema a −77,0 dBu A-wtd, 1,0 dB oltre il target −78 (dec. 89). Strade: (1) accettarlo come condizione d'uso, come le dec. 95/100; (2) partitore k 1/20: −78,9 (PASS 0,9), ma oscillazione a fine corsa −8,2 semitoni e +3,8 dBu (ora −5,7 e +4,9) e fischio sul programma ~2 dB più debole; (3) attendere B1. **Filippo 2026-10-21: (3).** Misura del (c-B) a 4 poli fatta lo stesso giorno (`sim/filtro/RISULTATI-cb-4p.md`): −92,1 dBu A-wtd nel caso peggiore, sistema −81,2 (PASS 3,2), con la curva di rumore del datasheet (Figure 4) e il VCA a 0 dB a 12 kHz; headroom verificato (≤ 1,84 mA contro 2,5 a +18 dBu). In modo HPF (caso peggiore, RISULTATI-D5 §6.5): sistema (a′) −74,8 (FAIL 3,2), (c-B) −79,6 (PASS 1,6). Restano la RES alta del (c-B) e la curva del clone V2181L. Il FAIL riguarda solo il core (a′) | `sim/filtro/RISULTATI-D5.md` §6.3-§6.4, `RISULTATI-cb-4p.md`, `docs/06` §12 | 70, 89 |
 
 ### B. Decisioni di Filippo che vogliono l'orecchio (prototipo Max for Live o banco)
 
@@ -67,8 +67,8 @@ Le voci chiuse di A e B stanno in fondo a C («Voci chiuse delle liste A e B»).
   rumore con l'overdrive aperto FATTI il 2026-10-21 (RISULTATI-D5 §6,
   todo 46): FAIL di rumore di 1,0 dB con 4 filtri → A18.** Restano:
   offset in continua ×30 contro la corsa del servo (~40 mV col Vos
-  massimo contro 83: margine ~2×); rumore in modo HPF; rumore del core
-  (c-B) a 4 poli per B1.
+  massimo contro 83: margine ~2×). Rumore in HPF e del core (c-B) a
+  4 poli FATTI il 2026-10-21 (A18).
 - **Da dec. 99 (2026-10-13)**: drive 5-way v0.4 (five-way §5bis) e
   overdrive filtro v0.2 (filter-module §5ter) SIMULATI, rumore MISURATO
   (modulo 5-way intero −85,9 A-wtd; overdrive a polarità diritta).

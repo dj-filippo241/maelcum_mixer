@@ -267,3 +267,8 @@ di rumore contro guadagno del datasheet (Figure 4) e il VCA a 0 dB a
 12 kHz; sistema con 4 filtri **−81,2** (PASS 3,2).
 Filippo ha scelto di aspettare B1 (A18, strada 3).
 
+**Modo HPF** (RISULTATI-D5 §6.5): è il caso peggiore. Per core, overdrive
+chiuso: (a′) −81,6 dBu A-wtd (fc 1 kHz), (c-B) −88,4 (fc 100 Hz).
+Sistema con 4 filtri in HPF: **(a′) −74,8 (FAIL 3,2)**, **(c-B) −79,6
+(PASS 1,6)**.
+

@@ -354,9 +354,29 @@ manopole ferme superano il target della dec. 89 di 1,0 dB.
   (contro −5,7 e +4,9), fischio sul programma più debole (85 % a −10 dBu:
   +6,7 contro +8,5 dB nel 2 poli). Scelta di Filippo (docs/02, A18).
 
-### 6.5 Non fatto
+### 6.5 Rumore in modo HPF (2026-10-21, pomeriggio)
 
-- Rumore in modo HPF (tutte le misure sono sull'uscita LP).
+dBu A-wtd, uscita HP del core a 4 poli (sezione 2 da hp1), overdrive a
+valle; DRIVE chiuso / aperto:
+
+| fc | (a′) k 1/30 (`d5b-4p-noise-hp.cir`) | (c-B) f1 12 kHz (`cb-4p-noise-hp.cir`) |
+|---|---|---|
+| 37 kHz | −93,6 / −86,6 | −96,5 / −93,9 |
+| 1 kHz | **−81,6** / −74,2 | −90,2 / −82,8 |
+| 100 Hz | −85,6 / −78,3 | **−88,4** / −81,0 |
+| 10 Hz | −87,2 / (*) | −88,6 / −81,2 |
+
+(*) (a′) a Iabc 114 nA con DRIVE aperto: guadagno 0,39 invece di 2,34.
+Nel punto di lavoro l'offset del core (×1/k) polarizza il tosatore; il
+netlist non ha il servo dell'overdrive (§5ter). Riga scartata.
+
+Sistema con 4 filtri in HPF, overdrive chiuso: **(a′) −74,8 (FAIL 3,2)**,
+**(c-B) −79,6 (PASS 1,6)**. In HPF il filtro aperto lascia passare il
+rumore degli integratori su tutta la banda: è il caso peggiore per
+entrambi i core.
+
+### 6.6 Non fatto
+
 - Programma vero (più toni, transitori): solo toni a 1 kHz.
 - Core (c-B) a 4 poli: rumore non misurato. Serve per confrontare B1 alla
   pari.
