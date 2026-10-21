@@ -261,3 +261,8 @@ con oscillazione e fischio che cambiano (RISULTATI-D5 §6.4). Resistenze al
 posto degli OTA a Q fissa aiutano solo col taglio in alto. Decisione di
 Filippo: `docs/02` A18.
 
+Core PULITO (c-B) a 4 poli, stesso metodo (`sim/filtro/RISULTATI-cb-4p.md`,
+2026-10-21): −89,9 dBu A-wtd nel caso peggiore col VCA a 0 dB intorno a
+6 kHz e il floor del datasheet; sistema con 4 filtri **−80,4** (PASS 2,4).
+Filippo ha scelto di aspettare B1 (A18, strada 3).
+
