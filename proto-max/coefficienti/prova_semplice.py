@@ -50,7 +50,7 @@ def manopole_filtro(rnd):
     p = {n: rnd.uniform(0, 100) for n, _, _ in gf.MANOPOLE}
     p[gf.MODO[0]] = rnd.choice((0, 1, 2))
     if gf.con_limitatore():
-        p[gf.LIMIT[0]] = rnd.choice((0, 1))
+        p[gf.LIMIT[0]] = rnd.choice(range(len(gf.LIMIT[2])))
     return p
 
 

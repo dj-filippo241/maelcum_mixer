@@ -19,7 +19,11 @@ Origine dei numeri:
   tarato su `sim/filtro/RISULTATI-cb-4p.md` §RES (2026-10-21): 2+2 o 3+3
   diodi, selettore LIMITATORE del prototipo (scelta di Filippo
   all'ascolto). Prima di allora il PULITO usava il limitatore del (a′) e
-  oscillava a +8,0 dBu invece di +4,4.
+  oscillava a +8,0 dBu invece di +4,4. Terza voce "OTA" (todo 126,
+  Filippo 2026-10-21): niente diodi, il tetto e la tanh dell'OTA della
+  RES dietro un partitore 1/15, che toglie smorzamento solo quanto vale
+  la RES: a RES zero il programma forte resta lineare
+  (RISULTATI-cb-4p §Limitatore che si spegne con la RES).
 - 4 poli: sezione 1 fissa Q 0,541, sezione 2 con la RES (base Q 1,307):
   Butterworth a RES zero. Allineamento [PROVVISORIO]: B2 si sceglie
   nella sessione 2 del P1.
@@ -62,7 +66,11 @@ LIM_OTA = (G_LIM, VK_LIM, W_LIM)
 # circuito. Tarato su LTspice cb-4p-res-*.cir / cb-4p-res33-*.cir:
 # oscillazione +4,5 / +6,7 dBu (LTspice +4,4 / +6,8), risonanza sul
 # programma entro 1 dB (2+2) e 1,6 dB (3+3).
-LIM_PULITO = {"2+2": (2.13, 0.72, 0.06), "3+3": (2.13, 0.93, 0.09)}
+LIM_PULITO = {"2+2": (2.13, 0.72, 0.06), "3+3": (2.13, 0.93, 0.09),
+              "OTA": None}
+# voce OTA: partitore dell'OTA della RES, tetto Vs = 2 VT / k (0,776 V)
+K_RES = 1.0 / 15.0
+VS_RES = 2.0 * VT / K_RES
 
 
 def freq_law(theta):
@@ -95,6 +103,12 @@ def a_ota(u, lineare):
     return VS * math.tanh(m / VS) / m
 
 
+def a_tanh(u, vs):
+    """Guadagno a secante di una tanh: vs tanh(u/vs) / u."""
+    m = max(abs(u), 1e-6)
+    return vs * math.tanh(m / vs) / m
+
+
 def a_lim(v, lim=LIM_OTA):
     """Conduttanza a secante del limitatore: L(v) / v."""
     g, vk, w = lim
@@ -117,12 +131,18 @@ class Sezione:
         self.s1 = self.s2 = 0.0
         self.hp = self.bp = 0.0
 
-    def passo(self, x, g, d):
-        """x in volt, g = tan(pi fc / fs), d = 1/Q. Ritorna hp, bp, lp."""
+    def passo(self, x, g, d, qb=None):
+        """x in volt, g = tan(pi fc / fs), d = 1/Q. Ritorna hp, bp, lp.
+        qb = 1/Q base: serve solo alla voce OTA (smorzamento fisso)."""
         a1 = a_ota(self.hp, self.lineare)
         a2 = a_ota(self.bp, self.lineare)
         ar = a_ota(self.bp, self.lineare)
-        r = d * ar + (a_lim(self.bp, self.lim) if self.limitatore else 0.0)
+        if self.limitatore and self.lim is None:
+            # smorzamento fisso qb meno quello che toglie l'OTA della RES
+            r = qb - (qb - d) * a_tanh(self.bp, VS_RES)
+        else:
+            r = d * ar + (a_lim(self.bp, self.lim) if self.limitatore
+                          else 0.0)
         g1, g2 = g * a1, g * a2
         bp = (g1 * (x - self.s2) + self.s1) / (1.0 + g1 * g2 + g1 * r)
         hp = x - self.s2 - (g2 + r) * bp
@@ -151,7 +171,7 @@ class Core:
         g2 = math.tan(math.pi * fc * m2 / self.fs)
         hp, _, lp = self.a.passo(x, g1, 1.0 / q1)
         hp2, _, lp2 = self.b.passo(hp if modo == "hp" else lp, g2,
-                                   smorz(gres, q2))
+                                   smorz(gres, q2), 1.0 / q2)
         return hp2 if modo == "hp" else lp2
 
 

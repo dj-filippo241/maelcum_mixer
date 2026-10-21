@@ -249,8 +249,56 @@ Lettura:
   si spegne con la RES (agisce sulla corrente iniettata dall'OTA, non
   sullo smorzamento fisso). Da progettare e simulare: non fatto.
 
+### Limitatore che si spegne con la RES (2026-10-21, todo 126, Filippo: «2»)
+
+Richiesta di Filippo: a RES zero il PULITO non deve schiacciare il
+programma forte. **Topologia [PROVVISORIO]**: niente diodi. Il tetto del
+fischio è la tanh d'ingresso dell'OTA della RES: l'OTA non dà più di
+Iabc, e Iabc è ~0 a RES minima. Il ginocchio sta a ~2VT/k di stato bp;
+lo smorzamento fisso Rq2 resta lineare. Il partitore k fissa il livello
+del fischio (proporzionale a 1/k), non la RES sul programma piccolo.
+
+Netlist `cb-4p-resota-k{15,30}-*.cir`, generati dai netlist del 3+3
+togliendo i diodi e cambiando k.
+
+**Auto-oscillazione** (dBu rms · semitoni dal taglio):
+
+| k | RES poco oltre 90 % | RES 100 % |
+|---|---|---|
+| 1/30 (fc 1010) | +2,4 · −0,03 | +12,5 · −0,35 |
+| **1/15** (fc 101 / 1010 / 10100) | −3,6 · −0,03 | **+6,4 · −0,36** (scarto ≤ 0,1 dB su tre decadi) |
+| 3+3 a diodi, per confronto | −0,6 | +6,8 · −1,15 |
+
+Con k 1/20 il fischio sarebbe ~+8,9 dBu (scala 1/k, verificata fra 1/15
+e 1/30). Scelta di partenza k 1/15: stesso fischio del 3+3, dentro il
++6…+10 della SPECIFICA §5. Iabc massima 143 uA.
+
+**Risonanza sul programma** (`cb-4p-resota-k15-prog.cir`, tono sul taglio,
+guadagno della fondamentale · THD; tra parentesi il 3+3):
+
+| ingresso | RES 0 % | 50 % | 70 % | 85 % |
+|---|---|---|---|---|
+| −30 dBu | −3,0 | +4,2 (+4,2) | +10,4 (+10,5) | +19,2 · 0,12 % (+21,6) |
+| −10 dBu | −3,0 | +3,2 (+3,8) | +6,3 (+8,0) | +8,4 · 0,60 % (+10,5) |
+| 0 dBu | **−3,0 · 0,0001 %** (−3,1 · 0,03 %) | +1,0 (+1,3) | +2,4 (+2,5) | +3,4 · 0,86 % (+3,2 · 1,7 %) |
+
+La RES sul programma resta vicina al 3+3 (fino a 2 dB in meno a −10 dBu
+e RES 70-85 %), con metà della distorsione.
+
+**Programma forte a RES minima** (`cb-4p-resota-k15-p18.cir`): a 0, +10,
++15 e +18 dBu, taglio a 4×, 2×, 1×, 0,5× del tono, l'uscita coincide col
+filtro lineare (scarto ≤ 0,05 dB) e la THD resta ≤ 0,008 %. Il problema
+del §Overdrive e programma forte è risolto. Overdrive a DRIVE 100 % con
++18 dBu: +5,7 dBu rms, picco 1,58 V (tetto di §5ter rispettato). Corrente
+dei VCA ≤ 0,76 mA.
+
+Rumore: a RES minima l'OTA è spento come prima, e i diodi tolti non
+conducevano: `cb-4p-noise-hp-res.cir` (−88,4 dBu A-wtd) resta valido.
+
 ### Non fatto
 
 - THD dei VCA contro corrente (modello ideale), clone V2181L a banco.
-- Limitatore che si spegne con la RES: solo se Filippo lo chiede.
+- Limitatore nell'OTA: offset dell'OTA al variare di Iabc (fino a 3 mV
+  max, ×1/k in stato), rumore dell'OTA a RES alta, modello nel prototipo
+  (filtro.py, MC-FILTRO), livello del fischio da sentire (k 1/15 o 1/20).
 

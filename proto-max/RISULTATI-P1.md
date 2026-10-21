@@ -225,3 +225,23 @@ risonanza LP/HP a RES 70 e 85 %, -10/0/+6 dBu, gen~ contro modello entro
 `prova_semplice.py`. Nel generatore il LIMITATORE esce dal -S se la
 scelta fissata è il core (a′): lì non serve.
 
+## Terza voce PULITO OTA (2026-10-21, todo 126, Filippo)
+
+Il selettore LIMITATORE ha una terza voce: PULITO OTA. Niente diodi: il
+tetto del fischio è la tanh dell'OTA della RES dietro il partitore 1/15
+(Vs = 0,776 V), che toglie smorzamento solo quanto vale la RES
+(`sim/filtro/RISULTATI-cb-4p.md` §Limitatore che si spegne con la RES).
+In `filtro.py`: r = qb − (qb − d)·a_tanh(bp), qb = 1/Q base. Nel gen~ la
+voce si dissolve in 20 ms dalle voci a diodi (peso lim_o).
+
+| | modello | LTspice |
+|---|---|---|
+| fischio a fine corsa, fc 1010 | +6,2 dBu · −0,2 st | +6,4 dBu · −0,36 st |
+| fischio poco oltre 90 % | −4,1 dBu | −3,6 dBu |
+| RES 85 %, −10 / 0 dBu | +8,2 / +3,3 dB | +8,4 / +3,4 dB |
+| RES 0 %, +18 dBu, sul taglio | −3,01 dB (lineare) | −3,0 dB, 0,008 % |
+
+Prove: prova_filtro PASS (voce OTA: risonanza LP/HP a RES 0/70/85 %,
+fischio a 200 Hz, 1 kHz, 5 kHz, programma a +18 dBu); prova_semplice
+PASS; regole gen~ pulite.
+

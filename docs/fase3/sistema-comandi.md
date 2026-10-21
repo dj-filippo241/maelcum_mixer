@@ -70,6 +70,19 @@ mandata ai pedali, trimmer di taratura.
 Manopole in tutto: 110 (dec. 99: +1 sul 5-way). Con 4 moduli MIC/MONO al posto di 4 il conto non
 cambia; ogni modulo MIC/MONO in meno toglie 7 pot singoli.
 
+## Scelte hardware (sessione del 2026-10-21, dec. 118)
+
+- Rotativi principali: classe 14 mm (Alps RK14K o equivalente), disposti
+  disassati come sul Xone:DB4. Vale per GAIN e EQ dei canali, 5-way,
+  filtro, FX (GAIN, reroute), master, CUE.
+- EQ di FX-SEND, ritorni FX, MIC e MONO (24 pot: 8 doppi FX-SEND, 8
+  doppi ritorni, 8 singoli MIC/MONO): classe 9 mm (Alps RK09 o
+  equivalente), senza scatto al centro.
+- Da verificare: codici a magazzino della RK14K doppia 10k B con detent
+  (alcune versioni hanno ordine minimo 1000 pezzi); tenuta alla polvere
+  (la RK14K ha struttura chiusa contro polvere e flussante, senza grado IP;
+  dec. 111 (e) chiede pot sigillati).
+
 ## Aperto per la sessione hardware
 
 - Taper custom: quante famiglie diverse servono davvero (EQ2, gain 5-way,
