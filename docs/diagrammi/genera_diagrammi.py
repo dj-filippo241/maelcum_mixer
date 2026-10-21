@@ -781,7 +781,7 @@ def schema_totale():
 def psu():
     d = Diagram("psu", 1560, 960, "SISTEMA PSU — ALIMENTAZIONE",
                 "maelcum mixer — alimentatore ESTERNO con pre-regolatori (dec. 113) · regolazione finale nei moduli (dec. 93) · 2 ventole a termostato (dec. 112)",
-                "box esterno · toroidale ~250 VA", GREEN)
+                "box esterno · toroidale ~270 VA", GREEN)
     # i due contenitori: box esterno e mixer, uniti dal cavo
     for x, w, label in ((20, 885, "BOX ESTERNO (dec. 113) — vicino al banco, a terra su piedini"),
                         (950, 590, "MIXER — modulo PSU-IN e regolazione nei moduli")):
@@ -791,8 +791,8 @@ def psu():
     RE = d.box(40, 130, 150, 90, "RETE 230 V", ["IEC + filtro EMC", "interruttore bipolare"], "dark")
     IN = d.box(220, 120, 210, 110, "INGRESSO RETE", ["fusibile T2 A [PROVV]", "NTC 10-20 Ω anti-inrush",
                                                   "+ relè di bypass dopo 0,5 s"])
-    TR = d.box(470, 110, 190, 130, "TOROIDALE ~250 VA", ["unico, 4 secondari", "schermo primario/secondari",
-                                                       "termico integrato", "(dec. 106/111)"], "green")
+    TR = d.box(470, 110, 190, 130, "TOROIDALE ~270 VA", ["unico, 4 secondari", "schermo primario/secondari",
+                                                       "termico integrato", "(dec. 106/111/115)"], "green")
     chain_h(d, [RE, IN, TR])
     d.box(690, 110, 200, 130, "CALORE NEL BOX (§2.8)", ["~48 W · ~63 W a rete +10 %", "aletta Rθ ≤ 0,6 K/W",
                                                       "senza ventola", "chiuso: pioggia e polvere"],
@@ -803,7 +803,7 @@ def psu():
            "ogni 0 V su conduttori propri fino alla stella · cadute ≤ 60 mV · marca: voce 40"],
           "note", tsize=12, lsize=10.5)
     rows = [
-        ("W1 2×21 V 3,5 A", ["ponte + bulk 2 × 15 mF", "T4 A per ramo"],
+        ("W1 2×21 V 4,0 A", ["ponte + bulk 2 × 15 mF", "T5 A per ramo"],
          "LDO MOSFET ±22,0 V", ["limite 2,7 A · soft-start 0,3 s", "ripple al mixer ≤ 3 mV pp"],
          ["PSU-IN: TVS · T2,5 A · 2,2 mF", "modulo: LM317/337 → 19,2 V + cap mult. → ±18"],
          ["canali · 5-way · FX · filtro · FX-SEND", "CUE · mic/mono · moduli opzionali",
@@ -838,7 +838,7 @@ def psu():
     d.box(40, 290, 390, 176, "PROTEZIONI (§2.7, §4.3)",
           ["rete: interruttore bipolare · T2 A · NTC + relè di bypass",
            "secondari: fusibili lenti prima dei ponti",
-           "   (T4 A · T1,25 A · T630 mA · T3,15 A) · termico",
+           "   (T5 A · T1,25 A · T630 mA · T3,15 A) · termico",
            "uscite: limite di corrente degli LDO (corto nel cavo)",
            "nel mixer: TVS + fusibile di gruppo per rail (PSU-IN)",
            "   + PTC per slot e per rail sul backplane [PROVV]"],
@@ -869,7 +869,7 @@ def psu():
           "note", align="start", lsize=10, tsize=12)
     d.legend(910, [("audio", "potenza (rail)"), ("cv", "mute e supervisione"), (AMBER, "regolazione nel mixer"),
                    ("dashed", "contenitore")])
-    d.footer("Fonte: docs/fase3/sistema-psu-esterno.md v0.1 (§1-§5) + sistema-psu.md REV dec. 113 + decisioni 90/93/106/111/112/113 + sim/system/psu-box-*.cir",
+    d.footer("Fonte: docs/fase3/sistema-psu-esterno.md v0.1 (§1-§5) + sistema-psu.md REV dec. 113 + decisioni 90/93/106/111/112/113/115 + sim/system/psu-*.cir",
              "2026-10-21")
     return d.save()
 
