@@ -142,6 +142,20 @@ e raw minimo 23,5 V a rete −10 % (requisito ≥ 21,7). Trasformatore
 **~225 → ~250 VA** (taglia commerciale già prevista dalla dec. 106).
 Bulk 2×10 mF invariato (ripple a 1,7 A ~0,6 V picco-picco nel caso 2).
 
+**REV 2026-10-21 (todo 114) — VCA del modulo FX: 40, non 20.** Il
+modulo FX contava i 2181 come chip doppi (`fx-module.md`, correzione in
+testa). +20 chip sul ramo ±18 V: da +48 mA (2,4 mA typ da datasheet)
+a +110 mA (5,5 mA/chip di questa tabella, I/V compreso). Ramo audio:
+**base ~1,45-1,5 A, con gli opzionali ~1,75-1,81 A**. Simulato
+(`sim/system/psu-w1-vca.cir`, bulk 15 mF, caso peggiore 1,81 A): W1 3,5 A
+al **98 %** a rete −10 % e al **100 %** a rete nominale (era 93 %); raw
+minimo 23,6 V (−0,2 V). Con W1 4,0 A: 88 %, raw minimo 23,9 V. Il calore
+sale di ~4 W. **APERTO**: il W1 3,5 A è della dec. 111/112; con tutti gli
+opzionali resta senza margine. Scelta di Filippo: tenere 3,5 A (margine
+zero solo con tutti gli opzionali e corrente dei chip al massimo) o
+passare a 4,0 A (~270 VA). La valle del raw scende di 0,2 V: margine
+dell'LDO ±22,0 V da ricontrollare in `psu-box-*`.
+
 **Bilancio termico rifatto.** La tabella §5 contava solo i regolatori
 (25-29 W). Il calore vero include la potenza che gli op-amp, i VCA e gli
 OTA assorbono dai rail: ogni ampere su ±18 V sono 36 W dentro il telaio.
@@ -233,7 +247,7 @@ OPA1654 ~1,8 mA/canale (7,2/quad) · OPA1612 ~2 mA/canale · THAT 2181
 
 | Dominio | Moduli | Idle/programma | Picco | Note |
 |---|---|---|---|---|
-| ±18 V audio (raw ~27 V, reg. locale) | 4× CDJ (~65 mA/canale), 5-way (~300 mA), FX (~180 mA), filtro (~110 mA), riserve mic/generic (~50) | **~0,9 A per ramo** | ~1,0 A | Iq op-amp dominante e costante; picchi di segnale su carichi ≥600 Ω = decine di mA |
+| ±18 V audio (raw ~27 V, reg. locale) | 4× CDJ (~65 mA/canale), 5-way (~300 mA), FX (~180 mA [SOTTOSTIMATO: contava 20 VCA, sono 40 → ~230-290 mA, REV 2026-10-21]), filtro (~110 mA), riserve mic/generic (~50) | **~0,9 A per ramo** | ~1,0 A | Iq op-amp dominante e costante; picchi di segnale su carichi ≥600 Ω = decine di mA |
 | ±26 V master HV ([M], raw W3 dedicato — dec. 93) | stadio HV composite ×2 (Iq 40 mA/canale, sizing pass 0,75/1,0/2,7 W — master-out v0.3) + LDO locali ±18/±15/+5 | ~130 mA | ~170 mA (600 Ω a picco) | statici ±23,6…29,2 V su rete ±10%: il punto VERIFICATO ±23,7 V (capability +25,4…+25,6 dBu) è il worst case a rete −10% |
 | ±15 V LN/OTA (raw ±22 → pre-reg LM317/337 ±16,5 → **LT3045/94 → ±15,0 V esatti** — due stadi, dec. 93/54) | filtro: 16 LM13700 (~65-100 mA; riserva (c-B) +16×2181 = +90), phono ×4 (~70), mic (~20), CV gen/dist (~40), **metering ~125** (detector ~25 + follower albero riferimenti ~100, dati S4 `sistema-metering.md` §5/§9, OP1612-class), CUE (idle ~30, picco ~90: 1 Vrms/32 Ω ×2 uscite) | ~280 mA | **~450 mA** | LT3045/94: Vin max **20 V**, Vout max 15 V, 500 mA, dropout max 0,45 V (datasheet — la premessa v0.1 «Vin max 15 V» era errata); il pre-reg ±16,5 lascia 1,5 V di headroom; il picco va DISTRIBUITO su regolatori locali per dominio (l'albero riferimenti meter ha la sua coppia LT3045/94 dedicata — nessun singolo regolatore vede 450 mA); (c-B) di q70 → +90 mA già nella riserva |
 | ±15 V switch/logica | ~30 ADG1434-class (µA) + logica selettori/relay driver | <30 mA | 50 mA | 78L15/79L15 locali dal raw LN (o secondario dedicato se il banco mostra accoppiamento) |

@@ -1,5 +1,12 @@
 # FASE 1 — Modulo FX: design v0.3-WIP (2026-10-01)
 
+> **CORREZIONE CONTEGGIO (2026-10-21, todo 114, `docs/fase3/sistema-vca-trim.md` §4)**:
+> il THAT 2181 / V2181L è un VCA SINGOLO. La matrice stereo ha 4 ritorni ×
+> 4 reroute × 2 lati = **32 chip** (non 16), il GAIN dei 4 ritorni stereo
+> **8 chip** (non 4): il modulo ha **40 VCA, non 20**. Mixer ~62 chip (+8 col
+> crossfader). I conteggi «16× / 20 chip / ~28-30» più sotto sono SUPERATI.
+> Trim delle coppie L/R: `sistema-vca-trim.md`.
+>
 > **v0.3-WIP (2026-10-01, decisione 91)**: (a) la sezione send di canale
 > (EQ2 + level + assign) ESCE dal canale CDJ e vive nel micro-modulo
 > FX-SEND ×4 (`docs/fase1/fx-send-module.md`): questo modulo riceve le
@@ -202,7 +209,8 @@ Stessa famiglia delle celle serie EQ v0.3 (decisione 76/77):
 
 - **Topologia [REV dec. 91b]**: per ogni ritorno (4), **4 VCA di reroute
   (3 cross verso gli altri bus + 1 SELF verso il proprio bus)** × 2 canali
-  = 8 sezioni VCA per ritorno = 32 sezioni = **16× THAT 2181**
+  = 8 sezioni VCA per ritorno = 32 sezioni = ~~16× THAT 2181~~ **32 chip singoli
+  (THAT 2181 / V2181L; correzione 2026-10-21, todo 114)**
   [PROVVISORIO — voce 37 per la reperibilità]. Solo attenuazione (gain
   ≤ 0 dB) come da SPEC. Il self si inietta sullo STESSO nodo summing del
   proprio bus (virtual-earth): punto unico d'ingresso, isolamento tra
@@ -353,7 +361,7 @@ dei cross (§8.3/§8.5 five-way: click −9 dB class). Limite del modello
 
 | Voce | Qtà | Note |
 |---|---|---|
-| THAT 2180/2181 (SINGLE VCA — datasheet 2026-09-27: "dual" = porti di controllo, non canali) | 16 reroute (12 cross + 4 self, dec. 91) + 4 gain ritorno = 20 chip | voce 37 (reperibilità/prezzo: ~28-30 chip in tutto il mixer post-dec. 91 (era ~24-26 post-dec. 88, ~34-36 pre); lotto clone → ~44-52 pz [PROVVISORIO]) |
+| THAT 2180/2181 (SINGLE VCA — datasheet 2026-09-27: "dual" = porti di controllo, non canali) | [CORRETTO 2026-10-21, todo 114] 16 reroute stereo = 32 chip + 4 GAIN ritorno stereo = 8 chip = **40 chip** (era «20»: conto coi dual) | voce 37 (reperibilità/prezzo: ~28-30 chip in tutto il mixer post-dec. 91 (era ~24-26 post-dec. 88, ~34-36 pre); lotto clone → ~44-52 pz [PROVVISORIO]) |
 | Quad op-amp (bus driver, buffer, summing, EQ2 ritorni, servo DC) | ~10-12 | classe OPA1654/1612 mista |
 | JFET buffer ritorno (o op-amp JFET-input) | 8 | hi-Z ≥1 MΩ |
 | Shaper law reroute (diodi/R/trimmer) | 16 canali CV (12 cross + 4 self) | famiglia shaper filtro |

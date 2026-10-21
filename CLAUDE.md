@@ -78,7 +78,7 @@ Review contro il benchmark (dec. 111): ibrido DJ / sound system / live, nessun f
 
 Documenti trasversali: `docs/fase1/gain-staging-sheet.md` (livelli e domini, referenza unica), `docs/06-ritaratura-rumore-71A.md` (budget di rumore e target ratificati), `docs/proto-max/piano.md` (prototipo Max).
 
-Numeri di sistema: rumore −82,9 dBu A-wtd a filtri OFF (docs/06 §10: canale con isolator −94,6, 5-way −85,9) (target ≤ −78, dec. 89; condizioni d'uso accettate con FX e overdrive aperti, dec. 95/100); master +25,4…+25,6 dBu (requisito ≥ +24). VCA: THAT 218x fuori produzione, rotta clone CoolAudio V2181L, ~34-36 chip.
+Numeri di sistema: rumore −82,9 dBu A-wtd a filtri OFF (docs/06 §10: canale con isolator −94,6, 5-way −85,9) (target ≤ −78, dec. 89; condizioni d'uso accettate con FX e overdrive aperti, dec. 95/100); master +25,4…+25,6 dBu (requisito ≥ +24). VCA: THAT 218x fuori produzione, rotta clone CoolAudio V2181L, ~62 chip (conteggio corretto il 2026-10-21: il modulo FX ne ha 40), trim in `docs/fase3/sistema-vca-trim.md`.
 
 Trappole di lettura:
 

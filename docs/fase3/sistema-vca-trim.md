@@ -113,8 +113,10 @@ singolo, 32 sezioni = **32 chip**. Anche il GAIN dei 4 ritorni stereo è 8
 chip, non 4. Il modulo FX ha 40 VCA, non 20. Il totale del mixer passa
 da ~34-36 a ~62. Conseguenze: lotto d'acquisto (voce 37: 56-64 pezzi
 dichiarati con scorte, ora servono ~70-80), corrente del modulo FX
-(+20 chip × ~5,5 mA = +110 mA per ramo sui ±18 V), costo. Da riportare
-in `fx-module.md`, `sistema-psu.md` §1 e voce 37 di `docs/02`.
+(+20 chip: da +48 a +110 mA per ramo sui ±18 V), costo. Riportato il
+2026-10-21 (todo 114) in `fx-module.md`, `sistema-psu.md` (REV
+2026-10-21: W1 3,5 A al 98-100 % con tutti gli opzionali) e voce 37 di
+`docs/02`.
 
 ## 5. Numeri
 
@@ -229,5 +231,5 @@ REW per livello e THD, multimetro con portata mV. È la lista di A11.
 - Shaper dei moduli: uscita ×2 e CV bipolare su EC− (cdj §3.2,
   master-out §3, fx §8.3, filter §5ter). Si applica quando si disegna lo
   shaper reale.
-- Conteggio dei VCA del modulo FX (§4): correggere `fx-module.md`,
-  `sistema-psu.md` e la voce 37.
+- W1 senza margine con tutti gli opzionali (`sistema-psu.md` REV
+  2026-10-21): scelta di Filippo, 3,5 A o 4,0 A.

@@ -55,6 +55,16 @@ filter-module §4.
 
 Scelta [PROVVISORIO]: **W1 2×21 V 3,5 A**, trasformatore **~250 VA**.
 
+**REV 2026-10-21 (todo 114, `psu-w1-vca.cir`, bulk 15 mF)**: il modulo FX ha
+40 VCA, non 20 → caso peggiore 1,81 A per ramo.
+
+| Caso | Avvolgimento | Rete | Carico DC | I efficace avv. | Raw min |
+|---|---|---|---|---|---|
+| 1 | 3,5 A | −10 % | 1,81 A | 3,44 A (98 %) | 23,6 V |
+| 2 | 3,5 A | nominale | 1,81 A | 3,50 A (100 %) | 26,6 V |
+| 3 | 4,0 A | −10 % | 1,81 A | 3,51 A (88 %) | 23,9 V |
+| 4 | 3,5 A | −10 % | 1,70 A (riferimento) | 3,27 A (93 %) | 23,8 V |
+
 ## 4. Tasto MONO (matrice M/S + VCA sulla larghezza)
 
 Caso peggiore: +18 dBu (6,16 Vp) tutto sul canale sinistro, commutazione

@@ -1,0 +1,30 @@
+* todo 114 (2026-10-21): W1 col conteggio corretto dei VCA del modulo FX (40, non 20).
+* +20 chip 2181 sul ramo ±18 V: +48 mA (2,4 mA typ) ... +110 mA (5,5 mA/chip della tabella
+* sistema-psu §1, che include l'I/V). Caso peggiore: 1,7 + 0,11 = 1,81 A per ramo.
+* Stesso modello di psu-w1-opt.cir; bulk 15 mF per ramo (dec. 113, sistema-psu-esterno).
+* Casi: 1 W1 3,5 A rete -10 % 1,81 A; 2 W1 3,5 A rete nominale 1,81 A;
+* 3 W1 4,0 A rete -10 % 1,81 A; 4 W1 3,5 A rete -10 % 1,70 A (riferimento, bulk 15 mF).
+* Corrente efficace d'avvolgimento ~1,9x la DC.
+.param k=1
+.param vs=21 ir=table(k,1,3.5,2,3.5,3,4.0,4,3.5) reg=0.07 mf=table(k,1,0.9,2,1.0,3,0.9,4,0.9) idc=table(k,1,1.81,2,1.81,3,1.81,4,1.7)
+.param rw={reg*vs/ir} vpk={vs*(1+reg)*mf*1.4142}
+.model DR D(Is=5n Rs=0.03 N=1.6)
+Va a ct SINE(0 {vpk} 50)
+Vb ct b SINE(0 {vpk} 50)
+Vct ct 0 0
+Rwa a a1 {rw}
+Rwb b b1 {rw}
+D1 a1 vp DR
+D2 b1 vp DR
+D3 vn a1 DR
+D4 vn b1 DR
+C1 vp 0 15m ic=20
+C2 0 vn 15m ic=20
+I1 vp 0 {idc}
+I2 0 vn {idc}
+.step param k 1 4 1
+.tran 0 1.0 0.6 100u uic
+.meas tran irms RMS I(Rwa)
+.meas tran vdc AVG V(vp)
+.meas tran vmin MIN V(vp)
+.end
