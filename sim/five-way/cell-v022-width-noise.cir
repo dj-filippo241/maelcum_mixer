@@ -1,0 +1,63 @@
+* 5-WAY — RUMORE CELLA v0.2.2 (WIDTH continuo, dec. 117), confronto con cell-v021-width-noise.cir
+* EQ3 700 Hz. Pot WIDTH partitore 10k, buffer x10, invertitore reali;
+* iniezione con E lineare. Q = 0,3/alpha. Totali: noise_total.py.
+.include ../lib/opamp-audio.inc
+.param Vcm=-1.2881 alpha=1 b=0
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 vin 0 DC 0 AC 1
+Vc2 vc2 0 DC {2*Vcm}
+Rvin vin ns 40.2k
+Rlp lp_b ns 10k
+Rf ns hp 10k
+Xsum 0 ns hp vcc vee OP1654
+Rg1a hp g1a 100k
+Rg2a vc2 g1a 100k
+J1 hp g1a nint1 NJFX
+Cint1 nint1 bp 56n
+Xint1 0 nint1 bp vcc vee OP1654
+Rb1 bp 0 1G
+Xb1 bp bp_b bp_b vcc vee OP1654
+Rg1b bp_b g1b 100k
+Rg2b vc2 g1b 100k
+J2 bp_b g1b nint2 NJFX
+Cint2 nint2 lp 56n
+Xint2 0 nint2 lp vcc vee OP1654
+Rb2 lp 0 1G
+Xb2 lp lp_b lp_b vcc vee OP1654
+.model NJFX NJF(Vto=-2 Beta=173u Lambda=5m)
+Rain vin ns2 10k
+Rf2 ns2 vout 10k
+Xout 0 ns2 vout vcc vee OP1654
+Rwt bp_b wq {10k*(1-alpha)+1m}
+Rwb wq 0 {10k*alpha+1m}
+Xbq wq ngq dq vcc vee OP1654
+Rgq1 dq ngq 9k
+Rgq2 ngq 0 1k
+Rin1 dq ninv 10k
+Rin2 ninv dqn 10k
+Xinv 0 ninv dqn vcc vee OP1654
+R0 dqn ns 30k
+Ew bwv 0 dq 0 {b/4.62}
+Rbw bwv ns2 1.623k
+.step param alpha LIST 1 0.6 0.3 0.1
+.step param b LIST 0 4.62
+.noise V(vout) V1 dec 20 10 40k
+.meas noise on1 FIND V(onoise) AT 20
+.meas noise on2 FIND V(onoise) AT 31.5
+.meas noise on3 FIND V(onoise) AT 50
+.meas noise on4 FIND V(onoise) AT 80
+.meas noise on5 FIND V(onoise) AT 125
+.meas noise on6 FIND V(onoise) AT 200
+.meas noise on7 FIND V(onoise) AT 315
+.meas noise on8 FIND V(onoise) AT 500
+.meas noise on9 FIND V(onoise) AT 800
+.meas noise on10 FIND V(onoise) AT 1250
+.meas noise on11 FIND V(onoise) AT 2000
+.meas noise on12 FIND V(onoise) AT 3150
+.meas noise on13 FIND V(onoise) AT 5000
+.meas noise on14 FIND V(onoise) AT 8000
+.meas noise on15 FIND V(onoise) AT 12500
+.meas noise on16 FIND V(onoise) AT 20000
+.meas noise g1k FIND gain AT 1000
+.end

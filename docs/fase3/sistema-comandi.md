@@ -32,7 +32,7 @@
 | | LPF freq / res / drive | 3 | singolo lin → CV | |
 | **5-way** | GAIN di banda | 5 | doppio 10k, taper custom | rotativi (dec. 85), detent |
 | | POSITION di banda | 5 | singolo lin → CV | |
-| | WIDTH di banda | 5 | selettore 3 posizioni a più vie | commuta resistenze 0,1 % |
+| | WIDTH di banda | 5 | doppio 1k, taper log da scegliere | dec. 117 (2026-10-21): continuo Q3…Q0,3, era selettore 3 posizioni |
 | | KILL di banda | 5 | bottoni o levette, logici | |
 | | GROWL e NASTRO (dec. 99; era DRIVE ×1) | 2 | doppio lin, diretto sul segnale (v0.4, niente CV) | primo 5-10 % quasi inerte |
 | | Meter | 1 | barra 10 LED | |

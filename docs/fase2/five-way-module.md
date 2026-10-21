@@ -79,7 +79,8 @@
   ripristina materiale killato); kill switch per via (altoparlanti fisici).
 - EQ CREATIVO: gain/position/width per banda; gain −∞/0/+15 (EQ1-3), +12
   (EQ4), +9 (EQ5); position: 20-120 / 80-400 / 250-1,5k / 800-5k / 3-20 kHz
-  [PROVVISORIO]; width: narrow ~Q3 / medium ~Q1 / broad ~Q0,5; position
+  [PROVVISORIO]; width: narrow ~Q3 / medium ~Q1 / broad ~Q0,5 [SUPERATO dec.
+  117: manopola continua Q3…Q0,3, §4.3]; position
   sposta il centro senza stravolgere gain/Q. Casi d'uso (corpus §17):
   broad+gain modesto = tonal shaping; narrow+gain alto = dub hit preciso;
   broad+gain alto = colorazione aggressiva.
@@ -238,7 +239,7 @@ dimostrati nel progetto:
   boost = 1+b) con BP da SVF OTA;
 - **Position**: ω0 dello SVF via gm = 19,2·Iabc — stessa tecnica del modulo
   filtro; range per banda ~2,3-2,7 ottave.
-- **Width**: Q della cella via damping nel summer: switch 3 posizioni
+- **Width** [SUPERATO dalla dec. 117: manopola continua Q3…Q0,3, §4.3]: Q della cella via damping nel summer: switch 3 posizioni
   (narrow Q3 / medium Q1 / broad Q0,5) su 3 resistori matched 0,1% —
   ripetibile, senza pot che interagiscono (SPEC chiede 3 comportamenti
   discreti, non continui).
@@ -407,6 +408,56 @@ LM13700 RIMOSSI dalle celle (restano eventualmente nel filtro, questione 70
 lato filtro). Delta costo vs v0.2: ~+5 quad (+8-12 €) +10 dual JFET
 (+15-30 €) +3 switch IC (+12-18 €) −10 LM13700 (−10-15 €) −10 VCA gate
 (−25-40 €) ≈ **−5…+5 €** [PROVVISORIO].
+
+### 4.3 v0.2.2 — WIDTH continuo (decisione 117, 2026-10-21)
+
+Filippo vuole WIDTH come manopola libera, al pari di GAIN e POSITION, con
+escursione **Q3…Q0,3** (prima: switch Q3/Q1/Q0,5, punto 2 della §4.1 e Rbw
+della §4.2 punto 4). Integratori, position, gain e summer d'uscita della §4.2
+restano invariati; cambia solo la presa del damping.
+
+**Il problema dei due deck.** Nella v0.2.1 lo switch cambia insieme Rq = Q·10k
+(larghezza) e Rbw = 2,5k·Q/4,62 (tiene fermo il boost). Due rami proporzionali
+a Q con un pot vorrebbero un pot a 4 sezioni (2 per lato) con tracking stretto:
+ogni 10 % di errore fra i due rami dello stesso lato sposta il boost di
+~0,7 dB a +15. Scartato.
+
+**Topologia (B, `sim/five-way/cell-v022-width.cir`)** [PROVVISORIO]:
+1. **Pot WIDTH come partitore su bp_b**: alpha = 0,1…1 (pot 1k + R di fondo
+   ~111 Ω per l'alpha minimo). Un pot doppio, una sezione per lato, come
+   GAIN e POSITION. Senso: CW = più largo (alpha sale).
+2. **Buffer non invertente ×10** (OPA1612, 1,8k/200): dq = 10·alpha·bp_b.
+3. **Invertitore** (OPA1612, 2k/2k): −dq. Sostituisce l'invertitore di −bp_b
+   della v0.2.1 (punto 4 della §4.2).
+4. **Damping da −dq con R0 30k**: Q = R0/(10·alpha·Rf) = 0,3/alpha.
+5. **Pot GAIN tra +dq e −dq**, iniezione Rbw **1,62k fissa**. dq vale
+   3·BP_norm per ogni Q: il boost non dipende da WIDTH, per costruzione e
+   senza secondo deck.
+
+Livelli: dq al picco = 3 × il livello del core, indipendente da Q. Al worst
+(+10 dBu di modulo, core −2 dBu) ~2,6 Vp: ampio margine sui ±18.
+
+**Verificato** (EQ3, `RISULTATI-width-continuo.md`): Q 3,00/2,00/1,00/0,50/0,30
+entro lo 0,1 %; boost 8,98/12,01/14,96 dB uguale su tutta la corsa (±0,005 dB);
+notch −46,6…−47,7 dB; detent piatto. Rumore A-wtd a detent −102,4 dBu per ogni
+WIDTH (invariato: il target di modulo resta); a +15 dB −91,8 (Q3, v0.2.1
+−96,6) / −88,9 (Q1, pari) / −86,1 (Q0,5, v0.2.1 −82,9) / −83,9 (Q0,3).
+La variante A (pot 10k, OP1654) perdeva fino a 13 dB a Q3: per questo pot a
+bassa impedenza e op-amp da 1,1 nV.
+
+**Law** [PROVVISORIO — ascolto]: Q = 0,3/alpha, quindi un taper logaritmico dà
+passi uguali in larghezza. Con un pot log al 10 % il centro corsa cade a ~Q1,6;
+con un taper ~20 % a ~Q1. Da scegliere con la sessione hardware delle
+manopole (voce 40).
+
+**Costo** [PROVVISORIO]: per cella −1 sezione OP1654 (invertitore) +1 OPA1612
+dual. Modulo: +10 OPA1612, −2,5 quad, −5 selettori a 3 posizioni a più vie,
++5 pot doppi 1k. Corrente: ~+50 mA sui ±18 del 5-way (~+1,8 W) [DA
+RIVERIFICARE nel bilancio di `docs/fase3/sistema-psu.md`].
+
+Cosa si perde: lo scatto ripetibile (un «Q3» preciso) e l'uguaglianza L/R della
+larghezza nella zona stretta (tracking del pot doppio). Il boost resta uguale
+fra L e R: dipende solo dal pot GAIN.
 
 ## 5. Drive e meter (questione 10 — v0.3 VALIDATA: design post-referenze, 2026-09-29)
 

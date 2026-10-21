@@ -1,0 +1,65 @@
+* MODULO 5-WAY — CELLA v0.2.2: WIDTH CONTINUO (decisione 117, Q 0,3...3)
+* Base: cell-v021-law.cir (EQ3, C 56n, Vcm -1,2881 = 700 Hz).
+* Cambia solo il damping: il pot WIDTH (partitore, alpha 0,1...1) prende
+* bp_b, un buffer non invertente x10 da' dq = 10*alpha*bp_b, un invertitore
+* da' -dq. Damping da -dq con R0 30k: Q = R0/(10*alpha*Rf) = 0,3/alpha.
+* Il pot GAIN sta tra +dq e -dq (iniezione Rbw 1,62k fissa): dq e' gia'
+* BP_norm*0,3*10, quindi il boost non dipende da Q (al posto del secondo
+* deck dello switch). L'invertitore di -bp_b della v0.2.1 si sposta su dq.
+* Atteso: Q = 0,3/0,5/1/2/3 sui 5 alpha; boost uguale su tutti i Q.
+.include ../lib/opamp-audio.inc
+.param Vcm=-1.2881 alpha=1 b=0
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 vin 0 DC 0 AC 1
+Vc2 vc2 0 DC {2*Vcm}
+* --- summer (Rvin 40,2k = pad core -12 dB) ---
+Rvin vin ns 40.2k
+Rlp lp_b ns 10k
+R0 dqn ns 30k
+Rf ns hp 10k
+Xsum 0 ns hp vcc vee OP1654
+* --- integratore 1: VCR JFET bootstrappato ---
+Rg1a hp g1a 100k
+Rg2a vc2 g1a 100k
+J1 hp g1a nint1 NJFX
+Cint1 nint1 bp 56n
+Xint1 0 nint1 bp vcc vee OP1654
+Rb1 bp 0 1G
+Xb1 bp bp_b bp_b vcc vee OP1654
+* --- integratore 2 ---
+Rg1b bp_b g1b 100k
+Rg2b vc2 g1b 100k
+J2 bp_b g1b nint2 NJFX
+Cint2 nint2 lp 56n
+Xint2 0 nint2 lp vcc vee OP1654
+Rb2 lp 0 1G
+Xb2 lp lp_b lp_b vcc vee OP1654
+.model NJFX NJF(Vto=-2 Beta=173u Lambda=5m)
+* --- WIDTH: pot partitore 1k su bp_b, buffer x10 e invertitore OPA1612 (rumore: variante B) ---
+Rwt bp_b wq {1k*(1-alpha)+1m}
+Rwb wq 0 {1k*alpha+1m}
+Xbq wq ngq dq vcc vee OP1612
+Rgq1 dq ngq 1.8k
+Rgq2 ngq 0 200
+Rin1 dq ninv 2k
+Rin2 ninv dqn 2k
+Xinv 0 ninv dqn vcc vee OP1612
+* --- iniezione b (notch b = -1, +15 dB b = 4,62): pot tra +dq e -dq ---
+Bw bwv 0 V={b/4.62*V(dq)}
+Rbw bwv ns2 1.623k
+Rain vin ns2 10k
+Rf2 ns2 vout 10k
+Xout 0 ns2 vout vcc vee OP1654
+.step param alpha LIST 1 0.6 0.3 0.15 0.1
+.step param b LIST -1 0 1.82 3.0 4.62
+.ac dec 400 10 40k
+.meas ac bpk MAX mag(V(bp))
+.meas ac flo WHEN mag(V(bp))=bpk*0.70711 CROSS=1
+.meas ac fhi WHEN mag(V(bp))=bpk*0.70711 CROSS=2
+.meas ac Qm PARAM sqrt(flo*fhi)/(fhi-flo)
+.meas ac hmax MAX mag(V(vout))
+.meas ac hmin MIN mag(V(vout))
+.meas ac h20 FIND mag(V(vout)) AT 20
+.meas ac h20k FIND mag(V(vout)) AT 20k
+.end

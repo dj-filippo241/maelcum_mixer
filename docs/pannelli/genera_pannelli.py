@@ -226,7 +226,9 @@ def five(w):
         p.bottone(x, y + 4, "KILL", w=12, h=6, sotto=False); y += 13
         p.manopola(x, y + 8, "GAIN", r=7.5, detent=True); y += 24
         p.manopola(x, y + 8, "POSITION", r=7.0); y += 22
-        p.selettore(x, y + 5, ["Q3", "Q1", "Q.5"], "WIDTH"); y += 14
+        p.manopola(x, y + 8, "WIDTH", r=7.0)  # dec. 117: continuo Q3...Q0,3
+        p.testo(x - 9.5, y + 15.5, "Q3", 2.0, colore=SOFT)
+        p.testo(x + 9.5, y + 15.5, "Q.3", 2.0, colore=SOFT); y += 22
         p.y = y
     x = w - 26
     p.manopola(x, y0 + 14, "GROWL", r=7.5)

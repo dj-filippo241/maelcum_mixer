@@ -1,6 +1,6 @@
 # SPECIFICA — MAELCUM MIXER (mixer dub modulare analogico, esemplare unico)
 
-> **v0.1 (2026-09-18, rev. 2026-09-28/01-10: decisioni 76-93; REV 2026-10-13: decisioni 97-106 recepite nei §4-6 come note in testa ai punti toccati + esiti simulazioni e sessione decisioni; REV 2026-10-14: decisioni 107-114; REV 2026-10-21: decisioni 115-116)** — Compilata da: decisioni 1-116 (`docs/01-decisioni-bloccate.md`; 103 e 104 revocate),
+> **v0.1 (2026-09-18, rev. 2026-09-28/01-10: decisioni 76-93; REV 2026-10-13: decisioni 97-106 recepite nei §4-6 come note in testa ai punti toccati + esiti simulazioni e sessione decisioni; REV 2026-10-14: decisioni 107-114; REV 2026-10-21: decisioni 115-117)** — Compilata da: decisioni 1-117 (`docs/01-decisioni-bloccate.md`; 103 e 104 revocate),
 > status doc ChatGPT rev2 (`docs/export-chatgpt/`, corpus chiuso — decisione 58),
 > gain-staging sheet (`docs/fase1/gain-staging-sheet.md`), revisione critica (`docs/03`).
 > Livello: REQUISITI. Il dettaglio circuitale vive nei design doc di `docs/fase1/` e `docs/fase2/`.
@@ -108,7 +108,7 @@ Catena [BLOCCATO]: RCA stereo → protezione → front-end (LINE; PHONO MM v0.1 
 
 - [BLOCCATO] Posizione: DJ BUS → 5-WAY → MASTER SUM. Riferimento interno −6 dB (pad in / makeup out, decisione 73).
 - [BLOCCATO] KILL: 5 sezioni = 5 vie dell'impianto; mappa [PROVVISORIO]: SUB ~10-90 Hz (esteso a 10 Hz per infrasub — decisione 65), KICK ~90-350, MID ~350-1,2k, HIGH ~1,2-3,5k, SUPER HI ~3,5-20k; 24 dB/ottava iniziali, overlap deliberato senza buchi; filter bank complementare (somma piatta senza kill); KILL prima dell'EQ creativo (il boost non ripristina materiale killato); kill switch per via (uno per altoparlanti fisici).
-- [BLOCCATO] EQ creativo 5 bande: gain/position/width per banda (comandi gain = 5 pot rotativi, decisione 85); −∞/0/+15 (bande 1-3), +12 (banda 4), +9 (banda 5); range [PROVVISORIO]: 20-120 / 80-400 / 250-1,5k / 800-5k / 3-20 kHz; width: narrow ~Q3, medium ~Q1, broad ~Q0,5; position sposta il centro senza stravolgere gain/Q.
+- [BLOCCATO] EQ creativo 5 bande: gain/position/width per banda (comandi gain = 5 pot rotativi, decisione 85); −∞/0/+15 (bande 1-3), +12 (banda 4), +9 (banda 5); range [PROVVISORIO]: 20-120 / 80-400 / 250-1,5k / 800-5k / 3-20 kHz; width: narrow ~Q3, medium ~Q1, broad ~Q0,5 [SUPERATO dec. 117: manopola continua Q3…Q0,3, five-way §4.3]; position sposta il centro senza stravolgere gain/Q.
 - [REV 2026-10-13 — DECISIONE 99] Drive = due saturatori con due manopole: GROWL (valvola spinta forte, solo sub e bassi) e NASTRO (JFET tape); niente fuzz; livello autoregolato (non alzano il volume); nessun boost pulito; primo 5-10 % di corsa quasi inerte. Design v0.4 SIMULATO (`five-way-module.md` §5bis: saturatori in parallelo al pulito, pot diretti, nessun VCA; volume ±0,2 dB al nominale; NASTRO 5,5 % e GROWL 20 % a fine corsa) GROWL sotto 350 Hz [F] [griglia DA CONFERMARE-F]. Il testo che segue descrive la v0.3, ARCHIVIATA come alternativa.
 - [SUPERATO, archiviato] Drive: dopo la somma EQ, prima del meter; full CCW = 0 dB (pulito), solo gain positivo CW; ~50% = punto ottimale (+7 dB senza distorsione), 50→80% = saturazione progressiva calda stile nastro, 80→100% = territorio fuzz (decisione 82); interagisce con gain di banda e overdrive filtro; JFET prima / BJT asimmetrico poi.
 - [BLOCCATO] Meter: dopo il drive, prima del master sum.
