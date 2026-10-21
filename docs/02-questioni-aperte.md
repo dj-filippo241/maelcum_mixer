@@ -1,32 +1,25 @@
 # Questioni aperte — maelcum mixer
 
-## STATO AL 2026-10-15 — cosa manca davvero
+## STATO AL 2026-10-21 — cosa manca davvero
 
 Il design teorico (carta + simulazione) è completo per tutti i moduli.
 Restano tre gruppi. Le voci numerate più sotto sono lo storico: ogni
 voce porta in testa il suo stato a oggi.
 
+Blocco attuale (2026-10-15, todo 76): in Live il prototipo salta e distorce
+muovendo le manopole. Gli ascolti del gruppo B aspettano questa riparazione.
+Le voci chiuse di A e B stanno in fondo a C («Voci chiuse delle liste A e B»).
+
 ### A. Decisioni di Filippo che si possono prendere sulla carta
 
 | # | Decisione | Dati pronti | Voce |
 |---|---|---|---|
-| A1 | **CHIUSA → dec. 99 (drive = GROWL + NASTRO, niente fuzz, v0.3 archiviata).** ~~Riconfermare la griglia del drive 5-way~~: i livelli erano etichettati 3 dB troppo bassi, distorce più di quanto confermato (6,9 % a fine corsa su programma nominale) | five-way §5.3bis | 10, dec. 87 |
-| A2 | **CHIUSA → dec. 99 (overdrive diverso dal drive, meno aggressivo dello Sherman, curva che accelera a fine corsa).** ~~Overdrive del filtro~~: confermare o cambiare la law (stessa del drive 5-way come partenza) | filter-module §5bis | 12 |
-| A3 | **CHIUSA → dec. 99 (i saturatori si autoregolano, il boost pulito sparisce).** ~~Drive e overdrive: distorcere senza salire di volume~~ — (A) manopola di livello dopo il drive, (B) compensazione automatica, (C) più guadagno prima dei saturatori | voce 72 + griglia corretta | 72 |
-| A14 | **CHIUSA 2026-10-13 → dec. 99 (g, h, i): griglie confermate.** ~~Confermare le griglie nate dalla dec. 99~~: (a) drive 5-way GROWL + NASTRO (frequenza del GROWL DECISA: 350 Hz); (b) overdrive filtro: morso a fine corsa, law (tetto DECISO: +3 dB) | five-way §5bis.4, filter-module §5ter | 10, 12 |
-| A4 | **CHIUSA 2026-10-13 → DECISIONE 101 (un percorso per canale).** Filtro: un solo percorso per canale (HPF oppure LPF) o HPF e LPF in serie (16 core invece di 8) | filter-module §8 | 63 |
-| A5 | **CHIUSA 2026-10-13 → DECISIONE 100 (accettato come condizione d'uso).** **[MISURATO 2026-10-13 con l'overdrive v0.2 (filter-module §5ter): overdrive chiuso −78,5 = PASS; a metà −77,8; tutto aperto e in silenzio −74,8. La domanda si riduce a: accettare il soffio di un overdrive aperto senza musica?]** Rumore con i filtri inseriti: −75,3 dBu contro il target −78 (definito a filtri OFF). Accettare come condizione d'uso, come per le mandate (dec. 95)? | filter-module §5bis | nuova |
-| A6 | **CHIUSA 2026-10-14 → DECISIONE 107 (pot doppi lineari selezionati, niente VCA per banda).** ~~Tracking stereo dell'EQ: pot doppi selezionati o un VCA per banda~~ | voce 53 | 53 |
-| A7 | **[SUPERATA lo stesso giorno dalla DECISIONE 105: EQ = isolator, vedi A15]** **CHIUSA 2026-10-13 → DECISIONE 104 (EQ in serie confermato + muto a fine corsa quando tutte le manopole sono a zero; la 103 «isolator» è revocata).** EQ tutto chiuso non è silenzio (resta il fader): accettare o aggiungere l'auto-mute | voce 59 | 59 |
 | A15 | **(dec. 114: boost confermato; curva e incroci restano in B7)** **RINVIATA ALL'ASCOLTO da Filippo il 2026-10-13 (→ B7; partenza 150/500/2500 Hz, +6 dB, law lineare).** ~~NUOVA (dec. 105, EQ isolator)~~: confermare incroci (150/500/2500 Hz oppure 100/630/4000 Hz: cambia quanto spariscono le bande medie chiuse da sole), boost +6 dB, law lineare della manopola | eq-isolator-v0.4 §4, §6 | 5, 59 |
-| A16 | **CHIUSA 2026-10-13 → DECISIONE 106 (trasformatore ~225 VA, W1 3,0 A).** ~~ratificare~~ il trasformatore da ~225 VA (avvolgimento audio 2×21 V 3,0 A invece di 2,5 A): con l'isolator quello da 200 VA lavora al 105-107 % | eq-isolator-v0.4 §8, `sim/system/psu-w1-iso.cir` | dec. 98 |
 | A8 | **RINVIATA da Filippo il 2026-10-14.** Chi costruisce (tu, un tecnico, PCB assemblati) | — | 23 |
-| A9 | **CHIUSA 2026-10-14 → DECISIONE 108 (solo LEVEL in mandata, pad fisso 0 dB, compensazione col GAIN del ritorno).** ~~Quali pedali userai: fissa i valori del pad di mandata~~ | fx-module §4 | 25 |
 | A10 | **2026-10-14, Filippo: nessun limite per ora** (nome e misure dopo il prototipo; il telaio nasce dalla somma dei moduli). Nome sul telaio e ingombri massimi | — | 29 |
 | A11 | **RINVIATA da Filippo il 2026-10-14** (acquisti sospesi fino al prototipo). Strumenti di misura da avere per il banco | — | 30 |
 | A12 | Acquisto VCA: resta sospeso fino al prototipo (già deciso). Nuovo conteggio con l'overdrive del filtro: ~36-38 chip, lotto ~52-60 (dec. 99: il drive 5-way v0.4 non usa VCA → ~34-36 chip) | voce 37 | 37 |
 | A13 | Sessione hardware: marca e modello di manopole, slider, bottoni; taper dei pot | `docs/fase3/sistema-comandi.md`: 109 manopole, 8 slider, 25 bottoni | 40 |
-| A17 | **CHIUSA 2026-10-14 → DECISIONE 110 (tutti e quattro accettati come partenza: risonanza Xone-like, griglia overdrive di `d5-chain.cir`, oscillazione ~+5 dBu, calo di nota = carattere).** ~~NUOVA 2026-10-14 (D5, dec. 109).~~ Riconfermare quattro numeri del filtro, scritti su picchi ideali che il chip reale non dà: (a) griglia dell'overdrive (dec. 99 i): il fischio arriva a −1,5…+2 dBu, non a +8 → a fine corsa 11-22 % invece di 31 %, e l'overdrive alza il fischio invece di frenarlo; (b) law RES (dec. 102): il picco si ferma a +8,5 dB su −10 dBu e a ~+1 dB su 0 dBu; (c) livello dell'auto-oscillazione +4,9 dBu contro il requisito +6…+10; (d) la nota che cala di ~6 semitoni tra 90 % e 100 % di RES | `sim/filtro/RISULTATI-D5.md` §2-§4 | 10, 11, 61 |
 
 ### B. Decisioni di Filippo che vogliono l'orecchio (prototipo Max for Live o banco)
 
@@ -35,7 +28,6 @@ voce porta in testa il suo stato a oggi.
 | B1 | Carattere del filtro: core OTA (a′) con partitore 1/30 (dec. 109; valore di lavoro, «a per ora» di Filippo 2026-10-14) o pulito con VCA (c-B). Il core (a) nudo è scartato: non funziona ai livelli di progetto (RISULTATI-D5 §1) | 70 |
 | B2 | Pendenza a 4 poli del filtro: Butterworth, Bessel o Linkwitz-Riley | 64 |
 | B3 | Frequenze delle 5 bande del 5-way (ora ~90 / 350 / 1,2k / 3,5k Hz). 2026-10-15: benchmark (tutti tagliano KICK/MID a 180-220 Hz e HIGH/SUPER a 5-8 kHz) e 5 varianti A-E da ascoltare in MC-5WAY (`proto-max/RISULTATI-P2.md` §1): A attuale, B/C/D benchmark, **E = impianto di Filippo** (DSP 37 / 80 / 170 / 1200 Hz / 20 kHz) 80/170/1,2k + 6k | 67 |
-| B4 | **[CADUTA con la dec. 105: nell'isolator HIGH a zero fa −39 dB a 8 kHz]** ~~[RIAPERTA dalla dec. 104]~~ Kill della banda HIGH: accettare «scurisce», o cella più profonda | 68 |
 | B5 | **2026-10-15, Filippo: resta aperta come OPZIONE d'ascolto; in MC-CHANNEL col selettore EQ TIPO = ISOLATOR / SERIE (`proto-max/RISULTATI-P0.md` §EQ TIPO)** (l'EQ dei canali è l'isolator, dec. 105; l'EQ in serie è archiviato). Review a orecchio dei centri EQ di canale (70 / 250 / 1k / 5k Hz) | 5 |
 | B7 | **2026-10-14 ascolto P0 → DECISIONE 114: boost +6 e GAIN confermati; curva da rifare con pot di serie; incroci A e B scartati entrambi, restano aperti. Varianti C 150 dolce/350/3150 e D 150 dolce/700/3150 (HI-MID senza kick, come i mixer DJ) nel prototipo; benchmark dei 4 bande in `docs/09`.** Incroci, boost e law dell'EQ isolator dei canali (partenza 150 / 500 / 2500 Hz, +6 dB, lineare; alternativa 100 / 630 / 4000 Hz). **2026-10-14: riferimento di Filippo = i DJM Pioneer recenti, poi ascolto. Pioneer non pubblica gli incroci (solo escursioni: 900NXS2 isolator 3 bande −∞…+6; V10 HI/LOW −∞, medie −26 dB); i soli numeri pubblicati sono i centri EQ del 900nexus, 70 Hz / 1 kHz / 13 kHz. Per copiarli serve misurare un mixer vero. Rinviato.** | dec. 105 |
 | B6 | Taratura fine: soglie dei LED mic/mono, carattere e curve di GROWL, NASTRO e overdrive filtro. 2026-10-15, primo ascolto P2: NASTRO troppo aggressivo, GROWL troppo debole e sentito solo con MID e HIGH killate → GROWL Rf 47k; NASTRO pot log, fine corsa 30 → 70 → **85 %**; selettori del prototipo **GROWL VER** DEC.99 / LIBERO (kl 0,6043, «quasi giusto») e **NASTRO VER** OGGI / COMPLETO / EXCITER / CLASSE A / LIBERO (+3 dB sul mix, +10 sul piano) [PROVVISORIO, in ascolto] (five-way §5bis REV, RISULTATI-P2 §6-10) | dec. 97, 99 |
@@ -95,6 +87,25 @@ voce porta in testa il suo stato a oggi.
 > Tutto ciò che NON è ancora deciso. Quando una voce si chiude, si sposta in
 > `01-decisioni-bloccate.md` con data e origine. Le voci marcate **[EXPORT]** richiedono
 > prima la lettura dell'export completo di ChatGPT.
+
+### Voci chiuse delle liste A e B
+
+Spostate qui il 2026-10-21 dalle tabelle A e B: chiuse da una decisione o cadute. Il testo è quello originale.
+
+| # | Decisione | Dati pronti | Voce |
+|---|---|---|---|
+| A1 | **CHIUSA → dec. 99 (drive = GROWL + NASTRO, niente fuzz, v0.3 archiviata).** ~~Riconfermare la griglia del drive 5-way~~: i livelli erano etichettati 3 dB troppo bassi, distorce più di quanto confermato (6,9 % a fine corsa su programma nominale) | five-way §5.3bis | 10, dec. 87 |
+| A2 | **CHIUSA → dec. 99 (overdrive diverso dal drive, meno aggressivo dello Sherman, curva che accelera a fine corsa).** ~~Overdrive del filtro~~: confermare o cambiare la law (stessa del drive 5-way come partenza) | filter-module §5bis | 12 |
+| A3 | **CHIUSA → dec. 99 (i saturatori si autoregolano, il boost pulito sparisce).** ~~Drive e overdrive: distorcere senza salire di volume~~ — (A) manopola di livello dopo il drive, (B) compensazione automatica, (C) più guadagno prima dei saturatori | voce 72 + griglia corretta | 72 |
+| A14 | **CHIUSA 2026-10-13 → dec. 99 (g, h, i): griglie confermate.** ~~Confermare le griglie nate dalla dec. 99~~: (a) drive 5-way GROWL + NASTRO (frequenza del GROWL DECISA: 350 Hz); (b) overdrive filtro: morso a fine corsa, law (tetto DECISO: +3 dB) | five-way §5bis.4, filter-module §5ter | 10, 12 |
+| A4 | **CHIUSA 2026-10-13 → DECISIONE 101 (un percorso per canale).** Filtro: un solo percorso per canale (HPF oppure LPF) o HPF e LPF in serie (16 core invece di 8) | filter-module §8 | 63 |
+| A5 | **CHIUSA 2026-10-13 → DECISIONE 100 (accettato come condizione d'uso).** **[MISURATO 2026-10-13 con l'overdrive v0.2 (filter-module §5ter): overdrive chiuso −78,5 = PASS; a metà −77,8; tutto aperto e in silenzio −74,8. La domanda si riduce a: accettare il soffio di un overdrive aperto senza musica?]** Rumore con i filtri inseriti: −75,3 dBu contro il target −78 (definito a filtri OFF). Accettare come condizione d'uso, come per le mandate (dec. 95)? | filter-module §5bis | nuova |
+| A6 | **CHIUSA 2026-10-14 → DECISIONE 107 (pot doppi lineari selezionati, niente VCA per banda).** ~~Tracking stereo dell'EQ: pot doppi selezionati o un VCA per banda~~ | voce 53 | 53 |
+| A7 | **[SUPERATA lo stesso giorno dalla DECISIONE 105: EQ = isolator, vedi A15]** **CHIUSA 2026-10-13 → DECISIONE 104 (EQ in serie confermato + muto a fine corsa quando tutte le manopole sono a zero; la 103 «isolator» è revocata).** EQ tutto chiuso non è silenzio (resta il fader): accettare o aggiungere l'auto-mute | voce 59 | 59 |
+| A16 | **CHIUSA 2026-10-13 → DECISIONE 106 (trasformatore ~225 VA, W1 3,0 A).** ~~ratificare~~ il trasformatore da ~225 VA (avvolgimento audio 2×21 V 3,0 A invece di 2,5 A): con l'isolator quello da 200 VA lavora al 105-107 % | eq-isolator-v0.4 §8, `sim/system/psu-w1-iso.cir` | dec. 98 |
+| A9 | **CHIUSA 2026-10-14 → DECISIONE 108 (solo LEVEL in mandata, pad fisso 0 dB, compensazione col GAIN del ritorno).** ~~Quali pedali userai: fissa i valori del pad di mandata~~ | fx-module §4 | 25 |
+| A17 | **CHIUSA 2026-10-14 → DECISIONE 110 (tutti e quattro accettati come partenza: risonanza Xone-like, griglia overdrive di `d5-chain.cir`, oscillazione ~+5 dBu, calo di nota = carattere).** ~~NUOVA 2026-10-14 (D5, dec. 109).~~ Riconfermare quattro numeri del filtro, scritti su picchi ideali che il chip reale non dà: (a) griglia dell'overdrive (dec. 99 i): il fischio arriva a −1,5…+2 dBu, non a +8 → a fine corsa 11-22 % invece di 31 %, e l'overdrive alza il fischio invece di frenarlo; (b) law RES (dec. 102): il picco si ferma a +8,5 dB su −10 dBu e a ~+1 dB su 0 dBu; (c) livello dell'auto-oscillazione +4,9 dBu contro il requisito +6…+10; (d) la nota che cala di ~6 semitoni tra 90 % e 100 % di RES | `sim/filtro/RISULTATI-D5.md` §2-§4 | 10, 11, 61 |
+| B4 | **[CADUTA con la dec. 105: nell'isolator HIGH a zero fa −39 dB a 8 kHz]** ~~[RIAPERTA dalla dec. 104]~~ Kill della banda HIGH: accettare «scurisce», o cella più profonda | — | 68 |
 
 ## Da risolvere con la revisione dell'export [EXPORT]
 
