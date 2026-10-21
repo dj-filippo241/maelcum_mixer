@@ -1,10 +1,12 @@
 """Genera il dispositivo MC-CHANNEL (prototipo Max P0).
 
-Uso:  python3 proto-max/coefficienti/genera.py
+Uso:  python3 proto-max/coefficienti/genera.py [--semplice]
 Scrive in proto-max/:
   MC-CHANNEL.genexpr  codice gen~ (si legge e si confronta)
   MC-CHANNEL.maxpat   patch Max (riserva: si apre e si copia in un dispositivo)
   MC-CHANNEL.amxd     dispositivo Max for Live pronto (doppio clic o trascina in Live)
+Con --semplice scrive MC-CHANNEL-S: le scelte d'ascolto di Filippo
+(2026-10-21) fissate, senza selettori: INCROCI A, CURVA PIONEER, ISOLATOR.
 
 I numeri vengono da canale.py. Il codice gen~ usa solo assegnazioni,
 peek/poke e due funzioni senza stato proprio: cosi prova_gen.py lo traduce
@@ -43,6 +45,9 @@ EQTIPO = ("eqtipo", "EQ TIPO", ["ISOLATOR", "SERIE 70/250/1k/5k"])
 BANDE = ["low", "lowmid", "midhigh", "high"]
 # sotto questo peso un blocco non si calcola (-100 dB: inudibile)
 SOGLIA_ON = 1e-5
+# versione semplice (Filippo 2026-10-21): scelte fissate, niente selettori
+SEMPLICE = False
+SCELTA_INCROCI = "A"
 
 
 # ---------------------------------------------------------------- gen~ ---
@@ -194,25 +199,28 @@ def genexpr():
     r()
     for nome, _, ini in MANOPOLE + [FADER]:
         r(f"Param {nome}({ini}, min=0, max=100);")
-    r(f"Param {SELETTORE[0]}(0, min=0, max={len(VARIANTI) - 1});")
-    r(f"Param {CURVA[0]}(0, min=0, max=1);")
-    r(f"Param {EQTIPO[0]}(0, min=0, max=1);")
+    if not SEMPLICE:
+        r(f"Param {SELETTORE[0]}(0, min=0, max={len(VARIANTI) - 1});")
+        r(f"Param {CURVA[0]}(0, min=0, max=1);")
+        r(f"Param {EQTIPO[0]}(0, min=0, max=1);")
     pos_data = len(g.righe)
     r("@@DATA@@")
     for nome, _, ini in MANOPOLE + [FADER]:
         r(f"History s_{nome}({ini});")
-    r("History s_x(0);")
-    r("History s_c(0);")
-    r("History s_t(0);")
+    if not SEMPLICE:
+        r("History s_x(0);")
+        r("History s_c(0);")
+        r("History s_t(0);")
     r()
     r("// manopole lisciate: 10 ms (selettore 20 ms, dissolvenza A/B)")
     r("t10 = exp(-1 / (0.010 * samplerate));")
     r("t20 = exp(-1 / (0.020 * samplerate));")
     for nome, _, _ in MANOPOLE + [FADER]:
         r(f"s_{nome} = {nome} + t10 * (s_{nome} - {nome});")
-    r(f"s_x = {SELETTORE[0]} + t20 * (s_x - {SELETTORE[0]});")
-    r(f"s_c = {CURVA[0]} + t20 * (s_c - {CURVA[0]});")
-    r(f"s_t = {EQTIPO[0]} + t20 * (s_t - {EQTIPO[0]});")
+    if not SEMPLICE:
+        r(f"s_x = {SELETTORE[0]} + t20 * (s_x - {SELETTORE[0]});")
+        r(f"s_c = {CURVA[0]} + t20 * (s_c - {CURVA[0]});")
+        r(f"s_t = {EQTIPO[0]} + t20 * (s_t - {EQTIPO[0]});")
     r()
     r("// GAIN: fondo corsa muto, meta CCW -100..0 dB, meta CW 0..+10 dB")
     r("tg = s_gain / 100;")
@@ -221,6 +229,10 @@ def genexpr():
     r("// taglio (2 theta)^1,5, boost uguale; a fondo corsa il contatto da silenzio")
     for b in BANDE:
         r(f"x_{b} = 2 * s_{b} / 100;")
+        if SEMPLICE:
+            r(f"g_{b} = (pow(min(x_{b}, 1), {canale.ESP_PIONEER!r})"
+              f" + max(x_{b} - 1, 0)) * max({b} > 0, s_{b} > 0.001);")
+            continue
         r(f"g_{b} = ((1 - s_c) * x_{b} + s_c * (pow(min(x_{b}, 1), "
           f"{canale.ESP_PIONEER!r}) + max(x_{b} - 1, 0)))"
           f" * max({b} > 0, s_{b} > 0.001);")
@@ -231,7 +243,8 @@ def genexpr():
     r("// coefficienti degli incroci (bilineare con prewarp)")
     r("// LR4: Q 0,7071 due volte; LR2: Q 0,5 una volta")
     r("sr4 = samplerate * 4;")
-    for chiave in VARIANTI:
+    varianti = [SCELTA_INCROCI] if SEMPLICE else VARIANTI
+    for chiave in varianti:
         freq, pend = canale.INCROCI[chiave], canale.PENDENZE[chiave]
         for j, (f, o) in enumerate(zip(freq, pend), 1):
             c = f"{chiave}{j}"
@@ -243,6 +256,8 @@ def genexpr():
             r(f"{c}_a2 = (1 - {c}_k * {inv_q!r} + {c}_kk) * {c}_n;")
             r(f"{c}_lb = {c}_kk * {c}_n;")
     r()
+    if SEMPLICE:
+        return genexpr_isolator(g, SCELTA_INCROCI)
     emetti_serie(g)
     r()
     # pesi delle varianti e dell'EQ in serie. Una variante con peso nullo
@@ -331,6 +346,53 @@ def genexpr():
         g.giu(f"{lato}_w", f"{lato}_v0", f"{lato}_v1", 1, (lato, "giu", 1))
         r(f"{uscita} = g_gain * g_fader * {lato}_w;")
         r()
+    g.righe[pos_data] = (f"Data st({g.n_st});\nData hb({g.n_hb});")
+    return "\n".join(g.righe) + "\n"
+
+
+def genexpr_isolator(g, chiave):
+    """Versione semplice: una sola banca isolator, senza pesi ne blocchi."""
+    r = g.r
+    c1, c2, c3 = (f"{chiave}{j}" for j in (1, 2, 3))
+    lr2 = canale.PENDENZE[chiave][0] == 2
+    for lato, ingresso, uscita in (("L", "in1", "out1"), ("R", "in2", "out2")):
+        r(f"// ===== lato {lato} =====")
+        g.su(ingresso, f"{lato}_e", f"{lato}_o", 1, (lato, "su", 1))
+        g.su(f"{lato}_e", f"{lato}_u0", f"{lato}_u1", 2, (lato, "su", 2))
+        g.su(f"{lato}_o", f"{lato}_u2", f"{lato}_u3", 2, (lato, "su", 2))
+        base_st = g.n_st
+        for k in range(4):
+            # i 4 sotto-campioni passano, in ordine, dagli STESSI filtri
+            g.n_st = base_st
+            u = f"{lato}_u{k}"
+            p = f"{lato}{k}{chiave}"
+            g.bq(f"{p}l", u, "lp", c1)
+            if not lr2:
+                g.bq(f"{p}l", f"{p}l", "lp", c1)
+            g.bq(f"{p}l", f"{p}l", "ap", c2)
+            g.bq(f"{p}l", f"{p}l", "ap", c3)
+            g.bq(f"{p}h1", u, "hp", c1)
+            if lr2:
+                g.r(f"{p}h1 = -{p}h1;")
+            else:
+                g.bq(f"{p}h1", f"{p}h1", "hp", c1)
+            g.bq(f"{p}lm", f"{p}h1", "lp", c2)
+            g.bq(f"{p}lm", f"{p}lm", "lp", c2)
+            g.bq(f"{p}lm", f"{p}lm", "ap", c3)
+            g.bq(f"{p}h2", f"{p}h1", "hp", c2)
+            g.bq(f"{p}h2", f"{p}h2", "hp", c2)
+            g.bq(f"{p}mh", f"{p}h2", "lp", c3)
+            g.bq(f"{p}mh", f"{p}mh", "lp", c3)
+            g.bq(f"{p}hi", f"{p}h2", "hp", c3)
+            g.bq(f"{p}hi", f"{p}hi", "hp", c3)
+            g.r(f"{lato}_y{k} = g_low * {p}l + g_lowmid * {p}lm"
+                f" + g_midhigh * {p}mh + g_high * {p}hi;")
+        g.giu(f"{lato}_v0", f"{lato}_y0", f"{lato}_y1", 2, (lato, "giu", 2))
+        g.giu(f"{lato}_v1", f"{lato}_y2", f"{lato}_y3", 2, (lato, "giu", 2))
+        g.giu(f"{lato}_w", f"{lato}_v0", f"{lato}_v1", 1, (lato, "giu", 1))
+        r(f"{uscita} = g_gain * g_fader * {lato}_w;")
+        r()
+    pos_data = g.righe.index("@@DATA@@")
     g.righe[pos_data] = (f"Data st({g.n_st});\nData hb({g.n_hb});")
     return "\n".join(g.righe) + "\n"
 
@@ -439,6 +501,14 @@ def patch(codice):
     comando(5, "obj-fad", ng, nl, "live.slider", [262, 8, 40, 150],
             {"parameter_type": 0, "parameter_mmax": 100.0,
              "parameter_initial": [ini], "parameter_unitstyle": 5})
+    if SEMPLICE:
+        boxes.append(box("obj-nota", maxclass="live.comment", numinlets=1,
+                         numoutlets=0, presentation=1,
+                         presentation_rect=[8, 62, 250, 40],
+                         patching_rect=[20, 440, 250, 36], linecount=3,
+                         text="50% = 0 dB. Versione semplice: ISOLATOR, "
+                              "INCROCI A 150/500/2500, CURVA PIONEER."))
+        return finestra(boxes, lines, parametri)
     ng, nl, voci = SELETTORE
     comando(6, "obj-sel", ng, nl, "live.tab", [8, 62, 240, 30],
             {"parameter_type": 2, "parameter_enum": voci,
@@ -460,6 +530,10 @@ def patch(codice):
                      patching_rect=[20, 440, 250, 36], linecount=2,
                      text="50% = 0 dB. SERIE: 0% taglia, non spegne; "
                           "INCROCI e CURVA solo per ISOLATOR."))
+    return finestra(boxes, lines, parametri)
+
+
+def finestra(boxes, lines, parametri):
     return {"patcher": {
         "fileversion": 1,
         "appversion": {"major": 9, "minor": 0, "revision": 0,
@@ -490,6 +564,9 @@ def amxd(dati_json):
 
 
 def main():
+    global SEMPLICE, NOME
+    if "--semplice" in sys.argv[1:]:
+        SEMPLICE, NOME = True, NOME + "-S"
     codice = genexpr()
     with open(os.path.join(USCITA, f"{NOME}.genexpr"), "w") as f:
         f.write(codice)

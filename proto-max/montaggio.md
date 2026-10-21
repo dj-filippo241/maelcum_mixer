@@ -167,3 +167,29 @@ I pedali sono effetti veri di Live. Ogni bus FX ha una traccia sua.
    fader): lascialo a 0 dB.
 7. **Cuffie, non casse**: con un mic aperto vicino alle casse parte il
    larsen. Prova il MUTE proprio lì.
+
+## Versioni semplici (MC-CHANNEL-S, MC-FILTRO-S, MC-5WAY-S)
+
+Scelte d'ascolto di Filippo del 2026-10-21, fissate nel codice. I
+selettori non ci sono più; i comandi del pannello vero restano.
+
+| Dispositivo | Scelte fissate | Comandi |
+|---|---|---|
+| `MC-CHANNEL-S` | ISOLATOR, INCROCI A 150/500/2500, CURVA PIONEER | GAIN, 4 bande, FADER |
+| `MC-FILTRO-S` | CORE PULITO (c-B), PENDENZA BUTTERWORTH | FREQ, RES, DRIVE ×2, MODO |
+| `MC-5WAY-S` | CROSSOVER E 80/170/1,2k/6k, GROWL LIBERO, NASTRO EXCITER | KILL, GAIN, POS, WIDTH ×5, GROWL, NASTRO |
+
+Si montano come gli originali: al posto di MC-CHANNEL, MC-FILTRO e
+MC-5WAY sulla traccia del canale. Il codice calcola solo la versione
+scelta: righe gen~ 1029 → 329 (canale), 590 → 374 (filtro), 1587 → 815
+(5-way).
+
+Generatori: `genera.py`, `genera_filtro.py`, `genera_5way.py` con
+`--semplice`. Senza l'opzione i file originali escono identici. Prova:
+ogni copia contro l'originale impostato sulle stesse scelte, con le
+manopole in movimento e a fondo corsa: scarto 0 su 8 casi (picco fino a
+1,5 dBFS).
+
+Attenzione al livello: GROWL LIBERO + NASTRO alti superano 0 dBFS anche
+con l'ingresso a 0 dBu (prova con ingresso +12 dBu: +3,7 dBFS). Sopra 0
+dBFS l'uscita della scheda taglia l'onda.

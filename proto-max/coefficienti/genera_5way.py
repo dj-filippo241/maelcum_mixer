@@ -1,7 +1,10 @@
 """Genera il dispositivo MC-5WAY (prototipo Max P2).
 
-Uso:  python3 proto-max/coefficienti/genera_5way.py
+Uso:  python3 proto-max/coefficienti/genera_5way.py [--semplice]
 Scrive in proto-max/: MC-5WAY.genexpr, .maxpat, .amxd
+Con --semplice scrive MC-5WAY-S: le scelte d'ascolto di Filippo
+(2026-10-21) fissate, senza selettori: CROSSOVER E, GROWL LIBERO,
+NASTRO EXCITER.
 
 I numeri vengono da fiveway.py; oversampling e contenitore .amxd da
 genera.py (P0). Come in P0 e P1, il codice gen~ usa solo assegnazioni,
@@ -49,6 +52,11 @@ SA_LATO = 18                    # + COMPLETO 5, EXCITER 1, CLASSE A 4, LIBERO 4
 VS20, ID0, VD0 = fw.jfet_riposo()
 _CA = al.ClasseA(48000.0)
 VE20, VCAP0 = _CA.ve2, _CA.vcap
+# versione semplice (Filippo 2026-10-21): scelte fissate, niente selettori
+SEMPLICE = False
+SCELTA_XO = 4                   # E 80/170/1,2k/6k (impianto di Filippo)
+SCELTA_GV = 1                   # GROWL LIBERO
+SCELTA_NV = 2                   # NASTRO EXCITER
 
 
 def funzioni(r):
@@ -204,14 +212,17 @@ def genexpr():
         r(f"Param {nome}(1, min=0, max=2);")
     for nome, _ in SAT:
         r(f"Param {nome}(0, min=0, max=100);")
-    r(f"Param {XO[0]}(0, min=0, max={len(XO[2]) - 1});")
-    r(f"Param {GV[0]}(0, min=0, max=1);")
-    r(f"Param {NV[0]}(0, min=0, max={len(NV[2]) - 1});")
+    if not SEMPLICE:
+        r(f"Param {XO[0]}(0, min=0, max={len(XO[2]) - 1});")
+        r(f"Param {GV[0]}(0, min=0, max=1);")
+        r(f"Param {NV[0]}(0, min=0, max={len(NV[2]) - 1});")
     r(f"Data sv({2 * 2 * SVF_LATO});")
     r(f"Data sa({2 * SA_LATO});")
     pos_data = len(g.righe)
     r("@@DATA@@")
-    lisci = [n for n, _ in GAIN + POS + WID + SAT] + [XO[0], GV[0], NV[0]]
+    lisci = [n for n, _ in GAIN + POS + WID + SAT]
+    if not SEMPLICE:
+        lisci += [XO[0], GV[0], NV[0]]
     for nome in lisci:
         ini = {"w": 1, "g": 50, "p": 50}.get(nome[0], 0)
         r(f"History s_{nome}({ini});")
@@ -227,14 +238,19 @@ def genexpr():
     r("sr4 = samplerate * 4;")
     r()
     varianti = list(fw.VARIANTI_XO.values())
-    r(f"// CROSSOVER: le {len(varianti)} varianti di B3, frequenze che"
-      " scivolano in 20 ms")
-    for j in range(len(varianti)):
-        r(f"wx{j} = max(0, 1 - abs(s_xo - {j}));")
-    for c in range(4):
-        termini = " + ".join(f"wx{j} * {v[c]!r}"
-                             for j, v in enumerate(varianti))
-        r(f"gx{c} = tan(pi * ({termini}) / sr4);")
+    if SEMPLICE:
+        r(f"// CROSSOVER {XO[2][SCELTA_XO]}")
+        for c in range(4):
+            r(f"gx{c} = tan(pi * {varianti[SCELTA_XO][c]!r} / sr4);")
+    else:
+        r(f"// CROSSOVER: le {len(varianti)} varianti di B3, frequenze che"
+          " scivolano in 20 ms")
+        for j in range(len(varianti)):
+            r(f"wx{j} = max(0, 1 - abs(s_xo - {j}));")
+        for c in range(4):
+            termini = " + ".join(f"wx{j} * {v[c]!r}"
+                                 for j, v in enumerate(varianti))
+            r(f"gx{c} = tan(pi * ({termini}) / sr4);")
     r()
     r("// KILL: 1 = via aperta (interruttore, taglio netto: dec. 88)")
     for v, (nome, _) in enumerate(KILL):
@@ -268,17 +284,24 @@ def genexpr():
       f" * (tn - 0.5) / 0.5));")
     r(f"// NASTRO LIBERO: spinta 0 -> +{al.NL_GMAX_DB:g} dB con la manopola")
     r(f"gnl = pow(10, {al.NL_GMAX_DB / 20!r} * tn);")
-    r("// GROWL VER: 0 = dec. 99, 1 = LIBERO (spinta 0 -> +18 dB col pot)")
-    r(f"gg = 1 + s_gv * (pow(10, {fw.LIB_GMAX_DB / 20!r} * mg) - 1);")
-    r(f"kk = {fw.KG!r} + s_gv * {fw.LIB_K - fw.KG!r};")
+    if SEMPLICE:
+        assert SCELTA_GV == 1
+        r("// GROWL LIBERO (spinta 0 -> +18 dB col pot)")
+        r(f"gg = pow(10, {fw.LIB_GMAX_DB / 20!r} * mg);")
+        r(f"kk = {fw.LIB_K!r};")
+    else:
+        r("// GROWL VER: 0 = dec. 99, 1 = LIBERO (spinta 0 -> +18 dB col pot)")
+        r(f"gg = 1 + s_gv * (pow(10, {fw.LIB_GMAX_DB / 20!r} * mg) - 1);")
+        r(f"kk = {fw.KG!r} + s_gv * {fw.LIB_K - fw.KG!r};")
     r(f"glp = tan(pi * {fw.FX_GROWL!r} / sr4);")
     r(f"ghg = tan(pi * {fw.F_HP_G!r} / sr4);")
     r(f"kcb = 1 / (sr4 * {fw.J_CB!r});")
     r(f"kc = 1 / (sr4 * {10e-6 * fw.J_RTS!r});")
-    r("// NASTRO VER: 0 OGGI, 1 COMPLETO, 2 EXCITER, 3 CLASSE A, 4 LIBERO"
-      " (20 ms)")
-    for j in range(len(NV[2])):
-        r(f"wn{j} = max(0, 1 - abs(s_nver - {j}));")
+    if not SEMPLICE:
+        r("// NASTRO VER: 0 OGGI, 1 COMPLETO, 2 EXCITER, 3 CLASSE A, 4 LIBERO"
+          " (20 ms)")
+        for j in range(len(NV[2])):
+            r(f"wn{j} = max(0, 1 - abs(s_nver - {j}));")
     r(f"gcp = tan(pi * {al.EN_FP!r} / sr4);")
     r(f"gcz = tan(pi * {al.EN_FZ!r} / sr4);")
     r(f"ghb = tan(pi * {al.HB_F!r} / sr4);")
@@ -329,6 +352,17 @@ def genexpr():
             i += 2
             r(f"dg = kk * hp1(sa, {sa0}, clipg(gg * lw), ghg) - lw;")
             r("y1 = xa + mg * dg;")
+            if SEMPLICE:
+                # solo l'EXCITER: gli altri NASTRO non si scrivono, ma i loro
+                # stati restano allocati (stessi indici dell'originale)
+                assert SCELTA_NV == 2
+                i += 2
+                r(f"exh = svhp(sv, {i}, y1, gex, {kq!r});")
+                i += 2
+                r(f"dex = {al.EX_K!r} * hp1(sa, {sa0 + 9}, clipe(exh), gex);")
+                r(f"{lato}_y{k} = (y1 + mt * dex) / {liv!r};")
+                assert i == b0 + 2 * SVF_LATO
+                continue
             r(f"jvs = {VS20!r} + peek(sa, {sa0 + 1});")
             r(f"jvc = {VD0!r} + peek(sa, {sa0 + 3});")
             r(f"jid = {ID0!r} + peek(sa, {sa0 + 2});")
@@ -491,6 +525,14 @@ def patch(codice):
         tab(WID[i][0], WID[i][1], WIDTH_VOCI, 1, [8 + col * i, 126, 54, 18])
     for j, (ng, nl) in enumerate(SAT):
         dial(ng, nl, 0.0, [312 + 60 * j, 24, 54, 48])
+    if SEMPLICE:
+        boxes.append(box("obj-nota", maxclass="live.comment", numinlets=1,
+                         numoutlets=0, presentation=1,
+                         presentation_rect=[8, 148, 490, 18],
+                         patching_rect=[20, 520, 490, 18],
+                         text="Semplice: CROSSOVER E 80/170/1,2k/6k, GROWL "
+                              "LIBERO, NASTRO EXCITER. 0 dBu = -12 dBFS."))
+        return finestra(boxes, lines, parametri)
     tab(XO[0], XO[1], XO[2], 0, [312, 78, 114, 66])
     boxes[-2]["box"]["num_lines_presentation"] = len(XO[2])
     boxes[-2]["box"]["num_lines_patching"] = len(XO[2])
@@ -506,6 +548,10 @@ def patch(codice):
                      patching_rect=[20, 520, 420, 18],
                      text="KILL per via; EQ a campana; GROWL < 350 Hz. "
                           "CROSSOVER solo prototipo (B3). 0 dBu = -12 dBFS."))
+    return finestra(boxes, lines, parametri)
+
+
+def finestra(boxes, lines, parametri):
     p = {"patcher": {
         "fileversion": 1,
         "appversion": {"major": 9, "minor": 0, "revision": 0,
@@ -536,6 +582,9 @@ def patch(codice):
 
 
 def main():
+    global SEMPLICE, NOME
+    if "--semplice" in sys.argv[1:]:
+        SEMPLICE, NOME = True, NOME + "-S"
     codice = genexpr()
     with open(os.path.join(USCITA, f"{NOME}.genexpr"), "w") as f:
         f.write(codice)

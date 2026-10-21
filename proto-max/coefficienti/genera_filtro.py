@@ -1,7 +1,9 @@
 """Genera il dispositivo MC-FILTRO (prototipo Max P1, parte 1).
 
-Uso:  python3 proto-max/coefficienti/genera_filtro.py
+Uso:  python3 proto-max/coefficienti/genera_filtro.py [--semplice]
 Scrive in proto-max/: MC-FILTRO.genexpr, .maxpat, .amxd
+Con --semplice scrive MC-FILTRO-S: le scelte d'ascolto di Filippo
+(2026-10-21) fissate, senza selettori: CORE PULITO (c-B), BUTTERWORTH.
 
 I numeri vengono da filtro.py; oversampling e contenitore .amxd da
 genera.py (P0). Come in P0, il codice gen~ usa solo assegnazioni,
@@ -42,6 +44,10 @@ PENDENZA = ("pend", "PENDENZA", list(filtro.ALLINEAMENTI), 0)
 SOGLIA_ON = 1e-5
 # overdrive sotto questa quantita: il tosatore non si calcola (-180 dB)
 SOGLIA_OD = 1e-9
+# versione semplice (Filippo 2026-10-21): scelte fissate, niente selettori
+SEMPLICE = False
+SCELTA_CORE = "c"               # "a" = OTA (a'), "c" = PULITO (c-B)
+SCELTA_PEND = 0                 # indice in filtro.ALLINEAMENTI: Butterworth
 
 
 def funzioni(r):
@@ -93,6 +99,8 @@ def funzioni(r):
     r("// (guadagno a secante), c = integratori lineari; 1 = col limitatore")
     for nome, ota, lim in (("sez_a0", 1, 0), ("sez_a1", 1, 1),
                            ("sez_c0", 0, 0), ("sez_c1", 0, 1)):
+        if SEMPLICE and nome[4] != SCELTA_CORE:
+            continue
         r(f"{nome}(m, i, x, g, d) {{")
         r("\ts1 = peek(m, i);")
         r("\ts2 = peek(m, i + 1);")
@@ -131,15 +139,17 @@ def genexpr():
     for nome, _, ini in MANOPOLE:
         r(f"Param {nome}({ini}, min=0, max=100);")
     r(f"Param {MODO[0]}({MODO[3]}, min=0, max=2);")
-    r(f"Param {CORE[0]}({CORE[3]}, min=0, max=1);")
-    r(f"Param {PENDENZA[0]}({PENDENZA[3]}, min=0, max=2);")
+    if not SEMPLICE:
+        r(f"Param {CORE[0]}({CORE[3]}, min=0, max=1);")
+        r(f"Param {PENDENZA[0]}({PENDENZA[3]}, min=0, max=2);")
     pos_data = len(g.righe)
     r("@@DATA@@")
     for nome, _, ini in MANOPOLE:
         r(f"History s_{nome}({ini});")
     r(f"History s_{MODO[0]}({MODO[3]});")
-    r(f"History s_{CORE[0]}({CORE[3]});")
-    r(f"History s_{PENDENZA[0]}({PENDENZA[3]});")
+    if not SEMPLICE:
+        r(f"History s_{CORE[0]}({CORE[3]});")
+        r(f"History s_{PENDENZA[0]}({PENDENZA[3]});")
     r()
     r("// manopole lisciate 10 ms; MODO 1 ms (rampa, dec. 80); CORE 20 ms")
     r("t1 = exp(-1 / (0.001 * samplerate));")
@@ -148,26 +158,37 @@ def genexpr():
     for nome, _, _ in MANOPOLE:
         r(f"s_{nome} = {nome} + t10 * (s_{nome} - {nome});")
     r("s_modo = modo + t1 * (s_modo - modo);")
-    r("s_core = core + t20 * (s_core - core);")
-    r("s_pend = pend + t20 * (s_pend - pend);")
+    if not SEMPLICE:
+        r("s_core = core + t20 * (s_core - core);")
+        r("s_pend = pend + t20 * (s_pend - pend);")
     r("w_hp = max(0, 1 - abs(s_modo));")
     r("w_off = max(0, 1 - abs(s_modo - 1));")
     r("w_lp = max(0, 1 - abs(s_modo - 2));")
-    r("// si calcola solo il core che si sente (CPU: traccia su un core)")
-    r(f"on_a = 1 - s_core > {SOGLIA_ON!r};")
-    r(f"on_c = s_core > {SOGLIA_ON!r};")
-    r()
-    r("sr4 = samplerate * 4;")
-    r("// PENDENZA: Q e frequenze delle due sezioni, scivolano in 20 ms")
     al = list(filtro.ALLINEAMENTI.values())
-    for j in range(3):
-        r(f"wp{j} = max(0, 1 - abs(s_pend - {j}));")
-    for nome, idx, inv in (("q1i", 0, True), ("m1", 1, False),
-                           ("q2i", 2, True), ("m2", 3, False)):
-        termini = " + ".join(
-            f"wp{j} * {(1 / a[idx] if inv else a[idx])!r}"
-            for j, a in enumerate(al))
-        r(f"{nome} = {termini};")
+    if SEMPLICE:
+        r()
+        r("sr4 = samplerate * 4;")
+        r(f"// PENDENZA {list(filtro.ALLINEAMENTI)[SCELTA_PEND]}: Q e"
+          " frequenze delle due sezioni")
+        a = al[SCELTA_PEND]
+        for nome, idx, inv in (("q1i", 0, True), ("m1", 1, False),
+                               ("q2i", 2, True), ("m2", 3, False)):
+            r(f"{nome} = {(1 / a[idx] if inv else a[idx])!r};")
+    else:
+        r("// si calcola solo il core che si sente (CPU: traccia su un core)")
+        r(f"on_a = 1 - s_core > {SOGLIA_ON!r};")
+        r(f"on_c = s_core > {SOGLIA_ON!r};")
+        r()
+        r("sr4 = samplerate * 4;")
+        r("// PENDENZA: Q e frequenze delle due sezioni, scivolano in 20 ms")
+        for j in range(3):
+            r(f"wp{j} = max(0, 1 - abs(s_pend - {j}));")
+        for nome, idx, inv in (("q1i", 0, True), ("m1", 1, False),
+                               ("q2i", 2, True), ("m2", 3, False)):
+            termini = " + ".join(
+                f"wp{j} * {(1 / a[idx] if inv else a[idx])!r}"
+                for j, a in enumerate(al))
+            r(f"{nome} = {termini};")
     r("dq1 = q1i;")
     for sez in ("hp", "lp"):
         r(f"// sezione {sez.upper()}: FREQ dec. 102 (a), RES dec. 102 (b)")
@@ -199,6 +220,24 @@ def genexpr():
             r(f"x = {u} * {filtro.LIV!r} + noise() * 0.00001;")
             i = base
             out = {}
+            if SEMPLICE:
+                for sez in ("hp", "lp"):
+                    p = f"{SCELTA_CORE}{sez}"
+                    r(f"{p}h, {p}l = sez_{SCELTA_CORE}0(st, {i}, x,"
+                      f" g_{sez}1, dq1);")
+                    a = f"{p}h" if sez == "hp" else f"{p}l"
+                    r(f"{p}h, {p}l = sez_{SCELTA_CORE}1(st, {i + 4}, {a},"
+                      f" g_{sez}2, d_{sez});")
+                    o = f"{p}h" if sez == "hp" else f"{p}l"
+                    r(f"o{sez} = {o};")
+                    i += 8
+                    r(f"if (od_{sez} > {SOGLIA_OD!r}) {{")
+                    r(f"o{sez} = o{sez} + od_{sez} * ({filtro.OD_K!r}"
+                      f" * clipd(2 * o{sez}) - o{sez});")
+                    r("}")
+                r(f"{lato}_y{k} = (w_off * x + w_hp * ohp + w_lp * olp)"
+                  f" / {filtro.LIV!r};")
+                continue
             for nome_c in ("a", "c"):
                 r(f"{nome_c}hph = 0;")
                 r(f"{nome_c}lpl = 0;")
@@ -222,13 +261,16 @@ def genexpr():
                 r("}")
             r(f"{lato}_y{k} = (w_off * x + w_hp * ohp + w_lp * olp)"
               f" / {filtro.LIV!r};")
-        # core spento: stati a zero, riparte pulito alla dissolvenza
-        for nome_c, da in (("a", base), ("c", base + 16)):
-            r(f"if (on_{nome_c} == 0) {{")
-            for j in range(da, da + 16):
-                r(f"poke(st, 0, {j});")
-            r("}")
-        n_st = base + 32
+        if SEMPLICE:
+            n_st = base + 16
+        else:
+            # core spento: stati a zero, riparte pulito alla dissolvenza
+            for nome_c, da in (("a", base), ("c", base + 16)):
+                r(f"if (on_{nome_c} == 0) {{")
+                for j in range(da, da + 16):
+                    r(f"poke(st, 0, {j});")
+                r("}")
+            n_st = base + 32
         g.giu(f"{lato}_v0", f"{lato}_y0", f"{lato}_y1", 2, (lato, "giu", 2))
         g.giu(f"{lato}_v1", f"{lato}_y2", f"{lato}_y3", 2, (lato, "giu", 2))
         g.giu(f"{lato}_w", f"{lato}_v0", f"{lato}_v1", 1, (lato, "giu", 1))
@@ -288,7 +330,8 @@ def patch(codice):
                 [8 + 56 * i, 8, 50, 48],
                 {"parameter_type": 0, "parameter_mmax": 100.0,
                  "parameter_initial": [ini], "parameter_unitstyle": 5})
-    for j, (ng, nl, voci, ini) in enumerate((MODO, CORE, PENDENZA)):
+    for j, (ng, nl, voci, ini) in enumerate(
+            (MODO,) if SEMPLICE else (MODO, CORE, PENDENZA)):
         comando(6 + j, f"obj-t{j}", ng, nl, "live.tab",
                 [8, 60 + 24 * j, 330, 20],
                 {"parameter_type": 2, "parameter_enum": voci,
@@ -299,7 +342,9 @@ def patch(codice):
                      presentation_rect=[8, 134, 330, 30],
                      patching_rect=[20, 440, 330, 30], linecount=2,
                      text="FREQ 0-100 % = 10 Hz-35 kHz (Xone:96). RES oltre "
-                          "90 % = fischio. 0 dBu = -12 dBFS."))
+                          "90 % = fischio. 0 dBu = -12 dBFS."
+                          + (" Semplice: PULITO (c-B), BUTTERWORTH."
+                             if SEMPLICE else "")))
     p = {"patcher": {
         "fileversion": 1,
         "appversion": {"major": 9, "minor": 0, "revision": 0,
@@ -330,6 +375,9 @@ def patch(codice):
 
 
 def main():
+    global SEMPLICE, NOME
+    if "--semplice" in sys.argv[1:]:
+        SEMPLICE, NOME = True, NOME + "-S"
     codice = genexpr()
     with open(os.path.join(USCITA, f"{NOME}.genexpr"), "w") as f:
         f.write(codice)
