@@ -178,7 +178,7 @@ def canale():
     chain_h(d, [rca, A, B, C])
     cvg = d.box(425, 100, 175, 32, "", ["CV gain (1 per coppia L/R)"], "ctrl", lsize=11)
     d.arrow([cvg.b, (B.cx, B.y - 2)], "cv")
-    pots = d.box(650, 84, 240, 32, "", ["4 pot doppi lin. + contatto fondo corsa"], "ctrl", lsize=11)
+    pots = d.box(650, 84, 240, 32, "", ["4 pot doppi lin., senza contatto (127)"], "ctrl", lsize=11)
     d.arrow([pots.b, (C.cx, C.y - 2)], "cv")
     # nodo split
     nx = 935
@@ -202,7 +202,7 @@ def canale():
     d.text(1213, BT.cy - 8, "→ FX-SEND", 10, CV)
     # colonna uscita
     G = d.box(1330, 440, 190, 66, "[G] METER DJ", ["LM3915 10 seg × 3 dB [PROVV]", "release ~0,3 s (dec. 81) + latch"])
-    H = d.box(1330, 536, 190, 66, "[H] FADER", ["−∞ → 0, stereo linked", "tracking ≤ 0,5 dB + buffer"])
+    H = d.box(1330, 536, 190, 66, "[H] FADER → VCA", ["fader mono 100 mm (dec. 126)", "2 VCA trimmati ≤ 0,5 dB + I/V"])
     I = d.box(1330, 632, 190, 60, "[I] OUT DRIVER", ["Z ≤ 50 Ω → DJ BUS (slot 1)"])
     d.text(1425, 708, "0 dBu nom / +16 worst", 10, AUDIO, "middle")
     d.arrow([(1150, F.y + F.h), (1150, 394), (G.cx, 394), (G.cx, G.y - 2)])
@@ -254,7 +254,7 @@ def fx():
     chain_v(d, [PDC, BUF, GAI, EQ2])
     MET = d.box(1020, 614, 220, 70, "METER pickup", ["detector condiviso (CDJ §7)", "release ~0,3 s (dec. 81) · latch clip"])
     NOD = d.box(770, 614, 200, 70, "NODO REROUTE", ["PRE-FADER [BLOCCATO]", "fader giù → il feedback continua"], "ctrl")
-    FAD = d.box(520, 614, 200, 70, "FADER ritorno", ["stereo linked → buffer", "→ backplane MASTER SUM"])
+    FAD = d.box(520, 614, 200, 70, "FADER ritorno → 2 VCA", ["fader mono 100 mm (dec. 126)", "→ backplane MASTER SUM"])
     d.arrow([EQ2.l, (MET.x + MET.w + 2, MET.cy)])
     d.arrow([MET.l, (NOD.x + NOD.w + 2, NOD.cy)])
     d.arrow([NOD.l, (FAD.x + FAD.w + 2, FAD.cy)])
@@ -272,8 +272,8 @@ def fx():
                  "smoothing 1 ms (dec. 80) →", "CV 6,1 mV/dB ai VCA (dec. 92), 1 per coppia L/R"], "ctrl")
     d.arrow([CVB.r, (MAT.x - 2, CVB.cy)], "cv")
     d.box(520, 720, 970, 58, "",
-          ["±18 V audio (summing/driver/VCA) · ±15 V LN (CV/shaper/servo) · VCA 218x = SINGLE: 20 chip in questo modulo (16 reroute + 4 gain)",
-           "mixer ~34-36 chip · rotta clone CoolAudio V2181L, acquisti dopo il prototipo M4L (voce 37) · mute dei send: GLOBAL_MUTE sui FX-SEND (dec. 94b)"],
+          ["±18 V audio (summing/driver/VCA) · ±15 V LN (CV/shaper/servo) · VCA 218x = SINGLE: 48 chip in questo modulo (32 reroute + 8 gain + 8 fader, stereo)",
+           "mixer ~78 chip (dec. 126) · rotta clone CoolAudio V2181L, acquisti dopo il prototipo M4L (voce 37) · mute dei send: GLOBAL_MUTE sui FX-SEND (dec. 94b)"],
           "note", align="start", lsize=11)
     d.legend(826, [("audio", "audio"), ("fb", "feedback (matrice reroute)"), ("cv", "controllo CV"),
                    ("dashed", "esterno al mixer")])
@@ -415,7 +415,7 @@ def five_way():
                 "!gate = SWITCH π SPDT hard-cut (dec. 88)", "!10 VCA 218x rimossi dai gate",
                 "2 invertitori unity (SUB/MID) per la polarità", "ALL-KILL = silenzio assoluto"])
     EQ = d.box(x, 610, w, 150, "EQ CREATIVO — 5 CELLE v0.2.1",
-               ["parametriche SVF in serie (dettaglio a destra)", "gain −∞(notch)…0…+15/12/9 dB · Q 3/1/0,5",
+               ["parametriche SVF in serie (dettaglio a destra)", "gain −∞…0…+15/12/9 dB · WIDTH Q3…Q0,3 (dec. 117)",
                 "position 2,6 ottave/banda · gain: 5 pot rotativi (dec. 85)",
                 "le 5 bande EQ NON sono le 5 vie", "freq. centri ~90/350/1,2k/3,5k [PROVV — q. 67]"], "green", lsize=10)
     DR = d.box(x, 790, w, 130, "DRIVE v0.4: GROWL + NASTRO",
@@ -448,7 +448,7 @@ def five_way():
     # zoom kill
     d.raw(f'  <rect x="{zx}" y="420" width="1100" height="190" rx="10" fill="#fff" stroke="{CV}" stroke-width="1.5"/>')
     d.text(zx + 30, 454, "ZOOM — GATE DI KILL A SWITCH (dec. 88, §8.10)", 16, CV, weight=700)
-    K1 = d.box(zx + 30, 478, 200, 104, "KILL SWITCH pannello", ["5 interruttori, uno per via", "+5 V via 10k (logica)",
+    K1 = d.box(zx + 30, 478, 200, 104, "KILL A LEVETTA (dec. 121)", ["ON-OFF-(ON): su fisso, giù a molla", "OR dei 2 contatti, +5 V via 10k",
                                                              "l'audio non passa dai contatti"], "ctrl", tsize=12, lsize=10)
     K2 = d.box(zx + 290, 478, 250, 104, "π SPDT classe ADG1434",
                ["serie + shunt a GND da off", "Ron 4,7 Ω · rail ±15 V dedicato", "off-isolation −95 dB a 20 kHz",
@@ -484,7 +484,7 @@ def filtro():
     BI = d.box(290, y, 140, 86, "BUFFER IN", ["× 4 sezioni stereo", "(CH1…CH4 L/R)"])
     CO = d.box(480, y - 20, 330, 126, "CORE SVF 4 POLI × 8 (mono)",
                ["2 sezioni 2 poli in cascata (allineamento = q. 64)", "!(a′) OTA LM13700 + partitore 1/30 (dec. 109)",
-                "C integratori 1,1 nF · tetto di stato 1,56 V", "(c-B) op-amp + VCA: alternativa pulita (B1)"], lsize=10)
+                "C integratori 1,1 nF · tetto di stato 1,56 V", "(c-B) op-amp + VCA: alternativa pulita (B1, rumore −92 dBu A)"], lsize=10)
     MX = d.box(860, y, 180, 86, "MUX MODO", ["HPF / OFF (bypass) / LPF", "un percorso per canale", "BBM + ramp 1 ms (dec. 80)"])
     DV = d.box(1090, y - 20, 260, 126, "OVERDRIVE v0.2 (§5ter)",
                ["tosatore in parallelo al pulito (dec. 99)", "1 VCA 218x per cella sulla differenza",
@@ -492,10 +492,12 @@ def filtro():
     RE = d.box(1400, y, 120, 86, "USCITA", ["R serie 33 Ω", "→ return canale"])
     chain_h(d, [IN, BI, CO, MX, DV, RE])
     d.text(1460, y + 104, "0 dBu nom · max +5,5 dBu", 10.5, AUDIO, "middle")
-    RS = d.box(560, 262, 390, 110, "RISONANZA + LIMITATORE (dec. 109-110)",
+    RS = d.box(560, 262, 390, 138, "RISONANZA + LIMITATORE (dec. 109-110)",
                ["OTA nel summer: 1/Q = Rf · gm_res (Iabc 221 µA × |gres|)", "!limitatore = perdita non lineare dal buffer BP:",
                 "!4,7k + 2+2 1N4148 → summer (livello uguale a ogni FREQ)",
-                "auto-osc. ~+5 dBu (requisito, dec. 110); nota −6 semitoni = carattere"], "purple", lsize=10)
+                "auto-osc. ~+5 dBu (requisito, dec. 110); nota −6 semitoni = carattere",
+                "(c-B): limitatore 2+2 / 3+3 o NELL'OTA della RES (si spegne a RES 0,",
+                "programma forte lineare): da scegliere all'ascolto (B1)"], "purple", lsize=10)
     d.arrow([(700, RS.y), (700, CO.y + CO.h + 2)], "fb")
     d.box(990, 262, 530, 110, "D5: COSA ARRIVA ALL'OVERDRIVE (sim/filtro/RISULTATI-D5.md)",
           ["Il fischio arriva a −1,5…+2 dBu, non a +8: il chip reale lo comprime.",
@@ -807,7 +809,7 @@ def psu():
          "LDO MOSFET ±22,0 V", ["limite 2,7 A · soft-start 0,3 s", "ripple al mixer ≤ 3 mV pp"],
          ["PSU-IN: TVS · T2,5 A · 2,2 mF", "modulo: LM317/337 → 19,2 V + cap mult. → ±18"],
          ["canali · 5-way · FX · filtro · FX-SEND", "CUE · mic/mono · moduli opzionali",
-          "!~1,5 A base · ~1,8 A con gli opzionali"]),
+          "!~1,6 A base · ~1,9 A opzionali + fader VCA"]),
         ("W2 2×18 V 1,0 A", ["ponte + bulk 2 × 10 mF", "T1,25 A"],
          "LDO MOSFET ±19 V", ["limite 1,1 A", "ripple al mixer ≤ 1 mV pp"],
          ["PSU-IN: TVS · T1 A · 1 mF", "modulo: pre-reg ±16,5 → LT3045/94 → ±15,0",
