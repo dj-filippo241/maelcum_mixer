@@ -33,7 +33,7 @@
 | **5-way** | GAIN di banda | 5 | doppio 10k, taper custom | rotativi (dec. 85), detent |
 | | POSITION di banda | 5 | singolo lin → CV | |
 | | WIDTH di banda | 5 | doppio 1k, taper log da scegliere | dec. 117 (2026-10-21): continuo Q3…Q0,3, era selettore 3 posizioni |
-| | KILL di banda | 5 | bottoni o levette, logici | |
+| | KILL di banda | 5 | levetta 3 posizioni ON-OFF-(ON), logica (dec. 121) | su = kill fisso, giù = kill a molla |
 | | GROWL e NASTRO (dec. 99; era DRIVE ×1) | 2 | doppio lin, diretto sul segnale (v0.4, niente CV) | primo 5-10 % quasi inerte |
 | | Meter | 1 | barra 10 LED | |
 | **Master** | MASTER | 1 | singolo lin → CV | detent a 0 dB |
@@ -83,6 +83,7 @@ cambia; ogni modulo MIC/MONO in meno toglie 7 pot singoli.
   senza rifare la scheda.
 - Fader (dec. 120, 2026-10-22): corsa 100 mm per canali e ritorni FX.
   Tracking stereo ≤ 0,5 dB da risolvere (fader selezionati o fader → VCA).
+- Kill del 5-way (dec. 121, 2026-10-22): levette sigillate ON-OFF-(ON).
 - Da verificare: codici a magazzino della RK14K doppia 10k B con detent
   (alcune versioni hanno ordine minimo 1000 pezzi).
 
