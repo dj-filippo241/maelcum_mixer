@@ -210,4 +210,4 @@ Design circuitale: `docs/fase1/master-out.md` **v0.3 (2026-09-29: stadio finale 
 
 ## Appendice B — BOM e costi
 
-- Stima materiali macchina completa: 3.000-4.000 € (±50%) · fase 1: 700-1.300 € · master-out ~60-90 € · canale ~35-55 € (esclusi pot/fader). BOM vere: a topologie scelte, modulo per modulo.
+- **[SUPERATA 2026-10-22]** ~~Stima materiali macchina completa: 3.000-4.000 € (±50%) · fase 1: 700-1.300 € · master-out ~60-90 € · canale ~35-55 € (esclusi pot/fader).~~ Budget per modulo e totale: `docs/09-budget.md` (generato da `docs/budget/genera_budget.py`): setup completo ~5.400-10.700 € IVA esclusa (~6.600-13.100 € IVA inclusa), compresi PCB, telaio e prototipo; esclusi manodopera, opzionali e strumenti.

@@ -105,6 +105,7 @@ SPECIFICA.md                  specifica consolidata
 docs/01-decisioni-bloccate.md cosa è deciso (129 voci; 103 e 104 revocate)
 docs/02-questioni-aperte.md   cosa manca: liste A/B/C in testa, storico delle voci sotto
 docs/03 … 08                  revisione critica, architettura filtro, benchmark, rumore, review
+docs/09-budget.md             costi per modulo e totale (generato da docs/budget/genera_budget.py)
 docs/storico-sessioni.md      cronaca delle sessioni fino al 2026-10-13
 docs/fase1 … fase4/           design doc per modulo (tabella sopra)
 docs/diagrammi/               SVG generati da genera_diagrammi.py
