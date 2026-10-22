@@ -19,13 +19,13 @@
 | | Filtro HPF / OFF / LPF | 1 | levetta 3 posizioni fisse ON-OFF-ON, logica (dec. 122) | su HPF, centro OFF, giù LPF |
 | | CUE | 1 | bottone con luce a ritenuta, logico (dec. 123) | |
 | | Assign FX 1-4 | 4 | bottoni con luce a ritenuta, logici (dec. 123) | pilotano il micro-modulo FX-SEND |
-| | Fader | 1 | slider stereo conduttivo-plastica | tracking ≤ 0,5 dB |
+| | Fader | 1 | slider MONO 100 mm → CV → VCA per lato (dec. 120, 126) | tracking ≤ 0,5 dB dai VCA |
 | | Meter | 1 | barra 10 LED | |
 | **FX-SEND** (×4) | EQ LOW / HIGH | 2 | doppio 10k, taper custom | |
 | | LEVEL | 1 | doppio 10k log | |
 | **FX** (4 bus) | GAIN ritorno | 4 | singolo → CV | |
 | | EQ LOW / HIGH ritorno | 8 | doppio 10k, taper custom | |
-| | Fader ritorno | 4 | slider stereo | |
+| | Fader ritorno | 4 | slider MONO 100 mm → CV → VCA per lato (dec. 120, 126) | |
 | | Reroute e self-feedback | 16 | singolo lin → CV | cablati rovesci (shaper) |
 | | Meter | 4 | barra 10 LED, una per ritorno | dec. 116 (2026-10-21), era 1 |
 | **Filtro** | HPF freq / res / drive | 3 | singolo lin → CV | |
@@ -60,7 +60,7 @@ mandata ai pedali, trimmer di taratura.
 |---|---|
 | Pot singoli | 66 (38 → CV lineari, 28 sui moduli MIC/MONO) |
 | Pot doppi | 43 (di cui 21 con taper custom e 16 lineari con contatto di fondo corsa per l'EQ dei canali, dec. 105; detent dove indicato) |
-| Slider stereo | 8 |
+| Slider mono → VCA (dec. 126) | 8 |
 | Selettori 3 posizioni | 9 |
 | Selettori 2 posizioni | 4 |
 | Bottoni / levette logici | 25 |
@@ -173,7 +173,7 @@ resistenza di legge non lo sposta se è simmetrica rispetto al centro.
   ~78 chip in tutto, +20…45 mA per ramo sul W1 (oggi all'88 %), un po'
   di rumore in più a fader aperto (da ricalcolare in docs/06); (b) fader
   doppi selezionati a coppie dal lotto; (c) accettare ±1 dB con i PGF8000.
-- Proposta: **(a)**. Da confermare da Filippo (costo e rumore).
+- **Deciso (a)** (dec. 126, 2026-10-22).
 
 ### Jack e connettori
 
