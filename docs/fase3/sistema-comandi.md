@@ -147,6 +147,11 @@ all'ascolto (B6, B8, B9; regola 3: niente valori prima). Il GAIN delle 5
 vie ha lo scatto al centro: lì la cella è piatta per costruzione, la
 resistenza di legge non lo sposta se è simmetrica rispetto al centro.
 
+**Scelte di Filippo (dec. 129, 2026-10-22, PROVVISORIE fino all'ascolto):**
+A3 (EQ secondari: lineare + resistenze, bassi e alti diversi), B2 (GAIN
+5 vie: lineare + resistenze), C2 (WIDTH log ~20 %), D1 (LEVEL log A 10 %),
+E2 e F1 (MIC/MONO GAIN e SEND log A), G fader «come Pioneer DJM».
+
 ### Contatto di fondo corsa dell'EQ di canale (16 pot)
 
 - Un pot doppio 10k lineare con scatto al centro E interruttore a fondo
