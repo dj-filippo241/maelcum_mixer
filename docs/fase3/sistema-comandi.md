@@ -41,7 +41,7 @@
 | | Meter | 2 | barre 20 LED | |
 | **CUE** | BLEND cue ↔ master | 1 | doppio 10k lin | centro = 50/50 |
 | | LEVEL cuffie | 1 | doppio 10k log | |
-| | Uscite cuffia | 2 | jack stereo | |
+| | Uscite cuffia | 2 | jack stereo 6,3 mm (dec. 128) | |
 | **MIC** (dec. 97) | GAIN | 1 | singolo 5k | nel percorso del segnale |
 | | EQ LOW / HIGH | 2 | singolo 10k, taper custom | |
 | | SEND 1-4 | 4 | singolo 10k | |
@@ -183,8 +183,7 @@ L/R (Neutrik NC3FAH o equivalente), TRS rec, jack TS per mandate e
 ritorni dei pedali, 2 jack cuffia stereo, circolare IP65 ≥ 20 contatti +
 PE per l'alimentatore (dec. 113). Proposta per l'aperto (dec. 111 e):
 connettori a corpo metallico con guarnizione verso il pannello, XLR con
-blocco. ⚠ Da Filippo: le due uscite cuffia, entrambe 6,3 mm o una 6,3 e
-una 3,5 mm.
+blocco. Uscite cuffia: entrambe 6,3 mm (dec. 128, 2026-10-22).
 
 ## Aperto per la sessione hardware
 
