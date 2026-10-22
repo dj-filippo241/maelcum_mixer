@@ -18,7 +18,7 @@ reroute resta pre-fader (fx-module §5).
 
 ## Curva del fader (`sim/shaper/shaper-fader.cir`, fit `sim/shaper/fader_fit.py`)
 
-Law [PROVVISORIO, scelta all'ascolto]: quadratica in ampiezza,
+Law [PROVVISORIO, dec. 129: «come Pioneer DJM», la curva graduale; da sentire]: quadratica in ampiezza,
 G = 40·log10(t), −12 dB a metà corsa. Valori E96: Rm 43,2k · ramo 1
 68,1k / 357k · ramo 2 20,0k / 38,3k · ramo 3 976 / 1,33k (verso −5 V),
 Rf 10k, OP1654. Il fit a 4 rami dava due rami uguali, qui fusi in uno.
