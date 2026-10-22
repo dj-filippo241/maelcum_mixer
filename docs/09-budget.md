@@ -19,7 +19,7 @@ fonte è S il prezzo è una stima, senza preventivo.
 |---|---|---|---|---|---|
 | Canale CDJ/line con phono | 194 € – 358 € | 4 | 778 € – 1.430 € | 2 | 389 € – 715 € |
 | FX-SEND | 39 € – 69 € | 4 | 156 € – 276 € | 2 | 78 € – 138 € |
-| Ritorno FX (un bus) | 120 € – 239 € | 4 | 480 € – 955 € | 4 | 480 € – 955 € |
+| FX-RET (un bus, dec. 130) | 123 € – 244 € | 4 | 493 € – 978 € | 4 | 493 € – 978 € |
 | Filtro, core OTA (a') | 196 € – 421 € | 1 | 196 € – 421 € | 1 | 196 € – 421 € |
 | 5-way | 364 € – 661 € | 1 | 364 € – 661 € | 1 | 364 € – 661 € |
 | Master out (con booth e MONO) | 133 € – 244 € | 1 | 133 € – 244 € | 1 | 133 € – 244 € |
@@ -30,13 +30,13 @@ fonte è S il prezzo è una stima, senza preventivo.
 | Backplane | 20 € – 42 € | 1 | 20 € – 42 € | 1 | 20 € – 42 € |
 | PSU-IN e ventole (nel mixer) | 56 € – 108 € | 1 | 56 € – 108 € | 1 | 56 € – 108 € |
 | Alimentatore esterno (box) | 415 € – 814 € | 1 | 415 € – 814 € | 1 | 415 € – 814 € |
-| **Elettronica dei moduli** | | | **2.905 € – 5.554 €** | | **2.361 € – 4.560 €** |
+| **Elettronica dei moduli** | | | **2.917 € – 5.576 €** | | **2.374 € – 4.582 €** |
 | Circuiti stampati, un giro (§4) | | | 485 € – 1.065 € | | 485 € – 1.065 € |
 | Cablaggio, minuteria, cappucci, scorte (§5) | | | 300 € – 590 € | | 300 € – 590 € |
 | Telaio, pannelli, flight case (§6) | | | 1.250 € – 2.550 € | | 1.250 € – 2.550 € |
 | Prototipo: millefori e secondo giro di PCB (§7) | | | 411 € – 889 € | | 411 € – 889 € |
-| **Totale IVA esclusa** | | | **5.351 € – 10.648 €** | | **4.807 € – 9.654 €** |
-| **Totale IVA inclusa (22 %)** | | | **6.528 € – 12.990 €** | | **5.865 € – 11.777 €** |
+| **Totale IVA esclusa** | | | **5.363 € – 10.670 €** | | **4.820 € – 9.676 €** |
+| **Totale IVA inclusa (22 %)** | | | **6.543 € – 13.017 €** | | **5.880 € – 11.805 €** |
 
 Setup completo: 4 canali con 4 FX-SEND, 1 MIC, 3 MONO. Setup ridotto: 2
 canali con 2 FX-SEND, 1 MIC, 1 MONO (come i disegni in `docs/pannelli/`).
@@ -49,7 +49,7 @@ ordini (~15-30 € per ordine sotto la soglia di spedizione gratuita).
 ## 2. Dove vanno i soldi
 
 - **Canale CDJ/line con phono**: ~1.104 € al centro della forchetta, 14 % del totale IVA esclusa.
-- **Ritorno FX (un bus)**: ~718 € al centro della forchetta, 9 % del totale IVA esclusa.
+- **FX-RET (un bus, dec. 130)**: ~735 € al centro della forchetta, 9 % del totale IVA esclusa.
 - **Alimentatore esterno (box)**: ~614 € al centro della forchetta, 8 % del totale IVA esclusa.
 - **5-way**: ~513 € al centro della forchetta, 6 % del totale IVA esclusa.
 - **Filtro, core OTA (a')**: ~308 € al centro della forchetta, 4 % del totale IVA esclusa.
@@ -60,7 +60,7 @@ Tre fatti che pesano:
 
 1. **I VCA e i loro trimmer.** ~78 chip a 2,80-5 € fanno 220-390 €; ogni
    chip vuole 3 trimmer di taratura (`sistema-vca-trim.md`), cioè ~230
-   trimmer. I 4 ritorni FX ne portano 12 ciascuno, 48 in tutto.
+   trimmer. I 4 FX-RET ne portano 12 ciascuno, 48 in tutto.
 2. **I prezzi del VCA clone sono deboli.** Non ho trovato oggi un listino
    europeo aggiornato del V2181L: il prezzo viene dai documenti di settembre
    e da un annuncio eBay (~4,30 € a pezzo). Lo stock è a lotti (voce 37).
@@ -110,15 +110,15 @@ Fonte delle quantità: fx-send-module §5. Copie: 4 nel completo, 2 nel ridotto.
 | pot 14 mm doppio (Alps RK14K) | 1 | 1,10 – 2,50 | 1 € – 2 € | M | LEVEL |
 | **Totale** | | | **39 € – 69 €** | | |
 
-### Ritorno FX (un bus)
+### FX-RET (un bus, dec. 130)
 
-Fonte delle quantità: fx-module §9, sistema-vca-trim §4. Copie: 4 nel completo, 4 nel ridotto.
+Fonte delle quantità: fx-module §2bis, §9, sistema-vca-trim §4. Copie: 4 nel completo, 4 nel ridotto.
 
 | Voce | Qtà | € al pezzo | Totale | Fonte | Note |
 |---|---|---|---|---|---|
 | VCA CoolAudio V2181L | 12 | 2,80 – 5,00 | 34 € – 60 € | D | reroute 8 (4 bus x L/R) + GAIN 2 + fader 2 |
 | trimmer multigiro | 41 | 0,80 – 2,00 | 33 € – 82 € | S | 3 per VCA + shaper |
-| OPA1654 quad op-amp | 3 | 1,60 – 2,80 | 5 € – 8 € | M |  |
+| OPA1654 quad op-amp | 5 | 1,60 – 2,80 | 8 € – 14 € | M | 3 + 2 per l'iniezione dei reroute sui net |
 | OPA1612 dual op-amp | 1 | 5,50 – 7,50 | 6 € – 8 € | M |  |
 | JFET dei buffer di ritorno (2) | 1 | a corpo | 1 € – 3 € | S |  |
 | shaper delle 5 CV: diodi e resistenze | 1 | a corpo | 4 € – 8 € | S |  |
@@ -132,7 +132,7 @@ Fonte delle quantità: fx-module §9, sistema-vca-trim §4. Copie: 4 nel complet
 | pot 9 mm doppio (Alps RK09) | 2 | 0,80 – 1,80 | 2 € – 4 € | S | EQ |
 | fader 100 mm mono (Alps RS60N) | 1 | 8,80 – 12,50 | 9 € – 12 € | R |  |
 | pot 9 mm singolo (Alps RK09K) | 4 | 0,35 – 0,70 | 1 € – 3 € | L | reroute verso gli altri bus e SELF, RK09K113004U |
-| **Totale** | | | **120 € – 239 €** | | |
+| **Totale** | | | **123 € – 244 €** | | |
 
 ### Filtro, core OTA (a')
 

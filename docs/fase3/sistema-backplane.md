@@ -15,6 +15,28 @@ test point per modulo; CV 0-5 V = convenzione d'interfaccia. Masse:
 topologia in `sistema-grounding.md` (stella unica alla PSU; qui viaggiano
 i ritorni dedicati).
 
+## REV 2026-10-22 — decisione 130: quattro moduli FX-RET [PROVVISORIO]
+
+La classe FX (un modulo, 1 slot) diventa **FX-RET ×4**: un modulo per bus,
+4 slot. I 4 moduli sono identici e intercambiabili; il numero del bus lo
+decide la posizione sul backplane. Riga b della classe FX-RET:
+
+| Slot | Segnale | Note |
+|---|---|---|
+| 1 | BUS_IN L/R | dal net Sn del proprio bus (n = posizione) sul virtual-earth locale, Rf 10k |
+| 2-5 | S1_OUT…S4_OUT L/R | reroute verso i 4 net, incluso il proprio (SELF); STESSE posizioni di FX-SEND e MIC/MONO |
+| 6 | RET_OUT L/R | verso MSUM(n+1) del master (FX-RET 1 → MSUM2 … FX-RET 4 → MSUM5) |
+| 7-10 | spare | |
+
+Righe a e c: mappa comune. Codifica meccanica: una sola per i 4 FX-RET
+(non per posizione), così un ritorno si sostituisce con un altro.
+Connettori sul backplane: ~21 → **~24**. Le colonne «FX» della tabella
+§4 e la riga «FX» delle tabelle §2 e §6 sono SUPERATE da questa REV.
+Correnti: ogni FX-RET ≈ un quarto del modulo FX di `sistema-psu.md` (REV
+2026-10-21) più ~16 mA per ramo per le 8 sezioni d'iniezione dei reroute
+(`fx-module.md` §2bis) [STIMA: +~64 mA sul W1 in tutto, da sommare nel
+todo 128].
+
 ## REV 2026-10-14 — decisione 113: alimentatore esterno [PROVVISORIO]
 
 La riga a conserva la mappa (§3) ma cambiano i valori: i pin «±27 V raw
@@ -281,5 +303,6 @@ ramo e dei fusibili di ramo (S1 §4).
   ≤70-80 cm [PROVVISORIO — q29]; a quella lunghezza le cadute sui raw
   sono <10 mV con piste §8 (loop ~6 mΩ su 2,5 mm² × 0,7 m a 1,1 A —
   dentro il margine dropout dei regolatori locali, verifica S1 §2 v0.2).
-- FX = modulo unico con matrice interna (accorpamento dei 4 FX RETURN
-  dei doc: da ratificare in fase di layout, SPECIFICA §3).
+- ~~FX = modulo unico con matrice interna (accorpamento dei 4 FX RETURN
+  dei doc: da ratificare in fase di layout, SPECIFICA §3).~~ SUPERATA dalla
+  dec. 130: 4 moduli FX-RET (REV in testa).

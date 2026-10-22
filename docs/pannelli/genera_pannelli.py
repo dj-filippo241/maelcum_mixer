@@ -11,7 +11,8 @@ master, MUTE del mic), 117 (WIDTH continuo), 118-124 (sessione manopole:
 Colori standard: un colore per tipo di oggetto (tabella C, chiave nel foglio
 dei moduli), da ridisegnare da Filippo. Disposizione e misure: BOZZA
 (scelte di Filippo del 2026-10-21: larghezza 19", in alto 5-way, master e
-CUE; sotto MIC/MONO a sinistra, ritorni FX al centro, canali a destra con
+CUE; sotto MIC/MONO a sinistra, i 4 ritorni FX al centro (un modulo per bus,
+dec. 130), canali a destra con
 sotto mandate e filtro). Unita: millimetri.
 """
 
@@ -258,23 +259,18 @@ def filtro(w):
     return p.chiudi()
 
 
-def fx(w):
-    p = Pannello("FX — 4 RITORNI", "fx", w)
-    p.y += 2
-    col = w / 4
-    y0 = p.y
-    for r in range(4):
-        x = col * r + col / 2
-        p.y = y0
-        p.testo(x, p.y + 2, f"RET {r + 1}", 2.6, "bold"); p.y += 5
-        p.colonna(x, [("GAIN", "k_gain", False)])
-        p.colonna(x, [("EQ HIGH", "k_eq_9mm", False), ("EQ LOW", "k_eq_9mm", False)], r=R9)
-        p.colonna(x, [("SELF" if b == r else f"> FX{b + 1}", "k_reroute", True) for b in range(4)],
-                  r=R9)
-        y = p.y
-        p.meter(x - 13.5, y + 2, 10, passo=6.0, nome="METER")
-        p.fader(x + 4, y + 2, 100.0)
-        p.y = y + 112
+def fx_ret(r):
+    """Un ritorno FX: un modulo a striscia per bus (dec. 130)."""
+    p = Pannello(f"FX RET {r + 1}", "fx", STRISCIA)
+    c = STRISCIA / 2
+    p.colonna(c, [("GAIN", "k_gain", False)])
+    p.colonna(c, [("EQ HIGH", "k_eq_9mm", False), ("EQ LOW", "k_eq_9mm", False)], r=R9)
+    p.colonna(c, [("SELF" if b == r else f"> FX{b + 1}", "k_reroute", True) for b in range(4)],
+              r=R9)
+    y = p.y
+    p.meter(c - 13.5, y + 2, 10, passo=6.0, nome="METER")
+    p.fader(c + 4, y + 2, 100.0)
+    p.y = y + 112
     return p.chiudi()
 
 
@@ -380,7 +376,7 @@ GAP = (UTILE - 3 * BLOCCO) / 2             # spazio fra i tre blocchi bassi
 
 
 def moduli_singoli():
-    tutti = [canale(1), send(1), micmono("MIC"), micmono("MONO"), filtro(BLOCCO), fx(BLOCCO),
+    tutti = [canale(1), send(1), micmono("MIC"), micmono("MONO"), fx_ret(0), filtro(BLOCCO),
              five(UTILE - 96 - 62 - 4), master(96), cue(62)]
     # due righe: strisce + fx + filtro, poi 5-way/master/cue
     corpo, x, y = [], 14.0, 34.0
@@ -466,15 +462,15 @@ def setup(nome, sotto, n_canali, n_mono, file):
     y_basso = oy + h_alto + 6
     # sinistra: MIC + MONO
     sinistra = [micmono("MIC")] + [micmono("MONO") for _ in range(n_mono)]
-    # centro: FX
-    centro = fx(BLOCCO)
+    # centro: i 4 ritorni FX, un modulo per bus (dec. 130)
+    ritorni = [fx_ret(r) for r in range(4)]
     # destra: canali, sotto le mandate, sotto il filtro
     canali = [canale(i + 1) for i in range(n_canali)]
     mandate = [send(i + 1) for i in range(n_canali)]
     filt = filtro(BLOCCO)
     h_can = canali[0].h
     h_dx = h_can + mandate[0].h + filt.h
-    h_basso = max(h_dx, centro.h, sinistra[0].h)
+    h_basso = max(h_dx, ritorni[0].h, sinistra[0].h)
     # blocco sinistro
     x = x0
     for p in sinistra:
@@ -486,9 +482,10 @@ def setup(nome, sotto, n_canali, n_mono, file):
     corpo.append(cieco(BLOCCO, h_basso - sinistra[0].h).svg(x0, y_basso + sinistra[0].h))
     # blocco centrale
     xc = x0 + BLOCCO + GAP
-    corpo.append(centro.svg(xc, y_basso))
-    if h_basso > centro.h + 1:
-        corpo.append(cieco(BLOCCO, h_basso - centro.h).svg(xc, y_basso + centro.h))
+    for i, p in enumerate(ritorni):
+        corpo.append(p.svg(xc + i * STRISCIA, y_basso))
+    if h_basso > ritorni[0].h + 1:
+        corpo.append(cieco(BLOCCO, h_basso - ritorni[0].h).svg(xc, y_basso + ritorni[0].h))
     # blocco destro
     xd = xc + BLOCCO + GAP
     x = xd
@@ -527,9 +524,9 @@ def setup(nome, sotto, n_canali, n_mono, file):
 
 def main():
     open(os.path.join(QUI, "moduli.svg"), "w", encoding="utf-8").write(moduli_singoli())
-    h1 = setup("Setup ridotto", "2 canali CDJ con 2 FX-SEND · 1 MIC · 1 MONO · FX 4 ritorni · filtro · 5-way · "
+    h1 = setup("Setup ridotto", "2 canali CDJ con 2 FX-SEND · 1 MIC · 1 MONO · 4 FX RET · filtro · 5-way · "
                "master · CUE", 2, 1, "setup-ridotto.svg")
-    h2 = setup("Setup completo", "4 canali CDJ con 4 FX-SEND · 1 MIC · 3 MONO · FX 4 ritorni · filtro · 5-way · "
+    h2 = setup("Setup completo", "4 canali CDJ con 4 FX-SEND · 1 MIC · 3 MONO · 4 FX RET · filtro · 5-way · "
                "master · CUE", 4, 3, "setup-completo.svg")
     print(f"altezza del pannello: ridotto {h1:.0f} mm, completo {h2:.0f} mm")
     html = ["<meta charset='utf-8'><title>Pannelli maelcum mixer</title>",

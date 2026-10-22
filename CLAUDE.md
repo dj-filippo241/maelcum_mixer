@@ -59,7 +59,7 @@ Regole di simulazione (ognuna nasce da un errore già pagato; il contesto sta ne
 - `perl -e 'alarm ...'` ferma lo script ma non `LTspice.exe` dentro wine: il processo resta al 300 % di CPU. Controllare con `ps aux | grep -i LTspice.exe` e chiuderlo per PID.
 - Non fermare LTspice con `pkill -f <nome netlist>`: uccide anche lo script. `drive2-chain` a 150 Hz non termina (causa ignota): usare 50 Hz o 1 kHz.
 
-## Stato corrente (2026-10-22, decisioni 1-129)
+## Stato corrente (2026-10-22, decisioni 1-130)
 
 Il design teorico (carta + simulazione) è completo per tutti i moduli. Il prototipo musicale in Max for Live (dec. 78) precede il millefori: P0 (`MC-CHANNEL`), P1 (`MC-FILTRO`, canale R corretto il 2026-10-15) e P2 (`MC-5WAY`: CROSSOVER A-E con E = impianto di Filippo 80/170/1,2k + 6k, GROWL VER DEC.99/LIBERO, NASTRO VER OGGI/COMPLETO/EXCITER/CLASSE A/LIBERO) costruiti, verificati e in ascolto da Filippo; P3 e P4 costruiti e verificati, da caricare in Live (P4 = `MC-MIC`: GAIN, EQ2, FX1-4 verso i bus di P3, MUTE, LED; pedali = effetti di Live: `MC-SEND` per canale, `MC-BUS` → effetto → `MC-RET` su 4 tracce FX, `MC-MASTER`; bus con `send~`/`receive~` che si sommano) (`proto-max/RISULTATI-P*.md`). Il prototipo è completo ma BLOCCATO (2026-10-15, todo 76): in Live l'audio salta muovendo le manopole, soprattutto il filtro, e a tratti distorce forte. Non è la CPU (salti anche con buffer 2048) né il sample rate. Finché non si ripara, nessun ascolto del gruppo B vale. Prossimo: trovare la causa (ipotesi e prove nell'ultimo handoff). Generatori e prove in `proto-max/coefficienti/`: i `.genexpr/.maxpat/.amxd` non si toccano a mano. Gli acquisti sono sospesi fino al prototipo.
 
@@ -67,7 +67,7 @@ Il design teorico (carta + simulazione) è completo per tutti i moduli. Il proto
 |---|---|---|---|
 | Canale CDJ/line | v0.4; EQ = ISOLATOR a 4 bande v0.4-beta (dec. 105: bande in parallelo; niente contatto di fondo corsa, dec. 127; incroci 150/500/2500 Hz di partenza, da sentire). Integrato nel canale: somma non invertente, polarità diritta (eq-isolator §9) | `docs/fase1/cdj-line-channel.md`, `eq-isolator-v0.4.md` | `sim/cdj/`, `sim/eq-iso/` |
 | Phono MM | v0.1 + REV 2026-09-30 (RIAA passiva 42 dB, dec. 79) | `docs/fase1/phono-stage.md` | `sim/cdj/phono-*` |
-| FX + FX-SEND ×4 | v0.3-WIP (matrice 16× VCA con self-feedback, dec. 91) | `docs/fase1/fx-module.md`, `fx-send-module.md` | `sim/fx/` |
+| FX-RET ×4 + FX-SEND ×4 | v0.3-WIP (matrice 16× VCA con self-feedback, dec. 91; un modulo per bus, dec. 130) | `docs/fase1/fx-module.md`, `fx-send-module.md` | `sim/fx/` |
 | Master out | v0.3 DEFINITIVA (bootstrap rail OPA1612, dec. 83/86) | `docs/fase1/master-out.md` | `sim/master-out/compB-*` |
 | Filtro | v0.2; un percorso per canale (dec. 101, 8 core); law Xone:96 (dec. 102); overdrive v0.2 §5ter (dec. 99); core OTA (a′) con partitore 1/30 §5quater (dec. 109: il core nudo non funziona col chip reale; B1 aperta); numeri col chip reale accettati (dec. 110: oscillazione ~+5 dBu, calo di nota = carattere); core PULITO (c-B) a 4 poli progettato (RISULTATI-cb-4p): limitatore 2+2 / 3+3 / nell'OTA della RES (si spegne a RES zero), selettore LIMITATORE nel prototipo | `docs/fase2/filter-module.md` | `sim/filtro/` |
 | 5-way | v0.3; celle v0.2.1; kill a switch §8.10 (dec. 88); drive v0.4 GROWL + NASTRO §5bis (dec. 99); WIDTH continuo Q3…Q0,3 §4.3 (dec. 117) | `docs/fase2/five-way-module.md` | `sim/five-way/` |
@@ -102,7 +102,7 @@ La coda vive in tre posti, non qui:
 
 ```
 SPECIFICA.md                  specifica consolidata
-docs/01-decisioni-bloccate.md cosa è deciso (129 voci; 103 e 104 revocate)
+docs/01-decisioni-bloccate.md cosa è deciso (130 voci; 103 e 104 revocate)
 docs/02-questioni-aperte.md   cosa manca: liste A/B/C in testa, storico delle voci sotto
 docs/03 … 08                  revisione critica, architettura filtro, benchmark, rumore, review
 docs/09-budget.md             costi per modulo e totale (generato da docs/budget/genera_budget.py)

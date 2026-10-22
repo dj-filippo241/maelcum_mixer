@@ -23,11 +23,11 @@
 | | Meter | 1 | barra 10 LED | |
 | **FX-SEND** (×4) | EQ LOW / HIGH | 2 | doppio 10k, taper custom | |
 | | LEVEL | 1 | doppio 10k log | |
-| **FX** (4 bus) | GAIN ritorno | 4 | singolo → CV | |
-| | EQ LOW / HIGH ritorno | 8 | doppio 10k, taper custom | |
-| | Fader ritorno | 4 | slider MONO 100 mm → CV → VCA per lato (dec. 120, 126) | |
-| | Reroute e self-feedback | 16 | singolo lin → CV | cablati rovesci (shaper) |
-| | Meter | 4 | barra 10 LED, una per ritorno | dec. 116 (2026-10-21), era 1 |
+| **FX-RET** (×4, un modulo per bus, dec. 130) | GAIN ritorno | 1 | singolo → CV | |
+| | EQ LOW / HIGH ritorno | 2 | doppio 10k, taper custom | |
+| | Fader ritorno | 1 | slider MONO 100 mm → CV → VCA per lato (dec. 120, 126) | |
+| | Reroute e self-feedback | 4 | singolo lin → CV | cablati rovesci (shaper) |
+| | Meter | 1 | barra 10 LED | dec. 116 (2026-10-21) |
 | **Filtro** | HPF freq / res / drive | 3 | singolo lin → CV | |
 | | LPF freq / res / drive | 3 | singolo lin → CV | |
 | **5-way** | GAIN di banda | 5 | doppio 10k, taper custom | rotativi (dec. 85), detent |

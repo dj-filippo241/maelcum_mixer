@@ -94,10 +94,10 @@ MODULI = [
         p("rk09d", 2, "EQ LOW/HIGH"),
         p("rk14d", 1, "LEVEL"),
     ]),
-    ("Ritorno FX (un bus)", 4, 4, "fx-module §9, sistema-vca-trim §4", [
+    ("FX-RET (un bus, dec. 130)", 4, 4, "fx-module §2bis, §9, sistema-vca-trim §4", [
         p("vca", 12, "reroute 8 (4 bus x L/R) + GAIN 2 + fader 2"),
         p("trim", 41, "3 per VCA + shaper"),
-        p("opa1654", 3),
+        p("opa1654", 5, "3 + 2 per l'iniezione dei reroute sui net"),
         p("opa1612", 1),
         a_corpo("JFET dei buffer di ritorno (2)", 1, 3),
         a_corpo("shaper delle 5 CV: diodi e resistenze", 4, 8),
@@ -402,7 +402,7 @@ def main():
     w("")
     w("1. **I VCA e i loro trimmer.** ~78 chip a 2,80-5 € fanno 220-390 €; ogni")
     w("   chip vuole 3 trimmer di taratura (`sistema-vca-trim.md`), cioè ~230")
-    w("   trimmer. I 4 ritorni FX ne portano 12 ciascuno, 48 in tutto.")
+    w("   trimmer. I 4 FX-RET ne portano 12 ciascuno, 48 in tutto.")
     w("2. **I prezzi del VCA clone sono deboli.** Non ho trovato oggi un listino")
     w("   europeo aggiornato del V2181L: il prezzo viene dai documenti di settembre")
     w("   e da un annuncio eBay (~4,30 € a pezzo). Lo stock è a lotti (voce 37).")

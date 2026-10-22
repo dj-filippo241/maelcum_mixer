@@ -1,5 +1,10 @@
 # FASE 1 — Modulo FX: design v0.3-WIP (2026-10-01)
 
+> **DEC. 130 (2026-10-22)**: il modulo FX si divide in **4 moduli FX-RET**,
+> uno per bus, identici. Il contenuto elettrico di questo documento resta
+> valido: ogni FX-RET è un quarto del modulo (un bus, un ritorno, 4
+> reroute stereo = 12 VCA). Cosa cambia: §2bis.
+>
 > **DEC. 116 (2026-10-21)**: un meter da 10 segmenti per OGNI ritorno (4
 > barre, come i canali DJ; era 1). Tap invariato (post-GAIN/EQ2, pre-fader,
 > mono centrato). `docs/fase3/sistema-metering.md` REV dec. 116.
@@ -84,6 +89,35 @@
 Nota "controlled mono sum" (pedale mono): send mono = somma L+R via 2×10k
 verso il jack mono (mai hard-short); return mono = buffer → distribuito a
 L/R con due path matched (centraggio affidabile, no phase games).
+
+## 2bis. Quattro moduli FX-RET (dec. 130, 2026-10-22) [PROVVISORIO]
+
+Ogni FX-RET n contiene, per il suo bus n: summing virtual-earth del net Sn
+(slot 1), driver e jack del pedale, ritorno (buffer JFET, GAIN VCA, EQ2,
+meter, nodo REROUTE, fader VCA, out verso MSUM), 4 coppie di VCA di
+reroute (3 cross + SELF) con i loro shaper. Pinout: `sistema-backplane.md`
+REV dec. 130.
+
+1. **Iniezione dei reroute.** Il reroute verso il bus j esce dal modulo
+   e arriva al summing del modulo j. Esce come tutte le altre sorgenti
+   dei net (FX-SEND, MIC, MONO): uscita del VCA → I/V con op-amp →
+   driver ≤ 50 Ω → R 10k lato sorgente sul net Sj (slot 2-5). Niente
+   corrente del VCA mandata nuda sul backplane: un nodo a massa virtuale
+   lungo 70 cm raccoglie disturbi. Costo: 8 sezioni op-amp per modulo
+   (2 quad), ~16 mA per ramo [STIMA].
+2. **SELF.** Esce sul net del proprio bus e rientra dallo slot 1: stesso
+   nodo di somma dei cross, come in §7. Cambia solo la pista (passa dal
+   backplane).
+3. **Contributori per bus.** Restano 12 (4 FX-SEND, fino a 4 MIC/MONO,
+   4 reroute): caso di §3 invariato.
+4. **Rumore del bus** [STIMA, da simulare]: 4 buffer d'iniezione in più
+   per net, sempre collegati, ~−116 dBu ciascuno → ~−110 dBu per bus,
+   contro −100,8 misurato (§8, docs/06): circa +0,5 dB. Target −88.
+5. **Fase 1** (SPECIFICA §fasi: «1 bus completo»): è un FX-RET intero.
+   Il secondo bus della fase 1b è un secondo modulo uguale.
+6. **Restano da fare**: simulazione di un bus con le 4 iniezioni dei
+   reroute (rumore, crosstalk, loop SELF attraverso il backplane);
+   corrente sul W1 col resto del todo 128.
 
 ## 3. Summing bus — dimensionamento e verifica
 

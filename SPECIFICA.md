@@ -66,7 +66,7 @@
 
 ## 3. Moduli e backplane
 
-Moduli [BLOCCATO dai doc §33, consolidamento [PROVVISORIO]]: DJ CH1-4 · FILTRO · 5-WAY · FX (bus/pedali/ritorni/matrice; i doc elencano 4 moduli FX RETURN separati — accorpamento in un modulo FX da ratificare in fase di layout) · MIC · GENERIC MONO (1..n) · MASTER · CUE/CUFFIE · PSU · utility/future.
+Moduli [BLOCCATO dai doc §33, consolidamento [PROVVISORIO]]: DJ CH1-4 · FILTRO · 5-WAY · FX-RET ×4 (un modulo per bus: summing, pedale, ritorno, 4 reroute; DEC. 130, 2026-10-22: tornano i 4 moduli FX RETURN separati dei doc, l'accorpamento in un modulo FX unico è SUPERATO) · MIC · GENERIC MONO (1..n) · MASTER · CUE/CUFFIE · PSU · utility/future.
 
 - [BLOCCATO] Bus audio: DJ L/R, FX1-4 L/R, 5-WAY L/R, MASTER L/R, CUE L/R, filter send/return per canale.
 - [BLOCCATO, REV decisione 93 2026-10-01] Bus potenza sul backplane: **raw ±27 V audio, raw ±22 V LN/OTA, raw ±26 V [M] HV (popolato solo dal master), +5 V control** (regolato nella PSU), analogue 0 V, control ground, chassis/shield. Tabella avvolgimenti/correnti: `docs/fase3/sistema-psu.md` v0.2 §2; pinout riga a: `docs/fase3/sistema-backplane.md` v0.2 §3. [BLOCCATO] I rail ±18 V audio e ±15 V low-noise si generano LOCALMENTE in ogni modulo (non distribuiti sul backplane): ogni modulo isola il proprio rumore — ciascuno dal SUO raw dedicato (±18: LM317/337 da ±27; ±15,0 V: pre-reg ±16,5 + LT3045/LT3094 da ±22).
