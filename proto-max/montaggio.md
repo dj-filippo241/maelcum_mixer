@@ -101,7 +101,8 @@ consegnare: `verifica.py` (modello contro LTspice) e `prova_gen.py`
      KILL = via tagliata di netto, col click come l'interruttore vero);
    - colonne EQ1-EQ5: GAIN (centro = piatto, destra = boost, sinistra =
      taglio fino al notch), POS (frequenza della campana), WIDTH
-     Q3 stretta / Q1 media / Q0.5 larga;
+     manopola continua da Q3 stretta (tutta a sinistra) a Q0,3 larga
+     (tutta a destra), Q1 a metà corsa (dec. 117, 129);
    - a destra: GROWL, NASTRO e il selettore CROSSOVER;
    - GROWL VER (solo prototipo): DEC.99 = il GROWL del design, LIBERO =
      spinta e miscela insieme, il basso cresce;

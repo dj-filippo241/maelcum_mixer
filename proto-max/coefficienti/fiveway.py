@@ -63,7 +63,20 @@ GAIN_MAX = (15.0, 15.0, 15.0, 12.0, 9.0)
 POSIZIONE = ((20.0, 120.0), (80.0, 400.0), (250.0, 1500.0),
              (800.0, 5000.0), (3000.0, 20000.0))
 WIDTH = ("NARROW", "MEDIUM", "BROAD")
-Q_WIDTH = (3.0, 1.0, 0.5)
+Q_WIDTH = (3.0, 1.0, 0.5)       # SUPERATO dalla dec. 117 (era lo switch)
+# WIDTH continuo (dec. 117, five-way §4.3): pot doppio come partitore su
+# bp_b, alpha = 0,1...1, Q = 0,3/alpha (Q3 a CCW, Q0,3 a CW). Taper log
+# ~20 % (dec. 129 C2, 2026-10-22): a meta corsa alpha 0,28 -> Q 1,07.
+WIDTH_ALPHA_MIN = 0.1
+WIDTH_Q0 = 0.3
+WIDTH_TAPER = 0.2
+
+
+def q_width(t):
+    """WIDTH: rotazione t (0-1) -> Q della campana."""
+    a = WIDTH_TAPER * t / 0.5 if t <= 0.5 else \
+        WIDTH_TAPER + (1 - WIDTH_TAPER) * (t - 0.5) / 0.5
+    return WIDTH_Q0 / (WIDTH_ALPHA_MIN + (1 - WIDTH_ALPHA_MIN) * a)
 
 CUT_KNEE_DB = -27.0             # dove inizia l'accelerazione al notch
 CUT_KNEE_TH = 0.05
@@ -174,7 +187,7 @@ class Modulo:
     def passo(self, x, kill, gain, pos, width):
         y, _ = self.banca.passo(x, kill)
         for i, c in enumerate(self.celle):
-            y = c.passo(y, posizione(pos[i], i), Q_WIDTH[width[i]],
+            y = c.passo(y, posizione(pos[i], i), q_width(width[i]),
                         b_di(gain[i], GAIN_MAX[i]), self.fs)
         return y
 
@@ -362,7 +375,7 @@ class Completo:
         self.sat = Saturatori(fs)
 
     def passo(self, x, kill=(1, 1, 1, 1, 1), gain=(0.5,) * 5,
-              pos=(0.5,) * 5, width=(1,) * 5, mg=0.0, mt=0.0, libero=0.0,
+              pos=(0.5,) * 5, width=(0.5,) * 5, mg=0.0, mt=0.0, libero=0.0,
               nv=0.0):
         # mt = rotazione della manopola NASTRO (0-1), la law sta qui
         y = self.lin.passo(x, kill, gain, pos, width)
@@ -442,8 +455,8 @@ if __name__ == "__main__":
         va = vie_analogiche(f)
         print(f"  {f:6.0f} Hz  somma {db(h):+.4f} dB  "
               f"(analogica {db(sum(va)):+.4f})")
-    print("Cella EQ3 a 700 Hz, +15 / notch, Q 3 / 1 / 0,5")
-    for qi, q in enumerate(Q_WIDTH):
+    print("Cella EQ3 a 700 Hz, +15 / notch, WIDTH 0 / 50 / 100 %")
+    for q in (q_width(0), q_width(0.5), q_width(1)):
         for th in (1.0, 0.0):
             b = b_di(th, 15)
             c = Cella()

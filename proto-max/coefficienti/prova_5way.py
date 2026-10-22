@@ -28,7 +28,7 @@ A0 = 1.0954 / fw.LIV            # 0 dBu in unita digitali
 VIE = [v.lower() for v in fw.VIE]
 
 
-def gen_param(kill=(1,) * 5, gain=(50,) * 5, pos=(50,) * 5, width=(1,) * 5,
+def gen_param(kill=(1,) * 5, gain=(50,) * 5, pos=(50,) * 5, width=(50,) * 5,
               growl=0, nastro=0, xo=0, gv=0, nver=0):
     p = {f"k_{v}": 1 - k for v, k in zip(VIE, kill)}
     for i in range(5):
@@ -53,7 +53,7 @@ def suona_gen(testo, f, amp, durata, coda, destra=1.0, **kw):
 
 
 def suona_mod(f, amp, durata, coda, kill=(1,) * 5, gain=(50,) * 5,
-              pos=(50,) * 5, width=(1,) * 5, growl=0, nastro=0, xo=0, gv=0,
+              pos=(50,) * 5, width=(50,) * 5, growl=0, nastro=0, xo=0, gv=0,
               nver=0):
     fs4 = 4 * FS
     m = fw.Completo(fs4, list(fw.VARIANTI_XO.values())[xo])
@@ -62,7 +62,7 @@ def suona_mod(f, amp, durata, coda, kill=(1,) * 5, gain=(50,) * 5,
     for i in range(n):
         x = amp * math.sin(2 * math.pi * f * i / fs4)
         y.append(m.passo(x, kill, [t / 100 for t in gain],
-                         [t / 100 for t in pos], width,
+                         [t / 100 for t in pos], [t / 100 for t in width],
                          growl / 100, nastro / 100, gv, nver))
     return y, n - int(coda * fs4)
 
@@ -113,15 +113,16 @@ def main():
 
     print("EQ: GAIN, POSITION, WIDTH (sul centro della campana)")
     for i in range(5):
-        for th, w in ((100, 0), (100, 2), (75, 1), (25, 1), (0, 1), (3, 1)):
+        for th, w in ((100, 0), (100, 100), (100, 30), (75, 50), (25, 50),
+                      (0, 50), (3, 50)):
             pos = [50] * 5
             pos[i] = 30
             f0 = fw.posizione(0.3, i)
             gain = [50] * 5
             gain[i] = th
-            width = [1] * 5
+            width = [50] * 5
             width[i] = w
-            caso(f"EQ{i + 1} GAIN {th} % WIDTH Q{fw.Q_WIDTH[w]}"
+            caso(f"EQ{i + 1} GAIN {th} % WIDTH {w} % (Q{fw.q_width(w / 100):.2f})"
                  f" a {f0:.0f} Hz", f0, toll=0.1 if th < 5 else 0.05,
                  gain=gain, pos=pos, width=width)
 

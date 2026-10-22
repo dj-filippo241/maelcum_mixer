@@ -392,3 +392,15 @@ meno spinta), al prezzo di un po' di carattere sul programma piano.
 Modelli: la bobina del head bump del COMPLETO è ideale (in hardware un
 giratore, qualche op-amp in più); il partitore della CLASSE A è
 dimensionato col carico della base (52,8k / 9,11k, 10k in serie).
+
+## WIDTH continuo (2026-10-22, dec. 117 e 129 C2, todo 127)
+
+Il selettore WIDTH Q3 / Q1 / Q0,5 diventa una manopola continua come nel
+circuito (five-way §4.3): alpha = 0,1…1 con pot log 20 %, Q = 0,3/alpha →
+Q 3,00 / 1,58 / 1,07 / 0,47 / 0,30 a 0 / 25 / 50 / 75 / 100 %
+(`fiveway.q_width`). Nel pannello le tre manopole per via sono più basse
+(40 px) per stare nei 169 px di Live. Lisciatura 10 ms come le altre
+manopole (prima 1 ms, era un selettore). MC-5WAY-S uguale.
+Prove: prova_5way (WIDTH 0 / 30 / 50 / 100 %, gen~ contro modello) e
+prova_semplice.
+

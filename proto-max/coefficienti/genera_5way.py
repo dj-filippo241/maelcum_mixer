@@ -41,7 +41,6 @@ GV = ("gv", "GROWL VER", ["DEC.99", "LIBERO"])
 NV = ("nver", "NASTRO VER", ["OGGI", "COMPLETO", "EXCITER", "CLASSE A",
                             "LIBERO"])
 XO = ("xo", "CROSSOVER", list(fw.VARIANTI_XO))
-WIDTH_VOCI = ["Q3", "Q1", "Q0.5"]
 KILL_VOCI = ["ON", "KILL"]
 
 # stati nel Data sv: 2 per SVF. Per lato: spina 8, LP 8, AP 6, celle 5,
@@ -209,7 +208,7 @@ def genexpr():
     for nome, _ in GAIN + POS:
         r(f"Param {nome}(50, min=0, max=100);")
     for nome, _ in WID:
-        r(f"Param {nome}(1, min=0, max=2);")
+        r(f"Param {nome}(50, min=0, max=100);")  # dec. 117: continuo
     for nome, _ in SAT:
         r(f"Param {nome}(0, min=0, max=100);")
     if not SEMPLICE:
@@ -224,10 +223,10 @@ def genexpr():
     if not SEMPLICE:
         lisci += [XO[0], GV[0], NV[0]]
     for nome in lisci:
-        ini = {"w": 1, "g": 50, "p": 50}.get(nome[0], 0)
+        ini = {"w": 50, "g": 50, "p": 50}.get(nome[0], 0)
         r(f"History s_{nome}({ini});")
     r()
-    r("// manopole lisciate 10 ms; WIDTH 1 ms; CROSSOVER 20 ms; KILL netti")
+    r("// manopole lisciate 10 ms (WIDTH compreso); CROSSOVER 20 ms; KILL netti")
     r("t1 = exp(-1 / (0.001 * samplerate));")
     r("t10 = exp(-1 / (0.010 * samplerate));")
     r("t20 = exp(-1 / (0.020 * samplerate));")
@@ -257,7 +256,7 @@ def genexpr():
         r(f"a{v} = 1 - {nome};")
     r()
     r("// celle EQ: GAIN (famiglia eq-serie §10), POSITION esponenziale,")
-    r("// WIDTH Q 3 / 1 / 0,5")
+    r("// WIDTH continuo Q3...Q0,3, taper log 20 % (fw.q_width; dec. 117, 129)")
     kn = fw.CUT_KNEE_DB
     lin_k = 10 ** (kn / 20)
     for i in range(5):
@@ -272,10 +271,11 @@ def genexpr():
         r(f"b{n} = gl - 1;")
         r(f"ge{n} = tan(pi * {lo!r} * pow({hi / lo!r}, s_p_{n} / 100)"
           f" / sr4);")
-        wq = [1 / q for q in fw.Q_WIDTH]
-        r(f"ke{n} = max(0, 1 - abs(s_w_{n})) * {wq[0]!r}"
-          f" + max(0, 1 - abs(s_w_{n} - 1)) * {wq[1]!r}"
-          f" + max(0, 1 - abs(s_w_{n} - 2)) * {wq[2]!r};")
+        mw, am = fw.WIDTH_TAPER, fw.WIDTH_ALPHA_MIN
+        r(f"tw = s_w_{n} / 100;")
+        r(f"aw = (tw <= 0.5) * {mw / 0.5!r} * tw + (tw > 0.5) * "
+          f"({mw!r} + {(1 - mw) / 0.5!r} * (tw - 0.5));")
+        r(f"ke{n} = ({am!r} + {1 - am!r} * aw) / {fw.WIDTH_Q0!r};")
     r(f"mg = s_growl / 100;")
     tn = "s_nastro / 100"
     r(f"tn = {tn};")
@@ -520,15 +520,15 @@ def patch(codice):
     for v, (ng, nl) in enumerate(KILL):
         tab(ng, nl, KILL_VOCI, 0, [8 + col * v, 4, 54, 18])
     for i in range(5):
-        dial(GAIN[i][0], GAIN[i][1], 50.0, [8 + col * i, 24, 54, 48])
-        dial(POS[i][0], POS[i][1], 50.0, [8 + col * i, 74, 54, 48])
-        tab(WID[i][0], WID[i][1], WIDTH_VOCI, 1, [8 + col * i, 126, 54, 18])
+        dial(GAIN[i][0], GAIN[i][1], 50.0, [8 + col * i, 24, 54, 40])
+        dial(POS[i][0], POS[i][1], 50.0, [8 + col * i, 66, 54, 40])
+        dial(WID[i][0], WID[i][1], 50.0, [8 + col * i, 108, 54, 40])
     for j, (ng, nl) in enumerate(SAT):
         dial(ng, nl, 0.0, [312 + 60 * j, 24, 54, 48])
     if SEMPLICE:
         boxes.append(box("obj-nota", maxclass="live.comment", numinlets=1,
                          numoutlets=0, presentation=1,
-                         presentation_rect=[8, 148, 490, 18],
+                         presentation_rect=[8, 150, 490, 18],
                          patching_rect=[20, 520, 490, 18],
                          text="Semplice: CROSSOVER E 80/170/1,2k/6k, GROWL "
                               "LIBERO, NASTRO EXCITER. 0 dBu = -12 dBFS."))
@@ -544,7 +544,7 @@ def patch(codice):
     boxes[-2]["box"]["num_lines_patching"] = len(NV[2])
     boxes.append(box("obj-nota", maxclass="live.comment", numinlets=1,
                      numoutlets=0, presentation=1,
-                     presentation_rect=[8, 148, 420, 18],
+                     presentation_rect=[8, 150, 420, 18],
                      patching_rect=[20, 520, 420, 18],
                      text="KILL per via; EQ a campana; GROWL < 350 Hz. "
                           "CROSSOVER solo prototipo (B3). 0 dBu = -12 dBFS."))

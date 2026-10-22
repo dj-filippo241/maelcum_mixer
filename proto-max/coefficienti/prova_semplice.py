@@ -59,7 +59,7 @@ def manopole_5way(rnd):
     for n, _ in g5.GAIN + g5.POS + g5.SAT:
         p[n] = rnd.uniform(0, 100)
     for n, _ in g5.WID:
-        p[n] = rnd.choice((0, 1, 2))
+        p[n] = rnd.uniform(0, 100)  # WIDTH continuo (dec. 117)
     return p
 
 
