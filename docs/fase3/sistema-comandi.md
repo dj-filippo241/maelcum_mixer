@@ -81,6 +81,8 @@ cambia; ogni modulo MIC/MONO in meno toglie 7 pot singoli.
 - Polvere (dec. 119, 2026-10-22): pot a corpo chiuso, protezione dal
   pannello (guarnizioni, coperchio del flight case), pot sostituibili
   senza rifare la scheda.
+- Fader (dec. 120, 2026-10-22): corsa 100 mm per canali e ritorni FX.
+  Tracking stereo ≤ 0,5 dB da risolvere (fader selezionati o fader → VCA).
 - Da verificare: codici a magazzino della RK14K doppia 10k B con detent
   (alcune versioni hanno ordine minimo 1000 pezzi).
 
