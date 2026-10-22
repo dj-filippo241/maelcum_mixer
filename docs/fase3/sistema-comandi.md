@@ -78,10 +78,11 @@ cambia; ogni modulo MIC/MONO in meno toglie 7 pot singoli.
 - EQ di FX-SEND, ritorni FX, MIC e MONO (24 pot: 8 doppi FX-SEND, 8
   doppi ritorni, 8 singoli MIC/MONO): classe 9 mm (Alps RK09 o
   equivalente), senza scatto al centro.
+- Polvere (dec. 119, 2026-10-22): pot a corpo chiuso, protezione dal
+  pannello (guarnizioni, coperchio del flight case), pot sostituibili
+  senza rifare la scheda.
 - Da verificare: codici a magazzino della RK14K doppia 10k B con detent
-  (alcune versioni hanno ordine minimo 1000 pezzi); tenuta alla polvere
-  (la RK14K ha struttura chiusa contro polvere e flussante, senza grado IP;
-  dec. 111 (e) chiede pot sigillati).
+  (alcune versioni hanno ordine minimo 1000 pezzi).
 
 ## Aperto per la sessione hardware
 
