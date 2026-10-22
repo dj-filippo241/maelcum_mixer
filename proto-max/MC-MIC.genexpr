@@ -65,8 +65,9 @@ s_snd2 = snd2 + t10 * (s_snd2 - snd2);
 s_snd3 = snd3 + t10 * (s_snd3 - snd3);
 s_snd4 = snd4 + t10 * (s_snd4 - snd4);
 sr4 = samplerate * 4;
-// GAIN: stadio 2 col pot lineare (mic.g2)
-tgn = s_gain / 100;
+// GAIN: stadio 2 col pot a curva inversa C 20 % (mic.gain_x, dec. 129 E2)
+tgu = 1 - s_gain / 100;
+tgn = 1 - ((tgu <= 0.5) * 0.4 * tgu + (tgu > 0.5) * (0.2 + 1.6 * (tgu - 0.5)));
 gst = (5360.0 + tgn * 5000.0) / (332.0 + (1 - tgn) * 5000.0);
 // passa-alto Sallen-Key 60 Hz (mic.hpf_w0_q)
 gpa = tan(190.18471790923815 / sr4);

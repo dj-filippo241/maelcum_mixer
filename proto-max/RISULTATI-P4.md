@@ -29,7 +29,7 @@ scheda audio (preamp al minimo) -> INA +30 dB fisso (rail) -> passa-alto
 
 | Comando | Law | Stato |
 |---|---|---|
-| GAIN | pot lineare del circuito: 29,5 dB a 0 %, 38,3 a metà, 59,3 a fine corsa; l'ultimo 10 % fa 8,4 dB | circuito simulato; taper = voce 40 |
+| GAIN | [REV 2026-10-22, dec. 129 E2] pot a curva inversa C 20 %: 29,5 dB a 0 %, 36,3 a 25 %, 46,4 a metà, 50,9 a 75 %, 59,3 a fine corsa (prima, lineare: 38,3 a metà, ultimo 10 % = 8,4 dB) | circuito simulato; prova_mic PASS |
 | Passa-alto | Sallen-Key 2° ordine, f0 60,5 Hz, Q 0,707: −3 dB a 60 Hz, −0,55 a 100 Hz | dec. 97 |
 | EQ LOW / HIGH | le celle e le law di P3 | [PROVVISORIO], come B8 |
 | FX1-FX4 | pot curva A: −20 dB a metà, 0 dB a fine corsa, mai sopra 0 | [PROVVISORIO], voce 40 |

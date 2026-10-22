@@ -57,8 +57,11 @@ def genexpr():
     r("@@DATA@@")
     lisci(r, [n for n, _, _ in DIAL], {n: ini for n, _, ini in DIAL})
     r("sr4 = samplerate * 4;")
-    r("// GAIN: stadio 2 col pot lineare (mic.g2)")
-    r("tgn = s_gain / 100;")
+    r("// GAIN: stadio 2 col pot a curva inversa C 20 % (mic.gain_x, dec. 129 E2)")
+    r("tgu = 1 - s_gain / 100;")
+    mg = mic.TAPER_C_MID
+    r(f"tgn = 1 - ((tgu <= 0.5) * {mg / 0.5!r} * tgu + (tgu > 0.5) * "
+      f"({mg!r} + {(1 - mg) / 0.5!r} * (tgu - 0.5)));")
     r(f"gst = ({mic.R2_G2!r} + tgn * {mic.P_G2!r}) / ({mic.R1_G2!r}"
       f" + (1 - tgn) * {mic.P_G2!r});")
     r("// passa-alto Sallen-Key 60 Hz (mic.hpf_w0_q)")

@@ -75,8 +75,25 @@ def g2(x):
     return (R2_G2 + x * P_G2) / (R1_G2 + (1 - x) * P_G2)
 
 
+# Pot GAIN a curva inversa C 20 % (dec. 129 E2, 2026-10-22; era lineare):
+# x = 0,8 a meta corsa. Lo stadio 2 da gia piu dB in alto (col lineare
+# l'ultimo 10 % vale 8,4 dB): la curva C li spalma quasi uguali su tutta la
+# corsa (29,5 / 36,3 / 46,4 / 50,9 / 59,3 dB a 0/25/50/75/100 %). La
+# curva A li avrebbe ammassati ancora di piu in alto (31,1 dB a meta).
+TAPER_C_MID = 0.2
+
+
+def gain_x(t):
+    """Rotazione t del pot GAIN -> posizione elettrica x (curva C)."""
+    u = 1 - t
+    a = TAPER_C_MID * u / 0.5 if u <= 0.5 else \
+        TAPER_C_MID + (1 - TAPER_C_MID) * (u - 0.5) / 0.5
+    return 1 - a
+
+
 def gain_db(t):
-    """Guadagno del preamp a centro banda, dB, dal microfono al nodo PRE."""
+    """Guadagno del preamp a centro banda, dB, dal microfono al nodo PRE;
+    t = posizione elettrica del pot (x), come in LTspice."""
     return 20 * math.log10(G_INGRESSO * g2(t))
 
 
@@ -115,7 +132,7 @@ class Mic:
     def passo(self, v, gain, low, high, mute):
         y = clamp_fe(G_INGRESSO * v)
         y = self.hpf.hp(y, self.g_hpf, self.k_hpf)
-        pre = clamp_fe(g2(gain) * y)
+        pre = clamp_fe(g2(gain_x(gain)) * y)
         y = fx.clamp(self.eq.passo(pre, fx.low_x(low), fx.high_thh(high)))
         p = 1 / (T_MUTE * self.fs)
         self.m += min(max(mute - self.m, -p), p)

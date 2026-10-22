@@ -128,7 +128,8 @@ Totale 115 manopole: 64 grandi, 10 medie, 41 piccole.
 | Famiglia | Pot | Pezzo |
 |---|---|---|
 | Lineare standard (B) | tutti i pot → CV (GAIN canale, filtro, reroute/SELF, GAIN ritorni, POSITION, MASTER, BOOTH), EQ canale (dec. 105), GROWL, BLEND (NASTRO: log A, riga sotto) | RK14K / RK09 lineari a catalogo; reroute: RK09K singolo con scatto al centro (es. RK09K113004U, verticale, 10k B) |
-| Logaritmica standard (A) | NASTRO (five-way §5bis), LEVEL di FX-SEND (fx-module: «curva A 10 % basta»), LEVEL cuffie, SEND 1-4 di MIC/MONO (B9), GAIN di MIC/MONO (B9: col lineare l'ultimo 10 % vale 8,4 dB) | A a catalogo; la scelta A contro B per MIC/MONO resta all'ascolto (B9) |
+| Logaritmica standard (A) | NASTRO (five-way §5bis), LEVEL di FX-SEND (fx-module: «curva A 10 % basta»), LEVEL cuffie, SEND 1-4 di MIC/MONO (B9) |
+| Logaritmica inversa (C 20 %) | GAIN del MIC (dec. 129 E2: col lineare l'ultimo 10 % vale 8,4 dB, con la C i dB sono quasi uguali su tutta la corsa); GAIN del MONO da verificare sul suo circuito | A a catalogo; la scelta A contro B per MIC/MONO resta all'ascolto (B9) |
 | Curva asimmetrica | EQ di FX-SEND, ritorni, MIC e MONO; GAIN delle 5 vie | vedi sotto |
 | Da scegliere (dec. 117) | WIDTH: log 10 % (centro ~Q1,6) o ~20 % (centro ~Q1) | ⚠ il WIDTH è un doppio 1k: la RK14 a catalogo parte da 5k; se il 1k non c'è, partitore riscalato su 10k (da rifare in five-way §4.3) |
 
@@ -150,7 +151,7 @@ resistenza di legge non lo sposta se è simmetrica rispetto al centro.
 **Scelte di Filippo (dec. 129, 2026-10-22, PROVVISORIE fino all'ascolto):**
 A3 (EQ secondari: lineare + resistenze, bassi e alti diversi), B2 (GAIN
 5 vie: lineare + resistenze), C2 (WIDTH log ~20 %), D1 (LEVEL log A 10 %),
-E2 e F1 (MIC/MONO GAIN e SEND log A), G fader «come Pioneer DJM», curva graduale (circa −12 dB a metà corsa, già simulata).
+E2 (GAIN MIC curva inversa C 20 %, vedi tabella), F1 (SEND MIC/MONO log A), G fader «come Pioneer DJM», curva graduale (circa −12 dB a metà corsa, già simulata).
 
 ### Contatto di fondo corsa dell'EQ di canale (16 pot)
 
