@@ -247,3 +247,5 @@
 
 122. **[F — 2026-10-22, sessione manopole (voce 40, todo 12), blocco 5 — selettore del filtro di canale]** **Il modo del filtro di ogni canale (HPF / OFF / LPF) si sceglie con una levetta a tre posizioni fisse**: su = HPF, centro = OFF, giù = LPF; resta dove la si lascia. Stessa famiglia delle levette dei kill (dec. 121), sigillata. Scartati la manopola a scatti e i tre bottoni con luce. Raccomandazione di Claude accettata. Elettrica invariata: rampa di 1 ms al cambio di modo (dec. 80).
 
+123. **[F — 2026-10-22, sessione manopole (voce 40, todo 12), blocco 5 — bottoni di canale]** **CUE e assign FX 1-4 = bottoni con luce, a ritenuta** (cinque stati da vedere insieme, anche al buio); **LINE/PHONO = levetta piccola** (si imposta una volta per serata, non si sposta per sbaglio). Proposta di Claude accettata; scartate le levette per CUE/assign e il bottone con luce per LINE/PHONO.
+

@@ -15,10 +15,10 @@
 |---|---|---|---|---|
 | **Canale CDJ** (×4) | GAIN | 1 | singolo 10k lin → CV | detent a 0 dB |
 | | EQ LOW / LOW-MID / MID-HIGH / HIGH | 4 | doppio 10k LINEARE + contatto di fondo corsa (chiude a massa) [REV 2026-10-13, dec. 105: isolator, prima taper custom] | detent al centro; tracking ≤ 0,25 dB; eq-isolator §5 e §8 |
-| | LINE / PHONO | 1 | selettore 2 posizioni | |
+| | LINE / PHONO | 1 | levetta piccola 2 posizioni (dec. 123) | |
 | | Filtro HPF / OFF / LPF | 1 | levetta 3 posizioni fisse ON-OFF-ON, logica (dec. 122) | su HPF, centro OFF, giù LPF |
-| | CUE | 1 | bottone, logico | |
-| | Assign FX 1-4 | 4 | bottoni, logici | pilotano il micro-modulo FX-SEND |
+| | CUE | 1 | bottone con luce a ritenuta, logico (dec. 123) | |
+| | Assign FX 1-4 | 4 | bottoni con luce a ritenuta, logici (dec. 123) | pilotano il micro-modulo FX-SEND |
 | | Fader | 1 | slider stereo conduttivo-plastica | tracking ≤ 0,5 dB |
 | | Meter | 1 | barra 10 LED | |
 | **FX-SEND** (×4) | EQ LOW / HIGH | 2 | doppio 10k, taper custom | |
@@ -86,6 +86,8 @@ cambia; ogni modulo MIC/MONO in meno toglie 7 pot singoli.
 - Kill del 5-way (dec. 121, 2026-10-22): levette sigillate ON-OFF-(ON).
 - Selettore del filtro di canale (dec. 122): levetta sigillata a tre
   posizioni fisse.
+- Bottoni di canale (dec. 123): CUE e assign FX con luce a ritenuta,
+  LINE/PHONO a levetta piccola.
 - Da verificare: codici a magazzino della RK14K doppia 10k B con detent
   (alcune versioni hanno ordine minimo 1000 pezzi).
 
