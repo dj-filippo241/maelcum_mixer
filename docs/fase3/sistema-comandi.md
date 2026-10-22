@@ -34,7 +34,7 @@
 | | POSITION di banda | 5 | singolo lin → CV | |
 | | WIDTH di banda | 5 | doppio 1k, taper log da scegliere | dec. 117 (2026-10-21): continuo Q3…Q0,3, era selettore 3 posizioni |
 | | KILL di banda | 5 | levetta 3 posizioni ON-OFF-(ON), logica (dec. 121) | su = kill fisso, giù = kill a molla |
-| | GROWL e NASTRO (dec. 99; era DRIVE ×1) | 2 | doppio lin, diretto sul segnale (v0.4, niente CV) | primo 5-10 % quasi inerte |
+| | GROWL e NASTRO (dec. 99; era DRIVE ×1) | 2 | doppi diretti sul segnale (v0.4, niente CV): GROWL lineare, NASTRO log A 10 % (five-way §5bis, prototipo `fiveway.py`; Filippo 2026-10-22) | primo 5-10 % quasi inerte |
 | | Meter | 1 | barra 10 LED | |
 | **Master** | MASTER | 1 | singolo lin → CV | detent a 0 dB |
 | | BOOTH | 1 | singolo lin → CV | |
@@ -127,8 +127,8 @@ Totale 115 manopole: 64 grandi, 10 medie, 41 piccole.
 
 | Famiglia | Pot | Pezzo |
 |---|---|---|
-| Lineare standard (B) | tutti i pot → CV (GAIN canale, filtro, reroute/SELF, GAIN ritorni, POSITION, MASTER, BOOTH), EQ canale (dec. 105), GROWL/NASTRO, BLEND | RK14K / RK09 lineari a catalogo; reroute: RK09K singolo con scatto al centro (es. RK09K113004U, verticale, 10k B) |
-| Logaritmica standard (A) | LEVEL di FX-SEND (fx-module: «curva A 10 % basta»), LEVEL cuffie, SEND 1-4 di MIC/MONO (B9), GAIN di MIC/MONO (B9: col lineare l'ultimo 10 % vale 8,4 dB) | A a catalogo; la scelta A contro B per MIC/MONO resta all'ascolto (B9) |
+| Lineare standard (B) | tutti i pot → CV (GAIN canale, filtro, reroute/SELF, GAIN ritorni, POSITION, MASTER, BOOTH), EQ canale (dec. 105), GROWL, BLEND (NASTRO: log A, riga sotto) | RK14K / RK09 lineari a catalogo; reroute: RK09K singolo con scatto al centro (es. RK09K113004U, verticale, 10k B) |
+| Logaritmica standard (A) | NASTRO (five-way §5bis), LEVEL di FX-SEND (fx-module: «curva A 10 % basta»), LEVEL cuffie, SEND 1-4 di MIC/MONO (B9), GAIN di MIC/MONO (B9: col lineare l'ultimo 10 % vale 8,4 dB) | A a catalogo; la scelta A contro B per MIC/MONO resta all'ascolto (B9) |
 | Curva asimmetrica | EQ di FX-SEND, ritorni, MIC e MONO; GAIN delle 5 vie | vedi sotto |
 | Da scegliere (dec. 117) | WIDTH: log 10 % (centro ~Q1,6) o ~20 % (centro ~Q1) | ⚠ il WIDTH è un doppio 1k: la RK14 a catalogo parte da 5k; se il 1k non c'è, partitore riscalato su 10k (da rifare in five-way §4.3) |
 
