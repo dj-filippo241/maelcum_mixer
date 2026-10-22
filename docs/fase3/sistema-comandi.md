@@ -121,6 +121,71 @@ Grande = pot 14 mm · media = pot 14 mm con cappuccio ~12 mm · piccola = pot 9 
 
 Totale 115 manopole: 64 grandi, 10 medie, 41 piccole.
 
+## Ingegneria dei comandi (2026-10-22, dopo le dec. 117-125) [PROPOSTA di Claude]
+
+### Curve dei pot: tre famiglie
+
+| Famiglia | Pot | Pezzo |
+|---|---|---|
+| Lineare standard (B) | tutti i pot → CV (GAIN canale, filtro, reroute/SELF, GAIN ritorni, POSITION, MASTER, BOOTH), EQ canale (dec. 105), GROWL/NASTRO, BLEND | RK14K / RK09 lineari a catalogo; reroute: RK09K singolo con scatto al centro (es. RK09K113004U, verticale, 10k B) |
+| Logaritmica standard (A) | LEVEL di FX-SEND (fx-module: «curva A 10 % basta»), LEVEL cuffie, SEND 1-4 di MIC/MONO (B9), GAIN di MIC/MONO (B9: col lineare l'ultimo 10 % vale 8,4 dB) | A a catalogo; la scelta A contro B per MIC/MONO resta all'ascolto (B9) |
+| Curva asimmetrica | EQ di FX-SEND, ritorni, MIC e MONO; GAIN delle 5 vie | vedi sotto |
+| Da scegliere (dec. 117) | WIDTH: log 10 % (centro ~Q1,6) o ~20 % (centro ~Q1) | ⚠ il WIDTH è un doppio 1k: la RK14 a catalogo parte da 5k; se il 1k non c'è, partitore riscalato su 10k (da rifare in five-way §4.3) |
+
+**Curve asimmetriche (cut su quasi tutta la corsa, boost nell'ultimo
+tratto).** Strade:
+1. **Pot lineare + 1-2 resistenze di legge** fra cursore ed estremi:
+   pezzi standard, curva approssimata, valori calcolati cella per cella.
+2. Pista su misura dal costruttore: curva esatta, ordine minimo e mesi.
+3. Pot → CV → VCA: curva esatta dallo shaper, ma un VCA per lato e
+   rumore in più.
+
+Raccomandazione: **1**. Gli EQ secondari non hanno più lo scatto
+(dec. 118 c, 125): il centro non deve cadere esatto su 0 dB. I valori
+delle resistenze si calcolano quando le curve sono confermate
+all'ascolto (B6, B8, B9; regola 3: niente valori prima). Il GAIN delle 5
+vie ha lo scatto al centro: lì la cella è piatta per costruzione, la
+resistenza di legge non lo sposta se è simmetrica rispetto al centro.
+
+### Contatto di fondo corsa dell'EQ di canale (16 pot)
+
+- Un pot doppio 10k lineare con scatto al centro E interruttore a fondo
+  corsa non l'ho trovato a catalogo: sarebbe un pezzo su misura.
+- Senza contatto il silenzio dipende dal residuo del pot: Alps dichiara
+  ≤ 20 Ω su 10k per la RK14J (da verificare per la RK14K) → banda chiusa
+  a circa −54 dB, tutte e quattro chiuse circa −54 dB (eq-isolator §5,
+  §8: col contatto −100 dB).
+- Alternativa elettronica (comparatore sulla continua del cursore +
+  interruttore analogico, 32 per i 4 canali): complicata, sporca il
+  percorso con una continua da togliere. Scartata.
+- Proposta: **niente contatto**, pot con residuo garantito ≤ 20 Ω. Una
+  banda chiusa a −54 dB sotto le altre tre è coperta; il muto vero del
+  canale resta il fader. ⚠ Cambia una proprietà dell'isolator (dec. 105:
+  «tutte a fondo corsa = canale muto»): da confermare da Filippo.
+
+### Tracking dei fader da 100 mm (dec. 59: ≤ 0,5 dB fra L e R)
+
+- Fader doppi a catalogo: Penny & Giles PGF8000 ±1,0 dB (0…−40 dB);
+  PGF3000 ±3 dB; Alps RS60 ±3 dB. Nessuno sta sotto 0,5 dB.
+- Strade: (a) **fader singolo (mono) → CV → VCA, come il Xone:92**:
+  tracking dato dai VCA trimmati, fader qualunque (anche a carbone),
+  curva libera nello shaper; +16 VCA (4 canali + 4 ritorni, stereo),
+  ~78 chip in tutto, +20…45 mA per ramo sul W1 (oggi all'88 %), un po'
+  di rumore in più a fader aperto (da ricalcolare in docs/06); (b) fader
+  doppi selezionati a coppie dal lotto; (c) accettare ±1 dB con i PGF8000.
+- Proposta: **(a)**. Da confermare da Filippo (costo e rumore).
+
+### Jack e connettori
+
+Già nei design: RCA dorati isolati per CDJ, RCA phono + morsetto di
+massa, XLR mic (solo dinamici), jack TS per MONO, XLR master L/R e booth
+L/R (Neutrik NC3FAH o equivalente), TRS rec, jack TS per mandate e
+ritorni dei pedali, 2 jack cuffia stereo, circolare IP65 ≥ 20 contatti +
+PE per l'alimentatore (dec. 113). Proposta per l'aperto (dec. 111 e):
+connettori a corpo metallico con guarnizione verso il pannello, XLR con
+blocco. ⚠ Da Filippo: le due uscite cuffia, entrambe 6,3 mm o una 6,3 e
+una 3,5 mm.
+
 ## Aperto per la sessione hardware
 
 - Taper custom: quante famiglie diverse servono davvero (EQ2, gain 5-way,
