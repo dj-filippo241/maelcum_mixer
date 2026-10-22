@@ -8,7 +8,7 @@ Il repository non contiene software da compilare né test: contiene documenti di
 
 ## Regole del progetto
 
-1. **Una decisione, un posto solo.** Le decisioni bloccate stanno in `docs/01-decisioni-bloccate.md`; le aperte in `docs/02-questioni-aperte.md`; la specifica consolidata in `SPECIFICA.md` (v0.1, rev. 2026-10-21: decisioni 76-118). Quando una questione si chiude: spostarla da 02 a 01 con data e origine [F]/[R]/[C], e aggiornare la specifica.
+1. **Una decisione, un posto solo.** Le decisioni bloccate stanno in `docs/01-decisioni-bloccate.md`; le aperte in `docs/02-questioni-aperte.md`; la specifica consolidata in `SPECIFICA.md` (v0.1, rev. 2026-10-21: decisioni 76-129). Quando una questione si chiude: spostarla da 02 a 01 con data e origine [F]/[R]/[C], e aggiornare la specifica.
 2. **Non inventare decisioni di design.** Le scelte sonore/ergonomiche sono di Filippo. L'ingegneria (topologie, componenti, simulazioni, calcoli) è di Claude, ma i numeri che vincolano l'uso musicale vanno mostrati e confermati.
 3. **Niente valori congelati prima della topologia.** Regola ereditata dalla review: mai fissare valori di componenti prima di aver scelto il circuito. Distinguere sempre [BLOCCATO] / [PROVVISORIO] / [APERTO] / [SUPERATO].
 4. **Metodo della fase circuitale**: requisito funzionale → funzione di trasferimento → topologia → componenti → simulazione → vincoli PCB → prototipo → misura → revisione.
@@ -59,7 +59,7 @@ Regole di simulazione (ognuna nasce da un errore già pagato; il contesto sta ne
 - `perl -e 'alarm ...'` ferma lo script ma non `LTspice.exe` dentro wine: il processo resta al 300 % di CPU. Controllare con `ps aux | grep -i LTspice.exe` e chiuderlo per PID.
 - Non fermare LTspice con `pkill -f <nome netlist>`: uccide anche lo script. `drive2-chain` a 150 Hz non termina (causa ignota): usare 50 Hz o 1 kHz.
 
-## Stato corrente (2026-10-21, decisioni 1-118)
+## Stato corrente (2026-10-22, decisioni 1-129)
 
 Il design teorico (carta + simulazione) è completo per tutti i moduli. Il prototipo musicale in Max for Live (dec. 78) precede il millefori: P0 (`MC-CHANNEL`), P1 (`MC-FILTRO`, canale R corretto il 2026-10-15) e P2 (`MC-5WAY`: CROSSOVER A-E con E = impianto di Filippo 80/170/1,2k + 6k, GROWL VER DEC.99/LIBERO, NASTRO VER OGGI/COMPLETO/EXCITER/CLASSE A/LIBERO) costruiti, verificati e in ascolto da Filippo; P3 e P4 costruiti e verificati, da caricare in Live (P4 = `MC-MIC`: GAIN, EQ2, FX1-4 verso i bus di P3, MUTE, LED; pedali = effetti di Live: `MC-SEND` per canale, `MC-BUS` → effetto → `MC-RET` su 4 tracce FX, `MC-MASTER`; bus con `send~`/`receive~` che si sommano) (`proto-max/RISULTATI-P*.md`). Il prototipo è completo ma BLOCCATO (2026-10-15, todo 76): in Live l'audio salta muovendo le manopole, soprattutto il filtro, e a tratti distorce forte. Non è la CPU (salti anche con buffer 2048) né il sample rate. Finché non si ripara, nessun ascolto del gruppo B vale. Prossimo: trovare la causa (ipotesi e prove nell'ultimo handoff). Generatori e prove in `proto-max/coefficienti/`: i `.genexpr/.maxpat/.amxd` non si toccano a mano. Gli acquisti sono sospesi fino al prototipo.
 
@@ -69,16 +69,18 @@ Il design teorico (carta + simulazione) è completo per tutti i moduli. Il proto
 | Phono MM | v0.1 + REV 2026-09-30 (RIAA passiva 42 dB, dec. 79) | `docs/fase1/phono-stage.md` | `sim/cdj/phono-*` |
 | FX + FX-SEND ×4 | v0.3-WIP (matrice 16× VCA con self-feedback, dec. 91) | `docs/fase1/fx-module.md`, `fx-send-module.md` | `sim/fx/` |
 | Master out | v0.3 DEFINITIVA (bootstrap rail OPA1612, dec. 83/86) | `docs/fase1/master-out.md` | `sim/master-out/compB-*` |
-| Filtro | v0.2; un percorso per canale (dec. 101, 8 core); law Xone:96 (dec. 102); overdrive v0.2 §5ter (dec. 99); core OTA (a′) con partitore 1/30 §5quater (dec. 109: il core nudo non funziona col chip reale; B1 aperta); numeri col chip reale accettati (dec. 110: oscillazione ~+5 dBu, calo di nota = carattere) | `docs/fase2/filter-module.md` | `sim/filtro/` |
+| Filtro | v0.2; un percorso per canale (dec. 101, 8 core); law Xone:96 (dec. 102); overdrive v0.2 §5ter (dec. 99); core OTA (a′) con partitore 1/30 §5quater (dec. 109: il core nudo non funziona col chip reale; B1 aperta); numeri col chip reale accettati (dec. 110: oscillazione ~+5 dBu, calo di nota = carattere); core PULITO (c-B) a 4 poli progettato (RISULTATI-cb-4p): limitatore 2+2 / 3+3 / nell'OTA della RES (si spegne a RES zero), selettore LIMITATORE nel prototipo | `docs/fase2/filter-module.md` | `sim/filtro/` |
 | 5-way | v0.3; celle v0.2.1; kill a switch §8.10 (dec. 88); drive v0.4 GROWL + NASTRO §5bis (dec. 99); WIDTH continuo Q3…Q0,3 §4.3 (dec. 117) | `docs/fase2/five-way-module.md` | `sim/five-way/` |
 | Mic e Mono | v0.1, due moduli separati, max 4 (dec. 97) | `docs/fase4/mic-mono-moduli.md` | `sim/mic/` |
 | Sistema | PSU ~270 VA (dec. 93/98/106; W1 4,0 A per i moduli opzionali e i 40 VCA FX, dec. 111/115; alimentatore ESTERNO con pre-regolatori, dec. 113, progettato in `sistema-psu-esterno.md`: LDO discreti ±22,0/±19 V, AC_OK, PSU-IN; ~83-97 W nel mixer, due ventole a termostato, dec. 112), grounding, backplane, metering (dec. 81/90), CUE (dec. 96), shaper, inventario comandi | `docs/fase3/` | `sim/system/` (box: `psu-box-*`, senza `uic`), `sim/meter/`, `sim/shaper/` |
+
+Hardware dei comandi (dec. 118-129, sessione del 2026-10-22): manopole 14 mm disassate come sul Xone:DB4 (EQ secondari e reroute 9 mm), fader mono 100 mm che comandano 2 VCA (dec. 126), kill a levetta ON-OFF-(ON), EQ di canale senza contatto di fondo corsa (dec. 127), curve dei pot provvisorie fino all'ascolto (dec. 129). Tabella: `docs/fase3/sistema-comandi.md`; render con colori standard (un colore per tipo di oggetto, per Illustrator): `docs/pannelli/`.
 
 Review contro il benchmark (dec. 111): ibrido DJ / sound system / live, nessun fork, moduli opzionali predisposti (uscite per via, crossfader, EQ grafico, sirena), tasto MONO master, MUTE mic, ambiente da sound system all'aperto (`docs/07`, `docs/08`).
 
 Documenti trasversali: `docs/fase1/gain-staging-sheet.md` (livelli e domini, referenza unica), `docs/06-ritaratura-rumore-71A.md` (budget di rumore e target ratificati), `docs/proto-max/piano.md` (prototipo Max).
 
-Numeri di sistema: rumore −82,9 dBu A-wtd a filtri OFF (docs/06 §10: canale con isolator −94,6, 5-way −85,9) (target ≤ −78, dec. 89; condizioni d'uso accettate con FX e overdrive aperti, dec. 95/100); master +25,4…+25,6 dBu (requisito ≥ +24). VCA: THAT 218x fuori produzione, rotta clone CoolAudio V2181L, ~62 chip (conteggio corretto il 2026-10-21: il modulo FX ne ha 40), trim in `docs/fase3/sistema-vca-trim.md`.
+Numeri di sistema: rumore −81,9 dBu A-wtd a filtri OFF col fader a VCA (docs/06 §13; prima −82,9, §10: canale con isolator −92,9 col fader a VCA, 5-way −85,9) (target ≤ −78, dec. 89; condizioni d'uso accettate con FX e overdrive aperti, dec. 95/100); master +25,4…+25,6 dBu (requisito ≥ +24). VCA: THAT 218x fuori produzione, rotta clone CoolAudio V2181L, ~78 chip (FX 40 + 16 dei fader, dec. 126), trim in `docs/fase3/sistema-vca-trim.md`.
 
 Trappole di lettura:
 
@@ -100,7 +102,7 @@ La coda vive in tre posti, non qui:
 
 ```
 SPECIFICA.md                  specifica consolidata
-docs/01-decisioni-bloccate.md cosa è deciso (118 voci; 103 e 104 revocate)
+docs/01-decisioni-bloccate.md cosa è deciso (129 voci; 103 e 104 revocate)
 docs/02-questioni-aperte.md   cosa manca: liste A/B/C in testa, storico delle voci sotto
 docs/03 … 08                  revisione critica, architettura filtro, benchmark, rumore, review
 docs/storico-sessioni.md      cronaca delle sessioni fino al 2026-10-13
