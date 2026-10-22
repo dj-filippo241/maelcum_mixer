@@ -245,3 +245,5 @@
 
 121. **[F — 2026-10-22, sessione manopole (voce 40, todo 12), blocco 5 — kill del 5-way]** **I 5 kill del 5-way sono levette a tre posizioni ON-OFF-(ON)**: in su la via resta spenta (kill fisso), al centro suona, in giù è spenta finché si tiene il dito e torna da sola a molla (kill a tempo). Levette sigillate per uso esterno (dec. 111 e, 119). Scartati il bottone a ritenuta con luce (stile Xone) e il bottone a due modi (tocco breve / pressione lunga). Raccomandazione di Claude accettata. Elettrica invariata (switch π SPDT, dec. 88, five-way §8.10): la logica del kill riceve l'OR dei due contatti della levetta.
 
+122. **[F — 2026-10-22, sessione manopole (voce 40, todo 12), blocco 5 — selettore del filtro di canale]** **Il modo del filtro di ogni canale (HPF / OFF / LPF) si sceglie con una levetta a tre posizioni fisse**: su = HPF, centro = OFF, giù = LPF; resta dove la si lascia. Stessa famiglia delle levette dei kill (dec. 121), sigillata. Scartati la manopola a scatti e i tre bottoni con luce. Raccomandazione di Claude accettata. Elettrica invariata: rampa di 1 ms al cambio di modo (dec. 80).
+

@@ -16,7 +16,7 @@
 | **Canale CDJ** (×4) | GAIN | 1 | singolo 10k lin → CV | detent a 0 dB |
 | | EQ LOW / LOW-MID / MID-HIGH / HIGH | 4 | doppio 10k LINEARE + contatto di fondo corsa (chiude a massa) [REV 2026-10-13, dec. 105: isolator, prima taper custom] | detent al centro; tracking ≤ 0,25 dB; eq-isolator §5 e §8 |
 | | LINE / PHONO | 1 | selettore 2 posizioni | |
-| | Filtro HPF / OFF / LPF | 1 | selettore 3 posizioni, logico | |
+| | Filtro HPF / OFF / LPF | 1 | levetta 3 posizioni fisse ON-OFF-ON, logica (dec. 122) | su HPF, centro OFF, giù LPF |
 | | CUE | 1 | bottone, logico | |
 | | Assign FX 1-4 | 4 | bottoni, logici | pilotano il micro-modulo FX-SEND |
 | | Fader | 1 | slider stereo conduttivo-plastica | tracking ≤ 0,5 dB |
@@ -84,6 +84,8 @@ cambia; ogni modulo MIC/MONO in meno toglie 7 pot singoli.
 - Fader (dec. 120, 2026-10-22): corsa 100 mm per canali e ritorni FX.
   Tracking stereo ≤ 0,5 dB da risolvere (fader selezionati o fader → VCA).
 - Kill del 5-way (dec. 121, 2026-10-22): levette sigillate ON-OFF-(ON).
+- Selettore del filtro di canale (dec. 122): levetta sigillata a tre
+  posizioni fisse.
 - Da verificare: codici a magazzino della RK14K doppia 10k B con detent
   (alcune versioni hanno ordine minimo 1000 pezzi).
 
