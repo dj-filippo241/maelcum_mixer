@@ -161,6 +161,8 @@ fuori dal centro, piano Max (todo 1), pot (voce 40).]**
 
 ## 8. Completamento v0.4-beta (2026-10-13, `sim/eq-iso/iso-b-*.cir`)
 
+> **[REV 2026-10-22, dec. 127]** Il contatto di fondo corsa NON si monta: il pot doppio con scatto al centro e contatto non esiste a catalogo. Vale la colonna «Prima (solo pot)» della tabella sotto, con residuo garantito ≤ 20 Ω: banda chiusa a circa −54 dB. Il muto vero del canale è il fader (VCA, dec. 126).
+
 **Contatto di fondo corsa per banda.** Ogni pot ha un contatto che a
 fondo corsa chiude il cursore a massa (50 mΩ nel modello). Il residuo
 del pot non conta più:

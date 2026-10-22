@@ -14,7 +14,7 @@
 | Modulo | Comando | Qtà | Tipo elettrico | Note |
 |---|---|---|---|---|
 | **Canale CDJ** (×4) | GAIN | 1 | singolo 10k lin → CV | detent a 0 dB |
-| | EQ LOW / LOW-MID / MID-HIGH / HIGH | 4 | doppio 10k LINEARE + contatto di fondo corsa (chiude a massa) [REV 2026-10-13, dec. 105: isolator, prima taper custom] | detent al centro; tracking ≤ 0,25 dB; eq-isolator §5 e §8 |
+| | EQ LOW / LOW-MID / MID-HIGH / HIGH | 4 | doppio 10k LINEARE, residuo ≤ 20 Ω, SENZA contatto di fondo corsa (dec. 127) [REV 2026-10-13, dec. 105: isolator, prima taper custom] | detent al centro; tracking ≤ 0,25 dB; eq-isolator §5 e §8 |
 | | LINE / PHONO | 1 | levetta piccola 2 posizioni (dec. 123) | |
 | | Filtro HPF / OFF / LPF | 1 | levetta 3 posizioni fisse ON-OFF-ON, logica (dec. 122) | su HPF, centro OFF, giù LPF |
 | | CUE | 1 | bottone con luce a ritenuta, logico (dec. 123) | |
@@ -158,7 +158,7 @@ resistenza di legge non lo sposta se è simmetrica rispetto al centro.
 - Alternativa elettronica (comparatore sulla continua del cursore +
   interruttore analogico, 32 per i 4 canali): complicata, sporca il
   percorso con una continua da togliere. Scartata.
-- Proposta: **niente contatto**, pot con residuo garantito ≤ 20 Ω. Una
+- **Deciso: niente contatto** (dec. 127, 2026-10-22), pot con residuo garantito ≤ 20 Ω. Una
   banda chiusa a −54 dB sotto le altre tre è coperta; il muto vero del
   canale resta il fader. ⚠ Cambia una proprietà dell'isolator (dec. 105:
   «tutte a fondo corsa = canale muto»): da confermare da Filippo.

@@ -65,7 +65,7 @@ Il design teorico (carta + simulazione) è completo per tutti i moduli. Il proto
 
 | Modulo | Versione corrente | Documento | Simulazioni |
 |---|---|---|---|
-| Canale CDJ/line | v0.4; EQ = ISOLATOR a 4 bande v0.4-beta (dec. 105: bande in parallelo, contatto di fondo corsa per banda; incroci 150/500/2500 Hz di partenza, da sentire). Integrato nel canale: somma non invertente, polarità diritta (eq-isolator §9) | `docs/fase1/cdj-line-channel.md`, `eq-isolator-v0.4.md` | `sim/cdj/`, `sim/eq-iso/` |
+| Canale CDJ/line | v0.4; EQ = ISOLATOR a 4 bande v0.4-beta (dec. 105: bande in parallelo; niente contatto di fondo corsa, dec. 127; incroci 150/500/2500 Hz di partenza, da sentire). Integrato nel canale: somma non invertente, polarità diritta (eq-isolator §9) | `docs/fase1/cdj-line-channel.md`, `eq-isolator-v0.4.md` | `sim/cdj/`, `sim/eq-iso/` |
 | Phono MM | v0.1 + REV 2026-09-30 (RIAA passiva 42 dB, dec. 79) | `docs/fase1/phono-stage.md` | `sim/cdj/phono-*` |
 | FX + FX-SEND ×4 | v0.3-WIP (matrice 16× VCA con self-feedback, dec. 91) | `docs/fase1/fx-module.md`, `fx-send-module.md` | `sim/fx/` |
 | Master out | v0.3 DEFINITIVA (bootstrap rail OPA1612, dec. 83/86) | `docs/fase1/master-out.md` | `sim/master-out/compB-*` |
