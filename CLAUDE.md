@@ -48,7 +48,7 @@ Regole di simulazione (ognuna nasce da un errore già pagato; il contesto sta ne
 - Rumore: mai `.meas INTEG` su `.noise` (LTspice 26.0.2 restituisce en²·√Δf: totali ~21,5 dB ottimisti). Si misura la densità `V(onoise)` a 10-16 punti e si integra con `noise_total.py`. Metodo: five-way §8.9. I totali √INTEG nei documenti anteriori al 2026-09-30 sono invalidi; valgono quelli di `docs/06`.
 - Sorgenti di rumore e op-amp: solo sorgenti `E` lineari a 4 nodi. Una `E` comportamentale non propaga il rumore nel `.noise`.
 - Subckt del VCA insieme alla banca Sallen-Key: errore di parse («Instance already defined»). Mettere il VCA inline con nomi unici.
-- `SINE` vuole il valore di picco: 0 dBu = 1,095 Vp, non 0,775.
+- `SINE` vuole il valore di picco: 0 dBu = 1,095 Vp, non 0,775; +18 dBu = 8,70 Vp (6,16 V è l'efficace: come picco vale +15 dBu, errore trovato il 2026-10-22, todo 125).
 - THD: leggere sempre Partial E Total (`fourier_tab.py` li stampa entrambi). Total molto sopra Partial non è distorsione armonica: guardare la forma d'onda.
 - `.meas ac`: `FIND V(nodo)`, mai `FIND dB(V(nodo))`. Serve uno sweep (`.ac dec ...`), non `.ac list` con un punto solo.
 - `.tran` con anelli di retroazione: `.nodeset` obbligatorio. Macro op-amp in due varianti: specchio lineare per `.ac`/`.noise`, `abs` per `.tran`.
