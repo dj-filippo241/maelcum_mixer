@@ -88,6 +88,8 @@ cambia; ogni modulo MIC/MONO in meno toglie 7 pot singoli.
   posizioni fisse.
 - Bottoni di canale (dec. 123): CUE e assign FX con luce a ritenuta,
   LINE/PHONO a levetta piccola.
+- Cappucci (dec. 124, PROVVISORIO): gommati; probabile stampa 3D di
+  Filippo. Tutti i rotativi con albero 6 mm a D e poche altezze d'albero.
 - Da verificare: codici a magazzino della RK14K doppia 10k B con detent
   (alcune versioni hanno ordine minimo 1000 pezzi).
 

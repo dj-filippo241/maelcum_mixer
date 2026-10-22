@@ -249,3 +249,5 @@
 
 123. **[F — 2026-10-22, sessione manopole (voce 40, todo 12), blocco 5 — bottoni di canale]** **CUE e assign FX 1-4 = bottoni con luce, a ritenuta** (cinque stati da vedere insieme, anche al buio); **LINE/PHONO = levetta piccola** (si imposta una volta per serata, non si sposta per sbaglio). Proposta di Claude accettata; scartate le levette per CUE/assign e il bottone con luce per LINE/PHONO.
 
+124. **[F — 2026-10-22, sessione manopole (voce 40, todo 12), blocco 7 — cappucci] [PROVVISORIO]** **Cappucci gommati** (presa sicura con mani sudate o umide, all'aperto; indice stampato o in rilievo; si cambiano quando si consumano). Filippo: «presumibilmente li stamperò in 3D, ma per ora 1». Conseguenza di ingegneria: tutti i rotativi con lo stesso albero (6 mm a D, come RK14K e RK09L) e altezze d'albero in poche misure, così un solo disegno di cappuccio stampato si adatta a tutti; un materiale flessibile stampabile (classe TPU) dà la presa della gomma. Scartati alluminio pieno e plastica dura. Raccomandazione di Claude accettata.
+
