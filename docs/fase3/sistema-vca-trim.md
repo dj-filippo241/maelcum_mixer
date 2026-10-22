@@ -104,6 +104,8 @@ canale S) e MUTE del mic. Basta la simmetria.
 | Crossfader (modulo opzionale, dec. 111) | 8 | 4 | ≤ 0,5 dB [PROVVISORIO] |
 
 Totale: **62 chip** nel mixer base con un mic (più 8 col crossfader).
+**[REV 2026-10-22, dec. 126]** +16 VCA dei fader (4 canali + 4 ritorni,
+stereo): **~78 chip**, lotto ~95-105 pezzi (`sim/cdj/RISULTATI-fader-vca.md`).
 Ogni coppia ha **una CV sola** (dec. 91: «stereo linked»).
 
 **FINDING — conteggio dei VCA del modulo FX.** `fx-module.md` §7 conta

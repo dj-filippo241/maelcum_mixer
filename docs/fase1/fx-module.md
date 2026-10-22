@@ -171,7 +171,7 @@ Catena (SPEC §7): buffer hi-Z → GAIN VCA (THAT 2181, −∞..0..+20, CV dal
 pot con law dB lineare + shaper) → EQ2 (§6) → METER pickup (detector
 rapido + clip latch 300-500 ms — design condiviso col meter di canale,
 simulazione peak detector = CDJ §7 punto 3) → **nodo REROUTE (pre-fader)**
-→ FADER stereo linked (−∞..0, slider conduttivo-plastica come i canali,
+→ FADER stereo linked [REV 2026-10-22, dec. 126: fader mono da 100 mm → 2 VCA, come i canali; ritorno −94,1 dBu A-wtd, `sim/cdj/RISULTATI-fader-vca.md`] (−∞..0, slider conduttivo-plastica come i canali,
 voce 40) → buffer out ≤50 Ω → MASTER SUM (backplane).
 
 Regola K4 (sheet §2): livello_in × gain ≤ +23 dBu: con ritorno max +18 dBu

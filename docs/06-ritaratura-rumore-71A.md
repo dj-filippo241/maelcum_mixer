@@ -272,3 +272,13 @@ chiuso: (a′) −81,6 dBu A-wtd (fc 1 kHz), (c-B) −88,4 (fc 100 Hz).
 Sistema con 4 filtri in HPF: **(a′) −74,8 (FAIL 3,2)**, **(c-B) −79,6
 (PASS 1,6)**.
 
+## 13. Aggiornamento 2026-10-22 (dec. 126): fader a VCA
+
+Il fader di canali e ritorni comanda un VCA per lato: un VCA a 0 dB in
+più nel percorso a fader aperto. Canale −94,6 → **−92,9** dBu A-wtd
+(`sim/cdj/channel-noise-v04-fader.cir`), ritorno −96,6 → **−94,1**
+(`sim/fx/fx-return-noise-fader.cir`). Sistema a filtri OFF: **−81,9 dBu
+A-wtd, PASS 3,9 dB** sul −78 (era −82,9). Con 4 filtri e overdrive aperto
+circa −75,3 (condizione accettata, dec. 100). Dettagli:
+`sim/cdj/RISULTATI-fader-vca.md`.
+

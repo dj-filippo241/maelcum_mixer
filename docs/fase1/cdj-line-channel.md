@@ -205,6 +205,12 @@ Numero segmenti definitivo: al design del modulo metering.
 > (buffer ≥ 100 k, slot 7). Senza modulo lo chiude il ponticello JXF del
 > backplane (`sistema-backplane.md` REV dec. 111). CUE, send FX e filtro
 > restano pre-fader e non lo vedono.
+> **[REV 2026-10-22, dec. 126]** Il fader è un fader MONO da 100 mm che
+> comanda due VCA 2181 (uno per lato) con uno shaper a diodi: tracking dai
+> VCA trimmati, curva [PROVVISORIO] −12 dB a metà corsa, fader chiuso
+> ≥ 102 dB. Rumore del canale −92,9 dBu A-wtd (era −94,6). Dettagli:
+> `sim/cdj/RISULTATI-fader-vca.md`. Il testo sotto è SUPERATO.
+
 Slider doppio conduttivo-plastica (hardware: sessione dedicata, voce 40), −∞..0,
 tracking ≤0,5 dB con selezione/trim; buffer OPA1612 ≤50 Ω → DJ BUS (injection 10 kΩ
 [PROVVISORIO dai doc §24/35]). Fallback VCA come §3.2 se il tracking meccanico delude.

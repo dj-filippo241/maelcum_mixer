@@ -149,7 +149,7 @@ a +110 mA (5,5 mA/chip di questa tabella, I/V compreso). Ramo audio:
 **base ~1,45-1,5 A, con gli opzionali ~1,75-1,81 A**. Simulato
 (`sim/system/psu-w1-vca.cir`, bulk 15 mF, caso peggiore 1,81 A): W1 3,5 A
 al **98 %** a rete −10 % e al **100 %** a rete nominale (era 93 %); raw
-minimo 23,6 V (−0,2 V). Con W1 4,0 A: 88 %, raw minimo 23,9 V. Il calore
+minimo 23,6 V (−0,2 V). Con W1 4,0 A: 88 %, raw minimo 23,9 V. [REV 2026-10-22, dec. 126: +16 VCA dei fader, caso peggiore 1,91 A: 92 %, raw minimo 23,7 V, `sim/system/psu-w1-fader.cir`.] Il calore
 sale di ~4 W. **DECISO → dec. 115 (Filippo, 2026-10-21): W1 2×21 V
 4,0 A, trasformatore ~270 VA**, fusibile del W1 T5 A (corrente efficace
 3,51 A: con T4 A il fusibile lavorerebbe all'88 %). La valle del raw scende di 0,2 V: margine

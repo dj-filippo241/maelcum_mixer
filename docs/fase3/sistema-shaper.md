@@ -106,6 +106,11 @@ arrotonda lo spigolo: errore fino a −12 % a caldo, cioè 17,7 Hz al posto
 di 20 Hz. Tolleranza di progetto ±5-10 % (dec. 74): fuori solo in quel
 punto, a 50 °C, in zona infrasonica. Accettato come partenza.
 
+**Fader** (`shaper-fader.cir`, 3 rami, fader rovescio; dec. 126,
+2026-10-22): curva [PROVVISORIO] −12 dB a metà corsa; dal 45 % in su
+errore entro ±0,35 dB a 20-50 °C, fino al 20 % entro ±1 dB; fader chiuso
+≥ 102 dB. Tabella: `sim/cdj/RISULTATI-fader-vca.md`.
+
 ## 4. Cosa resta
 
 - Frequenza del filtro: manca la pre-distorsione dell'errore del
