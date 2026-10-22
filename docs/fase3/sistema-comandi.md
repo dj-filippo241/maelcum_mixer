@@ -67,7 +67,7 @@ mandata ai pedali, trimmer di taratura.
 | Barre LED | 9 da 10 + 2 da 20 (dec. 116: +3 ritorni FX) |
 | LED tricolore | 4 |
 
-Manopole in tutto: 110 (dec. 99: +1 sul 5-way). Con 4 moduli MIC/MONO al posto di 4 il conto non
+Manopole in tutto: 115 (dec. 99: +1 sul 5-way; dec. 117: +5 WIDTH continui). Con 4 moduli MIC/MONO al posto di 4 il conto non
 cambia; ogni modulo MIC/MONO in meno toglie 7 pot singoli.
 
 ## Scelte hardware (sessione del 2026-10-21, dec. 118)
@@ -92,6 +92,34 @@ cambia; ogni modulo MIC/MONO in meno toglie 7 pot singoli.
   Filippo. Tutti i rotativi con albero 6 mm a D e poche altezze d'albero.
 - Da verificare: codici a magazzino della RK14K doppia 10k B con detent
   (alcune versioni hanno ordine minimo 1000 pezzi).
+
+## Taglia e scatto per comando (dec. 125, 2026-10-22)
+
+Grande = pot 14 mm · media = pot 14 mm con cappuccio ~12 mm · piccola = pot 9 mm.
+
+| Comando | Qtà | Taglia | Scatto |
+|---|---|---|---|
+| GAIN canale CDJ | 4 | grande | 0 dB |
+| EQ canale CDJ | 16 | grande | centro |
+| EQ di FX-SEND | 8 | piccola | no |
+| LEVEL di FX-SEND | 4 | grande | no |
+| GAIN dei ritorni FX | 4 | grande | no |
+| EQ dei ritorni FX | 8 | piccola | no |
+| Reroute e SELF | 16 | piccola | centro (pezzo da verificare) |
+| Filtro FREQ, RES, DRIVE | 6 | grande | no |
+| GAIN delle 5 vie | 5 | grande | centro |
+| POSITION | 5 | media | no |
+| WIDTH | 5 | media | no |
+| GROWL e NASTRO | 2 | grande | no |
+| MASTER | 1 | grande | 0 dB |
+| BOOTH | 1 | grande | no |
+| BLEND del CUE | 1 | grande | centro |
+| LEVEL cuffie | 1 | piccola | no |
+| GAIN di MIC e MONO | 4 | grande | no |
+| SEND 1-4 di MIC e MONO | 16 | grande | no |
+| EQ di MIC e MONO | 8 | piccola | no |
+
+Totale 115 manopole: 64 grandi, 10 medie, 41 piccole.
 
 ## Aperto per la sessione hardware
 

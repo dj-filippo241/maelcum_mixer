@@ -78,6 +78,7 @@ FONT = "font-family='Helvetica Neue, Helvetica, Arial, sans-serif'"
 # cappuccio disegnato
 R14 = 7.5
 R9 = 5.5
+R12 = 6.0                 # media: pot 14 mm con cappuccio ~12 mm (dec. 125)
 # disassato come sul Xone:DB4 (dec. 118): colonne a zig-zag
 DX = 5.5                  # spostamento laterale dal centro della colonna
 PASSO = 17.0              # passo verticale fra due manopole disassate
@@ -119,12 +120,14 @@ class Pannello:
         """Manopole disassate a zig-zag (dec. 118, come il Xone:DB4): la
         prima a sinistra, la seconda a destra, ... Etichetta sul lato
         libero. voci = (nome, tipo, detent)."""
-        for i, (nome, tipo, det) in enumerate(voci):
+        for i, voce in enumerate(voci):
+            nome, tipo, det = voce[:3]
+            rr = voce[3] if len(voce) > 3 else r   # taglia propria della voce
             sx = i % 2 == 0
             x = c - DX if sx else c + DX
-            self.manopola(x, self.y + r + 3, nome, tipo, r, det, "dx" if sx else "sx")
-            self.y += passo if r == R14 else passo - 3
-        self.y += r + 4
+            self.manopola(x, self.y + rr + 3, nome, tipo, rr, det, "dx" if sx else "sx")
+            self.y += passo if rr == R14 else passo - (3 if rr == R9 else 1.5)
+        self.y += rr + 4
 
     def levetta(self, x, y, tipo, su, giu, centro=None, nome=None, piccola=False):
         """Levetta vista dall'alto: ghiera e leva. su/giu/centro = etichette
@@ -264,9 +267,10 @@ def fx(w):
         x = col * r + col / 2
         p.y = y0
         p.testo(x, p.y + 2, f"RET {r + 1}", 2.6, "bold"); p.y += 5
-        p.colonna(x, [("GAIN", "k_gain", True)])
+        p.colonna(x, [("GAIN", "k_gain", False)])
         p.colonna(x, [("EQ HIGH", "k_eq_9mm", False), ("EQ LOW", "k_eq_9mm", False)], r=R9)
-        p.colonna(x, [("SELF" if b == r else f"> FX{b + 1}", "k_reroute", False) for b in range(4)])
+        p.colonna(x, [("SELF" if b == r else f"> FX{b + 1}", "k_reroute", True) for b in range(4)],
+                  r=R9)
         y = p.y
         p.meter(x - 13.5, y + 2, 10, passo=6.0, nome="METER")
         p.fader(x + 4, y + 2, 100.0)
@@ -298,10 +302,11 @@ def five(w):
         p.testo(x, p.y + 2, b, 2.7, "bold"); p.y += 9
         # kill a levetta ON-OFF-(ON) (dec. 121)
         p.levetta(x, p.y + 4, "l_kill", "FISSO", "MOLLA", nome="KILL"); p.y += 16
-        p.colonna(x, [("GAIN", "k_5w_gain", True), ("POSITION", "k_5w_pos", False),
-                      ("WIDTH", "k_5w_width", False)])  # dec. 117: WIDTH continuo Q3...Q0,3
-        # sotto la manopola WIDTH (terza della colonna: a sinistra)
-        p.testo(x - DX, p.y - PASSO + R14 + 3.5, "Q3 … Q.3", 2.0, colore=SOFT)
+        # POSITION e WIDTH medie (dec. 125); WIDTH continuo Q3...Q0,3 (dec. 117)
+        p.colonna(x, [("GAIN", "k_5w_gain", True), ("POSITION", "k_5w_pos", False, R12),
+                      ("WIDTH", "k_5w_width", False, R12)])
+        # sotto la WIDTH (terza della colonna: a sinistra)
+        p.testo(x - DX, p.y - PASSO + R12 + 4.5, "Q3 … Q.3", 2.0, colore=SOFT)
     y = p.y
     x = w - 26
     p.manopola(x, y0 + 14, "GROWL", "k_sat")
@@ -327,7 +332,7 @@ def cue(w):
     p = Pannello("CUE", "cue", w)
     x = w / 2
     p.manopola(x, p.y + 10, "BLEND", "k_cue", detent=True)
-    p.manopola(x, p.y + 34, "LEVEL", "k_cue")
+    p.manopola(x, p.y + 34, "LEVEL", "k_cue", r=R9)
     p.jack(x - 9, p.y + 56, "PHONES 1")
     p.jack(x + 9, p.y + 56, "PHONES 2")
     p.y += 70
@@ -405,7 +410,7 @@ def moduli_singoli():
     corpo.append(chiave)
     alt += h_chiave + 12
     return foglio("Moduli singoli", "Ogni modulo con i comandi dell'inventario (sistema-comandi.md, dec. 108, 111 e 116). "
-                  "Strisce da 36 mm. Manopole 14 mm, EQ secondari 9 mm, disassate (dec. 118); fader 100 mm (dec. 120).", larg, alt, "\n".join(corpo))
+                  "Strisce da 36 mm. Manopole grandi 14 mm, medie (cappuccio 12 mm), piccole 9 mm, disassate (dec. 118, 125); fader 100 mm (dec. 120).", larg, alt, "\n".join(corpo))
 
 
 def legenda(x, y):
