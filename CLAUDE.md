@@ -53,6 +53,7 @@ Regole di simulazione (ognuna nasce da un errore già pagato; il contesto sta ne
 - `.meas ac`: `FIND V(nodo)`, mai `FIND dB(V(nodo))`. Serve uno sweep (`.ac dec ...`), non `.ac list` con un punto solo.
 - `.tran` con anelli di retroazione: `.nodeset` obbligatorio. Macro op-amp in due varianti: specchio lineare per `.ac`/`.noise`, `abs` per `.tran`.
 - Sallen-Key high-pass: R_fb = R_gnd/2 per Q 0,707.
+- La macro `OP1612` di `opamp-audio.inc` ha un polo solo: è sempre stabile. Per la stabilità (nodi a massa virtuale lunghi, carichi capacitivi) serve un secondo polo inline (`sim/fx/fx-ret-bus-ac-130.cir`). Corrente dell'OPA1612: 3,6 mA per canale, non 2.
 - Alimentatori: simulare il trasformatore con EMF a vuoto e resistenza d'avvolgimento, mai ideale (corrente efficace d'avvolgimento ~1,9× la DC).
 - SVF con OTA della RES a Iabc quasi zero: il `.op` non converge (9 minuti a vuoto). Usare `.tran ... uic` e misurare il segnale con `PP`, non `RMS`: col partitore l'offset dell'OTA sale di 1/k.
 - Regolatori in anello (LDO del box, `sim/system/psu-box-*`): mai `uic`; accensione da zero, così il `.op` è banale. Con `uic`, con `limit()` brusco o con diodi a N 0,05, LTspice non termina.
