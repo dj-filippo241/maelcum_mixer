@@ -181,3 +181,78 @@ Cosa vuol dire:
 canale; il datasheet TI dice 3,6 mA tipici (4,5 max). Il bilancio del
 ramo audio è quindi ottimista dove ci sono molti OPA1612 (master, 5-way,
 meter). Da ricontare modulo per modulo (todo aperto il 2026-10-26).
+
+## 7. REV 2026-10-26 — todo 142/143: riconta dal basso e trasformatore con riserva (dec. 131)
+
+**Riconta.** Il ramo audio ±18 V era stimato dall'alto (1,4 A base nel
+2026-10-13, poi aggiunte). Contato chip per chip dalle quantità del budget
+(`docs/fase3/riconta_w1.py`), con le correnti a riposo dei datasheet:
+
+| Chip | Vecchia tabella | Datasheet tipico | Datasheet massimo |
+|---|---|---|---|
+| OPA1612 dual | 4,0 mA | **7,2 mA** (3,6 per canale) | 9,0 mA |
+| OPA1654 quad | 7,2 mA | 8,0 mA (2,0 per canale) | 10,0 mA |
+| VCA 2181 + I/V | 5,5 mA | 5,5 mA | 7,0 mA |
+
+| Modulo (copie) | Corrente per ramo, datasheet tipico |
+|---|---|
+| Canale CDJ (4) | 668 mA |
+| FX-SEND (4) | 145 mA |
+| FX-RET (4) | 481 mA |
+| Filtro (tutti gli op-amp sui ±18, prudente) | 209 mA |
+| 5-way | 398 mA |
+| CUE, stadio cuffie | 66 mA |
+| MIC (1) + MONO (3) | 151 mA |
+| **Base** | **2,12 A** |
+| Opzionali (crossfader, 2 EQ grafici, uscite per via, anello) | +0,32 A |
+| **Con tutti gli opzionali** | **2,44 A** |
+| Carico di progetto (+10 % di dispersione) | **2,70 A** |
+
+Con le correnti della vecchia tabella la riconta dà già 1,86 A di base:
+la stima dall'alto (1,45-1,5 A) era bassa anche senza l'errore
+dell'OPA1612. Con tutti i chip al massimo del datasheet si arriva a 3,2
+A: è un tetto teorico (non succede che tutti i chip stiano al massimo).
+
+Ramo LN ±15 (W2): con l'OPA1612 vero salgono meter, phono, INA del mic e
+CUE: **+~70 mA**, picco 0,55 A, progetto 0,60 A (era 0,48).
+
+**Trasformatore con riserva** (Filippo, 2026-10-26: «voglio riserva
+sull'alimentazione»). Criterio: avvolgimento ≤ 80 % al carico di progetto,
+anche a rete +10 %.
+
+W1 2×21 V, carico 2,70 A per ramo (`psu-box-w1-142.cir`, `psu-box-w1-142-7a.cir`;
+Rsense 0,15 Ω, vedi sotto):
+
+| W1 | Rete | Raw min | V_DS min | Ripple | P MOSFET | Avvolgimento |
+|---|---|---|---|---|---|---|
+| 5,0 A | −10 % | 23,16 V | 0,87 V | 16 mV | 4,0 W | 5,08 A (102 %) |
+| 5,0 A | +10 % | 29,22 V | 6,86 V | 1,1 mV | 20,2 W | 5,26 A (105 %) |
+| 5,5 A | −10 % / +10 % | 23,37 / 29,45 V | 1,07 V | 3,3 mV | 20,8 W | 94-97 % |
+| 6,0 A | −10 % / +10 % | 23,54 / 29,64 V | 1,24 V | 3,5 mV | 21,4 W | 87-90 % |
+| **7,0 A** | −10 % | 23,83 V | **1,52 V** | 3,7 mV | 5,8 W | 5,33 A (**76 %**) |
+| **7,0 A** | +10 % | 29,94 V | 7,57 V | 1,2 mV | **22,2 W** | 5,52 A (**79 %**) |
+| 7,0 A, carico 2,44 A | −10 % / +10 % | 24,10 / 30,23 V | 1,83 V | 3,5 mV | 20,7 W | 70-72 % |
+
+W2 2×18 V 1,5 A, carico 0,60 A (`psu-box-w2-142.cir`): raw min 20,8 V,
+V_DS min 1,60 V, al mixer 18,84-18,92 V, MOSFET 4,3 W, avvolgimento
+**77-80 %** (con 1,0 A sarebbe ~118 %).
+
+**Scelta: W1 2×21 V 7,0 A, W2 2×18 V 1,5 A** (dec. 131). Conseguenze:
+
+- **Toroidale ~420 VA** (W1 294 + W2 54 + W3 16 + W4 ~50 VA), su misura o
+  taglia di catalogo 500 VA. Era ~270 VA.
+- **Rsense del W1 da 0,22 a 0,15 Ω** (2 W): il limite di corrente dell'LDO
+  sale da ~2,7 A a ~4 A a freddo (~3,3 A a caldo). Con 0,22 Ω il limite
+  sarebbe caduto proprio sul carico di progetto. W2: 0,56 Ω (~1,1 A) va bene.
+- **Fusibili**: primario T3,15 A (era T2 A); W1 T8 A (corrente efficace
+  5,5 A); W2 T2 A; ponte del W1 da 25 A.
+- **Aletta del box**: MOSFET W1 2 × 22,2 W, W2 2 × 4,3 W, +5 V 7,7 W, ponti
+  ~9 W, Rsense 2 W: ~70 W nel caso peggiore → **Rθ ≤ 0,43 K/W** (era 0,57).
+  Giunzione ~70 + 22,2 × 1,3 ≈ 99 °C (limite 150).
+- **Spegnimento** (`psu-box-off-142.cir`, W1 7,0 A, 2,70 A): con 15 mF i
+  locali escono a 17,9 ms a rete −10 %, mute a ≤ 12,7 ms: margine 5,2 ms,
+  stretto. **Bulk del W1 da 15 a 22 mF per ramo**: locali fuori a
+  **25,1 ms** (−10 %), 50,0 ms (nominale), 75,0 ms (+10 %); margine
+  ≥ 12,4 ms, come prima della riconta. L'avvolgimento non cambia (5,34 A).
+- **Calore nel mixer**: ~118 W base, ~132 W con gli opzionali (era 83/97).
+  Con le ventole (dec. 112) l'aria interna sale di ~4 K invece di ~3 K.

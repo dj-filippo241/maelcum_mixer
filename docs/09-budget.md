@@ -29,14 +29,14 @@ fonte è S il prezzo è una stima, senza preventivo.
 | MONO | 38 € – 70 € | 3 | 115 € – 211 € | 1 | 38 € – 70 € |
 | Backplane | 20 € – 42 € | 1 | 20 € – 42 € | 1 | 20 € – 42 € |
 | PSU-IN e ventole (nel mixer) | 56 € – 108 € | 1 | 56 € – 108 € | 1 | 56 € – 108 € |
-| Alimentatore esterno (box) | 415 € – 814 € | 1 | 415 € – 814 € | 1 | 415 € – 814 € |
-| **Elettronica dei moduli** | | | **2.917 € – 5.576 €** | | **2.374 € – 4.582 €** |
+| Alimentatore esterno (box) | 480 € – 914 € | 1 | 480 € – 914 € | 1 | 480 € – 914 € |
+| **Elettronica dei moduli** | | | **2.982 € – 5.676 €** | | **2.439 € – 4.682 €** |
 | Circuiti stampati, un giro (§4) | | | 485 € – 1.065 € | | 485 € – 1.065 € |
 | Cablaggio, minuteria, cappucci, scorte (§5) | | | 300 € – 590 € | | 300 € – 590 € |
 | Telaio, pannelli, flight case (§6) | | | 1.250 € – 2.550 € | | 1.250 € – 2.550 € |
 | Prototipo: millefori e secondo giro di PCB (§7) | | | 411 € – 889 € | | 411 € – 889 € |
-| **Totale IVA esclusa** | | | **5.363 € – 10.670 €** | | **4.820 € – 9.676 €** |
-| **Totale IVA inclusa (22 %)** | | | **6.543 € – 13.017 €** | | **5.880 € – 11.805 €** |
+| **Totale IVA esclusa** | | | **5.428 € – 10.770 €** | | **4.885 € – 9.776 €** |
+| **Totale IVA inclusa (22 %)** | | | **6.623 € – 13.139 €** | | **5.960 € – 11.927 €** |
 
 Setup completo: 4 canali con 4 FX-SEND, 1 MIC, 3 MONO. Setup ridotto: 2
 canali con 2 FX-SEND, 1 MIC, 1 MONO (come i disegni in `docs/pannelli/`).
@@ -50,10 +50,10 @@ ordini (~15-30 € per ordine sotto la soglia di spedizione gratuita).
 
 - **Canale CDJ/line con phono**: ~1.104 € al centro della forchetta, 14 % del totale IVA esclusa.
 - **FX-RET (un bus, dec. 130)**: ~735 € al centro della forchetta, 9 % del totale IVA esclusa.
-- **Alimentatore esterno (box)**: ~614 € al centro della forchetta, 8 % del totale IVA esclusa.
+- **Alimentatore esterno (box)**: ~697 € al centro della forchetta, 9 % del totale IVA esclusa.
 - **5-way**: ~513 € al centro della forchetta, 6 % del totale IVA esclusa.
 - **Filtro, core OTA (a')**: ~308 € al centro della forchetta, 4 % del totale IVA esclusa.
-- **Telaio e pannelli**: ~1.900 €, 24 %. Sono la voce singola più grande:
+- **Telaio e pannelli**: ~1.900 €, 23 %. Sono la voce singola più grande:
   i pannelli incisi a misura costano più di tutto il silicio di un modulo.
 
 Tre fatti che pesano:
@@ -320,11 +320,11 @@ Fonte delle quantità: sistema-psu-esterno §2. Copie: 1 nel completo, 1 nel rid
 
 | Voce | Qtà | € al pezzo | Totale | Fonte | Note |
 |---|---|---|---|---|---|
-| toroidale ~270 VA, 4 secondari, schermo, su misura | 1 | a corpo | 130 € – 220 € | R |  |
-| bulk: 2 x 15 mF, 3 x 10 mF, 2 x 4,7 mF, 35 V 105 C | 1 | a corpo | 60 € – 110 € | S |  |
+| toroidale ~420 VA, 4 secondari, schermo, su misura (dec. 131) | 1 | a corpo | 170 € – 280 € | S |  |
+| bulk: 2 x 22 mF, 3 x 10 mF, 2 x 4,7 mF, 35 V 105 C | 1 | a corpo | 75 € – 135 € | S |  |
 | ponte raddrizzatore | 4 | 2,00 – 5,00 | 8 € – 20 € | S |  |
 | LDO discreti: MOSFET, riferimenti, op-amp | 1 | a corpo | 25 € – 45 € | S |  |
-| aletta | 1 | a corpo | 20 € – 45 € | S |  |
+| aletta, Rth <= 0,43 K/W | 1 | a corpo | 30 € – 60 € | S |  |
 | contenitore metallico | 1 | a corpo | 60 € – 130 € | S |  |
 | presa IEC con filtro, interruttore, fusibile | 1 | a corpo | 15 € – 30 € | S |  |
 | soft-start NTC e rele' | 1 | a corpo | 8 € – 15 € | S |  |
@@ -332,7 +332,7 @@ Fonte delle quantità: sistema-psu-esterno §2. Copie: 1 nel completo, 1 nel rid
 | connettore circolare IP65 >= 20 poli + PE, coppia | 1 | a corpo | 60 € – 130 € | S |  |
 | cavo schermato multipolare 2 m | 1 | a corpo | 20 € – 45 € | S |  |
 | rivelatore AC_OK | 1 | a corpo | 3 € – 6 € | S |  |
-| **Totale** | | | **415 € – 814 €** | | |
+| **Totale** | | | **480 € – 914 €** | | |
 
 ## 4. Circuiti stampati
 

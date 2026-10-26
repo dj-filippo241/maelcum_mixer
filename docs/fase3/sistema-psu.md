@@ -15,6 +15,17 @@ l'uscita max); +5 V **regolato nella PSU** (il «+10 raw sul backplane»
 della v0.1 §8 era un errore); correnti +5 riconciliate (worst 1,0 A,
 dimensionamento 1,25 A); supervisor a **finestre per avvolgimento**.
 
+**REV 2026-10-26 — dec. 131 (todo 142/143): riconta dal basso e trasformatore con riserva.**
+Contato chip per chip con le correnti dei datasheet (OPA1612 3,6 mA per
+canale, non 2), il ramo audio ±18 V chiede **2,12 A base, 2,44 A con
+tutti gli opzionali, 2,70 A di progetto** per ramo; il ramo LN 0,60 A di
+progetto. Scelta: **W1 2×21 V 7,0 A, W2 2×18 V 1,5 A, toroidale ~420 VA**
+(avvolgimenti ≤ 80 % al carico di progetto anche a rete +10 %), Rsense
+del W1 0,15 Ω, bulk del W1 22 mF per ramo, fusibili primario T3,15 A /
+W1 T8 A / W2 T2 A, aletta Rθ ≤ 0,43 K/W, calore nel mixer ~118/132 W.
+Dati: `sim/system/RISULTATI-psu-box.md` §7. I numeri di W1, W2, bulk,
+fusibili e calore più sotto sono superati dove diversi.
+
 ## REV 2026-10-13 — trasformatore RIDIMENSIONATO (decisione 98) [sostituisce i numeri di §1 ramo audio e la tabella §2]
 
 Due errori della v0.2, trovati riverificando il budget con i moduli MIC/MONO:

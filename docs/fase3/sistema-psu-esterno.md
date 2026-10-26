@@ -27,6 +27,17 @@ sul palco) restano alla sessione hardware (voce 40).
 7. **Calore nel box rifatto**: ~48 W nominali, ~63 W a rete +10 % (erano
    stimati ~30 / ~45). Nel mixer: ~83 W base, ~97 W coi moduli opzionali.
 
+**REV 2026-10-26 — dec. 131 (todo 142/143): riconta dal basso e trasformatore con riserva.**
+Contato chip per chip con le correnti dei datasheet (OPA1612 3,6 mA per
+canale, non 2), il ramo audio ±18 V chiede **2,12 A base, 2,44 A con
+tutti gli opzionali, 2,70 A di progetto** per ramo; il ramo LN 0,60 A di
+progetto. Scelta: **W1 2×21 V 7,0 A, W2 2×18 V 1,5 A, toroidale ~420 VA**
+(avvolgimenti ≤ 80 % al carico di progetto anche a rete +10 %), Rsense
+del W1 0,15 Ω, bulk del W1 22 mF per ramo, fusibili primario T3,15 A /
+W1 T8 A / W2 T2 A, aletta Rθ ≤ 0,43 K/W, calore nel mixer ~118/132 W.
+Dati: `sim/system/RISULTATI-psu-box.md` §7. I numeri di W1, W2, bulk,
+fusibili e calore più sotto sono superati dove diversi.
+
 ## 1. Schema a blocchi
 
 ```
