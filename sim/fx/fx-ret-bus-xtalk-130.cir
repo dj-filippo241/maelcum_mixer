@@ -1,0 +1,53 @@
+* ============================================================
+* FX-RET (dec. 130, todo 133) — CROSSTALK sul net Sn da una pista vicina (variante di fx-ret-bus-ac-130.cir), cn 50 pF
+* Il net Sn e il nodo a massa virtuale del summing del FX-RET n, lungo ~70 cm.
+* Op-amp: OPA1612 a DUE poli (GBW 80 MHz come opamp-audio.inc + secondo polo 115 MHz,
+* margine ~55 gradi a guadagno 1) [ASSUNZIONE: la macro condivisa ha un polo solo
+* ed e sempre stabile, qui non basta].
+* Uscita: vbus. Ingresso di misura: Vt (una sorgente di bus, 10k) oppure Vagg (pista vicina).
+* .step: cn = capacita del net verso massa (0 / 50 / 100 pF), cf = condensatore su Rf.
+* Crosstalk: una pista vicina con segnale a bassa impedenza accoppiata al net con cc.
+* ============================================================
+.param cn=50p cf=10p cc=2p
+.subckt OPP inp inn out
+E1 xx 0 inp inn 3.16e6
+R1 xx p1 3955
+C1 p1 0 1.59u
+E2 p2 0 p1 0 1
+R2 p2 p3 1k
+C2 p3 0 1.384p
+E3 out 0 p3 0 1
+.ends
+* sorgente di prova (un FX-SEND) e 11 altre sorgenti a 0 V
+Vt vt 0 AC 0
+Rt vt ns 10k
+Ro1 0 ns {10k/11}
+* pista aggressore (driver a bassa impedenza) accoppiata al net
+Vagg vagg 0 AC 1
+Cc vagg ns {cc}
+Cnet ns 0 {cn}
+Rf ns vbus 10k
+Cfb ns vbus {cf}
+Xs 0 ns vbus OPP
+* catena del SELF: corrente del VCA -> I/V 20k -> driver -> 10k sul net (misura separata)
+Iv 0 ivn AC 50u
+Xiv 0 ivn ivo OPP
+Riv ivo ivn 20k
+Civ ivo ivn 33p
+Xdr ivo dro dro OPP
+Rsd dro nself 10k
+Cself nself 0 {cn}
+Rfs nself vself 10k
+Cfs nself vself {cf}
+Xss 0 nself vself OPP
+.step param cc list 1p 2p 10p
+.ac dec 50 10 100Meg
+.meas ac x1k FIND V(vbus) AT 1k
+.meas ac x10k FIND V(vbus) AT 10k
+.meas ac x20k FIND V(vbus) AT 20k
+
+
+
+
+
+.end

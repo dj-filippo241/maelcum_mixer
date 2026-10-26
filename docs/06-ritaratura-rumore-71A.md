@@ -130,7 +130,7 @@ A. Lo script riproduce i numeri ufficiali vecchi entro 0,05 dB.
 | EQ β3 sola (unweighted) | −89,2 | −88,9 | +0,31 | — | — |
 | 5-way v031, θ0 | −83,9 | **−83,2** | +0,73 | ≤ −80 | PASS 3,2 dB (era 3,9) |
 | 5-way v031, θ50 | −79,4 | −78,2 | +1,20 | — | dato |
-| Bus FX send | −100,8 | −100,7 | +0,09 | ≤ −88 | PASS 12,7 dB |
+| Bus FX send | −100,8 | −100,7 | +0,09 | ≤ −88 | PASS 12,7 dB [REV 2026-10-26, dec. 130: con le 4 iniezioni dei reroute a peso 1, da −101,3 a **−91,5** (VCA al floor sempre): PASS 3,5 dB; fuori dal numero di sistema, `sim/fx/RISULTATI-fx-ret-bus-130.md`] |
 | Ritorno FX (uno) | −96,4 | −96,3 | +0,13 | — | 4 ritorni = −90,3 |
 | Send chain a canali vivi | −98,5 | −98,1 | +0,43 | — | dec. 95 invariata |
 | Summer DJ bus | −107,5 | −107,3 | +0,16 | — | trascurabile |

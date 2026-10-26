@@ -110,13 +110,19 @@ REV dec. 130.
    backplane).
 3. **Contributori per bus.** Restano 12 (4 FX-SEND, fino a 4 MIC/MONO,
    4 reroute): caso di §3 invariato.
-4. **Rumore del bus** [STIMA, da simulare]: 4 buffer d'iniezione in più
-   per net, sempre collegati, ~−116 dBu ciascuno → ~−110 dBu per bus,
-   contro −100,8 misurato (§8, docs/06): circa +0,5 dB. Target −88.
+4. **Rumore del bus** [SIMULATO 2026-10-26, todo 133,
+   `sim/fx/RISULTATI-fx-ret-bus-130.md`]: col reroute a peso 1 sul bus,
+   da **−101,3** (VCA chiusi muti) a **−91,5 dBu A-wtd** (4 VCA al floor
+   −98 dBV sempre, convenzione 71A). Target −88: PASS 3,5 dB nel caso
+   peggiore. La vecchia stima (+0,5 dB) contava solo i buffer. Numero
+   vero a banco. Cf 10 pF su Rf obbligatorio (net lungo: senza, +3…+5,6
+   dB di picco HF); net S1-S4 in stripline con guardia, ≤ 0,2 pF verso
+   linee pilotate (crosstalk: con 1 pF −58 dB a 20 kHz).
 5. **Fase 1** (SPECIFICA §fasi: «1 bus completo»): è un FX-RET intero.
    Il secondo bus della fase 1b è un secondo modulo uguale.
-6. **Restano da fare**: simulazione di un bus con le 4 iniezioni dei
-   reroute (rumore, crosstalk, loop SELF attraverso il backplane);
+6. ~~Restano da fare: simulazione di un bus con le 4 iniezioni dei
+   reroute (rumore, crosstalk, loop SELF attraverso il backplane)~~ FATTO
+   2026-10-26 (punto 4; SELF: −0,03 dB e −5,5° a 20 kHz, anello invariato);
    corrente sul W1: fatta (todo 128, +64 mA, `RISULTATI-psu-box.md` §6).
 
 ## 3. Summing bus — dimensionamento e verifica

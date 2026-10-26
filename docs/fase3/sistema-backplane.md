@@ -161,6 +161,12 @@ Struttura: **10 slot stereo** (L, R, AGND) = 30 posizioni + 2 spare
 (b31-b32; sul MASTER = VIE_TAP L/R, dec. 111). L'AGND ogni 3 pin isola gli slot adiacenti (capacità pin-pin
 ~0,5-1 pF: crosstalk stimato < −100 dB a 20 kHz su impedenze 10k —
 coerente col misurato DJ bus −98 dB @1 kHz / −72 @20 kHz, `sim/cdj/`).
+**[REV 2026-10-26, todo 133]** La stima < −100 dB vale fra nodi ad alta
+impedenza. Verso un net a massa virtuale (S1-S4, DJ bus) la corrente
+accoppiata entra in Rf: 1 pF da una linea pilotata vale −58 dB a 20 kHz
+(`sim/fx/RISULTATI-fx-ret-bus-130.md` §3). Vincolo PCB: net a massa virtuale
+in stripline con guardia, ≤ 0,2 pF verso ogni linea pilotata, nessun
+parallelo lungo; Cf 10 pF sul summing di ogni ricevitore.
 
 Semantica degli slot PER CLASSE (slot 1 = b1-b3, slot 2 = b4-b6, …):
 

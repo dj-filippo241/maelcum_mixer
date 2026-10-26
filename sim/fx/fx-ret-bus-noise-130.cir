@@ -1,0 +1,70 @@
+* ============================================================
+* FX-RET (dec. 130, todo 133) — RUMORE DI UN BUS CON LE 4 INIEZIONI DEI REROUTE
+* Come fx-bus-noise-71A.cir, con la topologia di fx-module §2bis:
+* - net Sn multidrop sul backplane, 12 contributori da 10k (4 FX-SEND, 4 MIC/MONO,
+*   4 reroute = 3 cross + SELF), summing virtual-earth Rf 10k nello slot 1 del FX-RET n;
+* - ogni reroute: uscita VCA (corrente) -> I/V OPA1612 20k (come datasheet) ->
+*   driver OPA1612 -> 10k lato sorgente sul net. Peso del reroute sul bus = 1
+*   (a pot tutto aperto il reroute arriva al bus come ogni altra sorgente).
+*   La rev. 71A usava peso 1/3 (Rout 20k + 10k): interfaccia allora non definita.
+* - 8 contributori non-reroute terminati a GND sui loro 10k (convenzione sheet §3).
+* - capacita del net verso massa 50 pF (70 cm su piano di massa) [ASSUNZIONE].
+* Casi (.step vca): 1 = VCA al floor datasheet -98 dBV SEMPRE (89 nV/rtHz all'uscita
+*   dell'I/V, convenzione 71A, conservativo) | 0 = core dei VCA muto (reroute chiusi):
+*   restano I/V (20k + OPA1612) e driver. Il vero sta in mezzo.
+* METODO §8.9 five-way: densita a 10 punti + noise_total.py, mai .meas INTEG.
+* ============================================================
+.include ../lib/opamp-audio.inc
+.param vca=1
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 vin1 0 DC 0 AC 1
+* --- 8 contributori non-reroute terminati ---
+Rc1 vin1 ns 10k
+Rc2 0 ns 10k
+Rc3 0 ns 10k
+Rc4 0 ns 10k
+Rc5 0 ns 10k
+Rc6 0 ns 10k
+Rc7 0 ns 10k
+Rc8 0 ns 10k
+* --- 4 iniezioni dei reroute ---
+* I/V: VCA come sorgente di corrente (alta impedenza) -> OPA1612 invertente, Rf 20k
+* rumore del core VCA: Rvn 476k -> 89 nV/rtHz, sommato dopo l'I/V con E lineare a 4 nodi
+.subckt INJ net vcc vee
+Xiv 0 ivn ivo vcc vee OP1612
+Riv ivo ivn 20k
+Civ ivo ivn 33p
+Rvn vn 0 476k
+Ev ivx ivo vn 0 {vca}
+Xdr ivx dro dro vcc vee OP1612
+Rs dro net 10k
+.ends
+X1 ns vcc vee INJ
+X2 ns vcc vee INJ
+X3 ns vcc vee INJ
+X4 ns vcc vee INJ
+Cnet ns 0 50p
+* --- summing (slot 1 del FX-RET n) ---
+Rf ns vbus 10k
+Cf ns vbus 10p
+Xsum 0 ns vbus vcc vee OP1612
+* --- pad driver + driver pedale, R 47 + 100, carico 10k (come 71A) ---
+Xpd vbus pd_o pd_o vcc vee OP1612
+Xdrv pd_o drv_o drv_o vcc vee OP1612
+Rser drv_o prot 47
+Rprot prot jack 100
+Rload jack 0 10k
+.step param vca list 1 0
+.noise V(jack) V1 dec 200 20 20k
+.meas noise nd20 FIND V(onoise) AT 20
+.meas noise nd50 FIND V(onoise) AT 50
+.meas noise nd100 FIND V(onoise) AT 100
+.meas noise nd200 FIND V(onoise) AT 200
+.meas noise nd500 FIND V(onoise) AT 500
+.meas noise nd1k FIND V(onoise) AT 1k
+.meas noise nd2k FIND V(onoise) AT 2k
+.meas noise nd5k FIND V(onoise) AT 5k
+.meas noise nd10k FIND V(onoise) AT 10k
+.meas noise nd20k FIND V(onoise) AT 20k
+.end
