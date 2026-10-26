@@ -124,3 +124,60 @@ Spegnimento (rete staccata sul picco, 15 mF, 1,81 A):
 
 Il mute arriva sempre prima che i regolatori locali escano di regolazione.
 
+
+## 6. REV 2026-10-26 — todo 128 e 130: carico 2,03 A per ramo
+
+Il ramo audio nel caso peggiore (tutti i moduli opzionali) sale da 1,81 a
+**2,03 A per ramo**:
+
+| Voce | Corrente per ramo | Fonte |
+|---|---|---|
+| Base dec. 115 (40 VCA del modulo FX, opzionali) | 1,81 A | §5 |
+| 16 VCA dei fader + 8 shaper (dec. 126) | +0,10 A | `psu-w1-fader.cir` |
+| WIDTH continuo del 5-way: +10 OPA1612 dual, −2,5 OPA1654 quad (dec. 117) | +0,055 A | 20 × 3,6 mA − 10 × 1,8 mA |
+| Iniezioni dei reroute: 4 FX-RET × 16 mA (dec. 130) | +0,064 A | fx-module §2bis |
+| **Totale** | **2,03 A** | |
+
+Per il WIDTH vale la corrente da datasheet dell'OPA1612 (3,6 mA per
+canale), non i ~2 mA della tabella di `sistema-psu.md` §1: vedi la nota
+in fondo.
+
+Netlist: `psu-box-w1-128.cir` e `psu-box-off-128.cir` (come le -115, carico
+2,03 A).
+
+| Caso | Rete | Carico | Raw min | V_DS min | Al mixer | Ripple | P MOSFET | I avv. eff. |
+|---|---|---|---|---|---|---|---|---|
+| 1 | −10 % | 2,03 A | 23,54 V | 1,19 V | 21,82 V | 2,5 mV | 3,4 W | 3,87 A (97 %) |
+| 2 | nom. | 2,03 A | 26,57 V | 4,19 V | 21,86 V | 1,7 mV | 9,5 W | 3,94 A (99 %) |
+| 3 | +10 % | 1,0 A | 31,36 V | 9,16 V | 21,94 V | 0,6 mV | 9,4 W | 2,22 A |
+| 4 | +10 % | 2,03 A | 29,62 V | 7,21 V | 21,89 V | 0,9 mV | **15,6 W** | **4,01 A (100 %)** |
+
+Spegnimento (rete staccata sul picco, 15 mF, 2,03 A; AC_OK invariato):
+
+| Rete | LDO del box sotto 21,5 V | Locali fuori | Allarme AC_OK + relè | Margine |
+|---|---|---|---|---|
+| −10 % | 14,6 ms | **20,1 ms** | ≤ 12,7 ms | ≥ 7,4 ms |
+| nom. | 37,2 ms | 42,6 ms | ≤ 17,3 ms | ≥ 25 ms |
+| +10 % | 59,7 ms | 65,1 ms | ≤ 21,4 ms | ≥ 43 ms |
+
+Cosa vuol dire:
+
+- **L'LDO regola ancora.** Margine minimo del MOSFET 1,19 V (era 1,56);
+  la caduta minima a 2,03 A è ~0,6 V (Rsense + Rds). Al mixer 21,82-21,94 V.
+- **Il calore sale poco.** MOSFET W1 2 × 15,6 W = 31,2 W nel caso
+  peggiore (era 29,1): sull'aletta ~52 W, serve **Rθ ≤ 0,57 K/W** (era
+  0,58). Giunzione ~70 + 15,6 × 1,3 ≈ 90 °C (limite 150).
+- **Il mute arriva ancora prima.** Il margine a rete −10 % scende da
+  12,6 a 7,4 ms: positivo, ma metà di prima.
+- **Il W1 4,0 A è al limite.** Con tutti i moduli opzionali e rete +10 %
+  l'avvolgimento lavora al 100 % (a rete −10 % al 97 %). Fusibile T5 A
+  all'80 %: regge. Un trasformatore al 100 % continuo scalda più del
+  previsto e non lascia riserva. Decisione per Filippo: W1 da 4,5 A
+  (trasformatore ~290 VA) oppure accettare, perché il caso peggiore
+  vale solo con tutti gli opzionali inseriti. Senza gli opzionali il
+  ramo sta a ~1,7-1,75 A, cioè all'85 % circa.
+
+**Nota OPA1612.** La tabella di `sistema-psu.md` §1 conta ~2 mA per
+canale; il datasheet TI dice 3,6 mA tipici (4,5 max). Il bilancio del
+ramo audio è quindi ottimista dove ci sono molti OPA1612 (master, 5-way,
+meter). Da ricontare modulo per modulo (todo aperto il 2026-10-26).

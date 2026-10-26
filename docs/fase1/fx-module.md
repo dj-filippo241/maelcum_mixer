@@ -117,7 +117,7 @@ REV dec. 130.
    Il secondo bus della fase 1b è un secondo modulo uguale.
 6. **Restano da fare**: simulazione di un bus con le 4 iniezioni dei
    reroute (rumore, crosstalk, loop SELF attraverso il backplane);
-   corrente sul W1 col resto del todo 128.
+   corrente sul W1: fatta (todo 128, +64 mA, `RISULTATI-psu-box.md` §6).
 
 ## 3. Summing bus — dimensionamento e verifica
 

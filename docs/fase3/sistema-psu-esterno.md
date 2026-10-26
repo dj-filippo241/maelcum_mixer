@@ -92,6 +92,13 @@ al mixer 21,83-21,94 V, ripple ≤ 2,4 mV, avvolgimento 88-91 %, calore per
 MOSFET 9,1 / **14,5 W**, locali fuori dopo 25,3 ms a rete −10 % (mute a
 ≤ 12,7 ms). La tabella sotto è quella del 2026-10-14.
 
+**REV 2026-10-26 (todo 128/130, `RISULTATI-psu-box.md` §6)**: carico
+2,03 A (fader a VCA, WIDTH continuo, iniezioni dei FX-RET). Margine
+minimo del MOSFET 1,19 V, al mixer 21,82-21,94 V, calore per MOSFET
+9,5 / **15,6 W**, locali fuori dopo 20,1 ms a rete −10 % (mute a ≤ 12,7 ms).
+L'avvolgimento W1 arriva al **100 %** a rete +10 %: decisione aperta
+(W1 4,5 A oppure accettare). Aletta: Rθ ≤ 0,57 K/W.
+
 | | W1 ±22,0 V | W2 ±19 V |
 |---|---|---|
 | Al mixer, rete −10 … +10 % | 21,83-21,94 V | 18,84-18,92 V |

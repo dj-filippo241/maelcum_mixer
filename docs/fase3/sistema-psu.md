@@ -149,7 +149,7 @@ a +110 mA (5,5 mA/chip di questa tabella, I/V compreso). Ramo audio:
 **base ~1,45-1,5 A, con gli opzionali ~1,75-1,81 A**. Simulato
 (`sim/system/psu-w1-vca.cir`, bulk 15 mF, caso peggiore 1,81 A): W1 3,5 A
 al **98 %** a rete −10 % e al **100 %** a rete nominale (era 93 %); raw
-minimo 23,6 V (−0,2 V). Con W1 4,0 A: 88 %, raw minimo 23,9 V. [REV 2026-10-22, dec. 126: +16 VCA dei fader, caso peggiore 1,91 A: 92 %, raw minimo 23,7 V, `sim/system/psu-w1-fader.cir`.] Il calore
+minimo 23,6 V (−0,2 V). Con W1 4,0 A: 88 %, raw minimo 23,9 V. [REV 2026-10-22, dec. 126: +16 VCA dei fader, caso peggiore 1,91 A: 92 %, raw minimo 23,7 V, `sim/system/psu-w1-fader.cir`.] [REV 2026-10-26, todo 128: + WIDTH continuo (+55 mA) e iniezioni dei 4 FX-RET (+64 mA), caso peggiore **2,03 A**: avvolgimento 97 % a rete −10 %, **100 % a rete +10 %**, raw minimo 23,5 V, `sim/system/psu-box-w1-128.cir`, `RISULTATI-psu-box.md` §6. W1 4,0 A al limite: decisione aperta, 4,5 A oppure accettare.] Il calore
 sale di ~4 W. **DECISO → dec. 115 (Filippo, 2026-10-21): W1 2×21 V
 4,0 A, trasformatore ~270 VA**, fusibile del W1 T5 A (corrente efficace
 3,51 A: con T4 A il fusibile lavorerebbe all'88 %). La valle del raw scende di 0,2 V: margine
@@ -240,7 +240,7 @@ CTRL_GND dei moduli. Corrente: ~0,3 A sul W4 → il W4 passa da 2,0 a
 ## 1. Budget assorbimenti per rail
 
 Stime di classe dichiarate (Iq da datasheet-class, non misurati):
-OPA1654 ~1,8 mA/canale (7,2/quad) · OPA1612 ~2 mA/canale · THAT 2181
+OPA1654 ~1,8 mA/canale (7,2/quad) · OPA1612 ~2 mA/canale [ERRATO, REV 2026-10-26: datasheet 3,6 mA typ, 4,5 max; da ricontare, `RISULTATI-psu-box.md` §6] · THAT 2181
 ~5,5 mA/chip · LM13700 ~3-5 mA/chip (2×Iabc + bias) · ADG1434 µA-class
 (trascurabile) · LM3915 ~5-10 mA + LED.
 
