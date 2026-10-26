@@ -23,6 +23,8 @@ Origine delle decisioni: **[F]** = detta da Filippo · **[R]** = dal resoconto C
 
 ## Comandi
 
+KiCad 10.0.7 sta in `/Applications/KiCad` (copiato dal .dmg: `brew install --cask kicad` vuole sudo e fallisce senza terminale; Homebrew non lo gestisce). CLI: `/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli`. Schemi e PCB fermi per decisione di Filippo (2026-10-26).
+
 Simulare un netlist (LTspice 26.0.2 in batch; avvio 30-60 s; il log esce accanto al netlist e viene stampato):
 
 ```bash
