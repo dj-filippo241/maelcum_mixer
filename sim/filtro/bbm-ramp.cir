@@ -5,7 +5,7 @@
 * fade-out del percorso uscente → gap muto (BBM: mai entrambi chiusi) →
 * fade-in del percorso entrante, con VCA THAT 218x (modello condiviso
 * sim/lib/that2181.inc) pilotato da CV a rampa tau.
-* Worst case: commutazione AL PICCO di un segnale +18 dBu (6,16 Vp, 1 kHz)
+* Worst case: commutazione AL PICCO di un segnale +18 dBu (8,70 Vp, 1 kHz; prima stesura 6,16 Vp = +15 dBu, todo 125)
 * — stesso criterio di gate-ramp.cir (5-way §8.5, voce 55).
 * Variante "brusco" (tau = 1 us): interruttore puro senza rampa = il click
 * di riferimento. Sonda HP 2 poli ~1,6 kHz = "rivelatore di click" (pattern
@@ -18,7 +18,7 @@
 .include ../lib/that2181.inc
 Vcc vcc 0 DC 18
 Vee vee 0 DC -18
-Vsig sig 0 SINE(0 6.16 1000)
+Vsig sig 0 SINE(0 8.70 1000)
 .param t0=2.25m
 .param tau=1m
 .param gap=50u

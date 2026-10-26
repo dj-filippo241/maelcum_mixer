@@ -67,19 +67,23 @@ Scelta [PROVVISORIO]: **W1 2×21 V 3,5 A**, trasformatore **~250 VA**.
 
 ## 4. Tasto MONO (matrice M/S + VCA sulla larghezza)
 
-Caso peggiore: +18 dBu (6,16 Vp) tutto sul canale sinistro, commutazione
-al picco. Sonda HP 2 poli ~1,6 kHz; baseline del programma 1,23 V.
+Caso peggiore: +18 dBu (8,70 Vp) tutto sul canale sinistro, commutazione
+al picco. Sonda HP 2 poli ~1,6 kHz; baseline del programma 1,74 V.
+
+**[RIFATTO 2026-10-26, todo 125]** La prima stesura usava 6,16 Vp, cioè
++15 dBu. Rilanciato `mono-ms.cir` a 8,70 Vp: i volt crescono di 1,41×, i
+dB sopra il programma restano uguali. Conclusioni invariate.
 
 | Rampa | Picco sonda | Sopra il programma |
 |---|---|---|
-| secco (1 µs) | 3,41 V | +8,9 dB (click) |
-| 0,3 ms | 1,81 V | +3,3 dB |
-| **1 ms** | **1,31 V** | **+0,55 dB** (nessun click) |
+| secco (1 µs) | 4,82 V | +8,9 dB (click) |
+| 0,3 ms | 2,55 V | +3,3 dB |
+| **1 ms** | **1,85 V** | **+0,55 dB** (nessun click) |
 
-- Normale (w = 0 dB): L' = 6,160 Vp, R' = 0,15 mV (separazione −92 dB,
+- Normale (w = 0 dB): L' = 8,700 Vp, R' = 0,22 mV (separazione −92 dB,
   limitata nel modello dal polo del VCA; nel circuito la limita
   l'appaiamento delle R della matrice: ~60 dB con R 0,1 %).
-- MONO: L' = R' = 3,080 Vp. Una sorgente tutta su un lato scende di 6 dB
+- MONO: L' = R' = 4,350 Vp. Una sorgente tutta su un lato scende di 6 dB
   su entrambe le uscite; una sorgente al centro resta identica; due lati
   scorrelati scendono di 3 dB.
 - Costo: 1 VCA THAT 218x (o V2181L) + 4 op-amp per il modulo master. Il

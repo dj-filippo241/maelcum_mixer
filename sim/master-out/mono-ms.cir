@@ -5,14 +5,14 @@
 * MONO: rampa del CV di S da 0 dB a -100 dB in tau (famiglia dec. 80,
 * niente BBM: la larghezza scende in modo continuo, nessun buco).
 * Worst case per il click: tutto il segnale su un lato (R = 0, S = L/2),
-* +18 dBu (6,16 Vp) a 1 kHz, commutazione al picco. Sonda HP 2 poli
+* +18 dBu (8,70 Vp; prima stesura 6,16 Vp = +15 dBu, todo 125) a 1 kHz, commutazione al picco. Sonda HP 2 poli
 * ~1,6 kHz come bbm-ramp.cir. tau = 1 us = commutatore secco (riferimento).
 * Matrice con sorgenti E ideali: nel circuito sono 2 op-amp per lato con
 * R 0,1 % (separazione L/R a w = 1 limitata dall'appaiamento: ~60 dB).
 .include ../lib/that2181.inc
 Vcc vcc 0 DC 15
 Vee vee 0 DC -15
-VL l 0 SINE(0 6.16 1000)
+VL l 0 SINE(0 8.70 1000)
 VR r 0 0
 .param t0=2.25m
 .param tau=1m

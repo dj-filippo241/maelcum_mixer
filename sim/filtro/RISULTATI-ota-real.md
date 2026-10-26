@@ -86,10 +86,16 @@ irrilevanti (mV DC su dominio 0 dBu). Nessun trim DC necessario.
 |---|---|---|---|---|
 | 52 mV | 0,87% | 37 mV (lineare) | 0,003% | 69 mV |
 | 104 mV | 1,32% | 63 mV (compress.) | 0,012% | 106 mV |
-| 388 mV (0 dBu int.) | 0,85% | 78 mV (saturo, gain −3,5×) | 0,155% | 305 mV |
-| 775 mV (0 dBu) | 1,25% | 81 mV (saturo) | 0,55% | 551 mV ✓ |
-| 2,45 V (+10 dBu) | 37,5% | 102 mV (saturo duro) | 1,24% | 976 mV (limite) |
-| 6,16 V (+18 dBu) | 94,3% | 110 mV (collasso) | 0,88% | 1,01 V (saturo) |
+| 388 mV (−9 dBu) | 0,85% | 78 mV (saturo, gain −3,5×) | 0,155% | 305 mV |
+| 775 mV (−3 dBu) | 1,25% | 81 mV (saturo) | 0,55% | 551 mV ✓ |
+| 2,45 V (+7 dBu) | 37,5% | 102 mV (saturo duro) | 1,24% | 976 mV (limite) |
+| 6,16 V (+15 dBu) | 94,3% | 110 mV (collasso) | 0,88% | 1,01 V (saturo) |
+
+**[CORRETTO 2026-10-26, todo 125]** I valori di `svf-real-thd.cir` sono di
+picco. Le etichette in dBu della prima stesura li leggevano come efficaci:
+775 mV di picco valgono −3 dBu, 2,45 V +7 dBu, 6,16 V +15 dBu (0 dBu =
+1,095 Vp, +18 dBu = 8,70 Vp). Le misure restano valide, cambia solo
+l'etichetta. Il core nudo è comunque superato dalla dec. 109 (§5quater).
 
 Il nudo comprime MORBIDO (tanh + limite di corrente = saturazione dolce,
 gain −3,5× a 388 mV senza THD esplosiva: 0,85-1,25%) — carattere da
@@ -114,15 +120,20 @@ R/OP1654, non dall'OTA.)
 Meccanismo (indipendente dalla questione 63): fade-out VCA THAT 218x del
 percorso uscente → gap muto 50 µs (BBM, classe ADG14xx [PROVVISORIO]) →
 fade-in del percorso entrante, ramp CV τ variabile. Worst: commutazione
-al picco di +18 dBu (6,16 Vp, 1 kHz). Sonda click = HP 2 poli 1,6 kHz
-(pattern gate-ramp 5-way; baseline programma = 0,613 V).
+al picco di +18 dBu (8,70 Vp, 1 kHz). Sonda click = HP 2 poli 1,6 kHz
+(pattern gate-ramp 5-way; baseline programma = 0,865 V).
+
+**[RIFATTO 2026-10-26, todo 125]** La prima stesura usava 6,16 Vp, cioè
++15 dBu (6,16 V è l'efficace di +18 dBu). Rilanciato `bbm-ramp.cir` a
+8,70 Vp: i volt crescono di 1,41×, i rapporti in dB restano uguali (il
+VCA è lineare a questi livelli). Conclusioni invariate.
 
 | τ ramp | picco sonda click | vs brusco | vs baseline | gestualità (2τ+gap) |
 |---|---|---|---|---|
-| 1 µs (brusco) | 3,22 V | — | +14,4 dB | click pieno |
-| 0,3 ms | 1,90 V | −4,6 dB | +9,8 dB | udibile |
-| 1 ms | 1,23 V | −8,4 dB | +6,1 dB | ~2 ms: trasparente |
-| 5 ms | 0,68 V | −13,5 dB | +0,9 dB ≈ baseline | ~10 ms: "soft mute" percepibile |
+| 1 µs (brusco) | 4,55 V | — | +14,4 dB | click pieno |
+| 0,3 ms | 2,69 V | −4,6 dB | +9,8 dB | udibile |
+| 1 ms | 1,74 V | −8,3 dB | +6,1 dB | ~2 ms: trasparente |
+| 5 ms | 0,96 V | −13,5 dB | +0,9 dB ≈ baseline | ~10 ms: "soft mute" percepibile |
 
 Durante il gap l'uscita è muta (BBM = interruzione, non crossfade):
 residuo = floor del modello (−100 dB). Raccomandazione [PROVVISORIA]:
