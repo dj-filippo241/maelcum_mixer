@@ -163,6 +163,27 @@ JACK TS → R serie 1k + diodi clamp ai rail (BAV199-class) + TVS low-cap
   1/3 dell'escursione elettrica del pot; la posizione meccanica
   dipende dal taper (voce 40).
 - Una sola variante elettrica (risposta alla questione 16).
+- **Curva del pot GAIN (todo 131, 2026-10-26)** [PROVVISORIO, scelta
+  finale all'ascolto, B9]. Qui il pot è un partitore passivo prima di un
+  make-up fisso: la curva giusta è la **logaritmica A**, non la C del MIC
+  (lì il pot sta nella retroazione e il lineare affolla i dB in cima;
+  qui il lineare li affolla in fondo). Guadagno del modulo per corsa
+  (modello a due tratti della pista, make-up +9,93 dB):
+
+  | Corsa | B lineare | A 10 % | A 15 % | C 20 % |
+  |---|---|---|---|---|
+  | 10 % | −10,1 | −24,0 | −20,5 | −6,0 |
+  | 30 % | −0,5 | −14,5 | −11,0 | +3,6 |
+  | 50 % | +3,9 | −10,1 | −6,5 | +8,0 |
+  | 70 % | +6,8 | +3,2 | +3,7 | +8,8 |
+  | 90 % | +9,0 | +8,2 | +8,3 | +9,6 |
+  | 0 dB del modulo a | 32 % | 62 % | 60 % | 20 % |
+
+  Con la A lo 0 dB cade poco oltre metà corsa e gli ultimi 10 dB
+  occupano il 40 % finale della manopola: si regola fine il livello di
+  una sorgente calda. Con la C gli ultimi 10 dB starebbero nell'80 % della
+  corsa e il resto in un dito. Pezzo: RK14 10k A a catalogo, lo stesso
+  tipo delle mandate SEND (F1).
 
 Simulato (`gen-ac.cir`, `gen-module-noise.cir`, sorgente 1 kΩ):
 guadagno −0,08 / +9,93 dB; banda −0,50 dB a 5 Hz, −0,19 dB a 10 Hz,

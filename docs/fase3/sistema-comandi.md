@@ -128,8 +128,8 @@ Totale 115 manopole: 64 grandi, 10 medie, 41 piccole.
 | Famiglia | Pot | Pezzo |
 |---|---|---|
 | Lineare standard (B) | tutti i pot → CV (GAIN canale, filtro, reroute/SELF, GAIN ritorni, POSITION, MASTER, BOOTH), EQ canale (dec. 105), GROWL, BLEND (NASTRO: log A, riga sotto) | RK14K / RK09 lineari a catalogo; reroute: RK09K singolo con scatto al centro (es. RK09K113004U, verticale, 10k B) |
-| Logaritmica standard (A) | NASTRO (five-way §5bis), LEVEL di FX-SEND (fx-module: «curva A 10 % basta»), LEVEL cuffie, SEND 1-4 di MIC/MONO (B9) |
-| Logaritmica inversa (C 20 %) | GAIN del MIC (dec. 129 E2: col lineare l'ultimo 10 % vale 8,4 dB, con la C i dB sono quasi uguali su tutta la corsa); GAIN del MONO da verificare sul suo circuito | A a catalogo; la scelta A contro B per MIC/MONO resta all'ascolto (B9) |
+| Logaritmica standard (A) | NASTRO (five-way §5bis), LEVEL di FX-SEND (fx-module: «curva A 10 % basta»), LEVEL cuffie, SEND 1-4 di MIC/MONO (B9), GAIN del MONO (todo 131, 2026-10-26: partitore passivo prima del make-up, la A dà dB regolari; mic-mono-moduli §4) |
+| Logaritmica inversa (C 20 %) | GAIN del MIC (dec. 129 E2: col lineare l'ultimo 10 % vale 8,4 dB, con la C i dB sono quasi uguali su tutta la corsa); GAIN del MONO: NON qui, vedi riga sopra (todo 131) | A a catalogo; la scelta A contro B per MIC/MONO resta all'ascolto (B9) |
 | Curva asimmetrica | EQ di FX-SEND, ritorni, MIC e MONO; GAIN delle 5 vie | vedi sotto |
 | Da scegliere (dec. 117) | WIDTH: log 10 % (centro ~Q1,6) o ~20 % (centro ~Q1) | ⚠ il WIDTH è un doppio 1k: la RK14 a catalogo parte da 5k; se il 1k non c'è, partitore riscalato su 10k (da rifare in five-way §4.3) |
 
