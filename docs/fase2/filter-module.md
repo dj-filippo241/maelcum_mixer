@@ -384,6 +384,17 @@ VERIFICATA diritta (`od2-pol-b.cir`: fase 0° a 1 kHz per ogni m).
 - Tutto DC-coupled; il tosatore simmetrico non genera continua. Niente
   pad −6 / make-up +6 della v0.1.
 - Mux del CV e smoothing 1 ms invariati (§5bis).
+- **REV 2026-10-26 (todo 124, `docs/fase3/sistema-vca-trim.md` §3)**: i 2
+  VCA dell'overdrive di un canale stereo sono una coppia. Uscita dello shaper ×2 e bipolare; la CV entra SOLO da EC− (pin 3),
+  negativa per alzare, positiva per tagliare; EC+ (pin 2) a massa. Ultimo
+  stadio: partitore 1,00k / 1,00k sul pin (lato L, 0,1 %); lato R 900 Ω +
+  piazzole del trimmer 200 Ω 25 giri e del ramo d'offset (trimmer 50k fra
+  ±15 V LN → 1,5 MΩ). Trimmer di simmetria su ogni chip: 50k cermet fra
+  ±15 V LN → 150 kΩ → pin 4, 51 Ω verso massa. La law al pin resta quella
+  simulata: cambia solo l'implementazione dello shaper.
+  Il VCA lavora solo in taglio (0…−30 dB): CV sempre positiva, lo
+  shaper non ha bisogno del tratto negativo. 8 trimmer di simmetria; trim
+  di law a piazzole sulle 4 coppie.
 
 ### Law della manopola (accelera a fine corsa)
 

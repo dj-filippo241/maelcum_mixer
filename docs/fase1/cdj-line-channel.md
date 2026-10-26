@@ -99,6 +99,19 @@ margine; il tracking L/R richiede trim di law (2181) o selezione di coppia
 (2180) — voce 37. Alternativa economica da scartare solo se la sim dice che il VCA
 colora: pot doppio selezionato + trim (più lavoro di calibrazione, tracking a rischio).
 
+**REV 2026-10-26 (todo 124, `docs/fase3/sistema-vca-trim.md` §3) — trim
+dei VCA applicato al canale.** Coppie per canale: GAIN e fader (dec. 126),
+4 chip. Uscita dello shaper ×2 e bipolare; la CV entra SOLO da EC− (pin 3),
+negativa per alzare, positiva per tagliare; EC+ (pin 2) a massa. Ultimo
+stadio: partitore 1,00k / 1,00k sul pin (lato L, 0,1 %); lato R 900 Ω +
+piazzole del trimmer 200 Ω 25 giri e del ramo d'offset (trimmer 50k fra
+±15 V LN → 1,5 MΩ). Trimmer di simmetria su ogni chip: 50k cermet fra
+±15 V LN → 150 kΩ → pin 4, 51 Ω verso massa. La law al pin resta quella
+simulata: cambia solo l'implementazione dello shaper. Il boost +10 dB del GAIN non usa più EC+: la CV
+scende sotto zero (~−61 mV al pin a +10 dB). Trimmer per canale: 4 di
+simmetria montati; trim di law solo a piazzole (tracking ≤ 0,5 dB coperto
+dall'abbinamento, §6 del documento trim).
+
 ### 3.3 [C] EQ 4 bande — ISOLATOR (decisione 105, integrato 2026-10-13)
 
 Design, misure e limiti: **`eq-isolator-v0.4.md`** (§3 topologia, §8

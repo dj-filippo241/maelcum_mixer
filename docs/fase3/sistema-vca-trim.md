@@ -230,8 +230,9 @@ REW per livello e THD, multimetro con portata mV. È la lista di A11.
   scala va allargato (400 Ω: ±10 %, 0,32 dB a giro).
 - Corrente di bias dei pin EC: non è in nessun datasheet. Su 500 Ω, 1 µA
   vale 0,08 dB di offset: lo assorbe il trimmer di offset o l'abbinamento.
-- Shaper dei moduli: uscita ×2 e CV bipolare su EC− (cdj §3.2,
-  master-out §3, fx §8.3, filter §5ter). Si applica quando si disegna lo
-  shaper reale.
-- W1 senza margine con tutti gli opzionali (`sistema-psu.md` REV
-  2026-10-21): scelta di Filippo, 3,5 A o 4,0 A.
+- ~~Shaper dei moduli: uscita ×2 e CV bipolare su EC−~~ FATTO il
+  2026-10-26 (todo 124): REV in cdj §3.2, master-out §3.2, fx §8.3,
+  filter §5ter; la cella del fader (dec. 126) lo aveva già. Restano i
+  valori di ogni shaper, quando le curve sono confermate all'ascolto.
+- ~~W1 senza margine con tutti gli opzionali~~: deciso 4,0 A (dec. 115);
+  con WIDTH e FX-RET di nuovo al 97-100 %, decisione A19 (2026-10-26).

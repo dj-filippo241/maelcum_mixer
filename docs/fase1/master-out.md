@@ -112,6 +112,19 @@ pot lineare 10 kΩ → generatore CV (mappa rotazione → legge dB voluta)
 - Il tratto sotto unity occupa la maggior parte della corsa (uso normale), +6 dB è trim fine in cima — coerente con "positive gain only above unity"
 - Detent meccanico a unity: **SI [BLOCCATO-F 2026-09-18]**. Nota: l'hardware di tutte le manopole (marca/modello pot) si rivede globalmente in un secondo momento — qui conta solo che il pot del master abbia il detent
 
+**REV 2026-10-26 (todo 124, `docs/fase3/sistema-vca-trim.md` §3) — trim
+dei VCA applicato al master.** I porti EC non vanno più in parallelo
+diretto: ogni chip ha il suo partitore. Uscita dello shaper ×2 e bipolare; la CV entra SOLO da EC− (pin 3),
+negativa per alzare, positiva per tagliare; EC+ (pin 2) a massa. Ultimo
+stadio: partitore 1,00k / 1,00k sul pin (lato L, 0,1 %); lato R 900 Ω +
+piazzole del trimmer 200 Ω 25 giri e del ramo d'offset (trimmer 50k fra
+±15 V LN → 1,5 MΩ). Trimmer di simmetria su ogni chip: 50k cermet fra
+±15 V LN → 150 kΩ → pin 4, 51 Ω verso massa. La law al pin resta quella
+simulata: cambia solo l'implementazione dello shaper. Il +6 dB di fine
+corsa è CV negativa su EC− (~−37 mV al pin). MASTER e BOOTH chiedono
+≤ 0,25 dB: **trim di law montato** (2 coppie, 4 trimmer di law + 4 di
+simmetria). Il VCA del MONO (canale S) è singolo: solo simmetria.
+
 **Dominio di alimentazione VCA**: ±18 V locali (massimo assoluto THAT 218x; verificare raccomandazione datasheet — se indica ±16,8 max operativi, il rail locale diventa ±16 V). Con +6 dB su picchi +16 dBu in ingresso, l'uscita VCA arriva a ~+22 dBu: il dominio ±18 V è necessario, il ±15 V non basterebbe.
 
 ### 3.3 [F]+[G] Stadio d'uscita master — dove vive il +24 dBu

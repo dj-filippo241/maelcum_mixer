@@ -352,6 +352,19 @@ lo "scatto" che chiude subito (coerente col gate 5-way [escluso dalla famiglia c
 morbido ma chiusura lenta. Raccomandazione RATIFICATA (decisione 80): **1 ms**
 per il reroute, famiglia unica; conferma a orecchio in M4L.
 
+**REV 2026-10-26 (todo 124, `docs/fase3/sistema-vca-trim.md` §3) — trim
+dei VCA applicato ai FX-RET.** Per modulo FX-RET (dec. 130): GAIN del
+ritorno, 4 reroute e fader = 6 coppie, 12 chip, 6 shaper. Uscita dello shaper ×2 e bipolare; la CV entra SOLO da EC− (pin 3),
+negativa per alzare, positiva per tagliare; EC+ (pin 2) a massa. Ultimo
+stadio: partitore 1,00k / 1,00k sul pin (lato L, 0,1 %); lato R 900 Ω +
+piazzole del trimmer 200 Ω 25 giri e del ramo d'offset (trimmer 50k fra
+±15 V LN → 1,5 MΩ). Trimmer di simmetria su ogni chip: 50k cermet fra
+±15 V LN → 150 kΩ → pin 4, 51 Ω verso massa. La law al pin resta quella
+simulata: cambia solo l'implementazione dello shaper.
+Lo smoothing RC 1 ms resta fra shaper e partitore. Trimmer per modulo: 12
+di simmetria montati; trim di law a piazzole sulle 6 coppie, montato solo
+se la coppia misurata esce da 0,5 dB.
+
 ### 8.4 v0.2 — Banda/TVS, DC servo, EQ2 (`fx-tvs-bw.cir`, `fx-dc-servo.cir`, `fx-eq2.cir`)
 
 **Banda d'ingresso e TVS** (griglia R_sorgente × C_TVS, §4): il polo HF lo
