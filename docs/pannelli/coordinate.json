@@ -1,0 +1,854 @@
+{
+ "nota": "Generato da docs/pannelli/genera_pannelli.py: non modificare a mano. Millimetri dall'angolo in alto a sinistra del pannello; meter = primo segmento; fader = centro della fessura. [PROVVISORIO]",
+ "moduli": {
+  "canale": {
+   "titolo": "CDJ 1",
+   "larghezza": 36.0,
+   "altezza": 292.5,
+   "comandi": [
+    {
+     "tipo": "levetta",
+     "nome": "LINE/PHONO",
+     "x": 18.0,
+     "y": 22.0,
+     "funzione": "l_linea",
+     "posizioni": [
+      "LINE",
+      "PHONO"
+     ]
+    },
+    {
+     "tipo": "manopola",
+     "nome": "GAIN",
+     "x": 12.5,
+     "y": 41.5,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_gain",
+     "scatto": true
+    },
+    {
+     "tipo": "manopola",
+     "nome": "HIGH",
+     "x": 23.5,
+     "y": 58.5,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_eq_canale",
+     "scatto": true
+    },
+    {
+     "tipo": "manopola",
+     "nome": "MID-HIGH",
+     "x": 12.5,
+     "y": 75.5,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_eq_canale",
+     "scatto": true
+    },
+    {
+     "tipo": "manopola",
+     "nome": "LOW-MID",
+     "x": 23.5,
+     "y": 92.5,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_eq_canale",
+     "scatto": true
+    },
+    {
+     "tipo": "manopola",
+     "nome": "LOW",
+     "x": 12.5,
+     "y": 109.5,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_eq_canale",
+     "scatto": true
+    },
+    {
+     "tipo": "levetta",
+     "nome": "FILTRO",
+     "x": 22.0,
+     "y": 133.5,
+     "funzione": "l_filtro",
+     "posizioni": [
+      "HPF",
+      "OFF",
+      "LPF"
+     ]
+    },
+    {
+     "tipo": "bottone",
+     "nome": "FX1",
+     "x": 12.0,
+     "y": 149.5,
+     "larghezza": 9.0,
+     "altezza": 6.0,
+     "funzione": "fx"
+    },
+    {
+     "tipo": "bottone",
+     "nome": "FX2",
+     "x": 24.0,
+     "y": 149.5,
+     "larghezza": 9.0,
+     "altezza": 6.0,
+     "funzione": "fx"
+    },
+    {
+     "tipo": "bottone",
+     "nome": "FX3",
+     "x": 12.0,
+     "y": 158.5,
+     "larghezza": 9.0,
+     "altezza": 6.0,
+     "funzione": "fx"
+    },
+    {
+     "tipo": "bottone",
+     "nome": "FX4",
+     "x": 24.0,
+     "y": 158.5,
+     "larghezza": 9.0,
+     "altezza": 6.0,
+     "funzione": "fx"
+    },
+    {
+     "tipo": "bottone",
+     "nome": "CUE",
+     "x": 18.0,
+     "y": 168.5,
+     "larghezza": 14,
+     "altezza": 6.0,
+     "funzione": "cue"
+    },
+    {
+     "tipo": "meter",
+     "nome": "METER",
+     "x": 4.5,
+     "y": 178.5,
+     "segmenti": 10,
+     "passo": 6.0,
+     "orizzontale": false
+    },
+    {
+     "tipo": "fader",
+     "nome": "FADER",
+     "x": 22.0,
+     "y": 228.5,
+     "corsa": 100.0
+    }
+   ]
+  },
+  "fx-send": {
+   "titolo": "FX-SEND 1",
+   "larghezza": 36.0,
+   "altezza": 87.0,
+   "comandi": [
+    {
+     "tipo": "manopola",
+     "nome": "EQ HIGH",
+     "x": 12.5,
+     "y": 25.5,
+     "pot": 9,
+     "cappuccio": 11.0,
+     "funzione": "k_eq_9mm",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "EQ LOW",
+     "x": 23.5,
+     "y": 39.5,
+     "pot": 9,
+     "cappuccio": 11.0,
+     "funzione": "k_eq_9mm",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "LEVEL",
+     "x": 12.5,
+     "y": 65.0,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_level_send",
+     "scatto": false
+    }
+   ]
+  },
+  "mic": {
+   "titolo": "MIC",
+   "larghezza": 36.0,
+   "altezza": 190.5,
+   "comandi": [
+    {
+     "tipo": "manopola",
+     "nome": "GAIN",
+     "x": 12.5,
+     "y": 27.5,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_gain",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "EQ HIGH",
+     "x": 12.5,
+     "y": 54.0,
+     "pot": 9,
+     "cappuccio": 11.0,
+     "funzione": "k_eq_9mm",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "EQ LOW",
+     "x": 23.5,
+     "y": 68.0,
+     "pot": 9,
+     "cappuccio": 11.0,
+     "funzione": "k_eq_9mm",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "SEND 1",
+     "x": 12.5,
+     "y": 93.5,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_send_mic",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "SEND 2",
+     "x": 23.5,
+     "y": 110.5,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_send_mic",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "SEND 3",
+     "x": 12.5,
+     "y": 127.5,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_send_mic",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "SEND 4",
+     "x": 23.5,
+     "y": 144.5,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_send_mic",
+     "scatto": false
+    },
+    {
+     "tipo": "led3",
+     "nome": "LED",
+     "x": 18.0,
+     "y": 165.5,
+     "passo": 4.0
+    },
+    {
+     "tipo": "bottone",
+     "nome": "MUTE",
+     "x": 18.0,
+     "y": 178.5,
+     "larghezza": 14,
+     "altezza": 6.0,
+     "funzione": "mute"
+    }
+   ]
+  },
+  "mono": {
+   "titolo": "MONO",
+   "larghezza": 36.0,
+   "altezza": 190.5,
+   "comandi": [
+    {
+     "tipo": "manopola",
+     "nome": "GAIN",
+     "x": 12.5,
+     "y": 27.5,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_gain",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "EQ HIGH",
+     "x": 12.5,
+     "y": 54.0,
+     "pot": 9,
+     "cappuccio": 11.0,
+     "funzione": "k_eq_9mm",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "EQ LOW",
+     "x": 23.5,
+     "y": 68.0,
+     "pot": 9,
+     "cappuccio": 11.0,
+     "funzione": "k_eq_9mm",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "SEND 1",
+     "x": 12.5,
+     "y": 93.5,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_send_mic",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "SEND 2",
+     "x": 23.5,
+     "y": 110.5,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_send_mic",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "SEND 3",
+     "x": 12.5,
+     "y": 127.5,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_send_mic",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "SEND 4",
+     "x": 23.5,
+     "y": 144.5,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_send_mic",
+     "scatto": false
+    },
+    {
+     "tipo": "led3",
+     "nome": "LED",
+     "x": 18.0,
+     "y": 165.5,
+     "passo": 4.0
+    }
+   ]
+  },
+  "fx-ret": {
+   "titolo": "FX RET 1",
+   "larghezza": 36.0,
+   "altezza": 264.5,
+   "comandi": [
+    {
+     "tipo": "manopola",
+     "nome": "GAIN",
+     "x": 12.5,
+     "y": 27.5,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_gain",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "EQ HIGH",
+     "x": 12.5,
+     "y": 54.0,
+     "pot": 9,
+     "cappuccio": 11.0,
+     "funzione": "k_eq_9mm",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "EQ LOW",
+     "x": 23.5,
+     "y": 68.0,
+     "pot": 9,
+     "cappuccio": 11.0,
+     "funzione": "k_eq_9mm",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "SELF",
+     "x": 12.5,
+     "y": 91.5,
+     "pot": 9,
+     "cappuccio": 11.0,
+     "funzione": "k_reroute",
+     "scatto": true
+    },
+    {
+     "tipo": "manopola",
+     "nome": "> FX2",
+     "x": 23.5,
+     "y": 105.5,
+     "pot": 9,
+     "cappuccio": 11.0,
+     "funzione": "k_reroute",
+     "scatto": true
+    },
+    {
+     "tipo": "manopola",
+     "nome": "> FX3",
+     "x": 12.5,
+     "y": 119.5,
+     "pot": 9,
+     "cappuccio": 11.0,
+     "funzione": "k_reroute",
+     "scatto": true
+    },
+    {
+     "tipo": "manopola",
+     "nome": "> FX4",
+     "x": 23.5,
+     "y": 133.5,
+     "pot": 9,
+     "cappuccio": 11.0,
+     "funzione": "k_reroute",
+     "scatto": true
+    },
+    {
+     "tipo": "meter",
+     "nome": "METER",
+     "x": 4.5,
+     "y": 150.5,
+     "segmenti": 10,
+     "passo": 6.0,
+     "orizzontale": false
+    },
+    {
+     "tipo": "fader",
+     "nome": "FADER",
+     "x": 22.0,
+     "y": 200.5,
+     "corsa": 100.0
+    }
+   ]
+  },
+  "filtro": {
+   "titolo": "FILTRO (4 canali)",
+   "larghezza": 144.0,
+   "altezza": 75.0,
+   "comandi": [
+    {
+     "tipo": "manopola",
+     "nome": "FREQ",
+     "x": 47.52,
+     "y": 26.0,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_filtro",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "RES",
+     "x": 82.08,
+     "y": 26.0,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_filtro",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "DRIVE",
+     "x": 116.64,
+     "y": 26.0,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_filtro",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "FREQ",
+     "x": 47.52,
+     "y": 53.0,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_filtro",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "RES",
+     "x": 82.08,
+     "y": 53.0,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_filtro",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "DRIVE",
+     "x": 116.64,
+     "y": 53.0,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_filtro",
+     "scatto": false
+    }
+   ]
+  },
+  "five-way": {
+   "titolo": "5-WAY",
+   "larghezza": 292.0,
+   "altezza": 104.0,
+   "comandi": [
+    {
+     "tipo": "levetta",
+     "nome": "KILL",
+     "x": 27.2,
+     "y": 30.0,
+     "funzione": "l_kill",
+     "posizioni": [
+      "FISSO",
+      "MOLLA"
+     ]
+    },
+    {
+     "tipo": "manopola",
+     "nome": "GAIN",
+     "x": 21.7,
+     "y": 52.5,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_5w_gain",
+     "scatto": true
+    },
+    {
+     "tipo": "manopola",
+     "nome": "POSITION",
+     "x": 32.7,
+     "y": 68.0,
+     "pot": 14,
+     "cappuccio": 12.0,
+     "funzione": "k_5w_pos",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "WIDTH",
+     "x": 21.7,
+     "y": 83.5,
+     "pot": 14,
+     "cappuccio": 12.0,
+     "funzione": "k_5w_width",
+     "scatto": false
+    },
+    {
+     "tipo": "levetta",
+     "nome": "KILL",
+     "x": 77.6,
+     "y": 30.0,
+     "funzione": "l_kill",
+     "posizioni": [
+      "FISSO",
+      "MOLLA"
+     ]
+    },
+    {
+     "tipo": "manopola",
+     "nome": "GAIN",
+     "x": 72.1,
+     "y": 52.5,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_5w_gain",
+     "scatto": true
+    },
+    {
+     "tipo": "manopola",
+     "nome": "POSITION",
+     "x": 83.1,
+     "y": 68.0,
+     "pot": 14,
+     "cappuccio": 12.0,
+     "funzione": "k_5w_pos",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "WIDTH",
+     "x": 72.1,
+     "y": 83.5,
+     "pot": 14,
+     "cappuccio": 12.0,
+     "funzione": "k_5w_width",
+     "scatto": false
+    },
+    {
+     "tipo": "levetta",
+     "nome": "KILL",
+     "x": 128.0,
+     "y": 30.0,
+     "funzione": "l_kill",
+     "posizioni": [
+      "FISSO",
+      "MOLLA"
+     ]
+    },
+    {
+     "tipo": "manopola",
+     "nome": "GAIN",
+     "x": 122.5,
+     "y": 52.5,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_5w_gain",
+     "scatto": true
+    },
+    {
+     "tipo": "manopola",
+     "nome": "POSITION",
+     "x": 133.5,
+     "y": 68.0,
+     "pot": 14,
+     "cappuccio": 12.0,
+     "funzione": "k_5w_pos",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "WIDTH",
+     "x": 122.5,
+     "y": 83.5,
+     "pot": 14,
+     "cappuccio": 12.0,
+     "funzione": "k_5w_width",
+     "scatto": false
+    },
+    {
+     "tipo": "levetta",
+     "nome": "KILL",
+     "x": 178.4,
+     "y": 30.0,
+     "funzione": "l_kill",
+     "posizioni": [
+      "FISSO",
+      "MOLLA"
+     ]
+    },
+    {
+     "tipo": "manopola",
+     "nome": "GAIN",
+     "x": 172.9,
+     "y": 52.5,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_5w_gain",
+     "scatto": true
+    },
+    {
+     "tipo": "manopola",
+     "nome": "POSITION",
+     "x": 183.9,
+     "y": 68.0,
+     "pot": 14,
+     "cappuccio": 12.0,
+     "funzione": "k_5w_pos",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "WIDTH",
+     "x": 172.9,
+     "y": 83.5,
+     "pot": 14,
+     "cappuccio": 12.0,
+     "funzione": "k_5w_width",
+     "scatto": false
+    },
+    {
+     "tipo": "levetta",
+     "nome": "KILL",
+     "x": 228.8,
+     "y": 30.0,
+     "funzione": "l_kill",
+     "posizioni": [
+      "FISSO",
+      "MOLLA"
+     ]
+    },
+    {
+     "tipo": "manopola",
+     "nome": "GAIN",
+     "x": 223.3,
+     "y": 52.5,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_5w_gain",
+     "scatto": true
+    },
+    {
+     "tipo": "manopola",
+     "nome": "POSITION",
+     "x": 234.3,
+     "y": 68.0,
+     "pot": 14,
+     "cappuccio": 12.0,
+     "funzione": "k_5w_pos",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "WIDTH",
+     "x": 223.3,
+     "y": 83.5,
+     "pot": 14,
+     "cappuccio": 12.0,
+     "funzione": "k_5w_width",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "GROWL",
+     "x": 266.0,
+     "y": 31.0,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_sat",
+     "scatto": false
+    },
+    {
+     "tipo": "manopola",
+     "nome": "NASTRO",
+     "x": 266.0,
+     "y": 57.0,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_sat",
+     "scatto": false
+    },
+    {
+     "tipo": "meter",
+     "nome": "METER",
+     "x": 283.0,
+     "y": 19.0,
+     "segmenti": 10,
+     "passo": 5.0,
+     "orizzontale": false
+    }
+   ]
+  },
+  "master": {
+   "titolo": "MASTER",
+   "larghezza": 96,
+   "altezza": 93.0,
+   "comandi": [
+    {
+     "tipo": "manopola",
+     "nome": "MASTER",
+     "x": 34.56,
+     "y": 27.0,
+     "pot": 14,
+     "cappuccio": 16.0,
+     "funzione": "k_master",
+     "scatto": true
+    },
+    {
+     "tipo": "manopola",
+     "nome": "BOOTH",
+     "x": 34.56,
+     "y": 55.0,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_master",
+     "scatto": false
+    },
+    {
+     "tipo": "bottone",
+     "nome": "MONO",
+     "x": 34.56,
+     "y": 77.0,
+     "larghezza": 14,
+     "altezza": 6.0,
+     "funzione": "mono"
+    },
+    {
+     "tipo": "meter",
+     "nome": "L",
+     "x": 79,
+     "y": 18.0,
+     "segmenti": 20,
+     "passo": 3.2,
+     "orizzontale": false
+    },
+    {
+     "tipo": "meter",
+     "nome": "R",
+     "x": 85,
+     "y": 18.0,
+     "segmenti": 20,
+     "passo": 3.2,
+     "orizzontale": false
+    }
+   ]
+  },
+  "cue": {
+   "titolo": "CUE",
+   "larghezza": 62,
+   "altezza": 91.0,
+   "comandi": [
+    {
+     "tipo": "manopola",
+     "nome": "BLEND",
+     "x": 31.0,
+     "y": 27.0,
+     "pot": 14,
+     "cappuccio": 15.0,
+     "funzione": "k_cue",
+     "scatto": true
+    },
+    {
+     "tipo": "manopola",
+     "nome": "LEVEL",
+     "x": 31.0,
+     "y": 51.0,
+     "pot": 9,
+     "cappuccio": 11.0,
+     "funzione": "k_cue",
+     "scatto": false
+    },
+    {
+     "tipo": "jack",
+     "nome": "PHONES 1",
+     "x": 22.0,
+     "y": 73.0
+    },
+    {
+     "tipo": "jack",
+     "nome": "PHONES 2",
+     "x": 40.0,
+     "y": 73.0
+    }
+   ]
+  }
+ }
+}

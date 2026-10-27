@@ -16,6 +16,7 @@ dec. 130), canali a destra con
 sotto mandate e filtro). Unita: millimetri.
 """
 
+import json
 import os
 import subprocess
 
@@ -91,7 +92,11 @@ class Pannello:
     def __init__(self, nome, classe, w):
         self.nome, self.classe, self.w = nome, classe, w
         self.el = []
+        self.comandi = []    # coordinate dei comandi, per le PCB (dec. 133)
         self.y = TESTA + 4
+
+    def segna(self, tipo, nome, x, y, **kw):
+        self.comandi.append(dict(tipo=tipo, nome=nome, x=round(x, 2), y=round(y, 2), **kw))
 
     # --- elementi ---
     def testo(self, x, y, t, size=2.9, peso="normal", colore=INK, anchor="middle"):
@@ -102,6 +107,8 @@ class Pannello:
     def manopola(self, x, y, nome, tipo, r=R14, detent=False, lato=None):
         """lato None: etichetta sotto; "dx"/"sx": etichetta a fianco
         (colonne disassate)."""
+        self.segna("manopola", nome, x, y, pot=9 if r == R9 else 14,
+                   cappuccio=round(2 * r, 1), funzione=tipo, scatto=detent)
         self.el.append(f"<circle cx='{x:.2f}' cy='{y:.2f}' r='{r + 1.6:.2f}' fill='none' "
                        f"stroke='{C['s_anello']}' stroke-width='0.25' stroke-dasharray='0.6 1.2'/>")
         if detent:
@@ -134,6 +141,8 @@ class Pannello:
         """Levetta vista dall'alto: ghiera e leva. su/giu/centro = etichette
         delle posizioni (dec. 121, 122, 123)."""
         rg = 2.6 if piccola else 3.4
+        self.segna("levetta", nome or "/".join(v for v in (su, centro, giu) if v), x, y,
+                   funzione=tipo, posizioni=[v for v in (su, centro, giu) if v])
         self.el.append(f"<circle cx='{x:.2f}' cy='{y:.2f}' r='{rg:.2f}' fill='{C[tipo]}' "
                        f"stroke='{C['s_levetta']}' stroke-width='0.35'/>")
         self.el.append(f"<circle cx='{x:.2f}' cy='{y:.2f}' r='{rg * 0.45:.2f}' fill='{C['l_leva']}'/>")
@@ -146,6 +155,7 @@ class Pannello:
 
     def bottone(self, x, y, nome, tipo, w=9.0, h=6.0):
         """Bottone con luce a ritenuta (dec. 123): corpo e striscia di luce."""
+        self.segna("bottone", nome, x, y, larghezza=w, altezza=h, funzione=tipo)
         self.el.append(f"<rect x='{x - w / 2:.2f}' y='{y - h / 2:.2f}' width='{w:.2f}' height='{h:.2f}' rx='1.2' "
                        f"fill='{C['b_' + tipo]}' stroke='{C['s_bottone']}' stroke-width='0.4'/>")
         self.el.append(f"<rect x='{x - w / 2 + 1.2:.2f}' y='{y - h / 2 + 0.8:.2f}' width='{w - 2.4:.2f}' "
@@ -153,6 +163,8 @@ class Pannello:
         self.testo(x, y + 1.6, nome, 2.2)
 
     def fader(self, x, y, corsa=100.0, nome="FADER"):
+        # coordinate = centro della fessura
+        self.segna("fader", nome, x, y + corsa / 2, corsa=corsa)
         self.el.append(f"<rect x='{x - 0.9:.2f}' y='{y:.2f}' width='1.8' height='{corsa:.2f}' rx='0.9' "
                        f"fill='{C['f_binario']}'/>")
         for i in range(11):
@@ -167,6 +179,7 @@ class Pannello:
 
     def meter(self, x, y, n, passo=3.0, orizz=False, nome=None):
         # zone schematiche (dec. 90a): blu, verde, giallo, ambra, rosso, viola
+        self.segna("meter", nome or "METER", x, y, segmenti=n, passo=passo, orizzontale=orizz)
         zone = ("m_blu", "m_verde", "m_verde", "m_verde", "m_verde", "m_giallo",
                 "m_giallo", "m_ambra", "m_rosso", "m_viola")
         for i in range(n):
@@ -185,11 +198,13 @@ class Pannello:
                 self.testo(x + 1.3, y + n * passo + 3.2, nome, 2.0, colore=SOFT)
 
     def led3(self, x, y, nome="LED"):
+        self.segna("led3", nome, x, y, passo=4.0)
         for i, c in enumerate(("led_verde", "led_giallo", "led_rosso")):
             self.el.append(f"<circle cx='{x - 4 + 4 * i:.2f}' cy='{y:.2f}' r='1.4' fill='{C[c]}'/>")
         self.testo(x, y + 4.4, nome, 2.3)
 
     def jack(self, x, y, nome):
+        self.segna("jack", nome, x, y)
         self.el.append(f"<circle cx='{x:.2f}' cy='{y:.2f}' r='4.2' fill='{C['j_ghiera']}' "
                        f"stroke='{C['s_jack']}' stroke-width='0.4'/>")
         self.el.append(f"<circle cx='{x:.2f}' cy='{y:.2f}' r='1.8' fill='{C['j_foro']}'/>")
@@ -522,7 +537,29 @@ def setup(nome, sotto, n_canali, n_mono, file):
     return h_tot + 8
 
 
+def coordinate():
+    """Posizione di ogni comando per modulo, in mm dall'angolo in alto a
+    sinistra del pannello (x a destra, y verso chi suona). Le PCB la leggono
+    per mettere i pot sotto i fori (dec. 133). Base: i render di oggi (#123)."""
+    moduli = [canale(1), send(1), micmono("MIC"), micmono("MONO"), fx_ret(0), filtro(BLOCCO),
+              five(UTILE - 96 - 62), master(96), cue(62)]
+    nomi = ("canale", "fx-send", "mic", "mono", "fx-ret", "filtro", "five-way", "master", "cue")
+    out = {"nota": "Generato da docs/pannelli/genera_pannelli.py: non modificare a mano. "
+                   "Millimetri dall'angolo in alto a sinistra del pannello; meter = primo segmento; "
+                   "fader = centro della fessura. [PROVVISORIO]",
+           "moduli": {}}
+    for n, p in zip(nomi, moduli):
+        out["moduli"][n] = {"titolo": p.nome, "larghezza": p.w, "altezza": round(p.h, 2),
+                            "comandi": p.comandi}
+    path = os.path.join(QUI, "coordinate.json")
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(out, f, indent=1, ensure_ascii=False)
+        f.write("\n")
+    return path
+
+
 def main():
+    print("coordinate:", coordinate())
     open(os.path.join(QUI, "moduli.svg"), "w", encoding="utf-8").write(moduli_singoli())
     h1 = setup("Setup ridotto", "2 canali CDJ con 2 FX-SEND · 1 MIC · 1 MONO · 4 FX RET · filtro · 5-way · "
                "master · CUE", 2, 1, "setup-ridotto.svg")

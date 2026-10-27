@@ -86,6 +86,33 @@ fault-protected ADG54xxF (Ron più alta, verifica a parte).
 5. **Power-off**: rafforzata la regola S3 §7.3 (mai segnali esterni col mixer
    spento): il clamp a 30 mA copre il nostro <1 mA ma fuori specifica.
 
+## 6. Pinout TSSOP-20 e tabella di verità [VERIFICATO 2026-10-27, todo 166]
+
+Fonte: datasheet Rev. E, Figura 6, Tabella 8 e Tabella 9 (pagina 9), letto dalla copia
+`rlocman.ru/i/File/2022/04/24/ADG1433_1434.pdf` (analog.com sempre in timeout). Il canale 2
+sta sul lato sinistro con il canale 1; i canali 3 e 4 stanno sul lato destro.
+
+| Pin | Nome | Pin | Nome |
+|---|---|---|---|
+| 1 | IN1 | 20 | IN4 |
+| 2 | S1A | 19 | S4A |
+| 3 | D1 | 18 | D4 |
+| 4 | S1B | 17 | S4B |
+| 5 | VSS | 16 | VDD |
+| 6 | GND | 15 | NIC (nessuna connessione interna) |
+| 7 | S2B | 14 | S3B |
+| 8 | D2 | 13 | D3 |
+| 9 | S2A | 12 | S3A |
+| 10 | IN2 | 11 | IN3 |
+
+Tabella di verità (TSSOP, senza EN): INx = 0 → SxA aperto, SxB chiuso; INx = 1 → SxA chiuso,
+SxB aperto. Conferma la convenzione del FX-SEND: IN alto = SxA in serie chiuso, SxB (shunt a
+massa) aperto.
+
+Errore trovato: la bozza FX-SEND v0.1 aveva i pin 6-20 «a memoria» (canale 4 sui pin 7-10,
+VDD sul 15, NC sul 16). Corretta nel simbolo di `pcb/fx-send/fx-send.py`. Il simbolo giusto vale
+per ogni scheda che usa l'ADG1434 (5-way kill, LINE/PHONO del canale).
+
 ## Fonti
 
 - Datasheet ADG1433/ADG1434 Rev. E: analog.com/media/en/technical-documentation/data-sheets/ADG1433_1434.pdf (letto da mirror)

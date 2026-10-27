@@ -34,7 +34,7 @@ Generare una scheda (Python di KiCad, ~4 min):
 Regole delle PCB (nate il 2026-10-27):
 
 - Le reti che toccano pin TSSOP (passo 0,65) vogliono piste ≤ 0,3 mm: con 0,6 Freerouting non le collega.
-- I datasheet di analog.com non si scaricano da qui (timeout, errore HTTP/2): pinout da verificare a mano e da segnare nel simbolo.
+- I datasheet di analog.com non si scaricano da qui (timeout, errore HTTP/2). Copia funzionante: la pagina radiolocman del pezzo → link «Download PDF» su rlocman.ru (così è arrivato l'ADG1434 Rev. E). Pinout sempre dal datasheet, mai a memoria.
 
 Simulare un netlist (LTspice 26.0.2 in batch; avvio 30-60 s; il log esce accanto al netlist e viene stampato):
 
@@ -73,7 +73,7 @@ Regole di simulazione (ognuna nasce da un errore già pagato; il contesto sta ne
 - `perl -e 'alarm ...'` ferma lo script ma non `LTspice.exe` dentro wine: il processo resta al 300 % di CPU. Controllare con `ps aux | grep -i LTspice.exe` e chiuderlo per PID.
 - Non fermare LTspice con `pkill -f <nome netlist>`: uccide anche lo script. `drive2-chain` a 150 Hz non termina (causa ignota): usare 50 Hz o 1 kHz.
 
-## Stato corrente (2026-10-27, decisioni 1-134)
+## Stato corrente (2026-10-27, decisioni 1-135)
 
 Il design teorico (carta + simulazione) è completo per tutti i moduli. Il prototipo musicale in Max for Live (dec. 78) precede il millefori: P0 (`MC-CHANNEL`), P1 (`MC-FILTRO`, canale R corretto il 2026-10-15) e P2 (`MC-5WAY`: CROSSOVER A-E con E = impianto di Filippo 80/170/1,2k + 6k, GROWL VER DEC.99/LIBERO, NASTRO VER OGGI/COMPLETO/EXCITER/CLASSE A/LIBERO) costruiti, verificati e in ascolto da Filippo; P3 e P4 costruiti e verificati, da caricare in Live (P4 = `MC-MIC`: GAIN, EQ2, FX1-4 verso i bus di P3, MUTE, LED; pedali = effetti di Live: `MC-SEND` per canale, `MC-BUS` → effetto → `MC-RET` su 4 tracce FX, `MC-MASTER`; bus con `send~`/`receive~` che si sommano) (`proto-max/RISULTATI-P*.md`). Il prototipo è completo ma BLOCCATO (2026-10-15, todo 76): in Live l'audio salta muovendo le manopole, soprattutto il filtro, e a tratti distorce forte. Non è la CPU (salti anche con buffer 2048) né il sample rate. Finché non si ripara, nessun ascolto del gruppo B vale. Prossimo: trovare la causa (ipotesi e prove nell'ultimo handoff). Generatori e prove in `proto-max/coefficienti/`: i `.genexpr/.maxpat/.amxd` non si toccano a mano. Gli acquisti sono sospesi fino al prototipo.
 

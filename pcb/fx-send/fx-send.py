@@ -20,13 +20,13 @@ C12 = "Capacitor_SMD:C_1206_3216Metric"
 
 ADG = boxsym("ADG1434", [
     ("1", "IN1", "input"), ("2", "S1A", "passive"), ("3", "D1", "passive"), ("4", "S1B", "passive"),
-    ("5", "VSS", "power_in"), ("6", "GND", "power_in"), ("7", "S4B", "passive"), ("8", "D4", "passive"),
-    ("9", "S4A", "passive"), ("10", "IN4", "input")], [
-    ("20", "IN2", "input"), ("19", "S2A", "passive"), ("18", "D2", "passive"), ("17", "S2B", "passive"),
-    ("16", "NC", "no_connect"), ("15", "VDD", "power_in"), ("14", "S3B", "passive"), ("13", "D3", "passive"),
+    ("5", "VSS", "power_in"), ("6", "GND", "power_in"), ("7", "S2B", "passive"), ("8", "D2", "passive"),
+    ("9", "S2A", "passive"), ("10", "IN2", "input")], [
+    ("20", "IN4", "input"), ("19", "S4A", "passive"), ("18", "D4", "passive"), ("17", "S4B", "passive"),
+    ("16", "VDD", "power_in"), ("15", "NIC", "no_connect"), ("14", "S3B", "passive"), ("13", "D3", "passive"),
     ("12", "S3A", "passive"), ("11", "IN3", "input")],
     fp="Package_SO:TSSOP-20_4.4x6.5mm_P0.65mm",
-    desc="Quad SPDT. PINOUT 6-20 DA VERIFICARE sul datasheet Rev. E (confermati 1-5)")
+    desc="Quad SPDT. Pinout TSSOP verificato sul datasheet Rev. E, tabella 8 (2026-10-27)")
 
 # ------------------------------------------------------------ backplane
 d.block = "BACKPLANE C96 (classe FX-SEND)"
@@ -161,14 +161,14 @@ for side, ueq, uinj in (("L", "U2", "U4"), ("R", "U3", "U5")):
 d.block = "ASSIGN S1-S4 (ADG1434 pi SPDT, soft-switch 1 ms, mute globale)"
 for side, ref in (("L", "U6"), ("R", "U7")):
     s = "_" + side
-    p = {"VDD": "+15SW", "VSS": "-15SW", "GND": "AGND", "NC": None}
+    p = {"VDD": "+15SW", "VSS": "-15SW", "GND": "AGND", "NIC": None}
     for k in range(1, 5):
         p["IN%d" % k] = "ASG%d" % k
-        p["S%dA" % k] = "LVL_W" + s        # NOTA: A = serie (IN alto), da verificare
+        p["S%dA" % k] = "LVL_W" + s        # A = serie (IN alto), datasheet tabella 9
         p["S%dB" % k] = "AGND"             # shunt a massa da off
         p["D%d" % k] = "SW%d%s" % (k, s)
     d.part("U", ADG, "ADG1434YRUZ", "Package_SO:TSSOP-20_4.4x6.5mm_P0.65mm", p, ref=ref,
-           note="pinout 6-20 e tabella di verità DA VERIFICARE")
+           note="pinout e tabella di verità verificati, Rev. E")
     d.C("+15SW", "AGND", "100n")
     d.C("AGND", "-15SW", "100n")
 for k in range(1, 5):
