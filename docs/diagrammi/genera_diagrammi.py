@@ -476,7 +476,7 @@ def five_way():
 # ---------------------------------------------------------------- FILTRO
 def filtro():
     d = Diagram("filtro", 1560, 920, "MODULO FILTRO GLOBALE",
-                "maelcum mixer — design v0.2 + D5 (dec. 109-110) · stile Sherman: 2 sezioni full-range 10 Hz–35 kHz, 8 core mono, un percorso per canale (dec. 101)",
+                "maelcum mixer — design v0.2 + D5 (dec. 109-110) · stile Sherman: HPF 20 Hz–35 kHz, LPF 10 Hz–35 kHz (dec. 137), 8 core mono, un percorso per canale (dec. 101)",
                 "B1: (a′) OTA o (c-B) pulito — ascolto")
     y = 120
     IN = d.box(40, y, 200, 86, "DAL BACKPLANE", ["4 × send stereo (pre-fader,", "post-EQ canale) + bit di modo",
@@ -510,7 +510,7 @@ def filtro():
     d.text(66, 442, "SEZIONE CONTROLLO — 6 knob: FREQ, RES, DRIVE per la sezione HPF e per la LPF (0-5 V)", 15, CV, weight=700)
     cy = 466
     b1 = d.box(66, cy, 215, 90, "LAW SHAPER", ["law Xone:96 (dec. 102):", "expo 20 Hz–20 kHz sul 90 %,",
-                                              "10 Hz / 35 kHz negli ultimi 5 %"], tsize=12, lsize=10)
+                                              "HPF da 20 Hz (dec. 137), LPF 10 Hz"], tsize=12, lsize=10)
     b2 = d.box(331, cy, 235, 90, "CONVERTER EXPO", ["coppia BJT matched, ΔVbe PTAT:", "Iabc 114 nA…397 µA = 10,6 Hz…37 kHz",
                                                  "deriva ≤ 2,4 % (0-50 °C)"], tsize=12, lsize=10)
     b3 = d.box(616, cy, 235, 90, "DISTRIBUZIONE", ["mirror bufferizzati × 8 + trim/core", "tracking ≤ 1,6 % PASS",

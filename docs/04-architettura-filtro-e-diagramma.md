@@ -190,4 +190,4 @@ più il proprio segnale filtrato. Nello Xone infatti il filtro lavora su un subm
 (post-fader): è l'unico modo di farlo con 2 core. La B′ mantiene invece il controllo
 individuale pre-fader, al costo di 4 core.
 
-HPF min: 10 Hz (decisione 68, derivata dal requisito infrasub, verifica in simulazione).
+HPF min: 10 Hz (decisione 68, derivata dal requisito infrasub, verifica in simulazione). [SUPERATO dalla dec. 137, 2026-10-27: HPF min 20 Hz.]

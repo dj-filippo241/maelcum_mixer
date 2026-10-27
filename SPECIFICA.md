@@ -1,6 +1,6 @@
 # SPECIFICA — MAELCUM MIXER (mixer dub modulare analogico, esemplare unico)
 
-> **v0.1 (2026-09-18, rev. 2026-09-28/01-10: decisioni 76-93; REV 2026-10-13: decisioni 97-106 recepite nei §4-6 come note in testa ai punti toccati + esiti simulazioni e sessione decisioni; REV 2026-10-14: decisioni 107-114; REV 2026-10-21: decisioni 115-118)** — Compilata da: decisioni 1-118 (`docs/01-decisioni-bloccate.md`; 103 e 104 revocate),
+> **v0.1 (2026-09-18, rev. 2026-09-28/01-10: decisioni 76-93; REV 2026-10-13: decisioni 97-106 recepite nei §4-6 come note in testa ai punti toccati + esiti simulazioni e sessione decisioni; REV 2026-10-14: decisioni 107-114; REV 2026-10-21: decisioni 115-118; REV 2026-10-27: decisioni 137-138, HPF del filtro da 20 Hz e subsonica phono 18 Hz)** — Compilata da: decisioni 1-118 (`docs/01-decisioni-bloccate.md`; 103 e 104 revocate),
 > status doc ChatGPT rev2 (`docs/export-chatgpt/`, corpus chiuso — decisione 58),
 > gain-staging sheet (`docs/fase1/gain-staging-sheet.md`), revisione critica (`docs/03`).
 > Livello: REQUISITI. Il dettaglio circuitale vive nei design doc di `docs/fase1/` e `docs/fase2/`.
@@ -18,7 +18,7 @@
 - [BLOCCATO] Stereo L/R ovunque; no pan; nessun controllo L/R separato; controlli linked; mono-compatibile.
 - [BLOCCATO] Livelli: nominale 0 dBu (0,775 Vrms); programma caldo ~+10 dBu; estremo interno ~+18 dBu; capability d'uscita pulita ≥ +24 dBu (solo stadio finale master). Referenza autorevole: gain-staging sheet.
 - [BLOCCATO, REV decisione 93 2026-10-01] Domini di alimentazione: **raw ±27 V audio · raw ±22 V LN/OTA · raw ±26 V [M] (SOLO stadio HV uscita master)** distribuiti sul backplane + **+5 V control** (regolato nel modulo PSU). Generazione LOCALE per modulo: ±18 V audio di percorso (LM317/337 dal raw ±27) · ±15 V ultra-low-noise (phono, mic, CV, metering, CUE: pre-reg ±16,5 V + LT3045/LT3094 dal raw ±22, dec. 54) · ±15 V switch/kill/assign (78L15/79L15 dal raw ±22, dec. 90c). Nessun raw alimenta mai un op-amp; il raw [M] alimenta solo lo stadio discreto HV master. (Il dominio «±24 V main unico» del consolidamento 2026-09-18 è SUPERATO: attuazione della dec. 90(c) — secondari dedicati audio/OTA/switch-logica.)
-- [BLOCCATO] Banda complessiva: −3 dB a ≤8 Hz … 35 kHz con filtri OFF; requisito infrasub: 10 Hz entro ±1 dB; nessun accoppiamento AC con corner >5 Hz nel percorso principale (DC servo).
+- [BLOCCATO] Banda complessiva: −3 dB a ≤8 Hz … 35 kHz con filtri OFF; requisito infrasub: 10 Hz entro ±1 dB; nessun accoppiamento AC con corner >5 Hz nel percorso principale (DC servo). [DEC. 137, 2026-10-27: la banda resta; l'infrasub non è più un gesto musicale (il VENU360 taglia a 37 Hz)] Eccezione voluta: subsonica del phono a 18 Hz (dec. 138).
 - [BLOCCATO] Nessun compressore/limiter/AGC. Protezione elettrica ≠ dinamica audio: protezioni DC/corto/ESD/RF e mute power-on/off obbligatorie.
 - [BLOCCATO] Nonlinearità intenzionali solo in: overdrive del filtro, drive del 5-way. Setting estremi permessi, elettricamente non distruttivi, saturazione morbida e recuperabile.
 - [BLOCCATO] Buffering low-Z tra stadi/moduli; buffer dedicato per ogni uscita (mai splittati).
@@ -108,7 +108,7 @@ Catena [BLOCCATO]: RCA stereo → protezione → front-end (LINE; PHONO MM v0.1 
 ## 6. Modulo 5-way (dub preamp) — requisiti
 
 - [BLOCCATO] Posizione: DJ BUS → 5-WAY → MASTER SUM. Riferimento interno −6 dB (pad in / makeup out, decisione 73).
-- [BLOCCATO] KILL: 5 sezioni = 5 vie dell'impianto; mappa [PROVVISORIO]: SUB ~10-90 Hz (esteso a 10 Hz per infrasub — decisione 65), KICK ~90-350, MID ~350-1,2k, HIGH ~1,2-3,5k, SUPER HI ~3,5-20k; 24 dB/ottava iniziali, overlap deliberato senza buchi; filter bank complementare (somma piatta senza kill); KILL prima dell'EQ creativo (il boost non ripristina materiale killato); kill switch per via (uno per altoparlanti fisici).
+- [BLOCCATO] KILL: 5 sezioni = 5 vie dell'impianto; mappa [PROVVISORIO]: SUB ~10-90 Hz (esteso a 10 Hz per infrasub — decisione 65; dec. 137: il KILL è un interruttore e spegne tutta la banda, nessun cambio), KICK ~90-350, MID ~350-1,2k, HIGH ~1,2-3,5k, SUPER HI ~3,5-20k; 24 dB/ottava iniziali, overlap deliberato senza buchi; filter bank complementare (somma piatta senza kill); KILL prima dell'EQ creativo (il boost non ripristina materiale killato); kill switch per via (uno per altoparlanti fisici).
 - [BLOCCATO] EQ creativo 5 bande: gain/position/width per banda (comandi gain = 5 pot rotativi, decisione 85); −∞/0/+15 (bande 1-3), +12 (banda 4), +9 (banda 5); range [PROVVISORIO]: 20-120 / 80-400 / 250-1,5k / 800-5k / 3-20 kHz; width: narrow ~Q3, medium ~Q1, broad ~Q0,5 [SUPERATO dec. 117: manopola continua Q3…Q0,3, five-way §4.3]; position sposta il centro senza stravolgere gain/Q.
 - [REV 2026-10-13 — DECISIONE 99] Drive = due saturatori con due manopole: GROWL (valvola spinta forte, solo sub e bassi) e NASTRO (JFET tape); niente fuzz; livello autoregolato (non alzano il volume); nessun boost pulito; primo 5-10 % di corsa quasi inerte. Design v0.4 SIMULATO (`five-way-module.md` §5bis: saturatori in parallelo al pulito, pot diretti, nessun VCA; volume ±0,2 dB al nominale; NASTRO 5,5 % e GROWL 20 % a fine corsa) GROWL sotto 350 Hz [F] [griglia DA CONFERMARE-F]. Il testo che segue descrive la v0.3, ARCHIVIATA come alternativa.
 - [SUPERATO, archiviato] Drive: dopo la somma EQ, prima del meter; full CCW = 0 dB (pulito), solo gain positivo CW; ~50% = punto ottimale (+7 dB senza distorsione), 50→80% = saturazione progressiva calda stile nastro, 80→100% = territorio fuzz (decisione 82); interagisce con gain di banda e overdrive filtro; JFET prima / BJT asimmetrico poi.
@@ -174,7 +174,7 @@ Design circuitale: `docs/fase1/master-out.md` **v0.3 (2026-09-29: stadio finale 
 ## 14. Rumore e banda — target
 
 - [PROVVISORIO] Allocazione per stadio (sheet §3): canale ≤−80 dBu A-wtd (dec. 89, misurato −94,6 con l'EQ isolator [docs/06 §10]; era −90,0 con l'EQ in serie) · bus FX send ≤−88 A-wtd (dec. 89, misurato −100,7) · filtro ≤−80 A-wtd (dec. 89: core nudo al limite a fc max col die reale → input q70) · **5-way ≤−80 dBu A-wtd (dec. 88, 2026-09-30: misurato −83,2 v031 al ricalcolo 2026-10-13 (era −83,9); out modulo, ingressi terminati, gain nominali, drive θ0)** · stadio XLR master ≤−92 (misurato −119,2 VALIDO; sistema ≤−78 A-wtd, dec. 89, condizioni docs/06 §2; VERIFICATO −82,9 = PASS 4,9 dB al ricalcolo 2026-10-13 sera con 5-way v0.4 e canale con isolator, docs/06 §10; era −80,0) · isolamento control→audio ≥100 dB · phono: budget dedicato al design. Tutto da validare in simulazione+misura (il −90 dBu "globale" dei doc resta target, non garanzia — correzione 13 review).
-- [BLOCCATO] Banda: §1 (8 Hz–35 kHz; 10 Hz ±1 dB infrasub).
+- [BLOCCATO] Banda: §1 (8 Hz–35 kHz; 10 Hz ±1 dB infrasub; dec. 137: banda invariata).
 
 ## 15. Interfaccia meccanica/elettrica
 

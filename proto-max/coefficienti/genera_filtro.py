@@ -235,9 +235,13 @@ def genexpr():
     for sez in ("hp", "lp"):
         r(f"// sezione {sez.upper()}: FREQ dec. 102 (a), RES dec. 102 (b)")
         r(f"th = s_freq_{sez} / 100;")
-        r(f"f_{sez} = (th < 0.05) * 10 * pow(2, th / 0.05)"
-          f" + (th >= 0.05) * (th <= 0.95) * 20 * pow(1000, (th - 0.05) / 0.9)"
-          f" + (th > 0.95) * 20000 * pow(1.75, (th - 0.95) / 0.05);")
+        if sez == "hp":  # dec. 137: HPF da 20 Hz
+            r(f"f_{sez} = (th <= 0.95) * 20 * pow(1000, th / 0.95)"
+              f" + (th > 0.95) * 20000 * pow(1.75, (th - 0.95) / 0.05);")
+        else:
+            r(f"f_{sez} = (th < 0.05) * 10 * pow(2, th / 0.05)"
+              f" + (th >= 0.05) * (th <= 0.95) * 20 * pow(1000, (th - 0.05) / 0.9)"
+              f" + (th > 0.95) * 20000 * pow(1.75, (th - 0.95) / 0.05);")
         op = "/" if sez == "hp" else "*"
         r(f"g_{sez}1 = tan(pi * f_{sez} {op} m1 / sr4);")
         r(f"g_{sez}2 = tan(pi * f_{sez} {op} m2 / sr4);")
@@ -386,7 +390,7 @@ def patch(codice):
                      numoutlets=0, presentation=1,
                      presentation_rect=[8, 144, 330, 24],
                      patching_rect=[20, 440, 330, 30], linecount=2,
-                     text="FREQ 0-100 % = 10 Hz-35 kHz (Xone:96). RES oltre "
+                     text="FREQ HPF 20 Hz-35 kHz, LPF 10 Hz-35 kHz. RES oltre "
                           "90 % = fischio. 0 dBu = -12 dBFS."
                           + (f" Semplice: {CORE[2][SCELTA_CORE == 'c']}, "
                              f"{list(filtro.ALLINEAMENTI)[SCELTA_PEND]}."

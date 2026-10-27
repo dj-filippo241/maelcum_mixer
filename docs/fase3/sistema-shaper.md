@@ -22,7 +22,7 @@ Dove sta nel mixer:
 | Drive 5-way | 1 | 0 / +7 / +9,5 / +12 / +14 / +16 dB (dec. 82/87) |
 | Drive filtro (HPF, LPF) | 2 | come il drive 5-way (filter-module §5bis) |
 | Position 5-way | 5 | frequenza esponenziale su 2,6 ottave |
-| Frequenza filtro (HPF, LPF) | 2 | curva Xone:96 nel 90 % centrale, più ripida negli ultimi 5 % (dec. 70/102) |
+| Frequenza filtro (HPF, LPF) | 2 | LPF: curva Xone:96 nel 90 % centrale, più ripida negli ultimi 5 % (dec. 70/102); HPF: 20 Hz a 0 %, senza ramo basso (dec. 137) |
 
 ## 2. Circuito: un op-amp, pochi diodi
 
@@ -105,6 +105,27 @@ temperatura (sole resistenze). Ai due ginocchi (5 % e 95 %) il diodo
 arrotonda lo spigolo: errore fino a −12 % a caldo, cioè 17,7 Hz al posto
 di 20 Hz. Tolleranza di progetto ±5-10 % (dec. 74): fuori solo in quel
 punto, a 50 °C, in zona infrasonica. Accettato come partenza.
+
+La tabella sopra vale per la sezione **LPF**. **Sezione HPF, dec. 137
+(2026-10-27)** (`shaper-filtro-freq-hpf.cir`, `-hpf-hot.cir`; tabella con
+`shaper_filtro_tab.py <log> --hp`): legge 20 Hz · 1000^(θ/0,95) fino al
+95 %, poi 20 → 35 kHz. Il ramo basso sparisce; Rm 9,09k → **9,53k**, ramo
+alto Ra 20k / Rb 24,3k → **17,8k / 21,5k**. Il ginocchio basso non c'è più:
+0-75 % esatto a tutte le temperature (errore 0,0 %, 37 Hz al 8,5 %).
+
+| Manopola | Target | 20 °C | 35 °C | 50 °C | 65 °C | 75 °C |
+|---|---|---|---|---|---|---|
+| 0 % | 20 Hz | 0,0 % | 0,0 % | 0,0 % | 0,0 % | −0,1 % |
+| 8,5 % | 37,1 Hz | 0,0 % | 0,0 % | 0,0 % | 0,0 % | −0,1 % |
+| 10-75 % | 41 Hz-4,7 kHz | 0,0 % | 0,0 % | 0,0 % | 0,0 % | −0,1 % |
+| 90 % | 13,9 kHz | +0,2 % | +0,4 % | +1,1 % | +2,4 % | +3,5 % |
+| 95 % | 20 kHz | +2,4 % | +4,7 % | +7,6 % | +11,3 % | +14,0 % |
+| 97,5 % | 26,5 kHz | −3,5 % | −0,4 % | +3,4 % | +7,6 % | +10,5 % |
+| 100 % | 35 kHz | −7,5 % | −3,7 % | +0,3 % | +4,8 % | +7,9 % |
+
+Il ginocchio alto si comporta come nella LPF (a caldo LPF: +14,5 % al
+95 % a 75 °C). Due shaper diversi per HPF e LPF: stessa famiglia, un ramo
+in meno nell'HPF.
 
 **Fader** (`shaper-fader.cir`, 3 rami, fader rovescio; dec. 126,
 2026-10-22): curva [PROVVISORIO] −12 dB a metà corsa; dal 45 % in su

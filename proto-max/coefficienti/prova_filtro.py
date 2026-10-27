@@ -58,7 +58,9 @@ def nuovo(testo):
     return g
 
 
-def theta_freq(fc):
+def theta_freq(fc, sez="lp"):
+    if sez == "hp":  # dec. 137: HPF da 20 Hz, 20 Hz - 20 kHz tra 0 e 95 %
+        return 100 * 0.95 * math.log(fc / 20) / math.log(1000)
     return 100 * (0.05 + 0.9 * math.log(fc / 20) / math.log(1000))
 
 
@@ -115,7 +117,7 @@ def main():
     for modo, nm in ((2, "lp"), (0, "hp")):
         for fc in (100, 1000, 10000):
             a = 1.0954 * 10 ** (-30 / 20) / liv
-            p = {f"freq_{nm}": theta_freq(fc), "modo": modo}
+            p = {f"freq_{nm}": theta_freq(fc, nm), "modo": modo}
             y, n0 = suona(testo, fc, a, durata=0.25 if fc < 300 else 0.12,
                           **p)
             controlla(f"{nm.upper()} fc {fc} Hz", db(ampiezza(y, fc, FS, n0)
@@ -129,7 +131,7 @@ def main():
                     if nm == "hp" and dbu == -30:
                         continue
                     av = 1.0954 * 10 ** (dbu / 20)
-                    p = {f"freq_{nm}": theta_freq(1000), f"res_{nm}": res,
+                    p = {f"freq_{nm}": theta_freq(1000, nm), f"res_{nm}": res,
                          "modo": modo, "core": lin}
                     y, n0 = suona(testo, 1000, av / liv, **p)
                     gen_db = db(ampiezza(y, 1000, FS, n0) * liv / av)
@@ -145,7 +147,7 @@ def main():
                     if res and dbu == 18:
                         continue
                     av = 1.0954 * 10 ** (dbu / 20)
-                    p = {f"freq_{nm}": theta_freq(1000), f"res_{nm}": res,
+                    p = {f"freq_{nm}": theta_freq(1000, nm), f"res_{nm}": res,
                          "modo": modo, "core": 1, "lim": j}
                     y, n0 = suona(testo, 1000, av / liv, **p)
                     gen_db = db(ampiezza(y, 1000, FS, n0) * liv / av)
@@ -166,11 +168,11 @@ def main():
         for modo, nm in ((2, "lp"), (0, "hp")):
             a = 1.0954 * 10 ** (-30 / 20) / liv
             y, n0 = suona(testo, 1000, a, modo=modo, pend=j,
-                          **{f"freq_{nm}": theta_freq(1000)})
+                          **{f"freq_{nm}": theta_freq(1000, nm)})
             controlla(f"{al} {nm.upper()}", db(ampiezza(y, 1000, FS, n0) / a),
                       att, 0.1)
             y, n0 = suona(testo, 2000, a, modo=modo, pend=j,
-                          **{f"freq_{nm}": theta_freq(1000)})
+                          **{f"freq_{nm}": theta_freq(1000, nm)})
             mod = db(modello(2000, 1000, a * liv, 0, nm, 0, al=al) / (a * liv))
             controlla(f"{al} {nm.upper()} a 2 kHz contro modello",
                       db(ampiezza(y, 2000, FS, n0) / a), mod, 0.05)
@@ -226,7 +228,7 @@ def main():
               {"modo": 2, "core": 1, "pend": 2, "drive_lp": 50},
               {"modo": 0, "core": 1, "pend": 1, "drive_hp": 50}):
         g = nuovo(testo)
-        g.imposta(freq_lp=theta_freq(1000), freq_hp=theta_freq(1000), **p)
+        g.imposta(freq_lp=theta_freq(1000), freq_hp=theta_freq(1000, "hp"), **p)
         dmax = 0.0
         for i in range(int(0.05 * FS)):
             x = a * math.sin(2 * math.pi * 1000 * i / FS)

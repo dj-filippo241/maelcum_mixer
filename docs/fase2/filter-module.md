@@ -174,8 +174,9 @@ le 11,8 ottave derivano del ~70% su 0-50 °C (misurato, §6).
     prototipo M4L. **[DEC. 137, 2026-10-27: vale per la sezione LPF. Sezione HPF:
     f = 20 Hz · 1000^(θ/0,95) tra 0 e 95 %, poi 20 → 35 kHz invariato. Tabella
     HPF: 0 % 20 Hz · 8,5 % 37 Hz · 10 % 41 Hz · 25 % 123 Hz · 50 % 759 Hz ·
-    75 % 4,67 kHz · 95 % 20 kHz · 100 % 35 kHz. Shaper del tratto basso e taratura
-    dell'estremo da rifare.]** [SUPERATO: f(0,05) = 14 Hz, f(0,95) = 25 kHz, «~4×» agli
+    75 % 4,67 kHz · 95 % 20 kHz · 100 % 35 kHz. Shaper HPF rifatto e simulato
+    (sistema-shaper §3, `sim/shaper/shaper-filtro-freq-hpf.cir`: ramo basso
+    tolto, 0-75 % esatto); restano i trimmer a banco come per la LPF.]** [SUPERATO: f(0,05) = 14 Hz, f(0,95) = 25 kHz, «~4×» agli
     estremi — in ottave gli estremi risultavano più lenti del centro.]
   - **Pre-distorsione**: l'errore residuo misurato del converter (§6: −3,6% → −9,4%,
     curva liscia monotona) si compensa nello shaper: vc* = vc_ideale − e(vc)/2,355

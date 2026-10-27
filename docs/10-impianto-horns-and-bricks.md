@@ -5,7 +5,7 @@ Fonte: scheda tecnica di Filippo aggiornata al 21/10/2026, incollata in sessione
 effetti esterni). Il testo sotto è la scheda così com'è. Le differenze con le decisioni del progetto
 stanno in `02-questioni-aperte.md` solo dopo che Filippo le ha discusse: questo documento non decide niente.
 
-Risposte di Filippo del 27/10: la quinta via arriva a breve, prima del mixer (dec. 132 b); maelcum sostituisce mixer DJ, EPM6 e Ligwa (dec. 132 a); incroci da valutare (B3); infrasub 10 Hz da rivedere (A20); gli effetti esterni citati qui non vincolano il progetto.
+Risposte di Filippo del 27/10: la quinta via arriva a breve, prima del mixer (dec. 132 b); maelcum sostituisce mixer DJ, EPM6 e Ligwa (dec. 132 a); incroci da valutare (B3); infrasub 10 Hz da rivedere (A20) [chiusa dalle dec. 137-138: banda invariata, HPF del filtro da 20 Hz, subsonica phono 18 Hz]; gli effetti esterni citati qui non vincolano il progetto.
 
 ---
 

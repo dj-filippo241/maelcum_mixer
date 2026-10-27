@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
 """Tabella dello shaper di frequenza del filtro (law dec. 102) dal log di
-shaper-filtro-freq.cir. Zero e fondo scala tarati a 35 C su 25 % e 75 %
+shaper-filtro-freq.cir (sezione LPF) o, con --hp, di shaper-filtro-freq-hpf.cir
+(sezione HPF, law dec. 137: 20 Hz a 0 %). Zero e fondo scala tarati a 35 C su 25 % e 75 %
 di corsa (zona a sole resistenze). Stampa frequenza ed errore a 20/35/50 C."""
 import re, math, sys
-s = open(sys.argv[1], errors='ignore').read()
-pts = [0, 0.025, 0.05, 0.10, 0.25, 0.40, 0.50, 0.60, 0.75, 0.90, 0.95, 0.975, 1.0]
+s = open([a for a in sys.argv[1:] if a != '--hp'][0], errors='ignore').read()
+HP = '--hp' in sys.argv
+pts = [0, 0.025, 0.05, 0.085, 0.10, 0.25, 0.40, 0.50, 0.60, 0.75, 0.90, 0.95, 0.975, 1.0]
 def tgt(t):
+    if HP and t <= 0.95: return 20 * 1000 ** (t / 0.95)
     if t <= 0.05: return 10 * 2 ** (t / 0.05)
     if t <= 0.95: return 20 * 1000 ** ((t - 0.05) / 0.9)
     return 20000 * 1.75 ** ((t - 0.95) / 0.05)
 V = {}
-for p in pts:
+for p in list(pts):
+    if 'Measurement: v%04d\n' % int(p * 1000) not in s:
+        pts.remove(p); continue
     b = s.split('Measurement: v%04d\n' % int(p * 1000))[1].split('Measurement')[0]
     V[p] = [float(x) for x in re.findall(r'^\s+\d+\s+(\S+)', b, re.M)]
 a, c = V[0.25][1], V[0.75][1]

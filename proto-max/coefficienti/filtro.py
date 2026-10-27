@@ -6,7 +6,8 @@ cambia qui.
 
 Origine dei numeri:
 - FREQ: dec. 102 (a), curva Xone:96 sul 90 % centrale, 10 Hz / 35 kHz agli
-  estremi (filter-module §1).
+  estremi (filter-module §1). Dec. 137 (2026-10-27): la sezione HPF parte
+  da 20 Hz (20 Hz - 20 kHz tra 0 e 95 %); la LPF resta com'era.
 - RES: dec. 102 (b), gres = 1 - theta/0,9 fino al 90 %; oltre, gres
   negativo fino a -0,75 a fine corsa (RISULTATI-D5 §2: "gres -0,1 poco
   oltre il 90 %", "-0,75 a RES 100 %").
@@ -73,8 +74,11 @@ K_RES = 1.0 / 15.0
 VS_RES = 2.0 * VT / K_RES
 
 
-def freq_law(theta):
-    """FREQ: 10 Hz (0 %) - 20 Hz (5 %) - 20 kHz (95 %) - 35 kHz (100 %)."""
+def freq_law(theta, sez="lp"):
+    """FREQ LPF: 10 Hz (0 %) - 20 Hz (5 %) - 20 kHz (95 %) - 35 kHz (100 %).
+    FREQ HPF (dec. 137): 20 Hz (0 %) - 20 kHz (95 %) - 35 kHz (100 %)."""
+    if sez == "hp" and theta <= 0.95:
+        return 20.0 * 1000.0 ** (theta / 0.95)
     if theta < 0.05:
         return 10.0 * 2.0 ** (theta / 0.05)
     if theta > 0.95:
