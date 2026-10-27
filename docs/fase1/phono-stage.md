@@ -40,6 +40,8 @@ Tre blocchi in cascata, RIAA **passiva** tra due stadi piatti:
 RCA PHONO → Rload 47k || Cload (switch) → [A1] STADIO 1 non-inv ×21
   (OPA1612: testina ~660 Ω = sorgente <100 Ω? no: 660 Ω — vedi nota)
   → [A2] SUBSONICA Sallen-Key HP 2 poli 13 Hz Q 0,707 (unity, OPA1612)
+     [DEC. 138, 2026-10-27: 18 Hz fissa, Rs1 61,9k / Rs2 124k;
+     sim/cdj/RISULTATI-phono-sub18.md]
   → [A3] RETE RIAA PASSIVA (R1 21,8k serie; C1 34,8n shunt; R2 3,16k+C2 100n
     shunt; uscita dal nodo R1/C1/R2 — C2 è interno al ramo, NON prelevare da lì)
   → [A4] DC BLOCK 1 polo 1,59 Hz (C3 100n serie + Rb2 1M verso gnd —
@@ -104,6 +106,7 @@ perdita di 3 dB di rumore: scelta rinviata al banco [PROVVISORIO].
   warp; 30 mV → clip dello stadio 2 (13,5 V). Margine documentato: dischi
   molto imbarcati + volume alto = clip udibile → opzione pannello
   "subsonica profonda" (SK 18-20 Hz o 3 poli) da valutare con Filippo
+  [SUPERATO dalla dec. 138: subsonica fissa a 18 Hz, nessun comando]
   [PROVVISORIO, tocca il layout comandi q. 24]. Nota REV 2026-09-30: questi
   numeri (netlist senza polo 15,9 Hz) valgono per la topologia fixata —
   il margine warp NON cambia con la fix, era la curva AC a essere incoerente.

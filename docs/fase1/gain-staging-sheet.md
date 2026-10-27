@@ -147,7 +147,7 @@ il percorso gestisce la tensione continua:
 
 | Tratto | Polo in basso | A 10 Hz | Continua | Esito |
 |---|---|---|---|---|
-| Phono | subsonica 13 Hz 2° ordine + DC block 1,6 Hz | circa −6 dB | bloccata | ESENTE: scelta voluta per il warp del vinile (dec. 79) |
+| Phono | subsonica 18 Hz 2° ordine (dec. 138; prima 13 Hz) + DC block 1,6 Hz | circa −6 dB | bloccata | ESENTE: scelta voluta per il warp del vinile (dec. 79) |
 | Ingresso line | **nessuno specificato** | 0 | **passa** | **BUCO → fix sotto** |
 | GAIN VCA + EQ 4 bande | nessuno (DC-coupled) | 0 | passa, il boost LOW la amplifica di +6 dB | **BUCO → fix sotto** |
 | Tap CUE, tap send, send filtro | nessuno | 0 | passa | segue il fix del canale |
