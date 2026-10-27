@@ -15,7 +15,7 @@ Le voci chiuse di A e B stanno in fondo a C («Voci chiuse delle liste A e B»).
 | # | Decisione | Dati pronti | Voce |
 |---|---|---|---|
 | A15 | **(dec. 114: boost confermato; curva e incroci restano in B7)** **RINVIATA ALL'ASCOLTO da Filippo il 2026-10-13 (→ B7; partenza 150/500/2500 Hz, +6 dB, law lineare).** ~~NUOVA (dec. 105, EQ isolator)~~: confermare incroci (150/500/2500 Hz oppure 100/630/4000 Hz: cambia quanto spariscono le bande medie chiuse da sole), boost +6 dB, law lineare della manopola | eq-isolator-v0.4 §4, §6 | 5, 59 |
-| A8 | **RINVIATA da Filippo il 2026-10-14.** Chi costruisce (tu, un tecnico, PCB assemblati) | — | 23 |
+| A8 | **CHIUSA 2026-10-27 → DECISIONE 134 (fabbrica per l'SMD, a mano pot, connettori e componenti grandi).** ~~RINVIATA da Filippo il 2026-10-14.~~ Chi costruisce (tu, un tecnico, PCB assemblati) | — | 23 |
 | A10 | **2026-10-14, Filippo: nessun limite per ora** (nome e misure dopo il prototipo; il telaio nasce dalla somma dei moduli). Nome sul telaio e ingombri massimi | — | 29 |
 | A11 | **RINVIATA da Filippo il 2026-10-14** (acquisti sospesi fino al prototipo). Strumenti di misura da avere per il banco | — | 30 |
 | A12 | Acquisto VCA: resta sospeso fino al prototipo (già deciso). **Conteggio corretto 2026-10-21 (todo 114): ~62 chip** (+8 col crossfader), lotto ~75-85 pz con scarti dell'abbinamento e scorte (`docs/fase3/sistema-vca-trim.md` §4, §6). [Superato: ~36-38 chip, lotto ~52-60] | voce 37 | 37 |
