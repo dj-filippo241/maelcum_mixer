@@ -38,7 +38,7 @@
 | Requisito | Valore | Fonte |
 |---|---|---|
 | Architettura | B′: core dedicato per canale, 4 stereo = 8 mono, stesso PCB | dec. 67 |
-| Sezioni | HPF e LPF indipendenti, entrambe full-range **10 Hz–35 kHz** | dec. 74 |
+| Sezioni | HPF e LPF indipendenti; LPF **10 Hz–35 kHz**, HPF **20 Hz–35 kHz** (dec. 137) | dec. 74/137 |
 | Pendenza | 24 dB/ott (4 poli = 2 sezioni 2-poli in cascata per core) | SPECIFICA §5 |
 | Pannello | 6 knob: FREQ/RES/DRIVE per sezione; per canale solo switch HPF/OFF/LPF | dec. 67 |
 | Legge knob | curva Xone:96 (20 Hz–20 kHz esponenziale) nel 90 % centrale; ultimi 5 % per lato fino a 10 Hz / 35 kHz; estremo di taglio = silenzio totale | dec. 70/74/102 |
@@ -171,7 +171,11 @@ le 11,8 ottave derivano del ~70% su 0-50 °C (misurato, §6).
     ottave in 5 %: ×1,45). Tabella θ → f: 0 % 10 Hz · 5 % 20 Hz · 10 % 29 Hz ·
     25 % 93 Hz · 40 % 294 Hz · 50 % 632 Hz · 60 % 1,36 kHz · 75 % 4,31 kHz ·
     90 % 13,6 kHz · 95 % 20 kHz · 100 % 35 kHz. Riferimento per shaper e
-    prototipo M4L. [SUPERATO: f(0,05) = 14 Hz, f(0,95) = 25 kHz, «~4×» agli
+    prototipo M4L. **[DEC. 137, 2026-10-27: vale per la sezione LPF. Sezione HPF:
+    f = 20 Hz · 1000^(θ/0,95) tra 0 e 95 %, poi 20 → 35 kHz invariato. Tabella
+    HPF: 0 % 20 Hz · 8,5 % 37 Hz · 10 % 41 Hz · 25 % 123 Hz · 50 % 759 Hz ·
+    75 % 4,67 kHz · 95 % 20 kHz · 100 % 35 kHz. Shaper del tratto basso e taratura
+    dell'estremo da rifare.]** [SUPERATO: f(0,05) = 14 Hz, f(0,95) = 25 kHz, «~4×» agli
     estremi — in ottave gli estremi risultavano più lenti del centro.]
   - **Pre-distorsione**: l'errore residuo misurato del converter (§6: −3,6% → −9,4%,
     curva liscia monotona) si compensa nello shaper: vc* = vc_ideale − e(vc)/2,355

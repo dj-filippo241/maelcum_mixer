@@ -110,3 +110,21 @@ Quietus, gearnews (AudioThing Dub Filter) · apiaudio.com (manuale 1608),
 Tape Op, Vintage King · Sound On Sound (Ghost, Venice F32, GSR24), brochure
 Ghost · B&H (GL2400, GS-R24) · mackie.com (1604VLZ4) · MusicRadar, Tape Op
 board, Wikipedia (Black Ark) · allen-heath.com (manuale GS-R24).
+
+## 5. Limiti bassi (ricerca 2026-10-27, per la questione A20)
+
+Fin dove scende la risposta in frequenza dei mixer del benchmark. Dati
+pubblicati dal costruttore o dal manuale; n.p. = non pubblicato. Ricerca web
+del 2026-10-27 (sessione «impianto e A20»).
+
+| Limite basso | Modelli |
+|---|---|
+| 5-10 Hz | Xone:92 originale 5 Hz ±0,5 dB · E&S DJR400 10 Hz −1 dB · Mackie 1604-VLZ4 <10 Hz −3 dB · Condesa Carmen V: banda SUB dell'isolator 10-80 Hz |
+| 15 Hz | Midas Venice · MasterSounds Radius 4 (HPF di canale da 15 Hz) |
+| 20 Hz | Rane MP2015 ±0,25 dB (più filtro infrasonico a 18 Hz sul phono) · Xone:92 Mk2 +1/−0,5 dB · Xone:464 +0/−1 dB · PLAYdifferently Model 1 +0/−2 dB · Pioneer DJM-900NXS2 e DJM-A9, AlphaTheta Euphonia (ingresso LINE) · Formula Sound FF6000, Soundcraft Ghost, Xone:96 (senza tolleranza) |
+| Preamp dub | Solo JB Audio Units pubblica un numero: sub 28-75 Hz. Abzu, Sage, Ligwa, Klementz, Mostec, SP Audio, Dub Sonic, Jah Tubby's, Moses, Ras EFX, Leviel: n.p. MCI di King Tubby: HPF da 70 Hz |
+| Non trovati | Bozak, UREI 1620, Union elara.4, Isonoe ISO420 (solo ±0,2 dB 20 Hz-20 kHz), DJM-V10 |
+
+Lettura: una banda a −3 dB sotto 10 Hz sta nella fascia alta dei mixer
+analogici, non fuori scala. La maggior parte dei mixer DJ si ferma a 20 Hz.
+I preamp dub non dichiarano il limite basso.
