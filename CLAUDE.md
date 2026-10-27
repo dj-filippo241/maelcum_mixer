@@ -31,6 +31,11 @@ Generare una scheda (Python di KiCad, ~4 min):
 /Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/3.9/bin/python3 pcb/fx-send/fx-send.py
 ```
 
+Regole delle PCB (nate il 2026-10-27):
+
+- Le reti che toccano pin TSSOP (passo 0,65) vogliono piste ≤ 0,3 mm: con 0,6 Freerouting non le collega.
+- I datasheet di analog.com non si scaricano da qui (timeout, errore HTTP/2): pinout da verificare a mano e da segnare nel simbolo.
+
 Simulare un netlist (LTspice 26.0.2 in batch; avvio 30-60 s; il log esce accanto al netlist e viene stampato):
 
 ```bash
