@@ -141,9 +141,10 @@ def boxsym(name, left, right, ref="U", fp="", desc=""):
 
 # ---------------------------------------------------------------- design
 class Part:
-    def __init__(self, ref, sym, value, fp, nets, block, note="", place=None):
+    def __init__(self, ref, sym, value, fp, nets, block, note="", place=None, anchor=None):
         self.ref, self.sym, self.value, self.fp = ref, sym, value, fp
         self.nets, self.block, self.note, self.place = nets, block, note, place
+        self.anchor = anchor     # punto dell'impronta (es. l'albero del pot) da mettere in place
         self.uuids = {}
 
 
@@ -157,7 +158,7 @@ class Design:
         self.notes = []
 
     # --- costruzione
-    def part(self, prefix, lib_id, value, fp, pins, note="", place=None, ref=None):
+    def part(self, prefix, lib_id, value, fp, pins, note="", place=None, ref=None, anchor=None):
         sym = libsym(lib_id) if isinstance(lib_id, str) else lib_id
         if ref is None:
             self.counters[prefix] = self.counters.get(prefix, 0) + 1
@@ -172,7 +173,7 @@ class Design:
                     raise ValueError("%s: pin %s inesistente in %s" % (ref, k, sym.lib_id))
                 k = byname[0]
             nets[k] = net
-        p = Part(ref, sym, value, fp, nets, self.block, note, place)
+        p = Part(ref, sym, value, fp, nets, self.block, note, place, anchor)
         self.parts.append(p)
         return p
 
@@ -501,7 +502,16 @@ class Design:
         free, fixed_boxes = [], []
         for p in self.parts:
             fp = fps[p.ref]
-            if p.place:
+            if p.place and p.anchor:
+                # place = posizione dell'ancora (coordinate dell'impronta, rotazione 0)
+                x, y, rot = p.place
+                fp.SetOrientationDegrees(rot)
+                a = math.radians(rot)
+                ax, ay = p.anchor
+                rx, ry = ax * math.cos(a) + ay * math.sin(a), -ax * math.sin(a) + ay * math.cos(a)
+                fp.SetPosition(pcbnew.VECTOR2I(mm(X0 + x - rx), mm(Y0 + y - ry)))
+                fixed_boxes.append(self._bbox(fp))
+            elif p.place:
                 x, y, rot = p.place
                 fp.SetOrientationDegrees(rot)
                 px = [pd.GetPosition() for pd in fp.Pads()]

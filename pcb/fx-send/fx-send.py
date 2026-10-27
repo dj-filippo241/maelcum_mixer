@@ -1,6 +1,10 @@
 """FX-SEND: micro-modulo send FX (dec. 91a), un canale stereo, 4x lo stesso PCB.
 
-Fonti: docs/fase1/fx-send-module.md, sim/fx/fx-eq2.cir, sim/fx/send-chain-noise.cir,
+v0.2 (2026-10-27): i pot stanno sulla scheda comandi (fx-send-comandi.py), dietro il
+pannello nelle posizioni di docs/pannelli/coordinate.json (dec. 135), collegata da un cavo
+piatto corto (J2). Cella LOW riordinata a Baxandall: un pot doppio 10k (sim/fx/fx-eq2-pot10k.cir).
+
+Fonti: docs/fase1/fx-send-module.md, sim/fx/fx-eq2-pot10k.cir, sim/fx/send-chain-noise.cir,
 docs/fase3/sistema-backplane.md (pinout C96), sim/system/psu-rail.cir (ramo +-18).
 Valori [PROVVISORIO]. Le scelte non scritte nei documenti sono segnate NOTA
 e riportate in pcb/fx-send/NOTE.md.
@@ -10,7 +14,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "tools"))
 from pcbgen import Design, boxsym
 
-d = Design("fx-send", HERE, "maelcum FX-SEND (dec. 91a) - bozza", board=(160, 100))
+d = Design("fx-send", HERE, "maelcum FX-SEND (dec. 91a) - bozza v0.2", board=(100, 165), rev="0.2-bozza")
 d.gnd = "AGND"
 SOIC8 = "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
 SOIC14 = "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
@@ -48,16 +52,16 @@ for s in range(1, 11):
 pins["c9"] = "GLOBAL_MUTE"
 for i in (16, 20, 24, 28): pins["c%d" % i] = "CTRL_GND"
 d.part("J", "Connector:DIN41612_03x32_C_Split", "C96 maschio", "Connector_DIN:DIN41612_C_3x32_Male_Horizontal_THT",
-       pins, ref="J1", place=(80, 93.5, 180), note="DIN 41612 C 3x32, angolo retto")
+       pins, ref="J1", place=(50, 158.5, 180), note="DIN 41612 C 3x32, angolo retto")
 d.part("H", "Mechanical:MountingHole_Pad", "CHASSIS", "MountingHole:MountingHole_3.2mm_M3_Pad",
        {1: "CHASSIS"}, ref="H1", place=(5, 5, 0), note="foro di fissaggio al pannello, a CHASSIS")
 d.part("H", "Mechanical:MountingHole_Pad", "CHASSIS", "MountingHole:MountingHole_3.2mm_M3_Pad",
-       {1: "CHASSIS"}, ref="H2", place=(155, 5, 0), note="foro di fissaggio al pannello, a CHASSIS")
+       {1: "CHASSIS"}, ref="H2", place=(95, 5, 0), note="foro di fissaggio al pannello, a CHASSIS")
 
 # ------------------------------------------------------------ alimentazione
 d.block = "ALIMENTAZIONE +-18 audio, +-15 switch, +5"
 d.power_nets("RAW+27", "RAW-27", "RAW+22", "RAW-22", "+5V", "AGND", "CTRL_GND", "CHASSIS", width=0.8)
-d.power_nets("+15SW", "-15SW", "+5VF", width=0.3)
+d.power_nets("+15SW", "-15SW", "+5VF", width=0.25)
 d.power_nets("+18V", "-18V", "V27F+", "V27F-", "V22F+", "V22F-", width=0.6)
 FB = "Inductor_SMD:L_1206_3216Metric"
 d.part("FB", "Device:FerriteBead_Small", "ferrite 600R", FB, {1: "RAW+27", 2: "V27F+"})
@@ -122,11 +126,12 @@ d.C("AGND", "-18V", "100n")
 for side, ueq, uinj in (("L", "U2", "U4"), ("R", "U3", "U5")):
     s = "_" + side
     d.block = "EQ2 lato %s (LOW 120 Hz + HIGH 4,5 kHz, fx-eq2.cir)" % side
-    # cella LOW shelf: Za = pot (gang a) // 56n fra NA e NB, Zb = pot (gang b) // 56n fra NC e VLO
-    d.R("VPRE" + s, "NA" + s, "1k 0.1%")
-    d.C("NA" + s, "NB" + s, "56n C0G", C12)
-    d.R("NB" + s, "NC" + s, "1k 0.1%")
-    d.C("NC" + s, "VLO" + s, "56n C0G", C12)
+    # cella LOW shelf Baxandall: pot 10k fra NA e NC, cursore su NB (massa virtuale);
+    # Za = NA-NB // 180n, Zb = NB-NC // 180n, poi Rf verso VLO (fx-eq2-pot10k.cir)
+    d.R("VPRE" + s, "NA" + s, "324 0.1%")
+    d.C("NA" + s, "NB" + s, "180n C0G", C12)
+    d.C("NB" + s, "NC" + s, "180n C0G", C12)
+    d.R("NC" + s, "VLO" + s, "324 0.1%")
     # cella HIGH sottrattiva
     d.C("VLO" + s, "NHA" + s, "10n C0G", C12)
     d.C("NHA" + s, "NHB" + s, "10n C0G", C12)
@@ -181,15 +186,18 @@ for k in range(1, 5):
 d.R("GLOBAL_MUTE", "MUTE_G", "1k")
 d.R("MUTE_G", "+5VF", "100k", note="NOTA: polarità c9 provvisoria, alto = muto (fail-safe)")
 
-# ------------------------------------------------------------ harness verso il pannello
-d.block = "HARNESS PANNELLO (pot LOW 4 sezioni, HIGH 2, LEVEL 2, 4 bottoni)"
-h = ["AGND", "NA_L", "NB_L", "NC_L", "VLO_L", "AGND", "NA_R", "NB_R", "NC_R", "VLO_R",
-     "AGND", "VHN_L", "WPH_L", "VHP_L", "VHN_R", "WPH_R", "VHP_R", "AGND",
-     "VHI_L", "LVL_W_L", "AGND", "VHI_R", "LVL_W_R", "AGND",
-     "+5VF", "BTN1", "BTN2", "BTN3", "BTN4", "CTRL_GND", "CHASSIS", "AGND", "AGND", "AGND"]
-d.part("J", "Connector_Generic:Conn_02x17_Odd_Even", "IDC 2x17", "Connector_IDC:IDC-Header_2x17_P2.54mm_Vertical",
-       {i + 1: n for i, n in enumerate(h)}, ref="J2", place=(80, 6, 90),
-       note="NOTA: pot fuori scheda; NB_x e NSH vicini alla massa virtuale")
+# ------------------------------------------------------------ cavi
+d.block = "CAVO SCHEDA COMANDI (J2) e BOTTONI ASSIGN (J3)"
+# stesso ordine di fx-send-comandi.py: masse fra i gruppi, NB (massa virtuale) fra due masse
+CAVO = ["AGND", "NA_L", "NB_L", "NC_L", "AGND", "NA_R", "NB_R", "NC_R",
+        "AGND", "VHN_L", "WPH_L", "VHP_L", "AGND", "VHN_R", "WPH_R", "VHP_R",
+        "AGND", "VHI_L", "LVL_W_L", "AGND", "VHI_R", "LVL_W_R", "AGND", "AGND"]
+d.part("J", "Connector_Generic:Conn_02x12_Odd_Even", "2x12 cavo piatto", "Connector_PinHeader_2.54mm:PinHeader_2x12_P2.54mm_Vertical",
+       {i + 1: n for i, n in enumerate(CAVO)}, ref="J2", place=(50, 5, 90),
+       note="cavo piatto corto verso la scheda comandi (pot a bordo, dec. 133)")
+d.part("J", "Connector_Generic:Conn_01x06", "1x6 bottoni", "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical",
+       {1: "+5VF", 2: "BTN1", 3: "BTN2", 4: "BTN3", 5: "BTN4", 6: "CTRL_GND"}, ref="J3", place=(80, 5, 90),
+       note="bottoni assign dal pannello del canale (logica +5 V, dec. 133)")
 
 if __name__ == "__main__":
     d.build(route="--no-route" not in sys.argv)

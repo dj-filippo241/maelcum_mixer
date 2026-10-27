@@ -1,5 +1,14 @@
 # FX-SEND — micro-modulo send FX (decisione 91)
 
+> **REV 2026-10-27 (PCB v0.2, dec. 135-136) [PROVVISORIO].** (1) Cella LOW riordinata a
+> Baxandall: Rf e Zb in serie si scambiano, così Za e Zb hanno in comune NB e diventano le due
+> metà di UN pot per lato. Pot doppio 10k invece di 4 sezioni da 31k; R 1k → 324 Ω, C 56n → 180n
+> C0G. Risposta uguale entro 0,31 dB (`sim/fx/RISULTATI-fx-eq2-pot10k.md`). (2) I 3 pot doppi
+> stanno su una scheda comandi parallela al pannello, nelle posizioni di
+> `docs/pannelli/coordinate.json`; un cavo piatto 2x12 la collega alla scheda principale. Il
+> «front connector» del §4 è superato. (3) LEVEL su pot da 9 mm (Alps RK09L doppio) finché non
+> c'è un'impronta per il 14 mm. PCB: `pcb/fx-send/NOTE.md`.
+
 > **Stato: v0.1-WIP (2026-10-01)** — design nuovo da decisione 91 (a):
 > EQ2 + level + switch assign ESCONO dal canale CDJ e vivono in un
 > micro-modulo separato, **uno identico per canale (4× stesso PCB)**.
