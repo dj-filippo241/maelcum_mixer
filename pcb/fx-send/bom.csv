@@ -15,7 +15,6 @@ quantita;valore;impronta;riferimenti;nota
 1;1N4148W;D_SOD-123;D3;
 1;S1G;D_SMA;D4;
 5;ferrite 600R;L_1206_3216Metric;FB1 FB2 FB3 FB4 FB5;
-2;CHASSIS;MountingHole_3.2mm_M3_Pad;H1 H2;foro di fissaggio al pannello, a CHASSIS
 1;C96 maschio;DIN41612_C_3x32_Male_Horizontal_THT;J1;DIN 41612 C 3x32, angolo retto
 1;2x12 cavo piatto;PinHeader_2x12_P2.54mm_Vertical;J2;cavo piatto corto verso la scheda comandi (pot a bordo, dec. 133)
 1;1x6 bottoni;PinHeader_1x06_P2.54mm_Vertical;J3;bottoni assign dal pannello del canale (logica +5 V, dec. 133)
@@ -29,13 +28,13 @@ quantita;valore;impronta;riferimenti;nota
 6;49k9 0.1%;R_0805_2012Metric;R15 R16 R17 R28 R29 R30;
 1;1k72 1%;R_0805_2012Metric;R2;1,72k: 19,2 V; E96 1,74k = 19,4 V
 1;1k;R_0805_2012Metric;R3;NOTA: cap-moltiplicatore scalato a ~50 mA (sim: 47R/10mF per 0,85 A)
-8;10k;R_0805_2012Metric;R35 R36 R38 R39 R41 R42 R44 R45;
-4;4k7;R_0805_2012Metric;R37 R40 R43 R46;NOTA: rampa del mute ~0,5 ms
+4;10k;R_0805_2012Metric;R35 R38 R41 R44;
+4;1k;R_0805_2012Metric;R37 R40 R43 R46;NOTA: mute a 0,45 V (VIL 0,8 V), rampa ~0,09 ms
 1;100k;R_0805_2012Metric;R48;NOTA: polarità c9 provvisoria, alto = muto (fail-safe)
 1;1k72 1%;R_0805_2012Metric;R5;
 2;1k;R_0805_2012Metric;R6 R47;
 1;100k;R_0805_2012Metric;R7;NOTA: tiene l'ingresso a massa senza canale
-1;100k;R_0805_2012Metric;R8;
+5;100k;R_0805_2012Metric;R8 R36 R39 R42 R45;
 4;324 0.1%;R_0805_2012Metric;R9 R10 R22 R23;
 1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U1;
 1;LM317;TO-220-3_Vertical;U10;

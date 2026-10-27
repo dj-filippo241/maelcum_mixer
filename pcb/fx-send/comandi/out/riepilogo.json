@@ -5,13 +5,69 @@
  "controllo_netlist": [],
  "erc": {},
  "reti_diverse_schema": [],
- "routing": true,
- "drc": {
-  "schematic_parity/warning/footprint_symbol_field_mismatch": 4,
-  "schematic_parity/warning/net_conflict": 6
+ "routing": {
+  "ok": true,
+  "aperti": {}
  },
- "bom": "/Users/filippo/Documents/ClaudeCode/maelcum_mixer/pcb/fx-send/comandi/bom.csv",
+ "drc": {
+  "atteso/warning/net_conflict": 6
+ },
+ "controllo_audio": {
+  "regole": {
+   "A1": [],
+   "A2": [],
+   "A3": [],
+   "A4": [],
+   "A5": []
+  },
+  "misure": {
+   "alimentazioni": [],
+   "regolatori": [],
+   "reti_sensibili": 0,
+   "A1_padpad_max_mm": [
+    0.0,
+    ""
+   ],
+   "A1_pista_max_mm": [
+    0.0,
+    ""
+   ],
+   "A2_lunghezza_max_mm": [
+    0.0,
+    ""
+   ],
+   "A2_via_max": [
+    0,
+    ""
+   ],
+   "A3_distanza_max_mm": [
+    0.0,
+    ""
+   ],
+   "A4_cm_max_pf": [
+    0.0,
+    ""
+   ],
+   "A5_distanza_min_mm": [
+    99.0,
+    ""
+   ]
+  },
+  "conteggio": {
+   "A1": 0,
+   "A2": 0,
+   "A3": 0,
+   "A4": 0,
+   "A5": 0
+  }
+ },
+ "bom": "bom.csv",
  "note": [
   "fanout di massa: 0 via"
+ ],
+ "esito": "PASSA",
+ "errori": [],
+ "peggiorato": [
+  "drc atteso/warning/net_conflict: 0 -> 6"
  ]
 }

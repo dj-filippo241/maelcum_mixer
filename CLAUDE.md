@@ -33,6 +33,7 @@ Generare una scheda (Python di KiCad, ~4 min):
 
 Regole delle PCB (nate il 2026-10-27):
 
+- La generazione finisce con PASSA o NON PASSA (codice 1): un NON PASSA non si committa. Le righe PEGGIO confrontano col giro prima. Controllo audio: `pcb/tools/audiocheck.py`, regole in `d.audio_rules`. Pinout del C96 solo da `pcb/tools/backplane.py`. Stato e piano: `pcb/NOTE-generatore.md`.
 - Le reti che toccano pin TSSOP (passo 0,65) vogliono piste ≤ 0,3 mm: con 0,6 Freerouting non le collega.
 - I datasheet di analog.com non si scaricano da qui (timeout, errore HTTP/2). Copia funzionante: la pagina radiolocman del pezzo → link «Download PDF» su rlocman.ru (così è arrivato l'ADG1434 Rev. E). Pinout sempre dal datasheet, mai a memoria.
 
@@ -49,6 +50,7 @@ Leggere un log (Python puro, nessun pacchetto da installare):
 ```bash
 python3 sim/mic/noise_total.py <log> [<log> ...]   # totali di rumore piatto e A-wtd da 16 punti di densità
 python3 sim/fourier_tab.py <log>                   # THD, H2, H3 dai blocchi .four
+python3 sim/lint_cir.py [file.cir ...]             # regole di simulazione come controllo; prima di simulare un netlist nuovo
 python3 sim/drive2_tab.py <log>                    # griglia drive v0.4 (log di drive2-chain*)
 python3 sim/shaper/shaper_fit.py                   # fit dei valori di uno shaper a diodi
 python3 docs/diagrammi/genera_diagrammi.py         # rigenera gli SVG: SOLO se Filippo lo chiede

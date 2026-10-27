@@ -8,7 +8,7 @@ Passi: schema (.kicad_sch, etichette sui pin) -> ERC e netlist da kicad-cli
 -> confronto col netlist voluto -> PCB a 4 strati (piazzamento per blocchi)
 -> Freerouting -> riempimento zone -> DRC. I report finiscono in out/.
 """
-import json, math, os, subprocess, sys, uuid, xml.etree.ElementTree as ET
+import difflib, json, math, os, re, shutil, subprocess, sys, uuid, xml.etree.ElementTree as ET
 sys.path.insert(0, os.path.dirname(__file__))
 from sexpr import parse, dump, find, first, Q
 
@@ -20,9 +20,34 @@ JAVA = "/opt/homebrew/opt/openjdk/bin/java"
 FREEROUTING = os.path.expanduser("~/Documents/ClaudeCode/kicad-prova/tools/freerouting-2.5.0.jar")
 G = 1.27
 
+# uuid ripetibili: lo stesso netlist dà lo stesso file, così git mostra solo le differenze vere
+_UIDNS = uuid.UUID("5d1c0a6e-6d61-656c-6375-6d2d70636267")
+_uidstate = {"seme": "pcbgen", "n": 0}
+
+
+def uid_seed(seme):
+    _uidstate["seme"], _uidstate["n"] = seme, 0
+
+
+def _uuid():
+    _uidstate["n"] += 1
+    return str(uuid.uuid5(_UIDNS, "%s/%d" % (_uidstate["seme"], _uidstate["n"])))
+
 
 def uid():
-    return Q(str(uuid.uuid4()))
+    return Q(_uuid())
+
+
+def _fresh(*paths):
+    """Toglie i report del giro prima: un file vecchio non deve passare per un risultato nuovo."""
+    for p in paths:
+        if os.path.exists(p):
+            os.remove(p)
+
+
+def _need(path, cosa):
+    if not os.path.exists(path):
+        raise SystemExit("manca %s: %s" % (cosa, path))
 
 
 def snap(v, g=G):
@@ -172,7 +197,11 @@ class Design:
                 if len(byname) != 1:
                     raise ValueError("%s: pin %s inesistente in %s" % (ref, k, sym.lib_id))
                 k = byname[0]
+            if k in nets:
+                raise ValueError("%s: pin %s dichiarato due volte (per numero e per nome?)" % (ref, k))
             nets[k] = net
+        if any(q.ref == ref for q in self.parts):
+            raise ValueError("riferimento %s usato due volte" % ref)
         p = Part(ref, sym, value, fp, nets, self.block, note, place, anchor)
         self.parts.append(p)
         return p
@@ -201,15 +230,29 @@ class Design:
         return nm
 
     def check(self):
+        """Errori del netlist voluto, prima di disegnare: reti con un pin solo, pin di
+        alimentazione dimenticati, nomi di rete quasi uguali (refusi)."""
         errs = []
-        for net, conns in self.netmap().items():
+        nm = self.netmap()
+        for net, conns in nm.items():
             if len(conns) < 2:
-                errs.append("net %s con un solo pin: %s" % (net, conns))
+                errs.append("rete %s con un solo pin: %s" % (net, conns))
+        for p in self.parts:
+            for q in p.sym.pins().values():
+                if q["type"] in ("power_in", "power_out") and q["num"] not in p.nets:
+                    errs.append("%s: pin di alimentazione %s (%s) non collegato" % (p.ref, q["num"], q["name"]))
+        names = sorted(nm)
+        for i, a in enumerate(names):
+            for b in difflib.get_close_matches(a, names[i + 1:], n=3, cutoff=0.9):
+                # stessi nomi a parte cifre o lato (S1/S2, _L/_R) sono voluti
+                if re.sub(r"\d|_[LR]$|[+-]", "", a) != re.sub(r"\d|_[LR]$|[+-]", "", b):
+                    errs.append("reti dai nomi quasi uguali: %s / %s (refuso?)" % (a, b))
         return errs
 
     # --- schema
     def write_schematic(self):
-        root = str(uuid.uuid4())
+        uid_seed(self.name)
+        root = _uuid()
         libs, items = {}, []
         for p in self.parts:
             libs[p.sym.lib_id] = p.sym.sexpr
@@ -295,10 +338,11 @@ class Design:
         return path
 
     def _sym_instance(self, p, u, x, y, root):
-        su = str(uuid.uuid4())
+        su = _uuid()
         p.uuids[u] = su
+        nobom = p.ref.startswith("#") or p.sym.lib_id.startswith("Mechanical:")
         s = ["symbol", ["lib_id", Q(p.sym.lib_id)], ["at", x, y, 0], ["unit", u], ["body_style", 1],
-             ["exclude_from_sim", "no"], ["in_bom", "no" if p.ref.startswith("#") else "yes"],
+             ["exclude_from_sim", "no"], ["in_bom", "no" if nobom else "yes"],
              ["on_board", "no" if p.ref.startswith("#") else "yes"], ["dnp", "no"], ["uuid", Q(su)],
              _prop("Reference", p.ref, x, y - 3.81), _prop("Value", p.value, x, y + 3.81),
              _prop("Footprint", p.fp, x, y, True), _prop("Datasheet", "", x, y, True)]
@@ -315,12 +359,22 @@ class Design:
         return ["global_label", Q(net), ["shape", "passive"], ["at", x, y, la], ["fields_autoplaced", "yes"],
                 ["effects", ["font", ["size", 1.0, 1.0]], ["justify", just]], ["uuid", uid()]]
 
+    @staticmethod
+    def _classname(w):
+        return "P%03d" % round(w * 100)
+
     def _write_project(self):
+        # le classi di rete vanno nel progetto: se si ritocca in KiCad, router e DRC le conoscono
+        classes = [{"name": "Default", "clearance": 0.2, "track_width": 0.25,
+                    "via_diameter": 0.8, "via_drill": 0.4}]
+        for w in sorted(set(self.netclass.values())):
+            classes.append({"name": self._classname(w), "clearance": 0.25, "track_width": w,
+                            "via_diameter": 1.0, "via_drill": 0.5})
+        assign = [{"netclass": self._classname(w), "pattern": net} for net, w in sorted(self.netclass.items())]
         pro = {"meta": {"filename": self.name + ".kicad_pro", "version": 3},
                "board": {"design_settings": {"defaults": {}, "rules": {"min_clearance": 0.2, "min_track_width": 0.12,
                                                                       "min_copper_edge_clearance": 0.3}}},
-               "net_settings": {"classes": [{"name": "Default", "clearance": 0.2, "track_width": 0.25,
-                                             "via_diameter": 0.8, "via_drill": 0.4}], "meta": {"version": 4}}}
+               "net_settings": {"classes": classes, "netclass_patterns": assign, "meta": {"version": 4}}}
         with open(os.path.join(self.outdir, self.name + ".kicad_pro"), "w") as f:
             json.dump(pro, f, indent=2)
         custom = [s.sexpr for s in _symcache.values() if s.lib_id.startswith("maelcum:")]
@@ -339,17 +393,20 @@ class Design:
         out = os.path.join(self.outdir, "out")
         os.makedirs(out, exist_ok=True)
         rep = os.path.join(out, "erc.json")
+        xmlp = os.path.join(out, "netlist.xml")
+        _fresh(rep, xmlp)
         subprocess.run([CLI, "sch", "erc", "--format", "json", "--severity-all", "-o", rep, sch],
                        capture_output=True)
+        _need(rep, "il report ERC (kicad-cli non è partito?)")
         erc = json.load(open(rep))
         counts = {}
         for sh in erc.get("sheets", []):
             for v in sh.get("violations", []):
                 key = (v["severity"], v["type"])
                 counts[key] = counts.get(key, 0) + 1
-        xmlp = os.path.join(out, "netlist.xml")
         subprocess.run([CLI, "sch", "export", "netlist", "--format", "kicadxml", "-o", xmlp, sch],
                        capture_output=True)
+        _need(xmlp, "il netlist esportato dallo schema")
         tree = ET.parse(xmlp)
         got = {}
         for n in tree.getroot().iter("net"):
@@ -357,11 +414,17 @@ class Design:
             if conns:
                 got[n.get("name").lstrip("/")] = conns
         want = {k: sorted(v) for k, v in self.netmap().items()}
+        # confronto nei due sensi: una rete voluta che manca, e una rete nata nello schema
+        # (due pin finiti sullo stesso punto). I pin liberi (reti a un pin) non contano.
         diff = []
         gotsets = {tuple(v) for v in got.values()}
+        wantsets = {tuple(v) for v in want.values()}
         for k, v in want.items():
             if tuple(v) not in gotsets:
-                diff.append(k)
+                diff.append("manca nello schema: " + k)
+        for k, v in got.items():
+            if len(v) > 1 and tuple(v) not in wantsets:
+                diff.append("rete in più nello schema: %s %s" % (k, v))
         return counts, diff
 
     # --- PCB
@@ -389,7 +452,7 @@ class Design:
             ns = ds.m_NetSettings
             classes = {}
             for net, w in self.netclass.items():
-                cname = "P%03d" % int(w * 100)
+                cname = self._classname(w)
                 if cname not in classes:
                     nc = pcbnew.NETCLASS(cname)
                     nc.SetTrackWidth(mm(w))
@@ -416,6 +479,13 @@ class Design:
             fp.SetReference(p.ref)
             fp.SetValue(p.value)
             fp.SetFPIDAsString(p.fp)
+            if p.note:
+                # la nota sta anche sull'impronta: sennò il DRC segnala la differenza di campi
+                fp.SetField("Nota", p.note)
+                try:
+                    fp.GetField("Nota").SetVisible(False)
+                except Exception:
+                    pass
             if p.uuids:
                 fp.SetPath(pcbnew.KIID_PATH("/" + p.uuids[min(p.uuids)]))
             for pad in fp.Pads():
@@ -447,7 +517,8 @@ class Design:
 
     def _fanout(self, b, net, mm, pcbnew):
         """Via di massa accanto a ogni pad SMD di massa: il piano interno fa il resto."""
-        n = 0
+        n, saltate, messe = 0, 0, []
+        altri = [pd for f in b.GetFootprints() for pd in f.Pads() if pd.GetNetCode() != net.GetNetCode()]
         for fp in b.GetFootprints():
             c = fp.GetPosition()
             for pad in fp.Pads():
@@ -457,10 +528,29 @@ class Design:
                 dx, dy = pp.x - c.x, pp.y - c.y
                 sz = pad.GetSize()
                 if abs(dx) >= abs(dy):
-                    off = pcbnew.VECTOR2I(int(math.copysign(sz.x / 2 + mm(0.75), dx or 1)), 0)
+                    sgn, half = math.copysign(1, dx or 1), sz.x / 2
+                    offs = [pcbnew.VECTOR2I(int(sgn * (half + mm(0.75))), 0),
+                            pcbnew.VECTOR2I(int(-sgn * (half + mm(0.75))), 0)]
                 else:
-                    off = pcbnew.VECTOR2I(0, int(math.copysign(sz.y / 2 + mm(0.75), dy or 1)))
-                vp = pcbnew.VECTOR2I(pp.x + off.x, pp.y + off.y)
+                    sgn, half = math.copysign(1, dy or 1), sz.y / 2
+                    offs = [pcbnew.VECTOR2I(0, int(sgn * (half + mm(0.75)))),
+                            pcbnew.VECTOR2I(0, int(-sgn * (half + mm(0.75))))]
+                # prima verso l'esterno; se cade su un pad di un'altra rete (es. il pin di massa
+                # dell'ADG1434 accanto al suo 100n) verso l'interno, sotto il corpo del chip
+                vp = None
+                for off in offs:
+                    cand = pcbnew.VECTOR2I(pp.x + off.x, pp.y + off.y)
+                    mid = pcbnew.VECTOR2I((pp.x + cand.x) // 2, (pp.y + cand.y) // 2)
+                    if any(o.HitTest(cand, mm(0.3 + 0.25)) or o.HitTest(mid, mm(0.2 + 0.2)) for o in altri):
+                        continue
+                    if any((cand.x - q.x) ** 2 + (cand.y - q.y) ** 2 < mm(0.85) ** 2 for q in messe):
+                        continue
+                    vp = cand
+                    break
+                if vp is None:
+                    saltate += 1
+                    continue
+                messe.append(vp)
                 v = pcbnew.PCB_VIA(b)
                 v.SetPosition(vp)
                 v.SetWidth(mm(0.6))
@@ -475,7 +565,7 @@ class Design:
                 t.SetNet(net)
                 b.Add(t)
                 n += 1
-        self.notes.append("fanout di massa: %d via" % n)
+        self.notes.append("fanout di massa: %d via, %d senza posto libero" % (n, saltate))
 
     def _zone(self, b, net, layer, X0, Y0, W, H, mm, pcbnew, prio=0):
         z = pcbnew.ZONE(b)
@@ -492,6 +582,9 @@ class Design:
         z.SetPadConnection(pcbnew.ZONE_CONNECTION_THERMAL)
         z.SetThermalReliefGap(mm(0.3))
         z.SetThermalReliefSpokeWidth(mm(0.4))
+        # i pezzi di colata staccati da tutto (isole) si tolgono: rame flottante e
+        # «collegamenti mancanti» fra frammenti della stessa zona
+        z.SetIslandRemovalMode(pcbnew.ISLAND_REMOVAL_MODE_ALWAYS)
         b.Add(z)
         return z
 
@@ -522,6 +615,13 @@ class Design:
                 fixed_boxes.append(self._bbox(fp))
             else:
                 free.append(p)
+        # disaccoppiamento: i 100n legati a un chip escono dal piazzamento a blocchi e
+        # viaggiano col loro chip, a ~2 mm dal pin di alimentazione
+        groups = self._decaps()
+        for ic, caps in groups.items():
+            self._attach(fps, ic, caps)
+        attached = {c for caps in groups.values() for c, _ in caps}
+        free = [p for p in free if p.ref not in attached]
         top, bot = Y0 + 2, Y0 + H - 2
         for (x1, y1, x2, y2) in fixed_boxes:
             if (y1 + y2) / 2 < Y0 + H / 2:
@@ -537,7 +637,7 @@ class Design:
             items = [p for p in free if p.block == blk]
             sizes = []
             for p in items:
-                x1, y1, x2, y2 = self._bbox(fps[p.ref])
+                x1, y1, x2, y2 = self._gbox(fps, p.ref, groups)
                 sizes.append((x2 - x1 + gap, y2 - y1 + gap))
             area = sum(w * h for w, h in sizes)
             bw = max(max(w for w, _ in sizes), math.sqrt(area * 1.2))
@@ -572,13 +672,80 @@ class Design:
             vsep = max(0, (bot - top) - hsum) / (len(c) + 1)
             for i, (pos, used, bh, y0) in enumerate(c):
                 for p, rx, ry in pos:
-                    fp = fps[p.ref]
-                    x1, y1, x2, y2 = self._bbox(fp)
-                    cx, cy = fp.GetPosition().x / 1e6, fp.GetPosition().y / 1e6
-                    tx = bx + rx + (cx - x1) + gap / 2
-                    ty = top + vsep * (i + 1) + y0 + ry + (cy - y1) + gap / 2
-                    fp.SetPosition(pcbnew.VECTOR2I(mm(tx), mm(ty)))
+                    x1, y1, x2, y2 = self._gbox(fps, p.ref, groups)
+                    dx = bx + rx + gap / 2 - x1
+                    dy = top + vsep * (i + 1) + y0 + ry + gap / 2 - y1
+                    for r in [p.ref] + [c for c, _ in groups.get(p.ref, [])]:
+                        fp = fps[r]
+                        q = fp.GetPosition()
+                        fp.SetPosition(pcbnew.VECTOR2I(int(q.x + mm(dx)), int(q.y + mm(dy))))
             bx += cw + sep
+
+    def _decaps(self):
+        """Lega ogni 100n fra un'alimentazione e la massa al chip dello stesso blocco che ha
+        quella alimentazione su un pin, nell'ordine in cui sono scritti nel netlist.
+        Ritorna {ref del chip: [(ref del C, pin del chip), ...]}."""
+        if not getattr(self, "decap_auto", True):
+            return {}
+        gnds = {getattr(self, "gnd", "AGND"), "CTRL_GND"}
+        free_pins = {}           # (blocco, rete) -> [(chip, pin)] ancora senza C
+        groups = {}
+        for p in self.parts:
+            if p.ref.startswith("U") and not p.place:
+                for q in p.sym.pins().values():
+                    net = p.nets.get(q["num"])
+                    if q["type"] == "power_in" and net and net not in gnds:
+                        free_pins.setdefault((p.block, net), []).append((p.ref, q["num"]))
+            elif p.ref.startswith("C") and p.value.startswith("100n") and not p.place:
+                nets = [n for n in p.nets.values() if n]
+                sup = [n for n in nets if n not in gnds]
+                if len(nets) == 2 and len(sup) == 1:
+                    cand = free_pins.get((p.block, sup[0]))
+                    if cand:
+                        ic, pin = cand.pop(0)
+                        groups.setdefault(ic, []).append((p.ref, pin))
+        return groups
+
+    def _attach(self, fps, ic, caps):
+        """Mette ogni C accanto al suo pin, verso l'esterno del chip, col pad
+        dell'alimentazione rivolto al pin. Due C sullo stesso lato si scalano in fuori."""
+        import pcbnew
+        mm = pcbnew.FromMM
+        u = fps[ic]
+        c0 = u.GetPosition()
+        nets = {pt.ref: pt.nets for pt in self.parts if pt.ref in [c for c, _ in caps]}
+        side_n = {}
+        for cref, pin in caps:
+            pad = [pd for pd in u.Pads() if pd.GetNumber() == pin][0]
+            pp = pad.GetPosition()
+            dx, dy = pp.x - c0.x, pp.y - c0.y
+            horiz = abs(dx) >= abs(dy)
+            sgn = 1 if (dx if horiz else dy) >= 0 else -1
+            k = side_n[(horiz, sgn)] = side_n.get((horiz, sgn), -1) + 1
+            cf = fps[cref]
+            cf.SetOrientationDegrees(0 if horiz else 90)
+            cf.SetPosition(pcbnew.VECTOR2I(0, 0))
+            cpads = list(cf.Pads())
+            span = max(abs(p.GetPosition().x if horiz else p.GetPosition().y) +
+                       (p.GetSize().x / 2) for p in cpads)
+            half_ic = (pad.GetSize().x if horiz else pad.GetSize().y) / 2
+            off = half_ic + mm(0.6) + span + k * (2 * span + mm(0.6))
+            if horiz:
+                tgt = pcbnew.VECTOR2I(int(pp.x + sgn * off), pp.y)
+            else:
+                tgt = pcbnew.VECTOR2I(pp.x, int(pp.y + sgn * off))
+            cf.SetPosition(tgt)
+            sup = [n for n in nets[cref].values() if n not in (getattr(self, "gnd", "AGND"), "CTRL_GND")][0]
+            near = min(cf.Pads(), key=lambda p: (p.GetPosition().x - pp.x) ** 2 + (p.GetPosition().y - pp.y) ** 2)
+            if near.GetNetname() != sup and nets[cref].get(near.GetNumber()) != sup:
+                cf.SetOrientationDegrees(180 if horiz else 270)
+        self.notes.append("disaccoppiamento: %s con %s" % (ic, ", ".join(c for c, _ in caps)))
+
+    def _gbox(self, fps, ref, groups):
+        """Riquadro di un pezzo, o del chip col suoi condensatori."""
+        boxes = [self._bbox(fps[r]) for r in [ref] + [c for c, _ in groups.get(ref, [])]]
+        return (min(b[0] for b in boxes), min(b[1] for b in boxes),
+                max(b[2] for b in boxes), max(b[3] for b in boxes))
 
     @staticmethod
     def _bbox(fp):
@@ -593,22 +760,32 @@ class Design:
         return (bb.GetLeft() / 1e6, bb.GetTop() / 1e6, bb.GetRight() / 1e6, bb.GetBottom() / 1e6)
 
     def route(self, pcb, passes=40):
+        """Freerouting. Ritorna {"ok", "aperti": {rete: n}}: i collegamenti lasciati aperti.
+        Quelli di massa li chiudono le colate; quelli di segnale sono un errore."""
         import pcbnew
+        _need(JAVA, "Java (brew install openjdk)")
+        _need(FREEROUTING, "il jar di Freerouting")
         out = os.path.join(self.outdir, "out")
         dsn, ses = os.path.join(out, self.name + ".dsn"), os.path.join(out, self.name + ".ses")
+        log = os.path.join(out, "freerouting.log")
+        _fresh(dsn, ses, log)
         b = pcbnew.LoadBoard(pcb)
         pcbnew.ZONE_FILLER(b).Fill(b.Zones())
         pcbnew.ExportSpecctraDSN(b, dsn)
         r = subprocess.run([JAVA, "-jar", FREEROUTING, "-de", dsn, "-do", ses, "-mp", str(passes)],
                            capture_output=True, text=True, timeout=3600)
-        with open(os.path.join(out, "freerouting.log"), "w") as f:
+        with open(log, "w") as f:
             f.write(r.stdout + r.stderr)
-        if not os.path.exists(ses):
-            return False
+        if r.returncode != 0 or not os.path.exists(ses):
+            return {"ok": False, "aperti": {}, "errore": "Freerouting uscito con codice %d" % r.returncode}
+        # l'ultimo elenco «Net 'X' (n unrouted connections)» del log
+        aperti = {}
+        for m in re.finditer(r"Net '([^']+)' \((\d+) unrouted", r.stdout + r.stderr):
+            aperti[m.group(1)] = int(m.group(2))
         b = pcbnew.LoadBoard(pcb)
         pcbnew.ImportSpecctraSES(b, ses)
         b.Save(pcb)
-        return True
+        return {"ok": True, "aperti": aperti}
 
     def pours(self, pcb):
         """Massa anche sui due strati esterni, poi riempimento di tutte le zone."""
@@ -623,22 +800,31 @@ class Design:
         pcbnew.ZONE_FILLER(b).Fill(b.Zones())
         b.Save(pcb)
 
+    # avvisi di parità che il generatore produce apposta: pin liberi del connettore
+    # (lo schema li chiama «unconnected-…», il pad resta senza rete) e staffe dei pot
+    ATTESI = (("schematic_parity", "net_conflict", re.compile(r"\(unconnected-")),
+              ("schematic_parity", "net_conflict", re.compile(r"pad MP ")),)
+
     def drc(self, pcb):
         out = os.path.join(self.outdir, "out", "drc.json")
+        _fresh(out)
         subprocess.run([CLI, "pcb", "drc", "--format", "json", "--severity-all", "--schematic-parity",
                         "-o", out, pcb], capture_output=True)
+        _need(out, "il report DRC")
         d = json.load(open(out))
         counts = {}
         for key in ("violations", "unconnected_items", "schematic_parity"):
             for v in d.get(key, []):
-                k = (key, v.get("severity"), v.get("type"))
+                text = v.get("description", "") + " " + " ".join(i.get("description", "") for i in v.get("items", []))
+                atteso = any(key == a and v.get("type") == t and rx.search(text) for a, t, rx in self.ATTESI)
+                k = ("atteso" if atteso else key, v.get("severity"), v.get("type"))
                 counts[k] = counts.get(k, 0) + 1
         return counts
 
     def bom(self):
         rows = {}
         for p in self.parts:
-            if p.ref.startswith("#"):
+            if p.ref.startswith("#") or p.sym.lib_id.startswith("Mechanical:"):
                 continue
             k = (p.value, p.fp, p.note)
             rows.setdefault(k, []).append(p.ref)
@@ -649,8 +835,49 @@ class Design:
                 f.write("%d;%s;%s;%s;%s\n" % (len(refs), v, fp.split(":")[1], " ".join(refs), note))
         return path
 
+    def verdetto(self, res, prev):
+        """Gli errori che fermano la scheda, e cosa è peggiorato rispetto al giro prima."""
+        gnd = getattr(self, "gnd", "AGND")
+        err = list(res["controllo_netlist"]) + list(res["reti_diverse_schema"])
+        err += ["ERC %s: %d" % (k, v) for k, v in res["erc"].items() if k.startswith("error")]
+        r = res["routing"]
+        if isinstance(r, dict):
+            if not r["ok"]:
+                err.append("routing non riuscito: %s" % r.get("errore", ""))
+            sig = {n: c for n, c in r["aperti"].items() if n not in (gnd, "CHASSIS")}
+            if sig:
+                err.append("Freerouting ha lasciato aperte reti di segnale: %s" % sig)
+        for k, v in res["drc"].items():
+            if k.startswith("violations/error") or k.startswith("unconnected_items"):
+                err.append("DRC %s: %d" % (k, v))
+            elif k.startswith("schematic_parity/"):
+                err.append("parità schema-PCB inattesa %s: %d" % (k, v))
+        peggio = []
+        if prev:
+            for sez in ("erc", "drc"):
+                for k, v in res[sez].items():
+                    if not k.startswith("atteso") and v > prev.get(sez, {}).get(k, 0):
+                        peggio.append("%s %s: %d -> %d" % (sez, k, prev.get(sez, {}).get(k, 0), v))
+            a, p = res.get("controllo_audio", {}).get("conteggio", {}), prev.get("controllo_audio", {}).get("conteggio", {})
+            for k, v in a.items():
+                if v > p.get(k, v):
+                    peggio.append("controllo audio %s: %d -> %d" % (k, p[k], v))
+        return err, peggio
+
+    def audio(self, pcb):
+        """Controllo audio dopo il routing (pcb/tools/audiocheck.py), con le regole del modulo."""
+        try:
+            import audiocheck
+        except ImportError:
+            return {"saltato": "manca pcb/tools/audiocheck.py"}
+        return audiocheck.check(pcb, getattr(self, "audio_rules", None))
+
     def build(self, route=True, passes=40):
-        os.makedirs(self.outdir, exist_ok=True)
+        """Tutta la catena. Esce con codice 1 se la scheda non passa: un errore non resta
+        sepolto nel JSON."""
+        os.makedirs(os.path.join(self.outdir, "out"), exist_ok=True)
+        rp = os.path.join(self.outdir, "out", "riepilogo.json")
+        prev = json.load(open(rp)) if os.path.exists(rp) else None
         res = {"modulo": self.name, "componenti": len(self.parts), "reti": len(self.netmap())}
         res["controllo_netlist"] = self.check()
         sch = self.write_schematic()
@@ -661,9 +888,21 @@ class Design:
         res["routing"] = self.route(pcb, passes) if route else "saltato"
         self.pours(pcb)
         res["drc"] = {"%s/%s/%s" % k: v for k, v in self.drc(pcb).items()}
-        res["bom"] = self.bom()
+        if route:
+            res["controllo_audio"] = self.audio(pcb)
+        res["bom"] = os.path.relpath(self.bom(), self.outdir)
         res["note"] = self.notes
-        with open(os.path.join(self.outdir, "out", "riepilogo.json"), "w") as f:
+        err, peggio = self.verdetto(res, prev)
+        res["esito"] = "NON PASSA" if err else "PASSA"
+        res["errori"], res["peggiorato"] = err, peggio
+        with open(rp, "w") as f:
             json.dump(res, f, indent=1, ensure_ascii=False)
         print(json.dumps(res, indent=1, ensure_ascii=False))
+        print("\n%s: %s" % (self.name, res["esito"]))
+        for e in err:
+            print("  ERRORE  " + e)
+        for e in peggio:
+            print("  PEGGIO  " + e)
+        if err:
+            sys.exit(1)
         return res

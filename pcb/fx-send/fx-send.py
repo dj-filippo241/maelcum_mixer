@@ -13,6 +13,8 @@ import os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "tools"))
 from pcbgen import Design, boxsym
+from backplane import c96, SYM_C96, FP_C96
+from cavo import CAVO
 
 d = Design("fx-send", HERE, "maelcum FX-SEND (dec. 91a) - bozza v0.2", board=(100, 165), rev="0.2-bozza")
 d.gnd = "AGND"
@@ -34,24 +36,14 @@ ADG = boxsym("ADG1434", [
 
 # ------------------------------------------------------------ backplane
 d.block = "BACKPLANE C96 (classe FX-SEND)"
-pins = {}
-for i in (1, 2): pins["a%d" % i] = "RAW+27"
-for i in (3, 4): pins["a%d" % i] = "RAW-27"
-for i in (5, 6): pins["a%d" % i] = "RAW+22"
-for i in (7, 8): pins["a%d" % i] = "RAW-22"
-for i in range(13, 21): pins["a%d" % i] = "AGND"
-for i in (21, 22): pins["a%d" % i] = "+5V"
-for i in (23, 24): pins["a%d" % i] = "CTRL_GND"
-for i in (25, 26): pins["a%d" % i] = "CHASSIS"
-pins.update({"b1": "SEND_IN_L", "b2": "SEND_IN_R"})
+b = {"b1": "SEND_IN_L", "b2": "SEND_IN_R"}
 for k in range(1, 5):
-    pins["b%d" % (3 * k + 1)] = "S%d_OUT_L" % k
-    pins["b%d" % (3 * k + 2)] = "S%d_OUT_R" % k
+    b["b%d" % (3 * k + 1)] = "S%d_OUT_L" % k
+    b["b%d" % (3 * k + 2)] = "S%d_OUT_R" % k
 for s in range(1, 11):
-    pins["b%d" % (3 * s)] = "AGND"
-pins["c9"] = "GLOBAL_MUTE"
-for i in (16, 20, 24, 28): pins["c%d" % i] = "CTRL_GND"
-d.part("J", "Connector:DIN41612_03x32_C_Split", "C96 maschio", "Connector_DIN:DIN41612_C_3x32_Male_Horizontal_THT",
+    b["b%d" % (3 * s)] = "AGND"
+pins = c96(b, c=["c9"])
+d.part("J", SYM_C96, "C96 maschio", FP_C96,
        pins, ref="J1", place=(50, 158.5, 180), note="DIN 41612 C 3x32, angolo retto")
 d.part("H", "Mechanical:MountingHole_Pad", "CHASSIS", "MountingHole:MountingHole_3.2mm_M3_Pad",
        {1: "CHASSIS"}, ref="H1", place=(5, 5, 0), note="foro di fissaggio al pannello, a CHASSIS")
@@ -81,7 +73,7 @@ d.R("ADJ+", "AGND", "1k72 1%", note="1,72k: 19,2 V; E96 1,74k = 19,4 V")
 d.CP("ADJ+", "AGND", "10u 35V", "Capacitor_THT:CP_Radial_D5.0mm_P2.00mm")
 d.CP("VREG+", "AGND", "47u 35V", "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm")
 d.part("D", "Diode:1N4148W", "1N4148W", "Diode_SMD:D_SOD-123", {"K": "VREG+", "A": "ADJ+"}, note="scarica Cadj")
-d.part("D", "Diode:1N4148W", "S1G", "Diode_SMD:D_SMA", {"K": "V27F+", "A": "VREG+"}, note="protezione inversa")
+d.part("D", "Device:D", "S1G", "Diode_SMD:D_SMA", {"K": "V27F+", "A": "VREG+"}, note="protezione inversa")
 d.R("VREG+", "BASE+", "1k", note="NOTA: cap-moltiplicatore scalato a ~50 mA (sim: 47R/10mF per 0,85 A)")
 d.CP("BASE+", "AGND", "470u 25V", "Capacitor_THT:CP_Radial_D8.0mm_P3.50mm")
 d.part("Q", "Transistor_BJT:BD139", "BD139", "Package_TO_SOT_THT:TO-126-3_Vertical",
@@ -95,7 +87,7 @@ d.R("ADJ-", "AGND", "1k72 1%")
 d.CP("AGND", "ADJ-", "10u 35V", "Capacitor_THT:CP_Radial_D5.0mm_P2.00mm")
 d.CP("AGND", "VREG-", "47u 35V", "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm")
 d.part("D", "Diode:1N4148W", "1N4148W", "Diode_SMD:D_SOD-123", {"A": "VREG-", "K": "ADJ-"})
-d.part("D", "Diode:1N4148W", "S1G", "Diode_SMD:D_SMA", {"A": "V27F-", "K": "VREG-"})
+d.part("D", "Device:D", "S1G", "Diode_SMD:D_SMA", {"A": "V27F-", "K": "VREG-"})
 d.R("VREG-", "BASE-", "1k")
 d.CP("AGND", "BASE-", "470u 25V", "Capacitor_THT:CP_Radial_D8.0mm_P3.50mm")
 d.part("Q", "Transistor_BJT:BD140", "BD140", "Package_TO_SOT_THT:TO-126-3_Vertical",
@@ -125,7 +117,7 @@ d.C("AGND", "-18V", "100n")
 
 for side, ueq, uinj in (("L", "U2", "U4"), ("R", "U3", "U5")):
     s = "_" + side
-    d.block = "EQ2 lato %s (LOW 120 Hz + HIGH 4,5 kHz, fx-eq2.cir)" % side
+    d.block = "EQ2 lato %s (LOW 120 Hz + HIGH 4,5 kHz, fx-eq2-pot10k.cir)" % side
     # cella LOW shelf Baxandall: pot 10k fra NA e NC, cursore su NB (massa virtuale);
     # Za = NA-NB // 180n, Zb = NB-NC // 180n, poi Rf verso VLO (fx-eq2-pot10k.cir)
     d.R("VPRE" + s, "NA" + s, "324 0.1%")
@@ -176,11 +168,15 @@ for side, ref in (("L", "U6"), ("R", "U7")):
            note="pinout e tabella di verità verificati, Rev. E")
     d.C("+15SW", "AGND", "100n")
     d.C("AGND", "-15SW", "100n")
+# Soglie ADG1434: VIH 2,0 V min, VIL 0,8 V max (adg1434-datasheet-verify.md).
+# Bottone premuto: 5 V x 100k/(10k+100k) = 4,55 V. Mute: 1k in serie al FET contro il 10k
+# del bottone = 5 V x 0,99k/10,99k = 0,45 V, sotto VIL. Rampe: accensione 0,9 ms, mute 0,09 ms.
+# (v0.2 aveva 10k a massa e 4k7 sul FET: 2,5 V acceso e 1,2 V col mute, fra le due soglie.)
 for k in range(1, 5):
     d.R("BTN%d" % k, "ASG%d" % k, "10k")
     d.C("ASG%d" % k, "CTRL_GND", "100n")
-    d.R("ASG%d" % k, "CTRL_GND", "10k")
-    d.R("ASG%d" % k, "MD%d" % k, "4k7", note="NOTA: rampa del mute ~0,5 ms")
+    d.R("ASG%d" % k, "CTRL_GND", "100k")
+    d.R("ASG%d" % k, "MD%d" % k, "1k", note="NOTA: mute a 0,45 V (VIL 0,8 V), rampa ~0,09 ms")
     d.part("Q", "Transistor_FET:2N7002", "2N7002", "Package_TO_SOT_SMD:SOT-23",
            {"D": "MD%d" % k, "S": "CTRL_GND", "G": "MUTE_G"})
 d.R("GLOBAL_MUTE", "MUTE_G", "1k")
@@ -188,16 +184,22 @@ d.R("MUTE_G", "+5VF", "100k", note="NOTA: polarità c9 provvisoria, alto = muto 
 
 # ------------------------------------------------------------ cavi
 d.block = "CAVO SCHEDA COMANDI (J2) e BOTTONI ASSIGN (J3)"
-# stesso ordine di fx-send-comandi.py: masse fra i gruppi, NB (massa virtuale) fra due masse
-CAVO = ["AGND", "NA_L", "NB_L", "NC_L", "AGND", "NA_R", "NB_R", "NC_R",
-        "AGND", "VHN_L", "WPH_L", "VHP_L", "AGND", "VHN_R", "WPH_R", "VHP_R",
-        "AGND", "VHI_L", "LVL_W_L", "AGND", "VHI_R", "LVL_W_R", "AGND", "AGND"]
+# ordine dei fili in cavo.py, lo stesso di fx-send-comandi.py
 d.part("J", "Connector_Generic:Conn_02x12_Odd_Even", "2x12 cavo piatto", "Connector_PinHeader_2.54mm:PinHeader_2x12_P2.54mm_Vertical",
        {i + 1: n for i, n in enumerate(CAVO)}, ref="J2", place=(50, 5, 90),
        note="cavo piatto corto verso la scheda comandi (pot a bordo, dec. 133)")
 d.part("J", "Connector_Generic:Conn_01x06", "1x6 bottoni", "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical",
        {1: "+5VF", 2: "BTN1", 3: "BTN2", 4: "BTN3", 5: "BTN4", 6: "CTRL_GND"}, ref="J3", place=(80, 5, 90),
        note="bottoni assign dal pannello del canale (logica +5 V, dec. 133)")
+
+# regole del controllo audio (pcb/tools/audiocheck.py): masse virtuali e ingressi
+# invertenti, reti del cavo dei pot, reti rumorose e regolatori
+d.audio_rules = {
+    "sensibili": r"^(NB|NSH|NVH|NHB|VPRE|SEND_IN|INJ\d|S\d_OUT)_[LR]$",
+    "cavo": r"^(NA|NB|NC)_[LR]$",
+    "rumorose": r"^(\+15SW|-15SW|ASG\d|MUTE_G|GLOBAL_MUTE|\+5VF?|BTN\d|MD\d|SW\d_[LR]|V27F[+-]|VREG[+-]|BASE[+-]|RAW.*|CTRL_GND)$",
+    "regolatori": ["U10", "U11", "U12", "U13", "Q1", "Q2"],
+}
 
 if __name__ == "__main__":
     d.build(route="--no-route" not in sys.argv)

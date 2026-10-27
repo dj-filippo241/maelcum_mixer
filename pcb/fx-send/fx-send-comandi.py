@@ -15,6 +15,7 @@ import json, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "tools"))
 from pcbgen import Design, boxsym
+from cavo import CAVO
 
 ROOT = os.path.join(HERE, "..", "..")
 PANNELLO = json.load(open(os.path.join(ROOT, "docs", "pannelli", "coordinate.json")))["moduli"]["fx-send"]
@@ -58,9 +59,6 @@ for c in PANNELLO["comandi"]:
            note="%s; manopola %s, cappuccio %s mm" % (nota, c["nome"], c["cappuccio"]))
 
 d.block = "CAVO VERSO LA SCHEDA PRINCIPALE"
-CAVO = ["AGND", "NA_L", "NB_L", "NC_L", "AGND", "NA_R", "NB_R", "NC_R",
-        "AGND", "VHN_L", "WPH_L", "VHP_L", "AGND", "VHN_R", "WPH_R", "VHP_R",
-        "AGND", "VHI_L", "LVL_W_L", "AGND", "VHI_R", "LVL_W_R", "AGND", "AGND"]
 d.part("J", "Connector_Generic:Conn_02x12_Odd_Even", "2x12 cavo piatto",
        "Connector_PinHeader_2.54mm:PinHeader_2x12_P2.54mm_Vertical",
        {i + 1: n for i, n in enumerate(CAVO)}, ref="J1", place=(W / 2, H - 4.5, 90),
