@@ -36,7 +36,7 @@
 | | KILL di banda | 5 | levetta 3 posizioni ON-OFF-(ON), logica (dec. 121) | su = kill fisso, giù = kill a molla |
 | | GROWL e NASTRO (dec. 99; era DRIVE ×1) | 2 | doppi diretti sul segnale (v0.4, niente CV): GROWL lineare, NASTRO log A 10 % (five-way §5bis, prototipo `fiveway.py`; Filippo 2026-10-22) | primo 5-10 % quasi inerte |
 | | Meter | 1 | barra 10 LED | |
-| **Master** | MASTER | 1 | singolo lin → CV | detent a 0 dB |
+| **Master** | MASTER | 1 | singolo lin → CV | detent al centro = 0 dB (dec. 139) |
 | | BOOTH | 1 | singolo lin → CV | |
 | | Meter | 2 | barre 20 LED | |
 | **CUE** | BLEND cue ↔ master | 1 | doppio 10k lin | centro = 50/50 |
@@ -111,7 +111,7 @@ Grande = pot 14 mm · media = pot 14 mm con cappuccio ~12 mm · piccola = pot 9 
 | POSITION | 5 | media | no |
 | WIDTH | 5 | media | no |
 | GROWL e NASTRO | 2 | grande | no |
-| MASTER | 1 | grande | 0 dB |
+| MASTER | 1 | grande | 0 dB, al centro (dec. 139) |
 | BOOTH | 1 | grande | no |
 | BLEND del CUE | 1 | grande | centro |
 | LEVEL cuffie | 1 | piccola | no |

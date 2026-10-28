@@ -22,6 +22,7 @@ Dove sta nel mixer:
 | Drive 5-way | 1 | 0 / +7 / +9,5 / +12 / +14 / +16 dB (dec. 82/87) |
 | Drive filtro (HPF, LPF) | 2 | come il drive 5-way (filter-module §5bis) |
 | Position 5-way | 5 | frequenza esponenziale su 2,6 ottave |
+| MASTER e BOOTH | 2 | MASTER: silenzio → 0 dB allo scatto al centro → +6 dB (dec. 139); BOOTH: curva del fader |
 | Frequenza filtro (HPF, LPF) | 2 | LPF: curva Xone:96 nel 90 % centrale, più ripida negli ultimi 5 % (dec. 70/102); HPF: 20 Hz a 0 %, senza ramo basso (dec. 137) |
 
 ## 2. Circuito: un op-amp, pochi diodi
@@ -131,6 +132,47 @@ in meno nell'HPF.
 2026-10-22): curva [PROVVISORIO] −12 dB a metà corsa; dal 45 % in su
 errore entro ±0,35 dB a 20-50 °C, fino al 20 % entro ±1 dB; fader chiuso
 ≥ 102 dB. Tabella: `sim/cdj/RISULTATI-fader-vca.md`.
+
+**MASTER** (`shaper-master.cir` + `master_fit.py`, 4 rami, pot rovescio;
+dec. 139, 2026-10-28, todo 181). Curva [PROVVISORIO, dec. 129]: 0 dB allo
+scatto al centro, sopra lineare in dB fino a +6, sotto 40 log10(2θ)
+(−12 dB al 25 %), fondo corsa chiesto a −140 dB. Il +6 dB viene da un ramo
+d'offset Roff 137k verso −5 V (uscita +0,366 V a fine corsa; convenzione
+della famiglia: uscita negativa = taglio; il verso sul pin EC− lo dà lo
+stadio del partitore, `sistema-vca-trim.md` §3.2). Valori E96: Rm 68,1k ·
+rami (Ra/Rb) 1,91k/2,43k · 16,9k/38,3k · 1,82k/2,43k · 1,96k/2,61k.
+Errore in dB:
+
+| Manopola | Target | 20 °C | 35 °C | 50 °C |
+|---|---|---|---|---|
+| 100 % | +6.0 dB | -0.02 | -0.01 | -0.01 |
+| 90 % | +4.8 dB | -0.02 | -0.02 | -0.01 |
+| 80 % | +3.6 dB | -0.02 | -0.02 | -0.01 |
+| 70 % | +2.4 dB | -0.03 | -0.02 | -0.02 |
+| 60 % | +1.2 dB | -0.03 | -0.03 | -0.02 |
+| 55 % | +0.6 dB | -0.03 | -0.03 | -0.03 |
+| 50 % | +0.0 dB | -0.06 | -0.09 | -0.17 |
+| 47 % | -1.1 dB | +0.50 | +0.33 | +0.08 |
+| 45 % | -1.8 dB | +0.70 | +0.40 | +0.06 |
+| 40 % | -3.9 dB | +0.59 | +0.16 | -0.28 |
+| 35 % | -6.2 dB | +0.31 | -0.16 | -0.62 |
+| 30 % | -8.9 dB | +0.22 | -0.25 | -0.73 |
+| 25 % | -12.0 dB | +0.55 | +0.07 | -0.41 |
+| 20 % | -15.9 dB | +1.54 | +1.03 | +0.49 |
+| 15 % | -20.9 dB | +3.35 | +2.40 | +0.91 |
+| 10 % | -28.0 dB | +2.53 | -2.23 | -8.54 |
+| 5 % | -40.0 dB | -13.09 | -23.40 | -34.53 |
+| 0 % | silenzio | -101 dB | -113 dB | -126 dB |
+
+Sopra il centro la curva è fatta di sole resistenze: esatta e ferma con la
+temperatura. Allo scatto il primo diodo comincia appena a condurre: −0,17 dB
+a 50 °C, uguale sui due lati (una CV sola), si azzera a banco col trimmer
+d'offset. Da −16 a −28 dB l'errore arriva a +3 dB a freddo; sotto il 10 %
+la curva cade più in fretta del bersaglio (−52…−75 dB al 5 %): lì il master
+è già quasi muto. Pot chiuso: −101 dB a 20 °C, requisito ≤ −90 dB.
+
+**BOOTH** (−∞ → 0 dB, senza scatto, dec. 125): stessa curva e stesso shaper
+del fader (`shaper-fader.cir`, −12 dB a metà corsa). [PROVVISORIO, dec. 129]
 
 ## 4. Cosa resta
 
