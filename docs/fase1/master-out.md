@@ -440,3 +440,17 @@ l'anello. Costo sempre presente: 1 driver + 1 buffer stereo.
 driver dedicato ≤ 50 Ω, 0 dBu nominale, su b31-b32. Così il modulo per vie
 segue master level, MONO e grafico. Mute: il modulo per vie ascolta
 GLOBAL_MUTE (c9).
+
+## ADDENDUM 2026-10-28 — schede del modulo (decisioni 140-141)
+
+Il modulo è fatto di quattro schede, generate con `pcb/tools/pcbgen.py`
+in `pcb/master/`:
+- **segnale** (col C96): [A2], [A3] MONO, INS_SEND/RET, [A] [B] [C] [N],
+  [D] e [B2] coi VCA, shaper e trim, [V] VIE_TAP, detector del meter [E];
+- **uscita** (sovrapposta, unita da un connettore): [F]+[G] ×4 col servo DC,
+  [B3] booth driver, [B4] [C3] [H] relè, [L] mute controller, [M] PSU HV;
+- **comandi** dietro il pannello: pot MASTER e BOOTH, tasto MONO, LM3915
+  e 2×20 LED;
+- **connettori** sul pannello posteriore: 4 XLR, TRS REC, protezioni [I].
+Relè: G6K-2F (5 V, 237 Ω), 5 pezzi: master 2, booth 2, rec 1
+(`sim/master-out/RISULTATI-mute-ctrl.md`).

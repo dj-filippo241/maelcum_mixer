@@ -76,7 +76,7 @@ Regole di simulazione (ognuna nasce da un errore già pagato; il contesto sta ne
 - `perl -e 'alarm ...'` ferma lo script ma non `LTspice.exe` dentro wine: il processo resta al 300 % di CPU. Controllare con `ps aux | grep -i LTspice.exe` e chiuderlo per PID.
 - Non fermare LTspice con `pkill -f <nome netlist>`: uccide anche lo script. `drive2-chain` a 150 Hz non termina (causa ignota): usare 50 Hz o 1 kHz.
 
-## Stato corrente (2026-10-28, decisioni 1-139)
+## Stato corrente (2026-10-28, decisioni 1-141)
 
 Il design teorico (carta + simulazione) è completo per tutti i moduli. Il prototipo musicale in Max for Live (dec. 78) precede il millefori: P0 (`MC-CHANNEL`), P1 (`MC-FILTRO`, canale R corretto il 2026-10-15) e P2 (`MC-5WAY`: CROSSOVER A-E con E = impianto di Filippo 80/170/1,2k + 6k, GROWL VER DEC.99/LIBERO, NASTRO VER OGGI/COMPLETO/EXCITER/CLASSE A/LIBERO) costruiti, verificati e in ascolto da Filippo; P3 e P4 costruiti e verificati, da caricare in Live (P4 = `MC-MIC`: GAIN, EQ2, FX1-4 verso i bus di P3, MUTE, LED; pedali = effetti di Live: `MC-SEND` per canale, `MC-BUS` → effetto → `MC-RET` su 4 tracce FX, `MC-MASTER`; bus con `send~`/`receive~` che si sommano) (`proto-max/RISULTATI-P*.md`). Il prototipo è completo ma BLOCCATO (2026-10-15, todo 76): in Live l'audio salta muovendo le manopole, soprattutto il filtro, e a tratti distorce forte. Non è la CPU (salti anche con buffer 2048) né il sample rate. Finché non si ripara, nessun ascolto del gruppo B vale. Prossimo: trovare la causa (ipotesi e prove nell'ultimo handoff). Generatori e prove in `proto-max/coefficienti/`: i `.genexpr/.maxpat/.amxd` non si toccano a mano. Gli acquisti sono sospesi fino al prototipo.
 
@@ -119,7 +119,7 @@ La coda vive in tre posti, non qui:
 
 ```
 SPECIFICA.md                  specifica consolidata
-docs/01-decisioni-bloccate.md cosa è deciso (139 voci; 103 e 104 revocate)
+docs/01-decisioni-bloccate.md cosa è deciso (141 voci; 103 e 104 revocate)
 docs/02-questioni-aperte.md   cosa manca: liste A/B/C in testa, storico delle voci sotto
 docs/03 … 08                  revisione critica, architettura filtro, benchmark, rumore, review
 docs/09-budget.md             costi per modulo e totale (generato da docs/budget/genera_budget.py)
