@@ -178,7 +178,7 @@ Design circuitale: `docs/fase1/master-out.md` **v0.3 (2026-09-29: stadio finale 
 
 ## 15. Interfaccia meccanica/elettrica
 
-- [BLOCCATO] Il design del pannello è di Filippo; l'elettronica fornisce: consumi per modulo, pin count/famiglia connettori, correnti backplane, contatti di massa, schermature, accessi di servizio/test. Fader = slider, resto = pot rotativi; hardware manopole = sessione dedicata (questione 40). [APERTO] ingombri/telaio (questione 29).
+- [BLOCCATO] Il design del pannello è di Filippo; l'elettronica fornisce: consumi per modulo, pin count/famiglia connettori, correnti backplane, contatti di massa, schermature, accessi di servizio/test. Fader = slider, resto = pot rotativi; hardware manopole = sessione dedicata (questione 40). [APERTO] ingombri/telaio (questione 29). [DEC. 142, 2026-10-28: schede alte 220 mm comuni a tutti i moduli, SMD sui due lati dove serve, più schede affiancate sotto un pannello; master = 3 schede.]
 - [DEC. 118, 2026-10-21] Rotativi principali classe 14 mm (Alps RK14K o equivalente), disposti disassati come sul Xone:DB4; EQ di FX-SEND, ritorni FX, MIC e MONO classe 9 mm senza scatto al centro. `docs/fase3/sistema-comandi.md` §Scelte hardware.
 - [DEC. 119, 2026-10-22, precisa la dec. 111 (e)] Pot a corpo chiuso (senza grado IP); la protezione da polvere e liquidi la fanno guarnizioni del pannello e coperchio del flight case; pot sostituibili senza rifare la scheda.
 - [DEC. 120, 2026-10-22] Fader dei canali e dei ritorni FX: corsa 100 mm. Tracking stereo ≤ 0,5 dB (dec. 59) da risolvere in ingegneria: fader selezionati o fader → VCA.

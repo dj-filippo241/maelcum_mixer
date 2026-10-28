@@ -262,6 +262,9 @@ ramo e dei fusibili di ramo (S1 §4).
    innesta verso il basso; guide laterali in lamiera per l'allineamento.
    Manutenzione: sviti il pannello, sfili il modulo — nessuna rimozione
    di cablaggio. Ingombri esatti = questione 29 (pannello di Filippo).
+   [REV 2026-10-28, dec. 142] Schede alte 220 mm (dal pannello al
+   backplane, comune a tutti i moduli), SMD sui due lati dove serve,
+   più schede affiancate sotto un pannello quando non basta una.
 3. **Comportamento a modulo rimosso** (q38): sistema SPENTO (no
    hot-swap [BLOCCATO]). Ad ogni modo: le uscite dei moduli assenti non
    caricano i bus (i bus sono ingressi a massa virtuale con iniezione

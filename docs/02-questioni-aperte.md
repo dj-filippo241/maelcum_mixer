@@ -148,7 +148,7 @@ Spostate qui il 2026-10-21 dalle tabelle A e B: chiuse da una decisione o cadute
 26. Quale DSP/processore e quali finali ha l'impianto a valle. **CHIUSA come requisito 2026-09-18**: uscita universale per DSP standard (decisione 49). Il modello specifico resta utile solo per la calibrazione finale al banco, non blocca nulla.
 27. Modello esatto dello Zoom per l'uscita REC. **CHIUSA come requisito 2026-09-18**: REC universale per registratori standard (decisione 50).
 28. Frequenze di taglio/zone delle 5 vie del suo soundsystem (serve per il filter bank del 5-way — voce 8).
-29. **[2026-10-14: nessun limite per ora, si fissa dopo il prototipo]** Nome/cognome del progetto per il telaio, vincoli meccanici di ingombro (il design del pannello è suo).
+29. **[2026-10-14: nessun limite per ora, si fissa dopo il prototipo; 2026-10-28, dec. 142: altezza interna delle schede 220 mm, mixer alto ~25 cm]** Nome/cognome del progetto per il telaio, vincoli meccanici di ingombro (il design del pannello è suo).
 
 ## Nati dal design fase 1 — modulo MASTER OUT (2026-09-18, docs/fase1/master-out.md)
 
