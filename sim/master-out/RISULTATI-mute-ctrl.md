@@ -12,8 +12,9 @@ tempi del supervisore: `docs/fase3/sistema-psu-esterno.md` §2.5, §2.6, §4.4.
 - **Timer.** RAILS_OK carica CT 2,2 µF attraverso RT 1,2 MΩ. Un comparatore
   confronta CT con VREF 2,495 V (TL431) e dà OKD (open collector, pull-up 10k).
   Il diodo DT scarica CT subito quando RAILS_OK cade: mute subito, riarmo lento.
-- **Relè.** Master, booth, rec: Omron G6K-2 5 V (178 Ω, 28,1 mA), eccitati =
-  suono, diseccitati = muto (failsafe). Driver NMOS logic level (AO3400)
+- **Relè.** Master, booth, rec: Omron G6K-2F 5 V (237 Ω, 21,1 mA: datasheet
+  Omron, 2026-10-28), eccitati = suono, diseccitati = muto (failsafe). Cinque
+  relè doppi: master 2 e booth 2 (caldo e freddo di L e R), rec 1. Driver NMOS logic level (AO3400)
   pilotato da OKD.
 - **GLOBAL_MUTE (c9).** NMOS open drain (2N7002) pilotato da OKD: **basso =
   suona, alto = muto**. Le pull-up stanno nei moduli che ascoltano (100k su ogni
@@ -31,18 +32,29 @@ box (rete −10 %: i regolatori escono dopo 25,9 ms). Tolleranza di CT ±10 %.
 | Riarmo dopo un buco di rete di 20 ms | 1,57 s | 1,74 s | 1,91 s | 1,5-2 s (psu-esterno §4.4) |
 | GLOBAL_MUTE alta dopo la caduta di AC_OK | 0,048 ms | 0,047 ms | 0,044 ms | subito |
 | Idem allo spegnimento | 0,067 ms | 0,069 ms | 0,069 ms | subito |
-| Bobine scariche (10 % della corrente), diodo solo | 1,35 ms | 1,35 ms | 1,35 ms | |
-| Idem, diodo + zener 12 V | 0,30 ms | 0,30 ms | 0,30 ms | |
-| Corrente nelle bobine durante l'accensione (prima del timer) | 0,8 µA | 0,8 µA | 0,8 µA | nessun impulso |
+| Bobine scariche (10 % della corrente), diodo solo | 1,02 ms | 1,02 ms | 1,03 ms | |
+| Idem, diodo + zener 12 V | 0,24 ms | 0,24 ms | 0,24 ms | |
+| Corrente nelle bobine durante l'accensione (prima del timer) | 1,0 µA | 1,0 µA | 1,0 µA | nessun impulso |
+| Corrente delle 5 bobine eccitate, dal +5 V | 105 mA | 105 mA | 105 mA | |
 
-- **Spegnimento: margine ampio.** Bobina scarica in 1,35 ms, più il rilascio
-  meccanico del G6K (3 ms max: dato di catalogo, da verificare sul PDF Omron):
-  contatti aperti entro ~4,4 ms dalla caduta di AC_OK. I regolatori del box
+- **Spegnimento: margine ampio.** Bobina scarica in 1,0 ms, più il rilascio
+  meccanico del G6K (3 ms max, verificato sul datasheet Omron il 2026-10-28):
+  contatti aperti entro ~4,1 ms dalla caduta di AC_OK. I regolatori del box
   escono dopo 25,9 ms nel caso peggiore. Basta il diodo solo; lo zener non serve.
 - **FX-SEND.** GLOBAL_MUTE sale in meno di 0,07 ms; poi gli assign si aprono
   con la rampa di 0,09 ms (pcb/fx-send/NOTE.md punto 12). La matrice del
   self-feedback è muta prima che i rail si muovano.
 - **Tensione sul driver** con lo zener: 18,4 V (AO3400 regge 30 V). Col diodo solo 5,8 V.
+
+## Revisione 2026-10-28: dati veri del relè
+
+Il primo giro usava 178 Ω e 28,1 mA per bobina e tre relè. Il datasheet Omron
+G6K (scaricato da omronfs.omron.com) dà per il 5 V: 237 Ω, 21,1 mA, eccitazione
+≤ 80 % (4 V), rilascio ≥ 10 % (0,5 V), tempi di eccitazione e rilascio 3 ms max.
+Piedinatura G6K-2F, vista dall'alto: bobina 1 (+) e 8 (−); comuni 3 e 6;
+a riposo chiusi 2 e 7, eccitati chiusi 4 e 5. Il netlist ora ha `Rc` e `Nrel`
+(5 relè): i tempi di accensione e riarmo non cambiano, le bobine si scaricano
+prima (1,02 ms invece di 1,35).
 
 ## Errori trovati e corretti in questa simulazione
 

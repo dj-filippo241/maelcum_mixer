@@ -6,7 +6,7 @@
 * (mute subito, riarmo lento). Comparatore del timer contro VREF 2,495 V
 * (TL431) -> OKD (open collector, pull-up 10k).
 * OKD comanda: (1) i 3 rele' di uscita (master, booth, rec; Omron G6K-2 5 V,
-*     178 ohm, 28,1 mA; eccitati = suono, diseccitati = muto: failsafe);
+*     237 ohm, 21,1 mA (datasheet Omron G6K, 2026-10-28; prima 178 ohm); eccitati = suono, diseccitati = muto: failsafe);
 *     due varianti di spegnimento della bobina: A = diodo solo, B = diodo + zener 12 V;
 * (2) la linea GLOBAL_MUTE c9: NMOS open drain, basso = suona; le pull-up
 *     100k dei moduli (4 FX-SEND) la portano alta = muto quando il master
@@ -51,16 +51,17 @@ DT ct rok BAT54
 S3 okd 0 vref ct SWC
 Rpokd okd p5 10k
 * driver dei rele': NMOS logic level (AO3400) pilotato in tensione da OKD
-* (3 bobine in parallelo = una bobina equivalente /3)
+* (Nrel bobine in parallelo = una bobina equivalente /Nrel; 5 rele': master 2, booth 2, rec 1)
+.param Rc=237 Nrel=5 Ion={Nrel*5/Rc}
 RbA okd bA 100
 MA cA bA 0 AO3400
-LA p5 xA {Lc/3}
-RA xA cA {178/3}
+LA p5 xA {Lc/Nrel}
+RA xA cA {Rc/Nrel}
 DA cA p5 D1N4148
 RbB okd bB 100
 MB cB bB 0 AO3400
-LB p5 xB {Lc/3}
-RB xB cB {178/3}
+LB p5 xB {Lc/Nrel}
+RB xB cB {Rc/Nrel}
 DB cB zB D1N4148
 DZB p5 zB DZ12
 * GLOBAL_MUTE c9 verso 4 FX-SEND: pull-up 100k ciascuno, ~470 pF di backplane
@@ -73,22 +74,22 @@ Cg mg 0 50p
 .tran 0 7.2 0 0.2m
 * accensione
 .meas tran t_c9_on   WHEN V(c9)=0.8 FALL=1
-.meas tran t_relA_on WHEN I(LA)=63m RISE=1
-.meas tran t_relB_on WHEN I(LB)=63m RISE=1
+.meas tran t_relA_on WHEN I(LA)={0.75*Ion} RISE=1
+.meas tran t_relB_on WHEN I(LB)={0.75*Ion} RISE=1
 .meas tran iA_glitch MAX I(LA) FROM 0 TO 1.4
 .meas tran iA_on AVG I(LA) FROM 2.5 TO 2.9
 .meas tran iB_on AVG I(LB) FROM 2.5 TO 2.9
 * buco di rete di 20 ms a 3,000 s
 .meas tran d_c9_buco   TRIG V(acok)=2.5 TD=2.9 FALL=1 TARG V(c9)=2.0 TD=2.9 RISE=1
-.meas tran d_relA_buco TRIG V(acok)=2.5 TD=2.9 FALL=1 TARG I(LA)=8.4m TD=2.9 FALL=1
-.meas tran d_relB_buco TRIG V(acok)=2.5 TD=2.9 FALL=1 TARG I(LB)=8.4m TD=2.9 FALL=1
+.meas tran d_relA_buco TRIG V(acok)=2.5 TD=2.9 FALL=1 TARG I(LA)={0.1*Ion} TD=2.9 FALL=1
+.meas tran d_relB_buco TRIG V(acok)=2.5 TD=2.9 FALL=1 TARG I(LB)={0.1*Ion} TD=2.9 FALL=1
 .meas tran t_riarmo    WHEN V(c9)=0.8 TD=3.03 FALL=1
 .meas tran d_riarmo    PARAM t_riarmo-3.02
-.meas tran t_riarmoA   WHEN I(LA)=63m TD=3.03 RISE=1
+.meas tran t_riarmoA   WHEN I(LA)={0.75*Ion} TD=3.03 RISE=1
 * spegnimento a 7,000 s
 .meas tran d_c9_off   TRIG V(acok)=2.5 TD=6.9 FALL=1 TARG V(c9)=2.0 TD=6.9 RISE=1
-.meas tran d_relA_off TRIG V(acok)=2.5 TD=6.9 FALL=1 TARG I(LA)=8.4m TD=6.9 FALL=1
-.meas tran d_relB_off TRIG V(acok)=2.5 TD=6.9 FALL=1 TARG I(LB)=8.4m TD=6.9 FALL=1
+.meas tran d_relA_off TRIG V(acok)=2.5 TD=6.9 FALL=1 TARG I(LA)={0.1*Ion} TD=6.9 FALL=1
+.meas tran d_relB_off TRIG V(acok)=2.5 TD=6.9 FALL=1 TARG I(LB)={0.1*Ion} TD=6.9 FALL=1
 .meas tran vB_max MAX V(cB) FROM 6.9 TO 7.2
 .meas tran vA_max MAX V(cA) FROM 6.9 TO 7.2
 .meas tran iA_dopo MAX I(LA) FROM 7.01 TO 7.2
