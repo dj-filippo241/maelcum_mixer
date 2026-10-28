@@ -167,12 +167,20 @@ def boxsym(name, left, right, ref="U", fp="", desc=""):
     return sym
 
 
+def _smd(fp):
+    """Impronta a montaggio superficiale: l'unica che può stare sul retro."""
+    lib = fp.split(":")[0]
+    return not ("THT" in lib or "PinHeader" in lib or "PinSocket" in lib or "MountingHole" in lib
+                or fp.split(":")[1].startswith("CP_Radial"))
+
+
 # ---------------------------------------------------------------- design
 class Part:
-    def __init__(self, ref, sym, value, fp, nets, block, note="", place=None, anchor=None):
+    def __init__(self, ref, sym, value, fp, nets, block, note="", place=None, anchor=None, side="F"):
         self.ref, self.sym, self.value, self.fp = ref, sym, value, fp
         self.nets, self.block, self.note, self.place = nets, block, note, place
         self.anchor = anchor     # punto dell'impronta (es. l'albero del pot) da mettere in place
+        self.side = side         # "F" lato componenti, "B" retro (solo SMD, dec. 142)
         self.uuids = {}
 
 
@@ -183,6 +191,7 @@ class Design:
         self.netclass = {}       # net -> (larghezza pista mm, nome classe)
         self.counters = {}
         self.block = "GENERALE"
+        self.side = "F"          # il modulo scrive d.side = "B" prima dei blocchi da mettere sul retro
         self.notes = []
         self.gnd = "AGND"        # rete delle colate; il modulo la può cambiare
 
@@ -211,7 +220,10 @@ class Design:
             nets[k] = net
         if any(q.ref == ref for q in self.parts):
             raise ValueError("riferimento %s usato due volte" % ref)
-        p = Part(ref, sym, value, fp, nets, self.block, note, place, anchor)
+        side = self.side
+        if side == "B" and (place or not _smd(fp)):
+            side = "F"           # i pezzi a foro passante e quelli fissi restano sul lato componenti
+        p = Part(ref, sym, value, fp, nets, self.block, note, place, anchor, side)
         self.parts.append(p)
         return p
 
@@ -349,7 +361,7 @@ class Design:
     def _sym_instance(self, p, u, x, y, root):
         su = _uuid()
         p.uuids[u] = su
-        nobom = p.ref.startswith("#") or p.sym.lib_id.startswith("Mechanical:")
+        nobom = p.ref.startswith("#") or p.sym.lib_id.startswith(("Mechanical:", "Jumper:SolderJumper"))
         s = ["symbol", ["lib_id", Q(p.sym.lib_id)], ["at", x, y, 0], ["unit", u], ["body_style", 1],
              ["exclude_from_sim", "no"], ["in_bom", "no" if nobom else "yes"],
              ["on_board", "no" if p.ref.startswith("#") else "yes"], ["dnp", "no"], ["uuid", Q(su)],
@@ -444,9 +456,12 @@ class Design:
         X0, Y0 = 50.0, 50.0
         b = pcbnew.BOARD()
         b.SetCopperLayerCount(layers)
+        # inner_signal (dec. 142, SMD sui due lati): In2 diventa uno strato di piste, la massa
+        # resta piena su In1; con i due lati pieni di pezzi F e B non bastano per le piste
+        sig2 = getattr(self, "inner_signal", False)
         if layers == 4:
             b.SetLayerType(pcbnew.In1_Cu, pcbnew.LT_POWER)
-            b.SetLayerType(pcbnew.In2_Cu, pcbnew.LT_POWER)
+            b.SetLayerType(pcbnew.In2_Cu, pcbnew.LT_SIGNAL if sig2 else pcbnew.LT_POWER)
         ds = b.GetDesignSettings()
         ds.m_TrackMinWidth = mm(0.15)
         ds.m_CopperEdgeClearance = mm(0.3)
@@ -517,12 +532,33 @@ class Design:
         gnd = self.gnd
         if layers == 4:
             self._fanout(b, nets[gnd], mm, pcbnew)
-        zl = [pcbnew.In1_Cu, pcbnew.In2_Cu] if layers == 4 else []
+        zl = ([pcbnew.In1_Cu] if sig2 else [pcbnew.In1_Cu, pcbnew.In2_Cu]) if layers == 4 else []
         for layer in zl:
             self._zone(b, nets[gnd], layer, X0, Y0, W, H, mm, pcbnew)
+        self._edge_keepout(b, X0, Y0, W, H, mm, pcbnew)
         path = os.path.join(self.outdir, self.name + ".kicad_pcb")
         b.Save(path)
         return path
+
+    @staticmethod
+    def _edge_keepout(b, X0, Y0, W, H, mm, pcbnew, m=0.8):
+        """Fascia di 0,8 mm lungo il bordo senza piste né via: Freerouting non conosce la
+        distanza dal bordo (0,3 mm) e ci passava a 0,28 (master segnale, 2026-10-28)."""
+        for x1, y1, x2, y2 in ((X0, Y0, X0 + W, Y0 + m), (X0, Y0 + H - m, X0 + W, Y0 + H),
+                               (X0, Y0, X0 + m, Y0 + H), (X0 + W - m, Y0, X0 + W, Y0 + H)):
+            z = pcbnew.ZONE(b)
+            z.SetIsRuleArea(True)
+            z.SetLayerSet(pcbnew.LSET.AllCuMask())
+            z.SetDoNotAllowTracks(True)
+            z.SetDoNotAllowVias(True)
+            z.SetDoNotAllowZoneFills(False)
+            z.SetDoNotAllowPads(False)
+            z.SetDoNotAllowFootprints(False)
+            ol = z.Outline()
+            ol.NewOutline()
+            for x, y in ((x1, y1), (x2, y1), (x2, y2), (x1, y2)):
+                ol.Append(mm(x), mm(y))
+            b.Add(z)
 
     def _fanout(self, b, net, mm, pcbnew):
         """Via di massa accanto a ogni pad SMD di massa: il piano interno fa il resto."""
@@ -636,6 +672,18 @@ class Design:
                 groups.setdefault(ic, []).extend((r, pin) for r, pin, _ in items)
         attached = {c for caps in groups.values() for c, _ in caps}
         free = [p for p in free if p.ref not in attached]
+        # retro (dec. 142): i gruppi col chip sul retro si ribaltano attorno al chip, poi si
+        # piazzano dopo il lato componenti, lontano dai pezzi a foro passante
+        side = {p.ref: p.side for p in self.parts}
+        fpn = {p.ref: p.fp for p in self.parts}
+        back = [p for p in free if side[p.ref] == "B"
+                and all(_smd(fpn[r]) for r in [c for c, _ in groups.get(p.ref, [])])]
+        back_refs = {p.ref for p in back}
+        free = [p for p in free if p.ref not in back_refs]
+        for p in back:
+            c = fps[p.ref].GetPosition()
+            for r in [p.ref] + [c2 for c2, _ in groups.get(p.ref, [])]:
+                fps[r].Flip(c, pcbnew.FLIP_DIRECTION_LEFT_RIGHT)
         top, bot = Y0 + 2, Y0 + H - 2
         for (x1, y1, x2, y2) in fixed_boxes:
             if (y1 + y2) / 2 < Y0 + H / 2:
@@ -694,6 +742,44 @@ class Design:
                         q = fp.GetPosition()
                         fp.SetPosition(pcbnew.VECTOR2I(int(q.x + mm(dx)), int(q.y + mm(dy))))
             bx += cw + sep
+        if back:
+            self._place_back(fps, back, groups, X0, Y0, W, H, mm, gap)
+
+    def _place_back(self, fps, back, groups, X0, Y0, W, H, mm, gap):
+        """Retro: ogni gruppo nel primo posto libero, colonna per colonna da sinistra, nell'ordine
+        del netlist (i blocchi restano insieme). Ostacoli: i pezzi a foro passante del lato
+        componenti (i loro pin escono sotto) e i gruppi già messi sul retro."""
+        import pcbnew
+        mine = {r for p in back for r in [p.ref] + [c for c, _ in groups.get(p.ref, [])]}
+        obst = []
+        for p in self.parts:
+            if p.ref not in mine and (not _smd(p.fp) or p.place):
+                x1, y1, x2, y2 = self._bbox(fps[p.ref])
+                obst.append((x1 - 1, y1 - 1, x2 + 1, y2 + 1))
+        step = 1.0
+        for p in back:
+            x1, y1, x2, y2 = self._gbox(fps, p.ref, groups)
+            w, h = x2 - x1 + gap, y2 - y1 + gap
+            spot, x = None, X0 + 2
+            while spot is None and x + w <= X0 + W - 2:
+                y = Y0 + 2
+                while y + h <= Y0 + H - 2:
+                    hit = [o for o in obst if x < o[2] and o[0] < x + w and y < o[3] and o[1] < y + h]
+                    if not hit:
+                        spot = (x, y)
+                        break
+                    y = max(o[3] for o in hit)
+                x += step
+            if spot is None:
+                self.overflow = True
+                self.notes.append("retro: nessun posto per %s" % p.ref)
+                continue
+            dx, dy = spot[0] + gap / 2 - x1, spot[1] + gap / 2 - y1
+            for r in [p.ref] + [c for c, _ in groups.get(p.ref, [])]:
+                q = fps[r].GetPosition()
+                fps[r].SetPosition(pcbnew.VECTOR2I(int(q.x + mm(dx)), int(q.y + mm(dy))))
+            obst.append((spot[0], spot[1], spot[0] + w, spot[1] + h))
+        self.notes.append("retro: %d gruppi" % len(back))
 
     def _decaps(self):
         """Lega ogni 100n fra un'alimentazione e la massa al chip dello stesso blocco che ha
@@ -873,7 +959,7 @@ class Design:
         import pcbnew
         try:
             fp.BuildCourtyardCaches()
-            bb = fp.GetCourtyard(pcbnew.F_CrtYd).BBox()
+            bb = fp.GetCourtyard(pcbnew.B_CrtYd if fp.IsFlipped() else pcbnew.F_CrtYd).BBox()
             if bb.GetWidth() == 0:
                 raise ValueError
         except Exception:
@@ -945,8 +1031,8 @@ class Design:
     def bom(self):
         rows = {}
         for p in self.parts:
-            if p.ref.startswith("#") or p.sym.lib_id.startswith("Mechanical:"):
-                continue
+            if p.ref.startswith("#") or p.sym.lib_id.startswith(("Mechanical:", "Jumper:SolderJumper")):
+                continue     # fori e ponticelli a stagno: rame della scheda, non pezzi da comprare
             k = (p.value, p.fp, p.note)
             rows.setdefault(k, []).append(p.ref)
         path = os.path.join(self.outdir, "bom.csv")

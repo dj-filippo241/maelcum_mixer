@@ -16,7 +16,7 @@ from pcbgen import Design, boxsym
 from backplane import c96, SYM_C96, FP_C96
 from cavo import CAVO
 
-d = Design("fx-send", HERE, "maelcum FX-SEND (dec. 91a) - bozza v0.2", board=(100, 165), rev="0.2-bozza")
+d = Design("fx-send", HERE, "maelcum FX-SEND (dec. 91a) - bozza v0.2", board=(100, 220), rev="0.3-bozza")
 d.gnd = "AGND"
 SOIC8 = "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
 SOIC14 = "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
@@ -44,7 +44,7 @@ for s in range(1, 11):
     b["b%d" % (3 * s)] = "AGND"
 pins = c96(b, c=["c9"])
 d.part("J", SYM_C96, "C96 maschio", FP_C96,
-       pins, ref="J1", place=(50, 158.5, 180), note="DIN 41612 C 3x32, angolo retto")
+       pins, ref="J1", place=(50, 213.5, 180), note="DIN 41612 C 3x32, angolo retto")
 d.part("H", "Mechanical:MountingHole_Pad", "CHASSIS", "MountingHole:MountingHole_3.2mm_M3_Pad",
        {1: "CHASSIS"}, ref="H1", place=(5, 5, 0), note="foro di fissaggio al pannello, a CHASSIS")
 d.part("H", "Mechanical:MountingHole_Pad", "CHASSIS", "MountingHole:MountingHole_3.2mm_M3_Pad",

@@ -17,7 +17,7 @@ rivedere**: non è pronta per l'ordine.
 | File | Cosa |
 |---|---|
 | `fx-send.py`, `fx-send-comandi.py` | i netlist in Python: unica fonte. Schema e PCB si rigenerano da qui |
-| `fx-send.kicad_sch/.kicad_pcb` | principale: 100 × 165 mm, 4 strati (In1 e In2 = piano AGND), 120 componenti |
+| `fx-send.kicad_sch/.kicad_pcb` | principale: 100 × 220 mm (dec. 142), 4 strati (In1 e In2 = piano AGND), 120 componenti |
 | `comandi/fx-send-comandi.kicad_sch/.kicad_pcb` | comandi: 34 × 83 mm (pannello 36 × 87 meno i margini), 4 componenti |
 | `bom.csv`, `comandi/bom.csv` | distinte |
 | `out/`, `comandi/out/` | riepilogo, ERC e DRC |
@@ -68,6 +68,9 @@ Tutto [PROVVISORIO].
    le classi piccole. Da chiudere con la meccanica (q29).
 9. **Altezza 165 mm** della scheda principale: dipende dall'altezza interna del telaio (q29).
    Si accorcia mettendo componenti sui due lati o tornando a una scheda larga.
+   [2026-10-28, dec. 142] Il telaio ha schede alte 220 mm: la principale sale a 100 × 220
+   (v0.3, C96 a y 213,5). Esito: PASSA. Controllo audio A4 8 -> 9 e A5 4 -> 6: le piste dal
+   C96 sono più lunghe di 55 mm; si accorciano col punto 1 di `pcb/NOTE-generatore.md`.
 10. **Pot.** Estremi dell'Alps RK09L (pin 1 antiorario, 3 orario, 2 cursore) da verificare sul
     disegno Alps: il sito non si scaricava. Curva del pot provvisoria (dec. 129). LEVEL da 9 mm
     invece di 14 (dec. 118) finché non c'è l'impronta dell'RK14.

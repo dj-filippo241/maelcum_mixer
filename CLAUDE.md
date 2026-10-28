@@ -34,7 +34,7 @@ Generare una scheda (Python di KiCad, ~4 min):
 Regole delle PCB (nate il 2026-10-27):
 
 - La generazione finisce con PASSA o NON PASSA (codice 1): un NON PASSA non si committa. Le righe PEGGIO confrontano col giro prima. Controllo audio: `pcb/tools/audiocheck.py`, regole in `d.audio_rules`. Pinout del C96 solo da `pcb/tools/backplane.py`. Stato e piano: `pcb/NOTE-generatore.md`.
-- Una scheda 100 × 165 porta ~120 impronte. Si stima dal conteggio vero (trimmer, 100n, regolatori, ponticelli), non dai circuiti del design doc: il master segnale ne ha 282.
+- Schede alte 220 mm, SMD sui due lati con `d.side = "B"`, più schede affiancate sotto un pannello (dec. 142). Una 100 × 220 porta ~160 impronte su un lato, ~280 coi due. Si stima dal conteggio vero (trimmer, 100n, regolatori, ponticelli), non dai circuiti del design doc.
 - Le reti che toccano pin TSSOP (passo 0,65) vogliono piste ≤ 0,3 mm: con 0,6 Freerouting non le collega.
 - Grappolo attorno all'op-amp: `d.cluster_gap` 0,5 mm. Con 0,2 mm Freerouting lascia reti aperte (FX-SEND: NON PASSA).
 - I datasheet di analog.com non si scaricano da qui (timeout, errore HTTP/2). Copia funzionante: la pagina radiolocman del pezzo → link «Download PDF» su rlocman.ru (così è arrivato l'ADG1434 Rev. E). Pinout sempre dal datasheet, mai a memoria.

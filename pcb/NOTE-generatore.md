@@ -87,6 +87,20 @@ Con 0,2 mm Freerouting lasciava aperti un filo del cavo e un tratto di +15SW: 0,
 A5 non dipende dalla cella: sono piste lunghe dal C96 (S*_OUT, SEND_IN, 90-130 mm) e
 dal cavo dei pot (NA/NB/NC) che passa accanto ai regolatori. Serve il punto 1 sotto.
 
+## Retro della scheda (dec. 142, 2026-10-28)
+
+Le schede sono alte 220 mm e possono portare SMD sui due lati. Nel file del modulo:
+`d.side = "B"` prima dei blocchi da mettere sul retro, `d.side = "F"` per tornare al lato
+componenti. Regole del generatore:
+
+- Sul retro va solo l'SMD. Foro passante, connettori, elettrolitici radiali e pezzi con
+  `place` restano sul lato componenti anche dentro un blocco «B».
+- Un chip del retro porta con sé i suoi 100n e il suo grappolo, ribaltati attorno al chip.
+  Se il grappolo contiene un pezzo a foro passante, tutto il gruppo resta davanti.
+- Il retro si piazza dopo il davanti: ogni gruppo nel primo posto libero, colonna per
+  colonna da sinistra. Ostacoli: i pin dei pezzi a foro passante (+1 mm) e i gruppi già messi.
+- I ponticelli a stagno non entrano nella distinta (sono rame), come i fori.
+
 ## Cosa resta (in ordine)
 
 1. **Blocchi vicino al loro connettore.** Oggi i blocchi vanno in colonne nell'ordine
