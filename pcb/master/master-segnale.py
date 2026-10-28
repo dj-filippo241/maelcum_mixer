@@ -1,8 +1,9 @@
 """MASTER, scheda di SEGNALE (dec. 140): somma, MONO, insert, buffer, VCA MASTER e BOOTH, meter.
 
-Il modulo master è fatto di quattro schede (master-out.md, ADDENDUM 2026-10-28):
-questa col C96; la scheda di USCITA sovrapposta (master-uscita.py, J2); la scheda comandi
-dietro il pannello (master-comandi.py, J3); la schedina dei connettori sul retro (dec. 141).
+Il modulo master (master-out.md, ADDENDUM 2026-10-28, dec. 142): questa col C96 e due schede
+di USCITA affiancate sotto il pannello (master-uscita*.py, J2); la scheda comandi dietro il
+pannello (master-comandi.py, J3); la schedina dei connettori sul retro (dec. 141).
+Scheda alta 220 mm (dec. 142); MONO, LEVEL e meter sul retro (d.side = "B", solo SMD).
 
 Fonti: docs/fase1/master-out.md (§2, §3.1, §3.2, §3.6, ADDENDA 2026-10-02 e 2026-10-14),
 sim/master-out/sum-noise-71A.cir (somma), sim/master-out/mono-ms.cir (MONO, blocchi ideali),
@@ -18,8 +19,9 @@ from pcbgen import Design, boxsym
 from backplane import c96, SYM_C96, FP_C96, A_STANDARD
 
 d = Design("master-segnale", os.path.join(HERE, "segnale"), "maelcum MASTER scheda di segnale (dec. 140) - bozza v0.1",
-           board=(150, 165), rev="0.1-bozza")
+           board=(100, 220), rev="0.2-bozza")
 d.gnd = "AGND"
+d.inner_signal = True     # SMD sui due lati: In2 strato di piste, massa piena su In1
 SOIC8 = "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
 C12 = "Capacitor_SMD:C_1206_3216Metric"
 OPA = "Amplifier_Operational:OPA1612AxD"
@@ -67,16 +69,17 @@ for k, n in enumerate(slot):
     b["b%d" % (3 * k + 3)] = "AGND"
 b["b31"], b["b32"] = "VIE_TAP_L", "VIE_TAP_R"
 pins = c96(b, a=A_STANDARD + ["a9", "a10", "a11", "a12"], c=["c9", "c17"])
-d.part("J", SYM_C96, "C96 maschio", FP_C96, pins, ref="J1", place=(75, 158.5, 180),
+d.part("J", SYM_C96, "C96 maschio", FP_C96, pins, ref="J1", place=(50, 213.5, 180),
        note="DIN 41612 C 3x32, angolo retto; il master popola anche a9-a12 (+-26 V [M])")
 d.part("H", "Mechanical:MountingHole_Pad", "CHASSIS", "MountingHole:MountingHole_3.2mm_M3_Pad",
        {1: "CHASSIS"}, ref="H1", place=(5, 5, 0), note="foro di fissaggio al pannello, a CHASSIS")
 d.part("H", "Mechanical:MountingHole_Pad", "CHASSIS", "MountingHole:MountingHole_3.2mm_M3_Pad",
-       {1: "CHASSIS"}, ref="H2", place=(145, 5, 0), note="foro di fissaggio al pannello, a CHASSIS")
+       {1: "CHASSIS"}, ref="H2", place=(95, 5, 0), note="foro di fissaggio al pannello, a CHASSIS")
 
 # ------------------------------------------------------------ alimentazione
 d.block = "ALIMENTAZIONE +-18 (LM317/337 + cap-moltiplicatore), +-15 LN (LT3045/LT3094)"
-d.power_nets("RAW+27", "RAW-27", "RAW+22", "RAW-22", "RAW+26", "RAW-26", "+5V", "AGND", "CTRL_GND", "CHASSIS", width=0.8)
+d.power_nets("RAW+27", "RAW-27", "RAW+22", "RAW-22", "RAW+26", "RAW-26", "AGND", "CHASSIS", width=0.8)
+d.power_nets("+5V", "CTRL_GND", width=0.5)    # relè e LED: ~0,3 A; 0,8 mm non passava dal C96 a J2/J3
 d.power_nets("+18V", "-18V", "+15LN", "-15LN", "V27F+", "V27F-", width=0.6)
 FB = "Inductor_SMD:L_1206_3216Metric"
 d.part("FB", "Device:FerriteBead_Small", "ferrite 600R", FB, {1: "RAW+27", 2: "V27F+"})
@@ -151,6 +154,7 @@ for s in ("L", "R"):
     d.R("NS_" + s, "SUM_" + s, "20k 0.1%")
     d.C("NS_" + s, "SUM_" + s, "10p C0G")
 
+d.side = "B"
 d.block = "MONO [A3] (matrice M/S + VCA su S, mono-ms.cir; resistenze NOTA)"
 # M = -(L+R)/2 ; S = (L-R)/2 ; Sv = -S dal VCA + I/V ; L' = -(M + Sv) = L ; R' = Sv - M = R
 # (somma invertente di prima: la catena [A2]+[A3] resta invertente, come [A2] da solo)
@@ -182,6 +186,7 @@ d.R("ECM_MONO", "AGND", "1k 0.1%", note="5 V x 1/8,15 = 0,613 V = -100 dB")
 opa("U4", ("RDP", "RDN", "LO_R"), ("MRC", "MBUF", "MBUF"), note="uscita R' e follower della rampa MONO")
 
 # ------------------------------------------------------------ insert del grafico (dec. 111 b)
+d.side = "F"
 d.block = "INS_SEND driver + INS_RET buffer (slot 9-10, ponticello JMS sul backplane)"
 opa("U5", ("LO_L", "ISD_L", "ISD_L"), ("LO_R", "ISD_R", "ISD_R"), note="driver <= 50 ohm")
 d.R("ISD_L", "INS_SEND_L", "47", note="NOTA: 47 ohm di uscita, stabilità sul cavo del backplane")
@@ -205,14 +210,15 @@ for s in ("L", "R"):
     d.R("PAD_" + s, "P20_" + s, "757 0.1%")
     d.part("JP", "Jumper:SolderJumper_2_Open", "-20 dB", "Jumper:SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm",
            {1: "P20_" + s, 2: "AGND"}, note="REC -20 dB")
-opa("U10", ("PAD_L", "RECD_L", "RECD_L"), ("PAD_R", "RECD_R", "RECD_R"), note="[C] REC")
-d.R("RECD_L", "REC_L", "47")
-d.R("RECD_R", "REC_R", "47")
+opa("U10", ("PAD_L", "DRVREC_L", "DRVREC_L"), ("PAD_R", "DRVREC_R", "DRVREC_R"), note="[C] REC")
+d.R("DRVREC_L", "REC_L", "47")
+d.R("DRVREC_R", "REC_R", "47")
 opa("U11", ("PROG_L", "MONB_L", "MONB_L"), ("PROG_R", "MONB_R", "MONB_R"), note="[N] MON verso il CUE")
 d.R("MONB_L", "MON_OUT_L", "47")
 d.R("MONB_R", "MON_OUT_R", "47")
 
 # ------------------------------------------------------------ MASTER LEVEL e BOOTH LEVEL
+d.side = "B"
 d.block = "MASTER LEVEL [D]: 2 VCA, shaper (shaper-master.cir), trim di law (vca-trim §3.2)"
 vca("U12", "BA_L", "NIM_L", "ECM_ML")
 vca("U13", "BA_R", "NIM_R", "ECM_MR")
@@ -268,12 +274,14 @@ shaper("B", "43.2k", [("68.1k", "357k"), ("20.0k", "38.3k"), ("976", "1.33k")])
 law_trim("B", "CVP_B", "ECM_BL", "ECM_BR")
 
 # ------------------------------------------------------------ VIE_TAP (dec. 111 b)
+d.side = "F"
 d.block = "VIE_TAP [V]: driver dopo MASTER LEVEL verso b31-b32"
 opa("U20", ("MAST_L", "VTD_L", "VTD_L"), ("MAST_R", "VTD_R", "VTD_R"), "+18V", "-18V")
 d.R("VTD_L", "VIE_TAP_L", "47")
 d.R("VTD_R", "VIE_TAP_R", "47")
 
 # ------------------------------------------------------------ meter [E]
+d.side = "B"
 d.block = "METER [E]: detector di picco L/R (meter-det-03s.cir) e albero dei riferimenti (metering §5)"
 for s, u1, u2 in (("L", "U21", "U22"), ("R", "U23", "U24")):
     d.R("MAST_" + s, "MG_" + s, "10k 0.1%", note="g = 0,287 (FS +24 dBu -> 5,00 V; doc 0,288)")
@@ -294,19 +302,20 @@ d.R("VRB0", "AGND", "4k64 0.1%", note="doc 4,625k: E96 4,64k = 1,585 V (+0,02 dB
 opa("U25", ("VRA0", "VREFA", "VREFA"), ("VRB0", "VREFB", "VREFB"), note="vrefA 5,000 V e vrefB 1,58 V")
 
 # ------------------------------------------------------------ connettori verso le altre schede
+d.side = "F"
 d.block = "CONNETTORI: J2 verso la scheda di USCITA, J3 verso la scheda COMANDI"
 J2 = ["RAW+26", "RAW+26", "RAW-26", "RAW-26", "RAW+27", "RAW-27", "AGND", "AGND",
       "MAST_L", "AGND", "MAST_R", "AGND", "BOOTH_L", "AGND", "BOOTH_R", "AGND", "REC_L", "AGND", "REC_R", "AGND",
       "+5V", "CTRL_GND", "GLOBAL_MUTE", "AC_OK", "CLIP_L", "CLIP_R"]
 d.part("J", "Connector_Generic:Conn_02x13_Odd_Even", "2x13 scheda-scheda",
        "Connector_PinHeader_2.54mm:PinHeader_2x13_P2.54mm_Vertical",
-       {i + 1: n for i, n in enumerate(J2)}, ref="J2", place=(120, 80, 90),
-       note="NOTA: connettore verso la scheda di uscita sovrapposta (dec. 140); AGND fra i segnali")
+       {i + 1: n for i, n in enumerate(J2)}, ref="J2", place=(72, 5, 90),
+       note="NOTA: cavo piatto verso le schede di uscita affiancate (dec. 142); AGND fra i segnali")
 J3 = ["POT_M", "AGND", "POT_B", "AGND", "+REF5", "AGND", "MONO_SW", "AGND",
       "MET_L", "AGND", "MET_R", "AGND", "VREFA", "VREFB", "CLIP_L", "CLIP_R", "+5V", "+5V", "CTRL_GND", "CTRL_GND"]
 d.part("J", "Connector_Generic:Conn_02x10_Odd_Even", "2x10 cavo piatto",
        "Connector_PinHeader_2.54mm:PinHeader_2x10_P2.54mm_Vertical",
-       {i + 1: n for i, n in enumerate(J3)}, ref="J3", place=(50, 5, 90),
+       {i + 1: n for i, n in enumerate(J3)}, ref="J3", place=(30, 5, 90),
        note="cavo piatto corto verso la scheda comandi (pot, MONO, LED)")
 
 d.audio_rules = {
