@@ -24,7 +24,7 @@ correzioni. Banco di prova: FX-SEND, rigenerato.
 File nuovi:
 
 - `pcb/tools/backplane.py`: pinout del C96 (righe a e c comuni, §3 e §5 del backplane). Il modulo scrive solo la riga b.
-- `pcb/tools/audiocheck.py`: controllo audio dopo il routing (regole A1-A5 sotto). Gira in 0,2 s.
+- `pcb/tools/audiocheck.py`: controllo audio dopo il routing (regole A1-A5 sotto). Gira in 0,2 s. Da riga di comando legge le regole da `d.audio_rules` del file del modulo.
 - `pcb/fx-send/cavo.py`: l'ordine dei fili del cavo piatto, letto dalle due schede.
 - `sim/lint_cir.py`: le regole di simulazione del CLAUDE.md come controllo dei `.cir`.
 
@@ -62,10 +62,37 @@ doc. Con mute attivo e bottone premuto l'ingresso dell'ADG1434 stava a 1,21 V, f
 e 1k in serie al FET. Acceso 4,55 V, mute 0,45 V, rampe 0,9 ms e 0,09 ms. Dettagli in
 `pcb/fx-send/NOTE.md` punto 12.
 
+## Piazzamento a grappolo (2026-10-28, todo 183)
+
+Ogni R e C (non elettrolitico) si lega a un op-amp: prima per un pin di segnale in
+comune (stesso blocco, poi un altro blocco), poi per una rete in comune con un passivo
+già legato. Il passivo va accanto al suo pin, sul lato del pin, col pad della rete in
+comune verso il pin; se il posto è occupato scorre lungo il lato, poi una fila più in
+fuori (spazio `d.cluster_gap`, 0,5 mm). Il grappolo viaggia col chip nel piazzamento a
+blocchi. Si spegne con `d.cluster_auto = False`.
+
+FX-SEND, prima e dopo:
+
+| Regola | prima | grappolo 0,2 mm | grappolo 0,5 mm (adesso) |
+|---|---|---|---|
+| A1 | 10 | 10 | 10 |
+| A2 | 29 | 22 | 28 |
+| A3 | 23 | 10 | 12 |
+| A4 | 4 | 5 | 8 |
+| A5 | 3 | 3 | 4 |
+| esito | PASSA | NON PASSA (2 aperti di Freerouting) | PASSA |
+
+Con 0,2 mm Freerouting lasciava aperti un filo del cavo e un tratto di +15SW: 0,5 mm
+è il compromesso. A3 (passivi lontani dal pin) è risolto. Quello che resta in A2, A4 e
+A5 non dipende dalla cella: sono piste lunghe dal C96 (S*_OUT, SEND_IN, 90-130 mm) e
+dal cavo dei pot (NA/NB/NC) che passa accanto ai regolatori. Serve il punto 1 sotto.
+
 ## Cosa resta (in ordine)
 
-1. **Piazzamento a grappolo.** I passivi di una cella attorno al loro op-amp, le celle del cavo
-   sotto il connettore, l'alimentazione in una fascia sul bordo. È la causa di A2-A5.
+1. **Blocchi vicino al loro connettore.** Oggi i blocchi vanno in colonne nell'ordine
+   del file. Le celle che parlano col C96 (iniezione, buffer d'ingresso) vanno sul bordo
+   del C96; le celle del cavo sotto J2; l'alimentazione in una fascia lontana dal cavo.
+   È la causa di A2, A4 e A5.
 2. **Blocchi con riferimenti fissi** (R1xx lato L, R2xx lato R): oggi una resistenza aggiunta
    rinumera tutte quelle dopo.
 3. **Fonte dichiarata per ogni valore** (`fonte="sim/fx/x.cir:Rf"`) e uno script che la

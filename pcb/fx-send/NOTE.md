@@ -56,7 +56,7 @@ Tutto [PROVVISORIO].
 2. **OPA1654: 4 chip, non 3** (resta da correggere nella BOM del design doc §5). 18 sezioni = 1 OPA1612 (buffer in) + 4 OPA1654 (2 EQ + 2 iniezione). La BOM del §5 ne conta 3.
 3. **[CHIUSA 2026-10-27] Pinout ADG1434.** Verificato sul datasheet Rev. E (tabella 8): i pin 6-20 della bozza erano sbagliati (canale 2 a sinistra, VDD sul 16, NIC sul 15). Simbolo corretto in `fx-send.py`; tabella di verità confermata (IN alto = SxA chiuso). Dettagli: `docs/fase1/adg1434-datasheet-verify.md` §6.
 4. **[SUPERATA dalla dec. 133: pot saldati sulla scheda, bozza da rifare]** Pot fuori scheda via harness (come dice il §4): i nodi NB_L/NB_R della cella LOW sono masse virtuali e viaggiano sul cavo fino al pannello. Rischio di ronzio e di instabilità. In alternativa i pot si montano sulla scheda, se la meccanica lo permette.
-5. **GLOBAL_MUTE (c9): polarità non definita** nel master (§3.7). Qui: pull-up a +5 V, alto = muto, così senza master il send resta muto. Il mute apre i 4 assign (rete corretta il 2026-10-28, punto 12). Da ratificare quando si disegna il controller del mute.
+5. **GLOBAL_MUTE (c9): polarità confermata il 2026-10-28** (`sim/master-out/RISULTATI-mute-ctrl.md`, todo 182): basso = suona, alto = muto. Il master tira giù la linea con un NMOS open drain; qui la pull-up a +5 V tiene il send muto senza master. Il mute apre i 4 assign (rete corretta il 2026-10-28, punto 12).
 6. **Cap-moltiplicatore scalato** a circa 50 mA: Rb 1k, Cb 470 µF (la sim usa 47 Ω e 10 mF per 0,85 A). Il ±18 V esce a circa 18,0 V, da riverificare in simulazione col carico vero.
 7. Aggiunti e non scritti nel documento: 100k a massa sugli ingressi SEND_IN (ingresso definito senza canale), diodi di protezione degli LM317/337, ferrite e bulk su ogni raw.
 

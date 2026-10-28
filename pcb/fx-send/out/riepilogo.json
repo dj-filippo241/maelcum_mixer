@@ -10,11 +10,12 @@
  "routing": {
   "ok": true,
   "aperti": {
-   "AGND": 32
+   "AGND": 35
   }
  },
  "drc": {
-  "violations/warning/via_dangling": 2,
+  "violations/warning/silk_overlap": 8,
+  "violations/warning/silk_over_copper": 16,
   "atteso/warning/net_conflict": 51
  },
  "controllo_audio": {
@@ -22,24 +23,31 @@
    "A1": [
     {
      "regola": "A1",
-     "oggetto": "Q2.1 (-18V)",
-     "misura": 13.32,
+     "oggetto": "U12.1 (+15SW)",
+     "misura": 18.47,
      "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C11"
+     "nota": "regolatore, C piu' vicino C14"
     },
     {
      "regola": "A1",
-     "oggetto": "U11.2 (V27F-)",
-     "misura": 34.74,
+     "oggetto": "U12.3 (V22F+)",
+     "misura": 29.44,
      "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C2"
+     "nota": "regolatore, C piu' vicino C12"
     },
     {
      "regola": "A1",
-     "oggetto": "U11.3 (VREG-)",
-     "misura": 18.14,
+     "oggetto": "U13.2 (V22F-)",
+     "misura": 16.72,
      "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C9"
+     "nota": "regolatore, C piu' vicino C13"
+    },
+    {
+     "regola": "A1",
+     "oggetto": "U13.3 (-15SW)",
+     "misura": 30.27,
+     "soglia": 10.0,
+     "nota": "regolatore, C piu' vicino C15"
     },
     {
      "regola": "A1",
@@ -57,17 +65,10 @@
     },
     {
      "regola": "A1",
-     "oggetto": "U12.1 (+15SW)",
-     "misura": 18.47,
+     "oggetto": "Q2.1 (-18V)",
+     "misura": 13.32,
      "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C14"
-    },
-    {
-     "regola": "A1",
-     "oggetto": "U12.3 (V22F+)",
-     "misura": 29.44,
-     "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C12"
+     "nota": "regolatore, C piu' vicino C11"
     },
     {
      "regola": "A1",
@@ -78,220 +79,213 @@
     },
     {
      "regola": "A1",
-     "oggetto": "U13.2 (V22F-)",
-     "misura": 16.72,
+     "oggetto": "U11.2 (V27F-)",
+     "misura": 34.74,
      "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C13"
+     "nota": "regolatore, C piu' vicino C2"
     },
     {
      "regola": "A1",
-     "oggetto": "U13.3 (-15SW)",
-     "misura": 30.27,
+     "oggetto": "U11.3 (VREG-)",
+     "misura": 18.14,
      "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C15"
+     "nota": "regolatore, C piu' vicino C9"
     }
    ],
    "A2": [
     {
      "regola": "A2",
-     "oggetto": "INJ4_R",
+     "oggetto": "NA_L",
+     "misura": 125.45,
+     "soglia": 40.0,
+     "nota": "lunghezza di pista (mm)"
+    },
+    {
+     "regola": "A2",
+     "oggetto": "NA_L",
      "misura": 2,
      "soglia": 1,
      "nota": "numero di via"
     },
     {
      "regola": "A2",
-     "oggetto": "NA_L",
-     "misura": 119.62,
+     "oggetto": "NA_R",
+     "misura": 132.64,
      "soglia": 40.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "NA_R",
-     "misura": 42.12,
+     "misura": 5,
+     "soglia": 1,
+     "nota": "numero di via"
+    },
+    {
+     "regola": "A2",
+     "oggetto": "NB_L",
+     "misura": 131.64,
      "soglia": 40.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "NB_L",
-     "misura": 129.25,
-     "soglia": 40.0,
-     "nota": "lunghezza di pista (mm)"
-    },
-    {
-     "regola": "A2",
-     "oggetto": "NB_L",
-     "misura": 4,
+     "misura": 2,
      "soglia": 1,
      "nota": "numero di via"
     },
     {
      "regola": "A2",
      "oggetto": "NB_R",
-     "misura": 75.22,
+     "misura": 53.6,
      "soglia": 40.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "NB_R",
-     "misura": 3,
+     "misura": 2,
      "soglia": 1,
      "nota": "numero di via"
     },
     {
      "regola": "A2",
      "oggetto": "NC_L",
-     "misura": 113.43,
+     "misura": 119.04,
      "soglia": 40.0,
      "nota": "lunghezza di pista (mm)"
+    },
+    {
+     "regola": "A2",
+     "oggetto": "NC_L",
+     "misura": 2,
+     "soglia": 1,
+     "nota": "numero di via"
     },
     {
      "regola": "A2",
      "oggetto": "NC_R",
-     "misura": 78.97,
+     "misura": 56.25,
      "soglia": 40.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
-     "oggetto": "NHB_L",
-     "misura": 38.7,
-     "soglia": 25.0,
-     "nota": "lunghezza di pista (mm)"
-    },
-    {
-     "regola": "A2",
-     "oggetto": "NHB_L",
-     "misura": 3,
-     "soglia": 1,
-     "nota": "numero di via"
-    },
-    {
-     "regola": "A2",
      "oggetto": "NHB_R",
-     "misura": 26.9,
-     "soglia": 25.0,
-     "nota": "lunghezza di pista (mm)"
-    },
-    {
-     "regola": "A2",
-     "oggetto": "NHB_R",
-     "misura": 3,
-     "soglia": 1,
-     "nota": "numero di via"
-    },
-    {
-     "regola": "A2",
-     "oggetto": "NSH_L",
-     "misura": 27.89,
-     "soglia": 25.0,
-     "nota": "lunghezza di pista (mm)"
-    },
-    {
-     "regola": "A2",
-     "oggetto": "NSH_L",
      "misura": 2,
      "soglia": 1,
      "nota": "numero di via"
     },
     {
      "regola": "A2",
-     "oggetto": "NSH_R",
-     "misura": 38.96,
+     "oggetto": "NSH_L",
+     "misura": 31.44,
      "soglia": 25.0,
      "nota": "lunghezza di pista (mm)"
-    },
-    {
-     "regola": "A2",
-     "oggetto": "NVH_L",
-     "misura": 2,
-     "soglia": 1,
-     "nota": "numero di via"
     },
     {
      "regola": "A2",
      "oggetto": "S1_OUT_L",
-     "misura": 76.07,
+     "misura": 91.64,
      "soglia": 25.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "S1_OUT_R",
-     "misura": 102.12,
+     "misura": 110.4,
      "soglia": 25.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
+     "oggetto": "S1_OUT_R",
+     "misura": 2,
+     "soglia": 1,
+     "nota": "numero di via"
+    },
+    {
+     "regola": "A2",
      "oggetto": "S2_OUT_L",
-     "misura": 62.67,
+     "misura": 75.35,
      "soglia": 25.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "S2_OUT_R",
-     "misura": 89.37,
+     "misura": 102.14,
      "soglia": 25.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
+     "oggetto": "S2_OUT_R",
+     "misura": 2,
+     "soglia": 1,
+     "nota": "numero di via"
+    },
+    {
+     "regola": "A2",
      "oggetto": "S3_OUT_L",
-     "misura": 49.39,
+     "misura": 51.25,
      "soglia": 25.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "S3_OUT_R",
-     "misura": 93.83,
+     "misura": 92.82,
      "soglia": 25.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
+     "oggetto": "S3_OUT_R",
+     "misura": 2,
+     "soglia": 1,
+     "nota": "numero di via"
+    },
+    {
+     "regola": "A2",
      "oggetto": "S4_OUT_L",
-     "misura": 52.21,
+     "misura": 49.11,
      "soglia": 25.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "S4_OUT_R",
-     "misura": 80.72,
+     "misura": 115.18,
      "soglia": 25.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
+     "oggetto": "S4_OUT_R",
+     "misura": 2,
+     "soglia": 1,
+     "nota": "numero di via"
+    },
+    {
+     "regola": "A2",
      "oggetto": "SEND_IN_L",
-     "misura": 135.42,
+     "misura": 132.57,
      "soglia": 25.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "SEND_IN_R",
-     "misura": 135.41,
+     "misura": 110.56,
      "soglia": 25.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
-     "oggetto": "VPRE_R",
-     "misura": 95.15,
-     "soglia": 25.0,
-     "nota": "lunghezza di pista (mm)"
-    },
-    {
-     "regola": "A2",
-     "oggetto": "VPRE_R",
-     "misura": 2,
+     "oggetto": "SEND_IN_R",
+     "misura": 3,
      "soglia": 1,
      "nota": "numero di via"
     }
@@ -299,215 +293,173 @@
    "A3": [
     {
      "regola": "A3",
-     "oggetto": "R18.1 (INJ1_L)",
-     "misura": 10.9,
-     "soglia": 6.0,
-     "nota": "dal pin U4.2, pista 12.8 mm"
-    },
-    {
-     "regola": "A3",
-     "oggetto": "R31.1 (INJ1_R)",
-     "misura": 10.9,
-     "soglia": 6.0,
-     "nota": "dal pin U5.2, pista 12.5 mm"
-    },
-    {
-     "regola": "A3",
-     "oggetto": "R21.1 (INJ4_L)",
-     "misura": 16.72,
-     "soglia": 6.0,
-     "nota": "dal pin U4.13, pista 19.4 mm"
-    },
-    {
-     "regola": "A3",
-     "oggetto": "R34.1 (INJ4_R)",
-     "misura": 16.72,
-     "soglia": 6.0,
-     "nota": "dal pin U5.13, pista 21.7 mm"
-    },
-    {
-     "regola": "A3",
-     "oggetto": "C18.2 (NB_L)",
-     "misura": 13.69,
-     "soglia": 6.0,
-     "nota": "dal pin U2.2, pista 17.2 mm"
-    },
-    {
-     "regola": "A3",
      "oggetto": "C19.1 (NB_L)",
-     "misura": 13.94,
+     "misura": 6.38,
      "soglia": 6.0,
-     "nota": "dal pin U2.2, pista 20.9 mm"
+     "nota": "dal pin U2.2, pista 7.8 mm"
     },
     {
      "regola": "A3",
      "oggetto": "C27.1 (NB_R)",
-     "misura": 13.94,
+     "misura": 6.38,
      "soglia": 6.0,
-     "nota": "dal pin U3.2, pista 18.7 mm"
-    },
-    {
-     "regola": "A3",
-     "oggetto": "C26.2 (NB_R)",
-     "misura": 13.69,
-     "soglia": 6.0,
-     "nota": "dal pin U3.2, pista 22.5 mm"
-    },
-    {
-     "regola": "A3",
-     "oggetto": "R12.1 (NHB_L)",
-     "misura": 16.28,
-     "soglia": 6.0,
-     "nota": "dal pin U2.5, pista 29.8 mm"
+     "nota": "dal pin U3.2, pista 7.9 mm"
     },
     {
      "regola": "A3",
      "oggetto": "C21.2 (NHB_L)",
-     "misura": 13.08,
+     "misura": 7.05,
      "soglia": 6.0,
-     "nota": "dal pin U2.5, pista 31.3 mm"
+     "nota": "dal pin U2.5, pista 8.1 mm"
     },
     {
      "regola": "A3",
-     "oggetto": "C29.2 (NHB_R)",
-     "misura": 13.08,
+     "oggetto": "R12.1 (NHB_L)",
+     "misura": 6.47,
      "soglia": 6.0,
-     "nota": "dal pin U3.5, pista 25.0 mm"
+     "nota": "dal pin U2.5, pista 8.0 mm"
     },
     {
      "regola": "A3",
      "oggetto": "R25.1 (NHB_R)",
-     "misura": 16.28,
+     "misura": 6.47,
      "soglia": 6.0,
-     "nota": "dal pin U3.5, pista 17.9 mm"
+     "nota": "dal pin U3.5, pista 8.5 mm"
+    },
+    {
+     "regola": "A3",
+     "oggetto": "C29.2 (NHB_R)",
+     "misura": 7.05,
+     "soglia": 6.0,
+     "nota": "dal pin U3.5, pista 6.8 mm"
     },
     {
      "regola": "A3",
      "oggetto": "R17.1 (NSH_L)",
-     "misura": 14.4,
+     "misura": 8.84,
      "soglia": 6.0,
-     "nota": "dal pin U2.13, pista 24.5 mm"
+     "nota": "dal pin U2.13, pista 12.4 mm"
     },
     {
      "regola": "A3",
-     "oggetto": "R16.2 (NSH_L)",
-     "misura": 6.35,
+     "oggetto": "R15.2 (NSH_L)",
+     "misura": 16.42,
      "soglia": 6.0,
-     "nota": "dal pin U2.13, pista 7.3 mm"
+     "nota": "dal pin U2.13, pista 19.0 mm"
+    },
+    {
+     "regola": "A3",
+     "oggetto": "R28.2 (NSH_R)",
+     "misura": 16.42,
+     "soglia": 6.0,
+     "nota": "dal pin U3.13, pista 21.4 mm"
     },
     {
      "regola": "A3",
      "oggetto": "R30.1 (NSH_R)",
-     "misura": 14.4,
+     "misura": 8.84,
      "soglia": 6.0,
-     "nota": "dal pin U3.13, pista 30.8 mm"
-    },
-    {
-     "regola": "A3",
-     "oggetto": "R29.2 (NSH_R)",
-     "misura": 6.35,
-     "soglia": 6.0,
-     "nota": "dal pin U3.13, pista 6.5 mm"
-    },
-    {
-     "regola": "A3",
-     "oggetto": "R14.1 (NVH_L)",
-     "misura": 13.51,
-     "soglia": 6.0,
-     "nota": "dal pin U2.9, pista 20.1 mm"
+     "nota": "dal pin U3.13, pista 10.0 mm"
     },
     {
      "regola": "A3",
      "oggetto": "R13.2 (NVH_L)",
-     "misura": 16.13,
+     "misura": 8.48,
      "soglia": 6.0,
-     "nota": "dal pin U2.9, pista 23.8 mm"
+     "nota": "dal pin U2.9, pista 8.8 mm"
     },
     {
      "regola": "A3",
      "oggetto": "R26.2 (NVH_R)",
-     "misura": 16.13,
+     "misura": 8.48,
      "soglia": 6.0,
-     "nota": "dal pin U3.9, pista 22.3 mm"
-    },
-    {
-     "regola": "A3",
-     "oggetto": "R27.1 (NVH_R)",
-     "misura": 13.51,
-     "soglia": 6.0,
-     "nota": "dal pin U3.9, pista 18.6 mm"
-    },
-    {
-     "regola": "A3",
-     "oggetto": "R7.1 (SEND_IN_L)",
-     "misura": 6.61,
-     "soglia": 6.0,
-     "nota": "dal pin U1.3, pista 8.9 mm"
-    },
-    {
-     "regola": "A3",
-     "oggetto": "R9.1 (VPRE_L)",
-     "misura": 15.95,
-     "soglia": 6.0,
-     "nota": "dal pin U1.2, pista 18.4 mm"
-    },
-    {
-     "regola": "A3",
-     "oggetto": "R22.1 (VPRE_R)",
-     "misura": 76.15,
-     "soglia": 6.0,
-     "nota": "dal pin U1.7, pista 93.9 mm"
+     "nota": "dal pin U3.9, pista 8.8 mm"
     }
    ],
    "A4": [
     {
      "regola": "A4",
      "oggetto": "NA_L",
-     "misura": 0.279,
+     "misura": 0.0811,
      "soglia": 0.05,
-     "nota": "RAW-27 0.266 pF (gap 0.29 mm); RAW+22 0.011 pF (gap 0.36 mm)"
+     "nota": "RAW+22 0.074 pF (gap 0.42 mm); V27F- 0.006 pF (gap 0.80 mm)"
+    },
+    {
+     "regola": "A4",
+     "oggetto": "S1_OUT_L",
+     "misura": 0.1172,
+     "soglia": 0.05,
+     "nota": "SW3_L 0.112 pF (gap 0.20 mm); SW4_L 0.003 pF (gap 0.83 mm)"
+    },
+    {
+     "regola": "A4",
+     "oggetto": "S1_OUT_R",
+     "misura": 0.1805,
+     "soglia": 0.05,
+     "nota": "SW3_R 0.164 pF (gap 0.20 mm); SW4_R 0.011 pF (gap 0.65 mm)"
+    },
+    {
+     "regola": "A4",
+     "oggetto": "S2_OUT_L",
+     "misura": 0.0545,
+     "soglia": 0.05,
+     "nota": "CTRL_GND 0.040 pF (gap 0.42 mm); RAW-22 0.015 pF (gap 0.26 mm)"
+    },
+    {
+     "regola": "A4",
+     "oggetto": "S2_OUT_R",
+     "misura": 0.2424,
+     "soglia": 0.05,
+     "nota": "SW4_R 0.212 pF (gap 0.20 mm); SW3_R 0.012 pF (gap 0.71 mm)"
+    },
+    {
+     "regola": "A4",
+     "oggetto": "S3_OUT_R",
+     "misura": 0.0631,
+     "soglia": 0.05,
+     "nota": "ASG4 0.034 pF (gap 0.31 mm); GLOBAL_MUTE 0.013 pF (gap 0.41 mm)"
     },
     {
      "regola": "A4",
      "oggetto": "S4_OUT_R",
-     "misura": 0.2408,
+     "misura": 0.2162,
      "soglia": 0.05,
-     "nota": "SW1_R 0.241 pF (gap 0.20 mm)"
-    },
-    {
-     "regola": "A4",
-     "oggetto": "SEND_IN_L",
-     "misura": 0.0686,
-     "soglia": 0.05,
-     "nota": "SW1_L 0.058 pF (gap 0.48 mm); CTRL_GND 0.007 pF (gap 1.09 mm)"
+     "nota": "+5VF 0.136 pF (gap 0.53 mm); SW4_R 0.046 pF (gap 0.24 mm)"
     },
     {
      "regola": "A4",
      "oggetto": "SEND_IN_R",
-     "misura": 0.0655,
+     "misura": 0.1116,
      "soglia": 0.05,
-     "nota": "CTRL_GND 0.044 pF (gap 0.64 mm); SW1_L 0.009 pF (gap 0.93 mm)"
+     "nota": "SW3_L 0.093 pF (gap 0.48 mm); SW4_L 0.014 pF (gap 0.93 mm)"
     }
    ],
    "A5": [
     {
      "regola": "A5",
      "oggetto": "NA_L",
-     "misura": 1.39,
+     "misura": 1.16,
      "soglia": 3.0,
      "nota": "distanza dal riquadro di U13 (mm)"
     },
     {
      "regola": "A5",
+     "oggetto": "NA_R",
+     "misura": 1.15,
+     "soglia": 3.0,
+     "nota": "distanza dal riquadro di U12 (mm)"
+    },
+    {
+     "regola": "A5",
      "oggetto": "NB_L",
-     "misura": 0.0,
+     "misura": 1.05,
      "soglia": 3.0,
      "nota": "distanza dal riquadro di U10 (mm)"
     },
     {
      "regola": "A5",
      "oggetto": "NC_L",
-     "misura": 0.0,
+     "misura": 0.36,
      "soglia": 3.0,
      "nota": "distanza dal riquadro di U10 (mm)"
     }
@@ -544,32 +496,32 @@
     "U1.4 (-18V) -> C17"
    ],
    "A2_lunghezza_max_mm": [
-    135.42,
-    "SEND_IN_L"
+    132.64,
+    "NA_R"
    ],
    "A2_via_max": [
-    4,
-    "NB_L"
+    5,
+    "NA_R"
    ],
    "A3_distanza_max_mm": [
-    76.15,
-    "R22.1 -> U1.7 (VPRE_R)"
+    16.42,
+    "R15.2 -> U2.13 (NSH_L)"
    ],
    "A4_cm_max_pf": [
-    0.279,
-    "NA_L"
+    0.2424,
+    "S2_OUT_R"
    ],
    "A5_distanza_min_mm": [
-    0.0,
-    "NB_L vicino a U10"
+    0.36,
+    "NC_L vicino a U10"
    ]
   },
   "conteggio": {
    "A1": 10,
-   "A2": 29,
-   "A3": 23,
-   "A4": 4,
-   "A5": 3
+   "A2": 28,
+   "A3": 12,
+   "A4": 8,
+   "A5": 4
   }
  },
  "bom": "bom.csv",
@@ -581,11 +533,20 @@
   "disaccoppiamento: U5 con C32, C33",
   "disaccoppiamento: U6 con C34, C35",
   "disaccoppiamento: U7 con C36, C37",
+  "grappolo: U1 con 4 passivi",
+  "grappolo: U2 con 12 passivi",
+  "grappolo: U4 con 4 passivi",
+  "grappolo: U3 con 12 passivi",
+  "grappolo: U5 con 4 passivi",
+  "grappolo: U6 con 16 passivi",
   "fanout di massa: 42 via, 0 senza posto libero"
  ],
  "esito": "PASSA",
  "errori": [],
  "peggiorato": [
-  "controllo audio A4: 3 -> 4"
+  "controllo audio A2: 22 -> 28",
+  "controllo audio A3: 10 -> 12",
+  "controllo audio A4: 5 -> 8",
+  "controllo audio A5: 3 -> 4"
  ]
 }

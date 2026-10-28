@@ -4,11 +4,14 @@ Uso: il file di un modulo (pcb/<modulo>/<modulo>.py) costruisce un Design e
 chiama design.build(). Gira col Python di KiCad (serve pcbnew):
   /Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/3.9/bin/python3 pcb/<modulo>/<modulo>.py
 
-Passi: schema (.kicad_sch, etichette sui pin) -> ERC e netlist da kicad-cli
--> confronto col netlist voluto -> PCB a 4 strati (piazzamento per blocchi)
--> Freerouting -> riempimento zone -> DRC. I report finiscono in out/.
+Passi: controllo del netlist -> schema (.kicad_sch, etichette sui pin) -> ERC e
+netlist da kicad-cli -> confronto nei due sensi col netlist voluto -> PCB a 4 strati
+(pezzi fissi, 100n accanto al pin, passivi a grappolo attorno all'op-amp, blocchi in
+colonne) -> Freerouting -> colate di massa -> DRC -> controllo audio (audiocheck.py).
+Esito PASSA / NON PASSA (codice 1) in out/riepilogo.json, coi peggioramenti sul giro prima.
+Stato e piano: pcb/NOTE-generatore.md.
 """
-import difflib, json, math, os, re, shutil, subprocess, sys, uuid, xml.etree.ElementTree as ET
+import difflib, json, math, os, re, subprocess, sys, uuid, xml.etree.ElementTree as ET
 sys.path.insert(0, os.path.dirname(__file__))
 from sexpr import parse, dump, find, first, Q
 
@@ -181,6 +184,12 @@ class Design:
         self.counters = {}
         self.block = "GENERALE"
         self.notes = []
+        self.gnd = "AGND"        # rete delle colate; il modulo la può cambiare
+
+    @property
+    def masse(self):
+        """Le reti di riferimento: mai alimentazione, mai segnale."""
+        return {self.gnd, "CTRL_GND", "CHASSIS"}
 
     # --- costruzione
     def part(self, prefix, lib_id, value, fp, pins, note="", place=None, ref=None, anchor=None):
@@ -505,7 +514,7 @@ class Design:
             s.SetLayer(pcbnew.Edge_Cuts)
             s.SetWidth(mm(0.1))
             b.Add(s)
-        gnd = getattr(self, "gnd", "AGND")
+        gnd = self.gnd
         if layers == 4:
             self._fanout(b, nets[gnd], mm, pcbnew)
         zl = [pcbnew.In1_Cu, pcbnew.In2_Cu] if layers == 4 else []
@@ -620,6 +629,11 @@ class Design:
         groups = self._decaps()
         for ic, caps in groups.items():
             self._attach(fps, ic, caps)
+        # grappoli: i passivi di una cella attorno al pin del loro op-amp
+        if getattr(self, "cluster_auto", True):
+            for ic, items in self._clusters(groups).items():
+                self._cluster_place(fps, ic, items, groups.get(ic, []))
+                groups.setdefault(ic, []).extend((r, pin) for r, pin, _ in items)
         attached = {c for caps in groups.values() for c, _ in caps}
         free = [p for p in free if p.ref not in attached]
         top, bot = Y0 + 2, Y0 + H - 2
@@ -687,7 +701,7 @@ class Design:
         Ritorna {ref del chip: [(ref del C, pin del chip), ...]}."""
         if not getattr(self, "decap_auto", True):
             return {}
-        gnds = {getattr(self, "gnd", "AGND"), "CTRL_GND"}
+        gnds = self.masse
         free_pins = {}           # (blocco, rete) -> [(chip, pin)] ancora senza C
         groups = {}
         for p in self.parts:
@@ -735,11 +749,118 @@ class Design:
             else:
                 tgt = pcbnew.VECTOR2I(pp.x, int(pp.y + sgn * off))
             cf.SetPosition(tgt)
-            sup = [n for n in nets[cref].values() if n not in (getattr(self, "gnd", "AGND"), "CTRL_GND")][0]
+            sup = [n for n in nets[cref].values() if n not in self.masse][0]
             near = min(cf.Pads(), key=lambda p: (p.GetPosition().x - pp.x) ** 2 + (p.GetPosition().y - pp.y) ** 2)
             if near.GetNetname() != sup and nets[cref].get(near.GetNumber()) != sup:
                 cf.SetOrientationDegrees(180 if horiz else 270)
         self.notes.append("disaccoppiamento: %s con %s" % (ic, ", ".join(c for c, _ in caps)))
+
+    def _clusters(self, groups):
+        """Assegna ogni R e C (non elettrolitico) a un op-amp: prima per un pin di segnale
+        in comune (stesso blocco, poi un altro blocco), poi per una rete in comune con un
+        passivo già nel grappolo (stesso blocco). Ritorna {chip: [(ref, pin, padre)]}:
+        pin = pin del chip a cui si lega, padre = passivo intermedio o None."""
+        regs = set((getattr(self, "audio_rules", None) or {}).get("regolatori", []))
+        taken = {c for caps in groups.values() for c, _ in caps}
+        blk = {p.ref: p.block for p in self.parts}
+        quiet = self.power | self.masse
+        ics = [p for p in self.parts if p.ref.startswith("U") and not p.place
+               and p.ref not in regs and len(p.nets) >= 8]
+        sig = {}
+        for p in ics:
+            for pin, net in sorted(p.nets.items(), key=lambda kv: int(kv[0]) if kv[0].isdigit() else 0):
+                if net and net not in quiet:
+                    sig.setdefault(net, []).append((p.ref, pin))
+        pas = [p for p in self.parts if p.ref[0] in "RC" and not p.place and p.ref not in taken
+               and len(p.nets) == 2 and p.sym.lib_id != "Device:C_Polarized"]
+        clus, member = {}, {}
+        for p in pas:
+            hits = [h for n in p.nets.values() if n in sig for h in sig[n]]
+            hits.sort(key=lambda h: blk[h[0]] != p.block)
+            if hits:
+                ic, pin = hits[0]
+                clus.setdefault(ic, []).append((p.ref, pin, None))
+                member[p.ref] = ic
+        bynet = {}
+        for p in pas:
+            for n in p.nets.values():
+                if n and n not in quiet:
+                    bynet.setdefault(n, []).append(p)
+        for p in pas:
+            if p.ref in member:
+                continue
+            for n in p.nets.values():
+                par = [q for q in bynet.get(n, []) if q.ref in member and q.block == p.block]
+                if par:
+                    ic = member[par[0].ref]
+                    clus[ic].append((p.ref, None, par[0].ref))
+                    member[p.ref] = ic
+                    break
+        return clus
+
+    def _cluster_place(self, fps, ic, items, caps):
+        """Ogni passivo accanto al suo pin (o al passivo padre), sul lato del pin, col pad
+        della rete in comune verso il pin. Se il posto è occupato prova più in là lungo il
+        lato, poi una fila più in fuori."""
+        import pcbnew
+        mm = pcbnew.FromMM
+        u = fps[ic]
+        c0 = u.GetPosition()
+        nets = {p.ref: p.nets for p in self.parts}
+        boxes = [self._bbox(u)] + [self._bbox(fps[c]) for c, _ in caps]
+        info = {}            # ref -> (punto di partenza, direzione verso fuori)
+
+        def free_at(cf):
+            x1, y1, x2, y2 = self._bbox(cf)
+            g = getattr(self, "cluster_gap", 0.5)    # spazio per le piste fra due passivi
+            return all(x2 + g <= a or x1 - g >= c or y2 + g <= b or y1 - g >= d
+                       for a, b, c, d in boxes)
+
+        for ref, pin, par in sorted(items, key=lambda it: it[2] is not None):
+            cf = fps[ref]
+            if par is None:
+                pad = [pd for pd in u.Pads() if pd.GetNumber() == pin][0]
+                pp = pad.GetPosition()
+                dx, dy = pp.x - c0.x, pp.y - c0.y
+                horiz = abs(dx) >= abs(dy)
+                sgn = 1 if (dx if horiz else dy) >= 0 else -1
+                start = (pp.x / 1e6, pp.y / 1e6)
+                lead = ((pad.GetSize().x if horiz else pad.GetSize().y) / 2e6) + 0.5
+                shared = nets[ic][pin]
+            else:
+                if par not in info:
+                    continue
+                (sx, sy), horiz, sgn, plead = info[par]
+                pf = fps[par]
+                far = max(pf.Pads(), key=lambda q: sgn * (q.GetPosition().x if horiz else q.GetPosition().y))
+                start = (far.GetPosition().x / 1e6, far.GetPosition().y / 1e6)
+                lead = 0.6
+                shared = [n for n in nets[ref].values() if n in nets[par].values() and n not in self.masse][0]
+            cf.SetOrientationDegrees(0 if horiz else 90)
+            cf.SetPosition(pcbnew.VECTOR2I(0, 0))
+            half = max(abs(q.GetPosition().x if horiz else q.GetPosition().y) +
+                       (q.GetSize().x / 2) for q in cf.Pads()) / 1e6
+            length = 2 * half + getattr(self, "cluster_gap", 0.5) + 0.4
+            ok = False
+            for row in range(6):
+                out = lead + half + row * length
+                for k in range(0, 13):
+                    side = (k + 1) // 2 * (1 if k % 2 else -1) * 0.75
+                    x = start[0] + (sgn * out if horiz else side)
+                    y = start[1] + (side if horiz else sgn * out)
+                    cf.SetPosition(pcbnew.VECTOR2I(mm(x), mm(y)))
+                    if free_at(cf):
+                        ok = True
+                        break
+                if ok:
+                    break
+            near = min(cf.Pads(), key=lambda q: (q.GetPosition().x / 1e6 - start[0]) ** 2 +
+                       (q.GetPosition().y / 1e6 - start[1]) ** 2)
+            if nets[ref].get(near.GetNumber()) != shared:
+                cf.SetOrientationDegrees((0 if horiz else 90) + 180)
+            boxes.append(self._bbox(cf))
+            info[ref] = (start, horiz, sgn, lead)
+        self.notes.append("grappolo: %s con %d passivi" % (ic, len(items)))
 
     def _gbox(self, fps, ref, groups):
         """Riquadro di un pezzo, o del chip col suoi condensatori."""
@@ -793,7 +914,7 @@ class Design:
         mm = pcbnew.FromMM
         b = pcbnew.LoadBoard(pcb)
         W, H = self.board
-        gnd = b.FindNet(getattr(self, "gnd", "AGND"))
+        gnd = b.FindNet(self.gnd)
         for layer in (pcbnew.F_Cu, pcbnew.B_Cu):
             z = self._zone(b, gnd, layer, 50.0, 50.0, W, H, mm, pcbnew)
             z.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
@@ -837,14 +958,14 @@ class Design:
 
     def verdetto(self, res, prev):
         """Gli errori che fermano la scheda, e cosa è peggiorato rispetto al giro prima."""
-        gnd = getattr(self, "gnd", "AGND")
+        colate = (self.gnd, "CHASSIS")     # reti che chiudono le colate e i fori
         err = list(res["controllo_netlist"]) + list(res["reti_diverse_schema"])
         err += ["ERC %s: %d" % (k, v) for k, v in res["erc"].items() if k.startswith("error")]
         r = res["routing"]
         if isinstance(r, dict):
             if not r["ok"]:
                 err.append("routing non riuscito: %s" % r.get("errore", ""))
-            sig = {n: c for n, c in r["aperti"].items() if n not in (gnd, "CHASSIS")}
+            sig = {n: c for n, c in r["aperti"].items() if n not in colate}
             if sig:
                 err.append("Freerouting ha lasciato aperte reti di segnale: %s" % sig)
         for k, v in res["drc"].items():

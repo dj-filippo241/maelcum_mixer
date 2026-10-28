@@ -8,6 +8,7 @@ Uso come modulo (dal file di una scheda, pcb/<modulo>/<modulo>.py):
 
 Uso da riga di comando (Python di KiCad, serve pcbnew):
     <python di KiCad> pcb/tools/audiocheck.py <scheda.kicad_pcb>
+    Le regole vengono da d.audio_rules del file del modulo accanto alla scheda.
 
 Regole (soglie di default in SOGLIE, sostituibili con rules["soglie"]):
   A1 disaccoppiamento: ogni pin di alimentazione di ogni IC ha un C sulla stessa
@@ -412,20 +413,27 @@ def riassunto(res):
     return "\n".join(righe)
 
 
+def _regole_del_modulo(pcb_path):
+    """Le regole stanno nel file del modulo (pcb/<modulo>/<modulo>.py, d.audio_rules):
+    lo importa senza costruire la scheda. Senza file, valgono i default."""
+    import importlib.util, os
+    base = os.path.splitext(os.path.abspath(pcb_path))[0]
+    for cand in (base + ".py", os.path.join(os.path.dirname(os.path.dirname(base)),
+                                             os.path.basename(base) + ".py")):
+        if os.path.exists(cand):
+            sys.path.insert(0, os.path.dirname(cand))      # i moduli importano i loro vicini (cavo.py)
+            spec = importlib.util.spec_from_file_location("_modulo", cand)
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            return getattr(getattr(mod, "d", None), "audio_rules", None)
+    return None
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         sys.exit("uso: audiocheck.py <scheda.kicad_pcb>")
     path = sys.argv[1]
-    rules = None
-    if path.endswith("fx-send.kicad_pcb"):
-        # regole di PROVA per FX-SEND: il posto giusto e' pcb/fx-send/fx-send.py
-        rules = {
-            "sensibili": r"^(NB|NSH|NVH|NHB|VPRE|SEND_IN|INJ\d|S\d_OUT)_[LR]$",
-            "cavo": r"^(NA|NB|NC)_[LR]$",
-            "rumorose": r"^(\+15SW|-15SW|ASG\d|MUTE_G|GLOBAL_MUTE|\+5VF?|BTN\d|MD\d|SW\d_[LR]"
-                        r"|V27F[+-]|VREG[+-]|BASE[+-]|RAW.*|CTRL_GND)$",
-            "regolatori": ["U10", "U11", "U12", "U13", "Q1", "Q2"],
-        }
+    rules = _regole_del_modulo(path)
     t0 = time.time()
     res = check(path, rules)
     dt = time.time() - t0

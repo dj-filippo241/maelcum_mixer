@@ -1,0 +1,95 @@
+* MUTE CONTROLLER del master [L] (master-out §3.7, todo 182) - tempi.
+* Supervisore: AC_OK (open collector, alto = rete presente, psu-esterno §2.5) e
+* finestra del +22 (< 21,2 V = mute, psu-esterno §4.4) tirano giu' RAILS_OK
+* (wired-OR di comparatori open collector, LM393/LM339). Timer: RAILS_OK carica
+* CT attraverso RT; il diodo DT scarica CT subito quando RAILS_OK cade
+* (mute subito, riarmo lento). Comparatore del timer contro VREF 2,495 V
+* (TL431) -> OKD (open collector, pull-up 10k).
+* OKD comanda: (1) i 3 rele' di uscita (master, booth, rec; Omron G6K-2 5 V,
+*     178 ohm, 28,1 mA; eccitati = suono, diseccitati = muto: failsafe);
+*     due varianti di spegnimento della bobina: A = diodo solo, B = diodo + zener 12 V;
+* (2) la linea GLOBAL_MUTE c9: NMOS open drain, basso = suona; le pull-up
+*     100k dei moduli (4 FX-SEND) la portano alta = muto quando il master
+*     la rilascia o manca (polarita' provvisoria di pcb/fx-send/NOTE.md punto 5).
+* Comparatori = interruttori con isteresi (S); i tempi del chip (~1 us) sono
+* trascurabili rispetto ai ms in gioco.
+* Sequenza: +5 sale in 50 ms da t=0; AC_OK alto a 0,10 s; +22 in finestra a 0,15 s.
+* Buco di rete: AC_OK basso da 3,000 a 3,020 s. Spegnimento: AC_OK basso a 7,000 s;
+* +22 esce dalla finestra a 7,0259 s (regolatori del box, caso peggiore -10 %,
+* psu-esterno §2.6); +5 cade dopo (bulk >= 4,7 mF), da 7,060 a 7,100 s.
+* Bobina: L non dichiarata da Omron; 150 mH per bobina (stima; con 50 mH il rilascio e' piu' veloce).
+* Risultati: RISULTATI-mute-ctrl.md.
+.param Lc=0.15 RTv=1.2Meg kC=1
+.step param kC list 0.9 1 1.1
+.model D1N4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p Tt=4n)
+.model BAT54 D(Is=0.1u Rs=1.5 N=1.0 Cjo=10p BV=30)
+.model DZ12 D(Is=1n Rs=5 BV=12 IBV=1m)
+.model SWC SW(Ron=50 Roff=100Meg Vt=0 Vh=0.02)
+.model N7002 VDMOS(Vto=1.8 Kp=0.3 Rd=0.5 Rs=0.5 Cgdmax=30p Cgdmin=5p Cgs=40p)
+.model AO3400 VDMOS(Vto=1.05 Kp=12 Rd=0.015 Rs=0.01 Cgdmax=150p Cgdmin=20p Cgs=600p)
+* alimentazioni e linee dal box
+Vp5 p5 0 PWL(0 0 50m 5 7.06 5 7.1 0)
+Vac acok_src 0 PWL(0 0 0.1 0 0.1001 5 3 5 3.0001 0 3.02 0 3.0201 5 7 5 7.0001 0)
+Rac acok_src acok 100
+Rpacok acok p5 10k
+V22 r22 0 PWL(0 0 0.15 22 7.0259 22 7.03 18 7.1 0)
+* riferimento TL431 (segue il +5 finche' non arriva a 2,495 V)
+Bref vref 0 V=min(V(p5),2.495)
+* supervisore: wired-OR su RAILS_OK
+Rpok rok p5 10k
+S1 rok 0 vref acok SWC
+* finestra del +22: partitore 2,495/21,2 -> R 160k / 21,5k
+Rd1 r22 d22 160k
+Rd2 d22 0 21.5k
+S2 rok 0 vref d22 SWC
+* timer: 1,2 M x 2,2 u, soglia a VREF (~meta' del +5): t = tau x ln 2 = 1,83 s.
+* DT Schottky (BAT54): dopo un buco CT resta a ~0,25 V invece di ~0,6 V (1N4148),
+* cosi' il riarmo non scende sotto 1,5 s. kC = tolleranza di CT (+-10 %).
+RT rok ct {RTv}
+CT ct 0 {2.2u*kC}
+DT ct rok BAT54
+S3 okd 0 vref ct SWC
+Rpokd okd p5 10k
+* driver dei rele': NMOS logic level (AO3400) pilotato in tensione da OKD
+* (3 bobine in parallelo = una bobina equivalente /3)
+RbA okd bA 100
+MA cA bA 0 AO3400
+LA p5 xA {Lc/3}
+RA xA cA {178/3}
+DA cA p5 D1N4148
+RbB okd bB 100
+MB cB bB 0 AO3400
+LB p5 xB {Lc/3}
+RB xB cB {178/3}
+DB cB zB D1N4148
+DZB p5 zB DZ12
+* GLOBAL_MUTE c9 verso 4 FX-SEND: pull-up 100k ciascuno, ~470 pF di backplane
+M1 c9 okd 0 N7002
+Rpu c9 p5 25k
+Cc9 c9 0 470p
+* FX-SEND: c9 -> 1k -> gate del 2N7002 del mute (MUTE_G)
+Rg c9 mg 1k
+Cg mg 0 50p
+.tran 0 7.2 0 0.2m
+* accensione
+.meas tran t_c9_on   WHEN V(c9)=0.8 FALL=1
+.meas tran t_relA_on WHEN I(LA)=63m RISE=1
+.meas tran t_relB_on WHEN I(LB)=63m RISE=1
+.meas tran iA_glitch MAX I(LA) FROM 0 TO 1.4
+.meas tran iA_on AVG I(LA) FROM 2.5 TO 2.9
+.meas tran iB_on AVG I(LB) FROM 2.5 TO 2.9
+* buco di rete di 20 ms a 3,000 s
+.meas tran d_c9_buco   TRIG V(acok)=2.5 TD=2.9 FALL=1 TARG V(c9)=2.0 TD=2.9 RISE=1
+.meas tran d_relA_buco TRIG V(acok)=2.5 TD=2.9 FALL=1 TARG I(LA)=8.4m TD=2.9 FALL=1
+.meas tran d_relB_buco TRIG V(acok)=2.5 TD=2.9 FALL=1 TARG I(LB)=8.4m TD=2.9 FALL=1
+.meas tran t_riarmo    WHEN V(c9)=0.8 TD=3.03 FALL=1
+.meas tran d_riarmo    PARAM t_riarmo-3.02
+.meas tran t_riarmoA   WHEN I(LA)=63m TD=3.03 RISE=1
+* spegnimento a 7,000 s
+.meas tran d_c9_off   TRIG V(acok)=2.5 TD=6.9 FALL=1 TARG V(c9)=2.0 TD=6.9 RISE=1
+.meas tran d_relA_off TRIG V(acok)=2.5 TD=6.9 FALL=1 TARG I(LA)=8.4m TD=6.9 FALL=1
+.meas tran d_relB_off TRIG V(acok)=2.5 TD=6.9 FALL=1 TARG I(LB)=8.4m TD=6.9 FALL=1
+.meas tran vB_max MAX V(cB) FROM 6.9 TO 7.2
+.meas tran vA_max MAX V(cA) FROM 6.9 TO 7.2
+.meas tran iA_dopo MAX I(LA) FROM 7.01 TO 7.2
+.end
