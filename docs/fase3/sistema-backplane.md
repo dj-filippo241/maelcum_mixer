@@ -222,7 +222,8 @@ elettricamente corte (λ = km). Bilanciato solo verso l'esterno
 | c10-c13 | CV_BUS 0-5 V ×4 | convenzione d'interfaccia [BLOCCATO]: CV remoti (es. filter freq shared, utility); generazione nel dominio ±15 V LN (sheet §1) |
 | c14-c15 | LED_DIM / SVC | dimming LED comune (PWM lento dal PSU) + linea di servizio spare |
 | c16, c20, c24, c28 | CTRL_GND | ritorni intercalati: ogni gruppo di segnali ha il suo ritorno adiacente |
-| c17-c19, c21-c23, c25-c27, c29-c32 | SPARE | riserva (future: meter link, automation, MIDI…) |
+| c17 | AC_OK | **[REV 2026-10-28, scheda del master]** linea open collector dal PSU-IN (alto = rete presente, `sistema-psu-esterno.md` §2.5) verso il mute controller del master; la pull-up sta nel PSU-IN |
+| c18-c19, c21-c23, c25-c27, c29-c32 | SPARE | riserva (future: meter link, automation, MIDI…) |
 
 ## 6. Correnti stimate per classe e per raw [PROVVISORIO — il calcolo esatto è di S1/PSU; REV dec. 93: split per rail dedicato]
 

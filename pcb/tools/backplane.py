@@ -35,6 +35,9 @@ RIGA_C["c9"] = "GLOBAL_MUTE"
 for _i in range(10, 14): RIGA_C["c%d" % _i] = "CV%d" % (_i - 9)
 RIGA_C["c14"] = "LED_DIM"
 RIGA_C["c15"] = "SVC"
+# AC_OK (open collector dal box, alto = rete presente; psu-esterno §2.5) va dal PSU-IN al
+# mute controller del master. Pin libero scelto il 2026-10-28 (pcb/master/NOTE.md): c17.
+RIGA_C["c17"] = "AC_OK"
 for _i in (16, 20, 24, 28): RIGA_C["c%d" % _i] = "CTRL_GND"
 
 # pin di riga a che ogni modulo collega (il master aggiunge a9-a12)
