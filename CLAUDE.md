@@ -23,7 +23,7 @@ Origine delle decisioni: **[F]** = detta da Filippo · **[R]** = dal resoconto C
 
 ## Comandi
 
-KiCad 10.0.7 sta in `/Applications/KiCad` (copiato dal .dmg: `brew install --cask kicad` vuole sudo e fallisce senza terminale; Homebrew non lo gestisce). CLI: `/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli`. Schemi e PCB ripartiti il 2026-10-27 (richiesta di Filippo): ogni scheda nasce da `pcb/<modulo>/<modulo>.py` col generatore `pcb/tools/pcbgen.py` (schema, PCB 4 strati, Freerouting, ERC/DRC) e si rigenera, non si ritocca a mano. Fatta: FX-SEND (bozza, `pcb/fx-send/NOTE.md`).
+KiCad 10.0.7 sta in `/Applications/KiCad` (copiato dal .dmg: `brew install --cask kicad` vuole sudo e fallisce senza terminale; Homebrew non lo gestisce). CLI: `/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli`. Schemi e PCB ripartiti il 2026-10-27 (richiesta di Filippo): ogni scheda nasce da `pcb/<modulo>/<modulo>.py` col generatore `pcb/tools/pcbgen.py` (schema, PCB 4 strati, Freerouting, ERC/DRC) e si rigenera, non si ritocca a mano. Fatta: FX-SEND (bozza, `pcb/fx-send/NOTE.md`). In corso: master, scheda di segnale scritta, NON PASSA per spazio (`pcb/master/NOTE.md`, todo 199).
 
 Generare una scheda (Python di KiCad, ~4 min):
 
@@ -34,6 +34,7 @@ Generare una scheda (Python di KiCad, ~4 min):
 Regole delle PCB (nate il 2026-10-27):
 
 - La generazione finisce con PASSA o NON PASSA (codice 1): un NON PASSA non si committa. Le righe PEGGIO confrontano col giro prima. Controllo audio: `pcb/tools/audiocheck.py`, regole in `d.audio_rules`. Pinout del C96 solo da `pcb/tools/backplane.py`. Stato e piano: `pcb/NOTE-generatore.md`.
+- Una scheda 100 × 165 porta ~120 impronte. Si stima dal conteggio vero (trimmer, 100n, regolatori, ponticelli), non dai circuiti del design doc: il master segnale ne ha 282.
 - Le reti che toccano pin TSSOP (passo 0,65) vogliono piste ≤ 0,3 mm: con 0,6 Freerouting non le collega.
 - Grappolo attorno all'op-amp: `d.cluster_gap` 0,5 mm. Con 0,2 mm Freerouting lascia reti aperte (FX-SEND: NON PASSA).
 - I datasheet di analog.com non si scaricano da qui (timeout, errore HTTP/2). Copia funzionante: la pagina radiolocman del pezzo → link «Download PDF» su rlocman.ru (così è arrivato l'ADG1434 Rev. E). Pinout sempre dal datasheet, mai a memoria.
