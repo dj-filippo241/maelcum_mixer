@@ -29,7 +29,18 @@ dal C96 (in basso) ai connettori verso le altre schede.
 | 3 | in alto accanto a J3 | SETP, +5V, CTRL_GND (0,5 mm), RAW±26 |
 
 Freerouting: 13 minuti di CPU per giro, fino a 3 ore di orologio a macchina carica.
-Strade per il prossimo giro, in ordine:
+Giri del 2026-10-29, dopo la dec. 143 (alimentazioni delle uscite dal loro C96, J2 2x7 solo audio e CLIP):
+
+| Giro | Modifica | Aperte |
+|---|---|---|
+| 4 | J2 senza alimentazioni, SETP 0,3 mm | SETP, +5V, CTRL_GND (12 collegamenti) |
+| 5 | reti sottili con via 0,8/0,4 e distanza 0,2 | SETP 2, +5V 2, CTRL_GND 3; 3 errori nuovi di distanza |
+
+Restano aperti anche collegamenti fra pin vicini del C96 (a21-a22, a23-a24) e fra R7, C11 e U42:
+non è spazio. Da capire prima di un altro giro (ripartire da una sessione pulita). Il cambio
+delle vie sottili in `pcbgen.py` non è ancora provato sul FX-SEND.
+
+Strade scritte il 2026-10-28 (la 1 è diventata la dec. 143):
 
 1. **Le schede d'uscita prendono l'alimentazione dal backplane** con un connettore loro
    (RAW±26, RAW±27, +5V, CTRL_GND). Sulla scheda di segnale resta solo l'audio verso J2.

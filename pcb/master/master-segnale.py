@@ -68,9 +68,9 @@ for k, n in enumerate(slot):
     b["b%d" % (3 * k + 2)] = n + "_R"
     b["b%d" % (3 * k + 3)] = "AGND"
 b["b31"], b["b32"] = "VIE_TAP_L", "VIE_TAP_R"
-pins = c96(b, a=A_STANDARD + ["a9", "a10", "a11", "a12"], c=["c9", "c17"])
+pins = c96(b, a=A_STANDARD)   # RAW±26, c9 e c17 vanno alle schede d'uscita (dec. 143)
 d.part("J", SYM_C96, "C96 maschio", FP_C96, pins, ref="J1", place=(50, 213.5, 180),
-       note="DIN 41612 C 3x32, angolo retto; il master popola anche a9-a12 (+-26 V [M])")
+       note="DIN 41612 C 3x32, angolo retto; a9-a12 sulle schede d'uscita (dec. 143)")
 d.part("H", "Mechanical:MountingHole_Pad", "CHASSIS", "MountingHole:MountingHole_3.2mm_M3_Pad",
        {1: "CHASSIS"}, ref="H1", place=(5, 5, 0), note="foro di fissaggio al pannello, a CHASSIS")
 d.part("H", "Mechanical:MountingHole_Pad", "CHASSIS", "MountingHole:MountingHole_3.2mm_M3_Pad",
@@ -78,7 +78,7 @@ d.part("H", "Mechanical:MountingHole_Pad", "CHASSIS", "MountingHole:MountingHole
 
 # ------------------------------------------------------------ alimentazione
 d.block = "ALIMENTAZIONE +-18 (LM317/337 + cap-moltiplicatore), +-15 LN (LT3045/LT3094)"
-d.power_nets("RAW+27", "RAW-27", "RAW+22", "RAW-22", "RAW+26", "RAW-26", "AGND", "CHASSIS", width=0.8)
+d.power_nets("RAW+27", "RAW-27", "RAW+22", "RAW-22", "AGND", "CHASSIS", width=0.8)
 d.power_nets("+5V", "CTRL_GND", width=0.5)    # relè e LED: ~0,3 A; 0,8 mm non passava dal C96 a J2/J3
 d.power_nets("+18V", "-18V", "+15LN", "-15LN", "V27F+", "V27F-", width=0.6)
 FB = "Inductor_SMD:L_1206_3216Metric"
@@ -121,6 +121,7 @@ d.part("U", "Regulator_Linear:LT3045xMSE", "LT3045EMSE", MSE, {
     1: "+18V", 2: "+18V", 3: "+18V", 4: "+18V", 5: None, 6: "AGND", 7: "AGND", 8: "SETP",
     9: "AGND", 10: "+15LN", 11: "+15LN", 12: "+15LN", 13: "AGND"}, ref="U42",
     note="EN/UV a IN; ILIM a massa = limite massimo; PG libero, PGFB a massa: NOTA da verificare")
+d.netclass["SETP"] = 0.3    # pin MSOP a passo 0,65 (regola delle reti TSSOP)
 d.R("SETP", "AGND", "150k 0.1%")
 d.C("SETP", "AGND", "4u7 25V", C12, note="rumore del riferimento (datasheet: 4,7 uF)")
 d.C("+18V", "AGND", "4u7 25V", C12)
@@ -304,11 +305,11 @@ opa("U25", ("VRA0", "VREFA", "VREFA"), ("VRB0", "VREFB", "VREFB"), note="vrefA 5
 # ------------------------------------------------------------ connettori verso le altre schede
 d.side = "F"
 d.block = "CONNETTORI: J2 verso la scheda di USCITA, J3 verso la scheda COMANDI"
-J2 = ["RAW+26", "RAW+26", "RAW-26", "RAW-26", "RAW+27", "RAW-27", "AGND", "AGND",
-      "MAST_L", "AGND", "MAST_R", "AGND", "BOOTH_L", "AGND", "BOOTH_R", "AGND", "REC_L", "AGND", "REC_R", "AGND",
-      "+5V", "CTRL_GND", "GLOBAL_MUTE", "AC_OK", "CLIP_L", "CLIP_R"]
-d.part("J", "Connector_Generic:Conn_02x13_Odd_Even", "2x13 scheda-scheda",
-       "Connector_PinHeader_2.54mm:PinHeader_2x13_P2.54mm_Vertical",
+# dec. 143: le alimentazioni delle uscite arrivano dal loro C96; qui solo audio e CLIP
+J2 = ["AGND", "MAST_L", "AGND", "MAST_R", "AGND", "BOOTH_L", "AGND", "BOOTH_R", "AGND", "REC_L", "AGND", "REC_R",
+      "CLIP_L", "CLIP_R"]
+d.part("J", "Connector_Generic:Conn_02x07_Odd_Even", "2x7 cavo piatto",
+       "Connector_PinHeader_2.54mm:PinHeader_2x07_P2.54mm_Vertical",
        {i + 1: n for i, n in enumerate(J2)}, ref="J2", place=(72, 5, 90),
        note="NOTA: cavo piatto verso le schede di uscita affiancate (dec. 142); AGND fra i segnali")
 J3 = ["POT_M", "AGND", "POT_B", "AGND", "+REF5", "AGND", "MONO_SW", "AGND",

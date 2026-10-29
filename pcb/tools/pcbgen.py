@@ -480,9 +480,12 @@ class Design:
                 if cname not in classes:
                     nc = pcbnew.NETCLASS(cname)
                     nc.SetTrackWidth(mm(w))
-                    nc.SetClearance(mm(0.25))
-                    nc.SetViaDiameter(mm(1.0))
-                    nc.SetViaDrill(mm(0.5))
+                    # piste sottili (passo fine, logica): via e distanze come il default;
+                    # con la via da 1 mm Freerouting non chiudeva SETP, +5V e CTRL_GND (master)
+                    thin = w < 0.6
+                    nc.SetClearance(mm(0.2 if thin else 0.25))
+                    nc.SetViaDiameter(mm(0.8 if thin else 1.0))
+                    nc.SetViaDrill(mm(0.4 if thin else 0.5))
                     ns.SetNetclass(cname, nc)
                     classes[cname] = nc
                 ns.SetNetclassPatternAssignment(net, cname)
