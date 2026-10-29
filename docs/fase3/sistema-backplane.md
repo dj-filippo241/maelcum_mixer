@@ -307,6 +307,9 @@ ramo e dei fusibili di ramo (S1 §4).
 
 ## 10. Assunzioni dichiarate
 
+[REV 2026-10-29, dec. 144] Principio: la forma del telaio segue la funzione. Le
+assunzioni sotto (lunghezza, numero di slot, schede verticali) cambiano se la funzione lo chiede.
+
 - Moduli = schede verticali dietro pannello (non card-cage Eurocard):
   il DIN 41612 angolo retto lo permette; se q29 sceglie il card-cage,
   stessa famiglia, montaggio diverso.
