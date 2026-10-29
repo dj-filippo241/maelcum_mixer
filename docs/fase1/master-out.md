@@ -444,7 +444,9 @@ GLOBAL_MUTE (c9).
 ## ADDENDUM 2026-10-28 — schede del modulo (decisioni 140-141)
 
 [REV 2026-10-28, dec. 142: schede alte 220 mm, SMD sui due lati; segnale e
-uscita sono 3 schede affiancate sotto il pannello: segnale + 2 di uscita.]
+uscita sono 3 schede affiancate sotto il pannello: segnale + 2 di uscita.
+Dec. 143: le 2 schede d'uscita hanno un C96 loro (RAW±26, +5V, CTRL_GND, c9, c17):
+il master occupa 3 slot del backplane.]
 Il modulo è fatto di quattro schede, generate con `pcb/tools/pcbgen.py`
 in `pcb/master/`:
 - **segnale** (col C96): [A2], [A3] MONO, INS_SEND/RET, [A] [B] [C] [N],

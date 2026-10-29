@@ -121,6 +121,7 @@ margine ≥2,7× (≥4× sul tipico 0,9 A).
 | 5-WAY | 1 | 1×C96 | DJ bus in → out MASTER SUM |
 | FX | 1 | 1×C96 | 4 bus-net in (multidrop, dec. 91) + 4 return out = 8 slot stereo |
 | MASTER | 1 | 1×C96 | 7 contributori MASTER SUM + MON out verso CUE |
+| MASTER-OUT (dec. 143) | 2 | 1×C96 cad. | solo alimentazione e controllo: RAW±26 [M] a9-a12, +5V, CTRL_GND, GLOBAL_MUTE c9, AC_OK c17; nessun audio; schede d'uscita del master accanto alla scheda di segnale |
 | CUE | 1 | 1×C96 | 4 cue in + MON in; ampli cuffia locale |
 | MIC / MONO | fino a 4 in totale (dec. 97) | 1×C96 cad. | due moduli SEPARATI, stessa classe di slot: out MASTER SUM + 4 out sui net dei bus FX (`docs/fase4/mic-mono-moduli.md`) |
 | PSU | 1 | 1×C96 (lato distribuzione) + morsetti/viti per ingresso rete e secondari | la PSU È la stella (§grounding): i radiali AGND partono dal suo connettore |
@@ -137,7 +138,7 @@ retto, montaggio a pannello) [REV dec. 91: +4 FX-SEND].
 | a3-a4 | −27 V raw AUDIO | idem |
 | a5-a6 | +22 V raw LN/OTA | 2 pin (≥3 A vs 0,5 A max) |
 | a7-a8 | −22 V raw LN/OTA | idem |
-| a9-a10 | +26 V raw [M] HV | solo master: la mappa è identica ma SOLO il modulo MASTER popola ferrite+bulk su questi pin |
+| a9-a10 | +26 V raw [M] HV | solo master: la mappa è identica ma SOLO il modulo MASTER popola ferrite+bulk su questi pin [dec. 143: li usano le 2 schede MASTER-OUT, non la scheda di segnale] |
 | a11-a12 | −26 V raw [M] HV | idem |
 | a13-a20 | AGND (analogue 0 V, ritorni) | 8 pin = <1 mΩ di percorso; è il radiale di stella del modulo |
 | a21-a22 | +5 V control | REGOLATO nella PSU (dec. 93); LED/logiche; 2 pin ≈ 4 A capacità vs 1,25 A di dimensionamento |
