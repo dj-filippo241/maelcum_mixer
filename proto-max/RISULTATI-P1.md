@@ -10,7 +10,8 @@ fatte nella stessa notte, su richiesta di Filippo («tutto P1»).
 - **FREQ** HPF e LPF, curva Xone:96 (dec. 102 a): 10 Hz a 0 %, 20 Hz a
   5 %, 20 kHz a 95 %, 35 kHz a 100 %. **[DEC. 137, 2026-10-27: la sezione
   HPF parte da 20 Hz a 0 % (20 Hz - 20 kHz tra 0 e 95 %); rigenerato,
-  `prova_filtro.py` PASS. La LPF non cambia.]**
+  `prova_filtro.py` PASS. La LPF non cambia. MC-FILTRO-S era rimasto con
+  la legge vecchia: rigenerato il 2026-10-29, `prova_semplice.py` PASS.]**
 - **RES** HPF e LPF, dec. 102 (b): Q base fino al 90 %, poi fischio.
   gres = 1 − θ/0,9 fino al 90 %; oltre scende a −0,75 a fine corsa.
 - **MODO** HPF / OFF / LPF (dec. 101), rampa 1 ms (dec. 80; dissolvenza

@@ -177,7 +177,7 @@ m2 = 1.0;
 dq1 = q1i;
 // sezione HP: FREQ dec. 102 (a), RES dec. 102 (b)
 th = s_freq_hp / 100;
-f_hp = (th < 0.05) * 10 * pow(2, th / 0.05) + (th >= 0.05) * (th <= 0.95) * 20 * pow(1000, (th - 0.05) / 0.9) + (th > 0.95) * 20000 * pow(1.75, (th - 0.95) / 0.05);
+f_hp = (th <= 0.95) * 20 * pow(1000, th / 0.95) + (th > 0.95) * 20000 * pow(1.75, (th - 0.95) / 0.05);
 g_hp1 = tan(pi * f_hp / m1 / sr4);
 g_hp2 = tan(pi * f_hp / m2 / sr4);
 od_hp = pow(s_drive_hp / 100, 2.5);
