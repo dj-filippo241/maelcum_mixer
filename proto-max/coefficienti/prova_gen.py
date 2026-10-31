@@ -158,9 +158,14 @@ def main():
         ("D: LOW-MID a zero", (50, 0, 50, 50), 2, [367, 700]),
         ("D: MID-HIGH a zero", (50, 50, 0, 50), 2, [250, 1514]),
         ("D: solo MID-HIGH", (0, 0, 50, 0), 2, [250, 700]),
+        ("A 400: tutte al centro", (50, 50, 50, 50), 3, [150, 400, 2500]),
+        ("A 400: MID-HIGH a zero", (50, 50, 0, 50), 3, [400, 1000]),
+        ("A 400: solo MID-HIGH", (0, 0, 50, 0), 3, [250, 400, 1000]),
+        ("A 450: MID-HIGH a zero", (50, 50, 0, 50), 4, [450, 1060]),
+        ("A 450: solo MID-HIGH", (0, 0, 50, 0), 4, [250, 450, 1000]),
     ]
     for nome, man, sel, freq in casi:
-        var = "ACD"[sel]
+        var = "ACDEG"[sel]
         inc, pend = canale.INCROCI[var], canale.PENDENZE[var]
         for f in freq:
             p = dict(zip(["low", "lowmid", "midhigh", "high"], man))
@@ -202,6 +207,7 @@ def main():
     g.imposta(midhigh=0)
     passi = [(dict(incroci=0, eqtipo=0), ("ACD", 0)),
              (dict(incroci=2), ("ACD", 2)),
+             (dict(incroci=4), ("ACDEG", 4)),
              (dict(eqtipo=1), ("F", 0)),
              (dict(eqtipo=2), ("P", 0)),
              (dict(incroci=1, eqtipo=0), ("ACD", 1))]

@@ -209,7 +209,7 @@ def main():
             y = [g.campione(0.0, 0.0)[0] for _ in range(n)]
             rms, f = nota(y, n - int(0.08 * FS), FS)
             c = filtro.Core(lin, 4 * FS, lim=lim)
-            ym = [c.passo(1e-6 if i < 10 else 0.0, fc, -0.75, "lp")
+            ym = [c.passo(1e-6 if i < 10 else 0.0, fc, filtro.res_law(1.0), "lp")
                   for i in range(int(0.35 * 4 * FS))]
             rms_m, f_m = nota(ym, len(ym) - int(0.08 * 4 * FS), 4 * FS)
             controlla(f"{nome_c} fc {fc} Hz livello dBu",

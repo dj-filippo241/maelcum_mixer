@@ -247,8 +247,9 @@ def genexpr():
         r(f"g_{sez}2 = tan(pi * f_{sez} {op} m2 / sr4);")
         r(f"od_{sez} = pow(s_drive_{sez} / 100, {filtro.OD_ESP!r});")
         r(f"tr = s_res_{sez} / 100;")
-        r(f"gr = (tr <= 0.9) * (1 - tr / 0.9)"
-          f" + (tr > 0.9) * (-0.75 * (tr - 0.9) / 0.1);")
+        r(f"gr = (tr <= 0.9) * pow({filtro.RES_G90!r}, tr / 0.9)"
+          f" + (tr > 0.9) * ({filtro.RES_G90!r} + {filtro.RES_FINE - filtro.RES_G90!r}"
+          f" * (tr - 0.9) / 0.1);")
         r(f"d_{sez} = (gr > 0) * gr * q2i"
           f" + (gr <= 0) * {2 ** 0.5!r} * gr;")
     r()

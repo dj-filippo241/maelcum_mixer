@@ -37,9 +37,9 @@ MANOPOLE = [
 ]
 FADER = ("fader", "FADER", 100.0)
 # varianti di incroci nel selettore (B scartata all'ascolto, dec. 114)
-VARIANTI = ["A", "C", "D"]
+VARIANTI = ["A", "C", "D", "E", "G"]
 SELETTORE = ("incroci", "INCROCI",
-             ["A 150/500/2500", "C 150d/350/3150", "D 150d/700/3150"])
+             ["A 500", "C 350", "D 700", "A 400", "A 450"])
 CURVA = ("curva", "CURVA", ["LINEARE", "PIONEER"])
 # B5 (Filippo 2026-10-15): EQ in serie archiviato come opzione d'ascolto
 # 2026-10-31 (Filippo): SERIE ridisegnato sull'EQ del Xone:92 (xone.py),

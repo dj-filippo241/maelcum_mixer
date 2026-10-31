@@ -288,3 +288,11 @@ Corsa uguale per tutte: 10 % circa -14 dB, 25 % -6 dB, 50 % 0, 100 % +6
 F e P gen~ contro `djm.djm_os`, cambi di selettore senza picchi);
 `prova_semplice.py` PASS; `regole_gen.py` nessuna collisione; rumore
 bianco con manopole a 0 e a 100 %: stabile. MC-CHANNEL-S invariato.
+
+## INCROCI A 400 e A 450 (2026-10-31, libretto 7.2)
+
+Filippo: «incroci da rivedere: vorrei un MID-HIGH più ampio verso il basso
+(non di molto)»; scelta «400 450». Due voci nuove nel selettore INCROCI di
+MC-CHANNEL, tutte LR4 come A: A 400 = 150 / 400 / 2500 Hz, A 450 = 150 /
+450 / 2500 Hz. Le voci si chiamano ora A 500, C 350, D 700, A 400, A 450
+(il numero e l'incrocio fra LOW-MID e MID-HIGH). MC-CHANNEL-S resta su A.

@@ -10,7 +10,11 @@ Origine dei numeri:
   da 20 Hz (20 Hz - 20 kHz tra 0 e 95 %); la LPF resta com'era.
 - RES: dec. 102 (b), gres = 1 - theta/0,9 fino al 90 %; oltre, gres
   negativo fino a -0,75 a fine corsa (RISULTATI-D5 §2: "gres -0,1 poco
-  oltre il 90 %", "-0,75 a RES 100 %").
+  oltre il 90 %", "-0,75 a RES 100 %"). 2026-10-31 (Filippo, libretto 8.3:
+  «non abbastanza all'inizio e poi troppo dopo, fischio troppo forte»):
+  gres = RES_G90^(theta/0,9) fino al 90 % (Q che cresce in modo uniforme,
+  fino a ~6 volte la base), poi lineare fino a RES_FINE -0,25 a fine corsa:
+  il fischio parte verso il 94 % ed e ~4 dB piu basso [PROVVISORIO].
 - Core (a'): OTA LM13700 dietro un partitore 1/30 (dec. 109). Ogni
   integratore e l'OTA della RES vedono Vs * tanh(u / Vs), con
   Vs = 2 VT / k = 1,55 V: il tetto di stato di filter-module §5quater.
@@ -86,11 +90,15 @@ def freq_law(theta, sez="lp"):
     return 20.0 * 1000.0 ** ((theta - 0.05) / 0.9)
 
 
+RES_G90 = 1.0 / 6.0             # gres al 90 %: Q = 6 volte la base
+RES_FINE = -0.25                # gres a fine corsa (era -0,75)
+
+
 def res_law(theta):
-    """RES: gres 1 (Q base) ... 0 al 90 % ... -0,75 a fine corsa."""
+    """RES: gres 1 (Q base) ... RES_G90 al 90 % ... RES_FINE a fine corsa."""
     if theta <= 0.9:
-        return 1.0 - theta / 0.9
-    return -0.75 * (theta - 0.9) / 0.1
+        return RES_G90 ** (theta / 0.9)
+    return RES_G90 + (RES_FINE - RES_G90) * (theta - 0.9) / 0.1
 
 
 def smorz(gres, q_base):

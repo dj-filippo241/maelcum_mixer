@@ -248,3 +248,25 @@ Prove: prova_filtro PASS (voce OTA: risonanza LP/HP a RES 0/70/85 %,
 fischio a 200 Hz, 1 kHz, 5 kHz, programma a +18 dBu); prova_semplice
 PASS; regole gen~ pulite.
 
+
+## RES nuova (2026-10-31, libretto 8.3)
+
+Filippo, col core OTA: «risonanza nella corsa non abbastanza all'inizio e
+poi troppo dopo, fischio troppo forte». Law nuova in `filtro.res_law`
+[PROVVISORIO]: gres = (1/6)^(theta/0,9) fino al 90 %, poi lineare fino a
+-0,25 a fine corsa (era 1 - theta/0,9 e -0,75).
+
+| RES | Q / Q base nuova | prima |
+|---|---|---|
+| 30 % | 1,82 | 1,50 |
+| 50 % | 2,71 | 2,25 |
+| 70 % | 4,03 | 4,50 |
+| 80 % | 4,92 | 9,00 |
+| 85 % | 5,43 | 18,0 |
+| 90 % | 6,00 | fischio |
+
+Fischio (core OTA, modello, fc 200 Hz / 1 kHz / 5 kHz): con gres -0,75
++4,8 / +4,7 / +4,1 dBu e nota -5,6 / -5,5 / -4,5 semitoni; con -0,25
++0,5 / +0,4 / 0,0 dBu e -2,4 / -2,4 / -1,9 semitoni. Parte verso il 94 %.
+Hardware: la curva esponenziale si fa con un pot logaritmico; da verificare
+nel design del filtro (dec. 102 b) quando la law si conferma.

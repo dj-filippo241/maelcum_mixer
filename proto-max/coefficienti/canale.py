@@ -25,6 +25,10 @@ INCROCI = {
     "B": (100.0, 630.0, 4000.0),
     "C": (150.0, 350.0, 3150.0),
     "D": (150.0, 700.0, 3150.0),
+    # 2026-10-31 (Filippo, libretto 7.2: «MID-HIGH piu ampio verso il basso,
+    # non di molto»): A con l'incrocio LOW-MID / MID-HIGH a 400 e a 450 Hz
+    "E": (150.0, 400.0, 2500.0),
+    "G": (150.0, 450.0, 2500.0),
 }
 # Pendenza di ogni incrocio: 4 = LR4 (24 dB/ott), 2 = LR2 (12 dB/ott).
 # C: primo incrocio dolce, LOW e LOW-MID si accavallano di piu (dec. 114).
@@ -38,6 +42,8 @@ PENDENZE = {
     "B": (4, 4, 4),
     "C": (2, 4, 4),
     "D": (2, 4, 4),
+    "E": (4, 4, 4),
+    "G": (4, 4, 4),
 }
 Q_LR2 = 0.5
 Q_BW = 1.0 / math.sqrt(2.0)   # Butterworth: due in cascata = LR4
