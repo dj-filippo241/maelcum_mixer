@@ -16,7 +16,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
 import canale  # noqa: E402
-import serie  # noqa: E402
+import xone  # noqa: E402
 
 QUI = os.path.dirname(os.path.abspath(__file__))
 FILE = os.path.join(os.path.dirname(QUI), "MC-CHANNEL.genexpr")
@@ -42,7 +42,7 @@ class Gen:
 
     def __init__(self, testo, fs):
         self.ns = {"bq": bq, "ap": ap, "tan": math.tan, "exp": math.exp,
-                   "pow": math.pow, "max": max, "isnan": lambda v: float(math.isnan(v)), "abs": abs, "pi": math.pi, "samplerate": fs,
+                   "pow": math.pow, "max": max, "isnan": lambda v: float(math.isnan(v)), "log10": math.log10, "sin": math.sin, "cos": math.cos, "abs": abs, "pi": math.pi, "samplerate": fs,
                    "poke": lambda d, v, i: d.__setitem__(int(i), v)}
         corpo, in_funzione, liv = [], False, 0
         for riga in testo.splitlines():
@@ -169,34 +169,33 @@ def main():
                 f, FS, inc, [m / 100 for m in man], pend))
             controlla(f"{nome}, {f} Hz", db(a), atteso)
 
-    print("EQ TIPO = SERIE (gen~ contro serie.serie_os; CURVA e INCROCI "
-          "non agiscono)")
+    print("EQ TIPO = XONE (gen~ contro xone.xone_os, CURVA PIONEER; INCROCI "
+          "non agisce)")
     casi_s = [
-        ("tutte al centro", (50, 50, 50, 50), [70, 1000, 8000]),
-        ("LOW a zero", (0, 50, 50, 50), [40, 70, 250, 1000]),
-        ("LOW al 5 %", (5, 50, 50, 50), [70]),
-        ("LOW al 30 %", (30, 50, 50, 50), [70]),
-        ("LOW al massimo", (100, 50, 50, 50), [40, 150]),
-        ("LOW-MID a zero", (50, 0, 50, 50), [150, 250, 500]),
-        ("LOW-MID al 20 %", (50, 20, 50, 50), [250]),
-        ("MID-HIGH a zero", (50, 50, 0, 50), [500, 1000, 2500]),
-        ("MID-HIGH al massimo", (50, 50, 100, 50), [1000]),
-        ("HIGH a zero", (50, 50, 50, 0), [5000, 10000, 18000]),
-        ("HIGH al 30 %", (50, 50, 50, 30), [10000]),
-        ("HIGH al massimo", (50, 50, 50, 100), [10000]),
-        ("dub (LOW e HIGH su, medi a zero)", (100, 0, 0, 100),
-         [40, 250, 1000, 10000]),
-        ("tutte a zero", (0, 0, 0, 0), [70, 2500, 5000]),
+        ("tutte al centro", (50, 50, 50, 50), [40, 300, 1000, 2500, 8000]),
+        ("LO a zero", (0, 50, 50, 50), [40, 120, 250, 1000]),
+        ("LO al 10 %", (10, 50, 50, 50), [60]),
+        ("LO al massimo", (100, 50, 50, 50), [60, 250]),
+        ("LO-MID a zero", (50, 0, 50, 50), [150, 350, 800]),
+        ("LO-MID al 25 %", (50, 25, 50, 50), [350]),
+        ("LO-MID al massimo", (50, 100, 50, 50), [350, 700]),
+        ("HI-MID a zero", (50, 50, 0, 50), [1000, 2000, 4000]),
+        ("HI-MID al massimo", (50, 50, 100, 50), [2000]),
+        ("HI a zero", (50, 50, 50, 0), [2500, 5000, 12000]),
+        ("HI al massimo", (50, 50, 50, 100), [10000]),
+        ("dub (LO e HI su, medi a zero)", (100, 0, 0, 100),
+         [40, 350, 2000, 10000]),
+        ("tutte a zero", (0, 0, 0, 0), [70, 700, 5000]),
     ]
     for nome, man, freq in casi_s:
         for f in freq:
             p = dict(zip(["low", "lowmid", "midhigh", "high"], man))
             a, _ = suona(testo, f, eqtipo=1, incroci=2, curva=1, **p)
-            atteso = serie.db(serie.serie_os(f, FS, [m / 100 for m in man]))
+            atteso = xone.db(xone.xone_os(f, FS, [m / 100 for m in man], pioneer=True))
             controlla(f"{nome}, {f} Hz", db(a), atteso)
 
     print("Cambi di selettore (blocchi spenti non calcolati, stati a zero)")
-    # A -> D -> SERIE -> ISOLATOR C, 1 kHz, MID-HIGH a zero: dopo ogni cambio
+    # A -> D -> XONE -> ISOLATOR C, 1 kHz, MID-HIGH a zero: dopo ogni cambio
     # e 250 ms di assestamento (rampa 20 ms: residuo e^-12) l'uscita deve valere quella del modello.
     g = Gen(testo, FS)
     g.imposta(midhigh=0)
@@ -217,7 +216,7 @@ def main():
             i += 1
         man = [0.5, 0.5, 0.0, 0.5]
         if tipo == "S":
-            atteso = serie.db(serie.serie_os(f, FS, man))
+            atteso = xone.db(xone.xone_os(f, FS, man))
         else:
             var = tipo[sel]
             atteso = canale.db(canale.isolator_os(

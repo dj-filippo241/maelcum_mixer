@@ -225,3 +225,32 @@ Protezione (stesso giorno, solo prototipo): un campione NaN, infinito o
 oltre +36 dBFS azzera gli stati ed esce silenzio; senza, un NaN avvelena il
 mixer della traccia di Live. `MC-CHANNEL-PROVA` (`genera.py --prova`) ha
 in piu il selettore STADI SERIE per accendere le celle una alla volta.
+
+## XONE al posto di SERIE (2026-10-31, B5)
+
+All'ascolto SERIE v2 era pulito, ma Filippo: «l'eq taglia veramente troppo
+poco» (a 0 %: LOW -25 dB a 70 Hz, medi buco stretto, HIGH -3 dB a 10 kHz).
+Richiesta: «serie ridisegnato in modo tale da essere simile al eq degli
+xone». Il selettore EQ TIPO ora e ISOLATOR / XONE; il modello archiviato
+`serie.py` resta, non e piu nel dispositivo.
+
+Modello `coefficienti/xone.py`, dall'EQ musicale del Xone:92 (user guide
+AP5345, guida Limited Edition): LO 250 Hz e HI 2,5 kHz da +6 dB a kill
+(coppie Linkwitz-Riley 2: g LP2 - HP2, allpass a g = 1, a fondo corsa
+filtro a 12 dB/ottava), LO-MID 350 Hz e HI-MID 2 kHz campane RBJ da +6 a
+-30 dB, Q 0,6 in taglio e 2 in boost [PROVVISORIO: il Xone non le
+pubblica]. Law delle manopole dell'isolator, CURVA compresa.
+
+| pos % | LO a 60 Hz | LO-MID a 350 Hz | HI-MID a 2 kHz | HI a 10 kHz |
+|---|---|---|---|---|
+| 0 | -25,3 | -30,0 | -30,0 | -24,7 |
+| 10 | -12,3 | -14,0 | -14,0 | -12,2 |
+| 25 | -5,6 | -6,0 | -6,0 | -5,5 |
+| 50 | 0 | 0 | 0 | 0 |
+| 100 | +5,8 | +6,0 | +6,0 | +5,8 |
+
+(CURVA LINEARE, 48 kHz.) A 0 % il LO e un passa-alto: piu si scende sotto
+250 Hz, piu taglia (-37 dB a 30 Hz); lo stesso per HI sopra 2,5 kHz.
+Tutte al centro: piatto entro 1e-11 dB. Polo piu vicino al cerchio
+0,99949 (44,1-192 kHz a 4x). `prova_gen.py`: PASS (casi XONE gen~ contro
+`xone.xone_os`). `MC-CHANNEL-PROVA` tolto: serviva solo al guasto di SERIE.

@@ -20,7 +20,7 @@ Se Live segnala un errore, o il suono non passa, vai al §3.
 | Comando | 0 % | 50 % | 100 % |
 |---|---|---|---|
 | GAIN | muto | 0 dB | +10 dB |
-| LOW, LOW-MID, MID-HIGH, HIGH | banda spenta (ISOLATOR) o tagliata (SERIE) | 0 dB (piatto) | +6 dB |
+| LOW, LOW-MID, MID-HIGH, HIGH | banda spenta (ISOLATOR); XONE: LO e HI spenti, medi -30 dB | 0 dB (piatto) | +6 dB |
 | FADER | muto | −12 dB [PROVVISORIO] | 0 dB |
 
 - Il centro (50 %) di ogni manopola vale il detent del pannello vero.
@@ -34,11 +34,12 @@ Se Live segnala un errore, o il suono non passa, vai al §3.
   Serve per la voce B7: confrontali a orecchio.
 - **CURVA**: LINEARE (pot di serie) o PIONEER (curva ideale dei DJM,
   solo per sentire se la differenza conta).
-- **EQ TIPO** (B5, 2026-10-15): ISOLATOR = l'EQ di progetto (dec. 105).
-  SERIE = l'EQ in serie archiviato, campane a 70 / 250 / 1k / 5k Hz: a
-  0 % LOW taglia ~−29 dB, i medi scavano una buca stretta, HIGH scurisce
-  (−3 dB a 10 kHz, −9 a 20 kHz). Nessuna banda spegne: il silenzio è il
-  fader. INCROCI e CURVA agiscono solo su ISOLATOR. Dissolvenza 20 ms.
+- **EQ TIPO** (B5): ISOLATOR = l'EQ di progetto (dec. 105). XONE
+  (2026-10-31, al posto del vecchio SERIE) = EQ in serie sul modello del
+  Xone:92: LO 250 Hz e HI 2,5 kHz da +6 dB a kill (a fondo corsa diventano
+  filtri a 12 dB/ottava), LO-MID 350 Hz e HI-MID 2 kHz da +6 a -30 dB,
+  campana larga in taglio e stretta in boost. CURVA vale per tutti e due;
+  INCROCI solo per ISOLATOR. Dissolvenza 20 ms.
 - La law del FADER non è decisa: qui è una curva da pot audio tipico.
 
 Per suonare 4 canali: un `MC-CHANNEL` su ognuna delle 4 tracce.

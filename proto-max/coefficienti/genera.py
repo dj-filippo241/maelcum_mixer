@@ -1,6 +1,6 @@
 """Genera il dispositivo MC-CHANNEL (prototipo Max P0).
 
-Uso:  python3 proto-max/coefficienti/genera.py [--semplice | --prova]
+Uso:  python3 proto-max/coefficienti/genera.py [--semplice]
 Scrive in proto-max/:
   MC-CHANNEL.genexpr  codice gen~ (si legge e si confronta)
   MC-CHANNEL.maxpat   patch Max (riserva: si apre e si copia in un dispositivo)
@@ -20,7 +20,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
 import canale  # noqa: E402
-import serie  # noqa: E402
+import xone  # noqa: E402
 
 QUI = os.path.dirname(os.path.abspath(__file__))
 USCITA = os.path.dirname(QUI)
@@ -41,16 +41,13 @@ SELETTORE = ("incroci", "INCROCI",
              ["A 150/500/2500", "C 150d/350/3150", "D 150d/700/3150"])
 CURVA = ("curva", "CURVA", ["LINEARE", "PIONEER"])
 # B5 (Filippo 2026-10-15): EQ in serie archiviato come opzione d'ascolto
-EQTIPO = ("eqtipo", "EQ TIPO", ["ISOLATOR", "SERIE 70/250/1k/5k"])
+# 2026-10-31 (Filippo): SERIE ridisegnato sull'EQ del Xone:92 (xone.py)
+EQTIPO = ("eqtipo", "EQ TIPO", ["ISOLATOR", "XONE 250/350/2k/2.5k"])
 BANDE = ["low", "lowmid", "midhigh", "high"]
 # sotto questo peso un blocco non si calcola (-100 dB: inudibile)
 SOGLIA_ON = 1e-5
 # versione semplice (Filippo 2026-10-21): scelte fissate, niente selettori
 SEMPLICE = False
-# versione di prova (2026-10-31, todo 210): selettore STADI SERIE per
-# trovare lo stadio che in gen~ oscilla. Non e un comando del design.
-PROVA = False
-STADI = ("stadi", "STADI SERIE", ["0 filo", "1 LOW", "2 +LM", "3 +MH", "4 tutto"])
 SCELTA_INCROCI = "A"
 
 
@@ -112,70 +109,43 @@ class Codice:
         self.r(f"{y} = 0.5 * (d0 + d1);")
 
 
-def emetti_serie(g):
-    """Law e coefficienti dell'EQ in serie (serie.py, eq-serie §9-§10)."""
+def emetti_xone(g):
+    """Coefficienti dell'EQ XONE (xone.py): LR2 a 250 Hz e 2,5 kHz, campane RBJ."""
     r = g.r
-    r("// EQ in serie (B5, archiviato: confronto a orecchio). Law eq-serie §10:")
-    r("// LOW e HIGH a tratti (kill negli ultimi 5 %), medi pot lineare caricato")
-    t = serie.THETA_CUT
-    # x scende a tratti: kill -> cut -> detent -> boost (solo sottrazioni
-    # di costanti positive: niente "+ -" nel codice gen~)
-    for th, xx, man in (("sr_tl", "sr_xl", "s_low"), ("sr_th", "sr_xh", "s_high")):
-        r(f"{th} = {man} / 100;")
-        r(f"{xx} = {serie.X_KILL!r}"
-          f" - {serie.X_KILL - serie.X_CUT:.6f} * min(max({th} / {t!r}, 0), 1)"
-          f" - {serie.X_CUT - serie.X_DETENT:.6f}"
-          f" * min(max(({th} - {t!r}) / {0.5 - t!r}, 0), 1)"
-          f" - {serie.X_DETENT - serie.X_BOOST:.6f}"
-          f" * min(max(({th} - 0.5) / 0.5, 0), 1);")
-    R, RP, C = serie.R_LOW, serie.RP_LOW, serie.C_LOW
-    r(f"sr_gh = ({R!r} + (1 - sr_xh) * {RP!r}) / ({R!r} + sr_xh * {RP!r});")
-    gk, gb = serie.g_shelf(serie.X_KILL), serie.g_shelf(serie.X_BOOST)
-    r(f"sr_chi = (sr_th <= 0.5) * (1 - sr_gh) / {1 - gk!r}"
-      f" - (sr_th > 0.5) * (sr_gh - 1) / {gb - 1!r};")
-    k = serie.R_POT / serie.R_SUMMER
-    for nome, b in (("lm", "lowmid"), ("mh", "midhigh")):
-        r(f"sr_t{nome} = s_{b} / 100;")
-        r(f"sr_c{nome} = (1 - 2 * sr_t{nome}) / (1 + {k!r} * sr_t{nome}"
-          f" * (1 - sr_t{nome}));")
-    r("// SERIE v2 (2026-10-31): LOW = due celle del 1o ordine, fattori esatti")
-    r("// del Baxandall (R + Zb) / (R + Za); medi e HIGH = biquad con prewarp")
-    r("// come le bande dell'isolator. Nessuna cella puo oscillare.")
-    r("sk = 2 * sr4;")
-    r(f"sr_ra = {RP!r} * sr_xl + 0.001;")
-    r(f"sr_rb = {RP!r} * (1 - sr_xl) + 0.001;")
-    # H1 = (R + rb + s R C rb) / (1 + s C rb)
-    r(f"e1_ai = 1 / (1 + {C!r} * sr_rb * sk);")
-    r(f"e1_b0 = ({R!r} + sr_rb + {R * C!r} * sr_rb * sk) * e1_ai;")
-    r(f"e1_b1 = ({R!r} + sr_rb - {R * C!r} * sr_rb * sk) * e1_ai;")
-    r(f"e1_a1 = (1 - {C!r} * sr_rb * sk) * e1_ai;")
-    # H2 = (1 + s C ra) / (R + ra + s R C ra)
-    r(f"e2_ai = 1 / ({R!r} + sr_ra + {R * C!r} * sr_ra * sk);")
-    r(f"e2_b0 = (1 + {C!r} * sr_ra * sk) * e2_ai;")
-    r(f"e2_b1 = (1 - {C!r} * sr_ra * sk) * e2_ai;")
-    r(f"e2_a1 = ({R!r} + sr_ra - {R * C!r} * sr_ra * sk) * e2_ai;")
-    for p, (f0, q, hc) in (("elm", serie.bp_fq("lm")), ("emh", serie.bp_fq("mh"))):
-        r(f"{p}_k = tan(pi * {f0!r} / sr4);")
-        r(f"{p}_n = 1 / (1 + {p}_k / {q!r} + {p}_k * {p}_k);")
-        r(f"{p}_b0 = {hc!r} * {p}_k / {q!r} * {p}_n;")
-        r(f"{p}_a1 = 2 * ({p}_k * {p}_k - 1) * {p}_n;")
-        r(f"{p}_a2 = (1 - {p}_k / {q!r} + {p}_k * {p}_k) * {p}_n;")
-    f0, q = serie.hp_fq()
-    r(f"ehi_k = tan(pi * {f0!r} / sr4);")
-    r(f"ehi_n = 1 / (1 + ehi_k / {q!r} + ehi_k * ehi_k);")
-    r("ehi_a1 = 2 * (ehi_k * ehi_k - 1) * ehi_n;")
-    r(f"ehi_a2 = (1 - ehi_k / {q!r} + ehi_k * ehi_k) * ehi_n;")
+    r("// EQ XONE (B5, 2026-10-31, xone.py): sul modello dell'EQ del Xone:92.")
+    r("// LO = g LP2 - HP2 a 250 Hz, HI = g HP2 - LP2 a 2,5 kHz (LR2, Q 0,5):")
+    r("// g = 1 allpass, g = 0 kill. Medi: campane RBJ 350 Hz e 2 kHz, +6..-30 dB,")
+    r(f"// Q {xone.Q_TAGLIO!r} in taglio e {xone.Q_BOOST!r} in boost [PROVVISORIO].")
+    for nome, f0 in (("xlo", xone.F_LO), ("xhi", xone.F_HI)):
+        r(f"{nome}_k = tan(pi * {f0!r} / sr4);")
+        r(f"{nome}_kk = {nome}_k * {nome}_k;")
+        r(f"{nome}_n = 1 / (1 + {nome}_k / {xone.Q_LR2!r} + {nome}_kk);")
+        r(f"{nome}_a1 = 2 * ({nome}_kk - 1) * {nome}_n;")
+        r(f"{nome}_a2 = (1 - {nome}_k / {xone.Q_LR2!r} + {nome}_kk) * {nome}_n;")
+        r(f"{nome}_lb = {nome}_kk * {nome}_n;")
+    for nome, f0, gv in (("xlm", xone.F_LM, "g_lowmid"), ("xmh", xone.F_MH, "g_midhigh")):
+        r(f"{nome}_db = 20 * log10(max({gv}, {xone.G_MIN_MEDI!r}));")
+        r(f"{nome}_q = {xone.Q_TAGLIO!r} + ({xone.Q_BOOST - xone.Q_TAGLIO!r}) * ({nome}_db > 0);")
+        r(f"{nome}_A = pow(10, {nome}_db / 40);")
+        r(f"{nome}_w = 2 * pi * {f0!r} / sr4;")
+        r(f"{nome}_al = sin({nome}_w) / (2 * {nome}_q);")
+        r(f"{nome}_ai = 1 / (1 + {nome}_al / {nome}_A);")
+        r(f"{nome}_b0 = (1 + {nome}_al * {nome}_A) * {nome}_ai;")
+        r(f"{nome}_a1 = -2 * cos({nome}_w) * {nome}_ai;")
+        r(f"{nome}_b2 = (1 - {nome}_al * {nome}_A) * {nome}_ai;")
+        r(f"{nome}_a2 = (1 - {nome}_al / {nome}_A) * {nome}_ai;")
 
 
 def emetti_cella(g, cella, uscita, ingresso):
-    """Una cella di SERIE v2 (stati: 2 per cella, anche per il 1o ordine)."""
+    """Una cella dell'EQ XONE (2 stati in st)."""
     i = g.n_st
     g.n_st += 2
-    args = {"e1": "e1_b0, e1_b1, 0, e1_a1, 0",
-            "e2": "e2_b0, e2_b1, 0, e2_a1, 0",
-            "elm": "elm_b0, 0, 0 - elm_b0, elm_a1, elm_a2",
-            "emh": "emh_b0, 0, 0 - emh_b0, emh_a1, emh_a2",
-            "ehi": "ehi_n, -2 * ehi_n, ehi_n, ehi_a1, ehi_a2"}[cella]
+    args = {"xlo_lp": "xlo_lb, 2 * xlo_lb, xlo_lb, xlo_a1, xlo_a2",
+            "xlo_hp": "xlo_n, -2 * xlo_n, xlo_n, xlo_a1, xlo_a2",
+            "xhi_lp": "xhi_lb, 2 * xhi_lb, xhi_lb, xhi_a1, xhi_a2",
+            "xhi_hp": "xhi_n, -2 * xhi_n, xhi_n, xhi_a1, xhi_a2",
+            "xlm": "xlm_b0, xlm_a1, xlm_b2, xlm_a1, xlm_a2",
+            "xmh": "xmh_b0, xmh_a1, xmh_b2, xmh_a1, xmh_a2"}[cella]
     g.r(f"{uscita} = bq(st, {i}, {ingresso}, {args});")
 
 def genexpr():
@@ -208,8 +178,6 @@ def genexpr():
         r(f"Param {SELETTORE[0]}(0, min=0, max={len(VARIANTI) - 1});")
         r(f"Param {CURVA[0]}(0, min=0, max=1);")
         r(f"Param {EQTIPO[0]}(0, min=0, max=1);")
-        if PROVA:
-            r(f"Param {STADI[0]}(4, min=0, max=4);")
     pos_data = len(g.righe)
     r("@@DATA@@")
     for nome, _, ini in MANOPOLE + [FADER]:
@@ -265,7 +233,7 @@ def genexpr():
     r()
     if SEMPLICE:
         return genexpr_isolator(g, SCELTA_INCROCI)
-    emetti_serie(g)
+    emetti_xone(g)
     r()
     # pesi delle varianti e dell'EQ in serie. Una variante con peso nullo
     # non si calcola (CPU: la traccia gira su un solo core); i suoi stati
@@ -326,44 +294,19 @@ def genexpr():
                 g.r("}")
                 stati[chiave] = (inizio, g.n_st)
                 termini.append(f"w_{chiave} * {p}")
-            # EQ in serie (B5): LOW -> LOW-MID -> MID-HIGH -> HIGH
+            # EQ XONE (B5, 2026-10-31): LO -> LO-MID -> HI-MID -> HI
             q = f"{lato}{k}s"
             inizio = g.n_st
             g.r(f"{q}4 = 0;")
             g.r("if (on_S) {")
-            if PROVA:
-                # ogni stadio si calcola solo se acceso; spento = filo
-                n0 = g.n_st
-                g.r(f"{q}1 = {u};")
-                g.r(f"if ({STADI[0]} >= 1) {{")
-                emetti_cella(g, "e1", f"{q}1", u)
-                emetti_cella(g, "e2", f"{q}1", f"{q}1")
-                g.r("}")
-                g.r(f"{q}2 = {q}1;")
-                g.r(f"if ({STADI[0]} >= 2) {{")
-                emetti_cella(g, "elm", f"{q}b", f"{q}1")
-                g.r(f"{q}2 = {q}1 + sr_clm * {q}b;")
-                g.r("}")
-                g.r(f"{q}3 = {q}2;")
-                g.r(f"if ({STADI[0]} >= 3) {{")
-                emetti_cella(g, "emh", f"{q}b", f"{q}2")
-                g.r(f"{q}3 = {q}2 + sr_cmh * {q}b;")
-                g.r("}")
-                g.r(f"{q}4 = {q}3;")
-                g.r(f"if ({STADI[0]} >= 4) {{")
-                emetti_cella(g, "ehi", f"{q}b", f"{q}3")
-                g.r(f"{q}4 = {q}3 - sr_chi * {q}b;")
-                g.r("}")
-                assert g.n_st == n0 + 10
-            else:
-                emetti_cella(g, "e1", f"{q}1", u)
-                emetti_cella(g, "e2", f"{q}1", f"{q}1")
-                emetti_cella(g, "elm", f"{q}b", f"{q}1")
-                g.r(f"{q}2 = {q}1 + sr_clm * {q}b;")
-                emetti_cella(g, "emh", f"{q}b", f"{q}2")
-                g.r(f"{q}3 = {q}2 + sr_cmh * {q}b;")
-                emetti_cella(g, "ehi", f"{q}b", f"{q}3")
-                g.r(f"{q}4 = {q}3 - sr_chi * {q}b;")
+            emetti_cella(g, "xlo_lp", f"{q}a", u)
+            emetti_cella(g, "xlo_hp", f"{q}b", u)
+            g.r(f"{q}1 = g_low * {q}a - {q}b;")
+            emetti_cella(g, "xlm", f"{q}2", f"{q}1")
+            emetti_cella(g, "xmh", f"{q}3", f"{q}2")
+            emetti_cella(g, "xhi_hp", f"{q}a", f"{q}3")
+            emetti_cella(g, "xhi_lp", f"{q}b", f"{q}3")
+            g.r(f"{q}4 = {q}b - g_high * {q}a;")
             g.r("}")
             stati["S"] = (inizio, g.n_st)
             termini.append(f"w_S * {q}4")
@@ -578,19 +521,12 @@ def patch(codice):
             {"parameter_type": 2, "parameter_enum": voci,
              "parameter_mmax": float(len(voci) - 1),
              "parameter_initial": [0], "parameter_unitstyle": 0})
-    if PROVA:
-        ng, nl, voci = STADI
-        comando(9, "obj-sta", ng, nl, "live.tab", [8, 170, 294, 18],
-                {"parameter_type": 2, "parameter_enum": voci,
-                 "parameter_mmax": float(len(voci) - 1),
-                 "parameter_initial": [len(voci) - 1],
-                 "parameter_unitstyle": 0})
     boxes.append(box("obj-nota", maxclass="live.comment", numinlets=1,
                      numoutlets=0, presentation=1,
                      presentation_rect=[8, 140, 250, 28],
                      patching_rect=[20, 440, 250, 36], linecount=2,
-                     text="50% = 0 dB. SERIE: 0% taglia, non spegne; "
-                          "INCROCI e CURVA solo per ISOLATOR."))
+                     text="50% = 0 dB. XONE: LO e HI kill, medi fino a -30 dB; "
+                          "INCROCI solo per ISOLATOR."))
     return finestra(boxes, lines, parametri)
 
 
@@ -601,7 +537,7 @@ def finestra(boxes, lines, parametri):
                        "architecture": "x64", "modernui": 1},
         "classnamespace": "box",
         "rect": [100.0, 100.0, 900.0, 520.0],
-        "openrect": [0.0, 0.0, 0.0, 196.0 if PROVA else 169.0],
+        "openrect": [0.0, 0.0, 0.0, 169.0],
         "bglocked": 0, "openinpresentation": 1,
         "default_fontsize": 10.0, "default_fontface": 0,
         "default_fontname": "Arial Bold",
@@ -625,11 +561,9 @@ def amxd(dati_json):
 
 
 def main():
-    global SEMPLICE, NOME, PROVA
+    global SEMPLICE, NOME
     if "--semplice" in sys.argv[1:]:
         SEMPLICE, NOME = True, NOME + "-S"
-    elif "--prova" in sys.argv[1:]:
-        PROVA, NOME = True, NOME + "-PROVA"
     codice = genexpr()
     with open(os.path.join(USCITA, f"{NOME}.genexpr"), "w") as f:
         f.write(codice)
