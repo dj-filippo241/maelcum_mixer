@@ -238,7 +238,10 @@ LIB_K = 0.6043                  # +5 dB (era 0,6783 = +6: «un po piu sciallo»,
 # all 85 % di quello di prima (prove: 30, 70 %). Hardware: pot a taper A (10 % a meta corsa,
 # pista a due tratti) e 1,8k in serie sopra un pot da 10k (10/11,8 = 0,85).
 NASTRO_MAX = 0.85               # 30 % poco, 70 % «un po piu aggressivo» (Filippo)
-TAPER_A_MID = 0.1
+# 2026-10-31 (Filippo, libretto 9.3: «nastro forse deve essere piu udibile
+# prima nella curva»): taper log 20 % (come WIDTH, dec. 129) al posto del
+# taper A 10 % [PROVVISORIO]. Il nome resta per i generatori.
+TAPER_A_MID = 0.2
 
 
 def nastro_law(theta):

@@ -50,7 +50,7 @@ SOGLIA_ON = 1e-5
 SOGLIA_OD = 1e-9
 # versione semplice (Filippo 2026-10-21): scelte fissate, niente selettori
 SEMPLICE = False
-SCELTA_CORE = "c"               # "a" = OTA (a'), "c" = PULITO (c-B)
+SCELTA_CORE = "a"               # "a" = OTA (a'), "c" = PULITO (c-B); OTA dal 2026-10-31 (libretto 8.1)
 SCELTA_PEND = 0                 # indice in filtro.ALLINEAMENTI: Butterworth
 
 

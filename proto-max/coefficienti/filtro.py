@@ -225,12 +225,14 @@ def oscillazione(core_o_sez, fc, fs, dur, coda, passo):
 
 # ------------------------------------------------------- overdrive ---
 # Overdrive v0.2 (filter-module §5ter, dec. 99/110): y = x + m (k CLIP(2x) - x)
-# CLIP = 2,2k + 2+2 1N4148 a massa (modello di od2-chain.cir), m = theta^2,5.
+# CLIP = 2,2k + 2+2 1N4148 a massa (modello di od2-chain.cir), m = theta^OD_ESP.
+# 2026-10-31 (Filippo, libretto 8.4: «il drive deve entrare in azione molto
+# prima di meta corsa»): OD_ESP 2,5 -> 1 (pot lineare) [PROVVISORIO].
 OD_K = 1.171
 OD_R = 2200.0
 OD_IS = 2.52e-9
 OD_A = 2 * 1.752 * 0.025865     # due diodi in serie, N 1,752, 27 C
-OD_ESP = 2.5
+OD_ESP = 1.0
 
 
 def clip(v):

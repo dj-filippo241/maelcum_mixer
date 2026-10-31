@@ -1,6 +1,6 @@
 # SPECIFICA — MAELCUM MIXER (mixer dub modulare analogico, esemplare unico)
 
-> **v0.1 (2026-09-18, rev. 2026-09-28/01-10: decisioni 76-93; REV 2026-10-13: decisioni 97-106 recepite nei §4-6 come note in testa ai punti toccati + esiti simulazioni e sessione decisioni; REV 2026-10-14: decisioni 107-114; REV 2026-10-21: decisioni 115-118; REV 2026-10-27: decisioni 137-138, HPF del filtro da 20 Hz e subsonica phono 18 Hz; REV 2026-10-31: dec. 145, limiter fisso del MIC)** — Compilata da: decisioni 1-118 (`docs/01-decisioni-bloccate.md`; 103 e 104 revocate),
+> **v0.1 (2026-09-18, REV 2026-10-31: decisioni 146-151 dall'ascolto del libretto (curva PIONEER, EQ isolator, filtro OTA Butterworth, DRIVE e NASTRO prima, 5-way E e GROWL LIBERO) in `docs/01`, non ancora riportate nei §; rev. 2026-09-28/01-10: decisioni 76-93; REV 2026-10-13: decisioni 97-106 recepite nei §4-6 come note in testa ai punti toccati + esiti simulazioni e sessione decisioni; REV 2026-10-14: decisioni 107-114; REV 2026-10-21: decisioni 115-118; REV 2026-10-27: decisioni 137-138, HPF del filtro da 20 Hz e subsonica phono 18 Hz; REV 2026-10-31: dec. 145, limiter fisso del MIC)** — Compilata da: decisioni 1-118 (`docs/01-decisioni-bloccate.md`; 103 e 104 revocate),
 > status doc ChatGPT rev2 (`docs/export-chatgpt/`, corpus chiuso — decisione 58),
 > gain-staging sheet (`docs/fase1/gain-staging-sheet.md`), revisione critica (`docs/03`).
 > Livello: REQUISITI. Il dettaglio circuitale vive nei design doc di `docs/fase1/` e `docs/fase2/`.
