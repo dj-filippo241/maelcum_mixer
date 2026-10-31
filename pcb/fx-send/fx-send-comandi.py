@@ -7,8 +7,8 @@ piatto corto (J1) la collega a J2 della scheda principale (fx-send.py, stesso or
 Pot: Alps RK09L doppio ad albero verticale, 10k (fx-send-module.md). Il LEVEL era di classe
 14 mm (dec. 118): qui è un 9 mm, perché KiCad non ha l'impronta dell'RK14 e Filippo ha
 lasciato libero il tipo di pot (2026-10-27). Il cappuccio del pannello non cambia.
-Estremi: pin 1 = fine corsa antiorario, pin 3 = orario, pin 2 = cursore [DA VERIFICARE sul
-disegno Alps]. Sezione A (1-3) = lato L, sezione B (4-6) = lato R. Le staffe (MP) non hanno
+Estremi: pin 1 = fine corsa antiorario, pin 3 = orario, pin 2 = cursore (verificato sul catalogo
+Alps RK09L rev. 2510, disegni n. 7-8: NOTE.md punto 10). Sezione A (1-3) = lato L, sezione B (4-6) = lato R. Le staffe (MP) non hanno
 rete: il corpo del pot va a massa telaio attraverso il dado sul pannello metallico.
 """
 import json, os, sys

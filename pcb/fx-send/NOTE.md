@@ -71,9 +71,15 @@ Tutto [PROVVISORIO].
    [2026-10-28, dec. 142] Il telaio ha schede alte 220 mm: la principale sale a 100 × 220
    (v0.3, C96 a y 213,5). Esito: PASSA. Controllo audio A4 8 -> 9 e A5 4 -> 6: le piste dal
    C96 sono più lunghe di 55 mm; si accorciano col punto 1 di `pcb/NOTE-generatore.md`.
-10. **Pot.** Estremi dell'Alps RK09L (pin 1 antiorario, 3 orario, 2 cursore) da verificare sul
-    disegno Alps: il sito non si scaricava. Curva del pot provvisoria (dec. 129). LEVEL da 9 mm
-    invece di 14 (dec. 118) finché non c'è l'impronta dell'RK14.
+10. **Pot.** Alps RK09L doppio «Vertical» (albero perpendicolare alla scheda), disegni n. 7 e 8
+    del catalogo Alps (rev. 2510, verificato il 2026-10-31). Estremi confermati: 1 e 3 = estremi
+    della pista, 2 = cursore; albero disegnato tutto antiorario coi pin 1-2-3 da sinistra, e Alps
+    misura la curva fra 1 e 2: pin 1 = antiorario. Impronta KiCad uguale al disegno: passo 2,5,
+    file a 7,5 e 10 mm dall'albero, staffe 9,5 mm, albero a (10; 2,5) dal pin 1, albero 6 mm a D.
+    **Curva**: a catalogo il doppio verticale senza scatto (12D0A1W 15 mm, 12D0A1T 20 mm) esiste
+    solo con curva 15A (non lineare); il lineare 1B c'è solo con scatto al centro (1240015,
+    1240019). La dec. 118 (c) vuole EQ senza scatto: curva provvisoria fino all'ascolto (dec.
+    129). LEVEL da 9 mm invece di 14 (dec. 118) finché non c'è l'impronta dell'RK14.
 11. **Cavo piatto e masse virtuali.** NB_L e NB_R (cursore del LOW, massa virtuale) viaggiano sul
     cavo, fra due fili di massa. Il cavo va tenuto corto (≤ 10 cm). Da provare a banco: ronzio e
     stabilità della cella LOW col cavo vero.

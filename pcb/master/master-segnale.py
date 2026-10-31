@@ -115,21 +115,23 @@ d.part("Q", "Transistor_BJT:BD140", "BD140", "Package_TO_SOT_THT:TO-126-3_Vertic
        {"C": "VREG-", "B": "BASE-", "E": "-18V"}, ref="Q41")
 d.CP("AGND", "-18V", "100u 25V", "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm")
 # +-15 LN dal +-18 (master-out §3.8, dec. 93): SET = 15 V / 100 uA = 150k.
-# Pinout dal simbolo KiCad LT3045xMSE / LT3093xMSE: DA VERIFICARE sul datasheet (NOTE.md).
+# Pinout verificato sui datasheet LT3045 Rev. B (p. 12-13) e LT3094 Rev. B (p. 15), MSE-12.
+# PGFB a IN, non a massa: con PGFB sotto 300 mV il fast start-up resta acceso (2 mA nel SET,
+# datasheet LT3045 p. 19, LT3094 p. 22) e l'uscita va in dropout. PG libero, ILIM a massa.
 MSE = "Package_SO:MSOP-12-1EP_3x4.039mm_P0.65mm_EP1.651x2.845mm"
 d.part("U", "Regulator_Linear:LT3045xMSE", "LT3045EMSE", MSE, {
-    1: "+18V", 2: "+18V", 3: "+18V", 4: "+18V", 5: None, 6: "AGND", 7: "AGND", 8: "SETP",
+    1: "+18V", 2: "+18V", 3: "+18V", 4: "+18V", 5: None, 6: "AGND", 7: "+18V", 8: "SETP",
     9: "AGND", 10: "+15LN", 11: "+15LN", 12: "+15LN", 13: "AGND"}, ref="U42",
-    note="EN/UV a IN; ILIM a massa = limite massimo; PG libero, PGFB a massa: NOTA da verificare")
+    note="EN/UV a IN; ILIM a massa = limite massimo; PG libero; PGFB a IN (fast start-up e PG spenti)")
 d.netclass["SETP"] = 0.3    # pin MSOP a passo 0,65 (regola delle reti TSSOP)
 d.R("SETP", "AGND", "150k 0.1%")
 d.C("SETP", "AGND", "4u7 25V", C12, note="rumore del riferimento (datasheet: 4,7 uF)")
 d.C("+18V", "AGND", "4u7 25V", C12)
 d.C("+15LN", "AGND", "10u 25V", C12)
 d.part("U", "Regulator_Linear:LT3094xMSE", "LT3094EMSE", MSE, {
-    1: "-18V", 2: "-18V", 13: "-18V", 3: "-18V", 4: None, 5: "AGND", 6: "AGND", 7: None, 8: "SETN",
+    1: "-18V", 2: "-18V", 13: "-18V", 3: "-18V", 4: None, 5: "-18V", 6: "AGND", 7: None, 8: "SETN",
     9: "AGND", 10: "-15LN", 11: "-15LN", 12: "-15LN"}, ref="U43",
-    note="EN/UV a IN; VIOC libero; PG libero: NOTA da verificare")
+    note="EN/UV a IN; PG libero; PGFB a IN (fast start-up e PG spenti); ILIM a massa; VIOC libero")
 d.R("SETN", "AGND", "150k 0.1%")
 d.C("AGND", "SETN", "4u7 25V", C12)
 d.C("AGND", "-18V", "4u7 25V", C12)

@@ -65,9 +65,12 @@ Strade scritte il 2026-10-28 (la 1 è diventata la dec. 143):
 8. **Pad del REC**: 6,81k in serie, shunt 3,16k (−10 dB) o 757 Ω (−20 dB) a ponticello;
    0 dB = ponticello chiuso di serie (dec. 63).
 9. **Meter**: guadagno 10k/4,02k = 0,287; vrefB con 4,64k (E96) = 1,585 V.
-10. **LT3045 / LT3094**: pinout preso dal simbolo KiCad (LT3045xMSE, LT3093xMSE). **Da
-    verificare sul datasheet** (analog.com non si scarica: via radiolocman). PG libero,
-    PGFB a massa, VIOC libero: da verificare.
+10. **LT3045 / LT3094**: pinout verificato il 2026-10-31 sui datasheet Rev. B (LT3045 p. 12-13,
+    LT3094 p. 15; copie da rlocman.ru). Il simbolo KiCad era giusto. Errore trovato: PGFB era a
+    massa. Con PGFB sotto la soglia il fast start-up resta acceso (2 mA nel SET invece di 100 uA) e
+    l'uscita va in dropout: niente ±15 LN. Ora PGFB va a IN (+18 / −18), come vuole il datasheet
+    senza PG. PG libero, ILIM a massa, EN/UV a IN, VIOC libero: confermati. Pad esposto: GND nel
+    LT3045, IN nel LT3094.
 
 ## Errori del primo giro
 
