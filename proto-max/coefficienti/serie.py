@@ -129,9 +129,71 @@ def serie_analogico(f, manopole_el):
     return _celle(lambda nd: valuta(nd, s), manopole_el)
 
 
+# --- realizzazione digitale v2 (2026-10-31, todo 210) ---
+# La v1 passava i polinomi in s interi alla bilineare: in Live (gen~)
+# SERIE oscillava, nella prova Python no. La v2 usa solo mattoni che in
+# gen~ funzionano gia nell'isolator, e stabili per costruzione:
+# - LOW = due celle del 1o ordine (fattori esatti del Baxandall):
+#   H1 = (R + rb + s R rb C) / (1 + s rb C), H2 = (1 + s ra C) / (R + ra + s R ra C);
+#   ogni polo ha coefficiente fra -1 e 1 per qualunque x;
+# - medi e HIGH: biquad con prewarp alla frequenza centrale (come le
+#   bande dell'isolator), da f0, Q e guadagno al centro del circuito.
+
+def low_primo(x):
+    """Le due celle del 1o ordine della LOW: ((n0, n1), (d0, d1)) x 2."""
+    ra, rb = RP_LOW * x + 1e-3, RP_LOW * (1 - x) + 1e-3
+    h1 = ((R_LOW + rb, R_LOW * rb * C_LOW), (1.0, rb * C_LOW))
+    h2 = ((1.0, ra * C_LOW), (R_LOW + ra, R_LOW * ra * C_LOW))
+    return h1, h2
+
+
+def bp_fq(chiave):
+    """MFB: frequenza centrale, Q e guadagno al centro (negativo)."""
+    r1, r2, c1, c2, r3 = MFB[chiave]
+    g = 1 / r1 + 1 / r2
+    w0 = math.sqrt(g / (c1 * c2 * r3))
+    q = math.sqrt(g * c1 * c2 * r3) / (c1 + c2)
+    return w0 / (2 * math.pi), q, -(c1 * r3 / r1) / (c1 + c2)
+
+
+def hp_fq():
+    """Sallen-Key passa-alto a guadagno 1: frequenza e Q."""
+    c1, c2, r1, r2 = SK_HP
+    w0 = math.sqrt(1 / r1 / (c1 * c2 * r2))
+    q = math.sqrt(c1 * c2 * r2 / r1) / (c1 + c2)
+    return w0 / (2 * math.pi), q
+
+
+def primo_ordine(nd, fs):
+    """Cella del 1o ordine come biquad (b2 = a2 = 0), bilineare."""
+    (n0, n1), (d0, d1) = nd
+    k = 2 * fs
+    a0 = d0 + d1 * k
+    return ((n0 + n1 * k) / a0, (n0 - n1 * k) / a0, 0.0, (d0 - d1 * k) / a0, 0.0)
+
+
+def bp_digitale(f0, q, hc, fs):
+    k = math.tan(math.pi * f0 / fs)
+    n = 1 / (1 + k / q + k * k)
+    b0 = hc * k / q * n
+    return (b0, 0.0, -b0, 2 * (k * k - 1) * n, (1 - k / q + k * k) * n)
+
+
+def hp_digitale(f0, q, fs):
+    k = math.tan(math.pi * f0 / fs)
+    n = 1 / (1 + k / q + k * k)
+    return (n, -2 * n, n, 2 * (k * k - 1) * n, (1 - k / q + k * k) * n)
+
+
 def serie_digitale(f, fs, manopole_el):
     from canale import risposta
-    return _celle(lambda nd: risposta(bilineare(nd, fs), f, fs), manopole_el)
+    x, c_lm, c_mh, c_hi = manopole_el
+    h1, h2 = low_primo(x)
+    low = risposta(primo_ordine(h1, fs), f, fs) * risposta(primo_ordine(h2, fs), f, fs)
+    lm = risposta(bp_digitale(*bp_fq("lm"), fs), f, fs)
+    mh = risposta(bp_digitale(*bp_fq("mh"), fs), f, fs)
+    hi = risposta(hp_digitale(*hp_fq(), fs), f, fs)
+    return low * (1 + c_lm * lm) * (1 + c_mh * mh) * (1 - c_hi * hi)
 
 
 def serie_os(f, fs, manopole):

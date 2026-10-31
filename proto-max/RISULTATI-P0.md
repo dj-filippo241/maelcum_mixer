@@ -203,3 +203,25 @@ in uso normale una banca su quattro (A, C, D, SERIE), due durante i 20 ms
 di dissolvenza. Gli stati di un blocco spento vanno a zero, così riparte
 pulito. `prova_gen.py` PASS, più una prova nuova dei cambi di selettore
 (A → D → SERIE → C: valore giusto dopo l'assestamento, nessun picco).
+
+## SERIE v2 (2026-10-31, todo 210)
+
+In Live, EQ TIPO = SERIE dava rumore fortissimo e clip continuo con la
+musica che suona; tornava normale su ISOLATOR. La prova Python
+(`prova_gen.py`) sullo stesso codice era stabile, e nel modello non c'e
+alcun anello: le celle sommano in avanti. La causa esatta dentro gen~ non
+e trovata. La v1 calcolava i biquad passando alla bilineare i polinomi in
+s interi (coefficienti fino a 1e8 prima della divisione).
+
+v2: LOW = due celle del 1o ordine, fattori esatti del Baxandall
+(R + Zb) / (R + Za); LOW-MID, MID-HIGH e HIGH = biquad con prewarp da f0, Q
+e guadagno al centro del circuito, come le bande dell'isolator che in Live
+funzionano. Stabili per costruzione: polo piu vicino al cerchio 0,99938
+(0-100 % di corsa, 44,1-192 kHz a 4x). `verifica_serie.py` contro
+`cascade-b3.log`: PASS (scarto max 0,24 dB analogico, 0,23 dB a 48 kHz).
+`prova_gen.py`: PASS. Comandi e law invariati.
+
+Protezione (stesso giorno, solo prototipo): un campione NaN, infinito o
+oltre +36 dBFS azzera gli stati ed esce silenzio; senza, un NaN avvelena il
+mixer della traccia di Live. `MC-CHANNEL-PROVA` (`genera.py --prova`) ha
+in piu il selettore STADI SERIE per accendere le celle una alla volta.

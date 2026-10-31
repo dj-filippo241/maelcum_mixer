@@ -78,25 +78,6 @@ class Codice:
             args = f"{c}_a2, {c}_a1, 1, {c}_a1, {c}_a2"
         self.r(f"{uscita} = bq(st, {i}, {ingresso}, {args});")
 
-    def bq_nome(self, uscita, ingresso, p):
-        """Biquad con coefficienti p_b0, p_b1, p_b2, p_a1, p_a2."""
-        i = self.n_st
-        self.n_st += 2
-        self.r(f"{uscita} = bq(st, {i}, {ingresso}, {p}_b0, {p}_b1, {p}_b2,"
-               f" {p}_a1, {p}_a2);")
-
-    def bilineare(self, p, num, den):
-        """Coefficienti digitali da H(s) = (n0 + n1 s + n2 s^2) /
-        (e0 + e1 s + e2 s^2), s = sk (1 - z^-1) / (1 + z^-1), sk = 2 sr4."""
-        n0, n1, n2 = num
-        e0, e1, e2 = den
-        self.r(f"{p}_ai = 1 / ({e0} + ({e1}) * sk + ({e2}) * sk2);")
-        self.r(f"{p}_b0 = ({n0} + ({n1}) * sk + ({n2}) * sk2) * {p}_ai;")
-        self.r(f"{p}_b1 = (2 * ({n0}) - 2 * ({n2}) * sk2) * {p}_ai;")
-        self.r(f"{p}_b2 = ({n0} - ({n1}) * sk + ({n2}) * sk2) * {p}_ai;")
-        self.r(f"{p}_a1 = (2 * ({e0}) - 2 * ({e2}) * sk2) * {p}_ai;")
-        self.r(f"{p}_a2 = ({e0} - ({e1}) * sk + ({e2}) * sk2) * {p}_ai;")
-
     def cammino(self, var, coefs, pari, base):
         """Un ramo del halfband polifase: coefficienti pari o dispari."""
         for idx, cf in enumerate(coefs):
@@ -136,8 +117,6 @@ def emetti_serie(g):
     r = g.r
     r("// EQ in serie (B5, archiviato: confronto a orecchio). Law eq-serie §10:")
     r("// LOW e HIGH a tratti (kill negli ultimi 5 %), medi pot lineare caricato")
-    r("sk = 2 * sr4;")
-    r("sk2 = sk * sk;")
     t = serie.THETA_CUT
     # x scende a tratti: kill -> cut -> detent -> boost (solo sottrazioni
     # di costanti positive: niente "+ -" nel codice gen~)
@@ -159,23 +138,45 @@ def emetti_serie(g):
         r(f"sr_t{nome} = s_{b} / 100;")
         r(f"sr_c{nome} = (1 - 2 * sr_t{nome}) / (1 + {k!r} * sr_t{nome}"
           f" * (1 - sr_t{nome}));")
-    r("// cella LOW: Baxandall, (R + Zb) / (R + Za)")
+    r("// SERIE v2 (2026-10-31): LOW = due celle del 1o ordine, fattori esatti")
+    r("// del Baxandall (R + Zb) / (R + Za); medi e HIGH = biquad con prewarp")
+    r("// come le bande dell'isolator. Nessuna cella puo oscillare.")
+    r("sk = 2 * sr4;")
     r(f"sr_ra = {RP!r} * sr_xl + 0.001;")
     r(f"sr_rb = {RP!r} * (1 - sr_xl) + 0.001;")
-    r(f"sr_na0 = {R!r} + sr_rb;")
-    r(f"sr_na1 = {R * C!r} * sr_rb;")
-    r(f"sr_ta = sr_ra * {C!r};")
-    r(f"sr_nb0 = {R!r} + sr_ra;")
-    r(f"sr_nb1 = {R * C!r} * sr_ra;")
-    r(f"sr_tb = sr_rb * {C!r};")
-    g.bilineare("sl", ("sr_na0", "sr_na1 + sr_na0 * sr_ta", "sr_na1 * sr_ta"),
-                ("sr_nb0", "sr_nb1 + sr_nb0 * sr_tb", "sr_nb1 * sr_tb"))
-    r("// passa-banda MFB dei medi e passa-alto Sallen-Key della HIGH")
-    for p, nd in (("slm", serie.bp_s("lm")), ("smh", serie.bp_s("mh")),
-                  ("shi", serie.hp_s())):
-        g.bilineare(p, tuple(repr(v) for v in nd[0]),
-                    tuple(repr(v) for v in nd[1]))
+    # H1 = (R + rb + s R C rb) / (1 + s C rb)
+    r(f"e1_ai = 1 / (1 + {C!r} * sr_rb * sk);")
+    r(f"e1_b0 = ({R!r} + sr_rb + {R * C!r} * sr_rb * sk) * e1_ai;")
+    r(f"e1_b1 = ({R!r} + sr_rb - {R * C!r} * sr_rb * sk) * e1_ai;")
+    r(f"e1_a1 = (1 - {C!r} * sr_rb * sk) * e1_ai;")
+    # H2 = (1 + s C ra) / (R + ra + s R C ra)
+    r(f"e2_ai = 1 / ({R!r} + sr_ra + {R * C!r} * sr_ra * sk);")
+    r(f"e2_b0 = (1 + {C!r} * sr_ra * sk) * e2_ai;")
+    r(f"e2_b1 = (1 - {C!r} * sr_ra * sk) * e2_ai;")
+    r(f"e2_a1 = ({R!r} + sr_ra - {R * C!r} * sr_ra * sk) * e2_ai;")
+    for p, (f0, q, hc) in (("elm", serie.bp_fq("lm")), ("emh", serie.bp_fq("mh"))):
+        r(f"{p}_k = tan(pi * {f0!r} / sr4);")
+        r(f"{p}_n = 1 / (1 + {p}_k / {q!r} + {p}_k * {p}_k);")
+        r(f"{p}_b0 = {hc!r} * {p}_k / {q!r} * {p}_n;")
+        r(f"{p}_a1 = 2 * ({p}_k * {p}_k - 1) * {p}_n;")
+        r(f"{p}_a2 = (1 - {p}_k / {q!r} + {p}_k * {p}_k) * {p}_n;")
+    f0, q = serie.hp_fq()
+    r(f"ehi_k = tan(pi * {f0!r} / sr4);")
+    r(f"ehi_n = 1 / (1 + ehi_k / {q!r} + ehi_k * ehi_k);")
+    r("ehi_a1 = 2 * (ehi_k * ehi_k - 1) * ehi_n;")
+    r(f"ehi_a2 = (1 - ehi_k / {q!r} + ehi_k * ehi_k) * ehi_n;")
 
+
+def emetti_cella(g, cella, uscita, ingresso):
+    """Una cella di SERIE v2 (stati: 2 per cella, anche per il 1o ordine)."""
+    i = g.n_st
+    g.n_st += 2
+    args = {"e1": "e1_b0, e1_b1, 0, e1_a1, 0",
+            "e2": "e2_b0, e2_b1, 0, e2_a1, 0",
+            "elm": "elm_b0, 0, 0 - elm_b0, elm_a1, elm_a2",
+            "emh": "emh_b0, 0, 0 - emh_b0, emh_a1, emh_a2",
+            "ehi": "ehi_n, -2 * ehi_n, ehi_n, ehi_a1, ehi_a2"}[cella]
+    g.r(f"{uscita} = bq(st, {i}, {ingresso}, {args});")
 
 def genexpr():
     g = Codice()
@@ -335,31 +336,33 @@ def genexpr():
                 n0 = g.n_st
                 g.r(f"{q}1 = {u};")
                 g.r(f"if ({STADI[0]} >= 1) {{")
-                g.bq_nome(f"{q}1", u, "sl")
+                emetti_cella(g, "e1", f"{q}1", u)
+                emetti_cella(g, "e2", f"{q}1", f"{q}1")
                 g.r("}")
                 g.r(f"{q}2 = {q}1;")
                 g.r(f"if ({STADI[0]} >= 2) {{")
-                g.bq_nome(f"{q}b", f"{q}1", "slm")
+                emetti_cella(g, "elm", f"{q}b", f"{q}1")
                 g.r(f"{q}2 = {q}1 + sr_clm * {q}b;")
                 g.r("}")
                 g.r(f"{q}3 = {q}2;")
                 g.r(f"if ({STADI[0]} >= 3) {{")
-                g.bq_nome(f"{q}b", f"{q}2", "smh")
+                emetti_cella(g, "emh", f"{q}b", f"{q}2")
                 g.r(f"{q}3 = {q}2 + sr_cmh * {q}b;")
                 g.r("}")
                 g.r(f"{q}4 = {q}3;")
                 g.r(f"if ({STADI[0]} >= 4) {{")
-                g.bq_nome(f"{q}b", f"{q}3", "shi")
+                emetti_cella(g, "ehi", f"{q}b", f"{q}3")
                 g.r(f"{q}4 = {q}3 - sr_chi * {q}b;")
                 g.r("}")
-                assert g.n_st == n0 + 8
+                assert g.n_st == n0 + 10
             else:
-                g.bq_nome(f"{q}1", u, "sl")
-                g.bq_nome(f"{q}b", f"{q}1", "slm")
+                emetti_cella(g, "e1", f"{q}1", u)
+                emetti_cella(g, "e2", f"{q}1", f"{q}1")
+                emetti_cella(g, "elm", f"{q}b", f"{q}1")
                 g.r(f"{q}2 = {q}1 + sr_clm * {q}b;")
-                g.bq_nome(f"{q}b", f"{q}2", "smh")
+                emetti_cella(g, "emh", f"{q}b", f"{q}2")
                 g.r(f"{q}3 = {q}2 + sr_cmh * {q}b;")
-                g.bq_nome(f"{q}b", f"{q}3", "shi")
+                emetti_cella(g, "ehi", f"{q}b", f"{q}3")
                 g.r(f"{q}4 = {q}3 - sr_chi * {q}b;")
             g.r("}")
             stati["S"] = (inizio, g.n_st)
