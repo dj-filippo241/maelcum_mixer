@@ -398,16 +398,14 @@ giro di PCB (rev. B) è prudente: quasi ogni scheda nuova ne chiede uno.
 
 ## 8. Moduli opzionali (dec. 111)
 
-### Crossfader (dec. 111)
+### Crossfader (dec. 111, solo CV dalla dec. 160)
 
 | Voce | Qtà | € al pezzo | Totale | Fonte | Note |
 |---|---|---|---|---|---|
-| VCA CoolAudio V2181L | 8 | 2,80 – 5,00 | 22 € – 40 € | D |  |
-| trimmer multigiro | 24 | 0,80 – 2,00 | 19 € – 48 € | S |  |
-| OPA1654 quad op-amp | 2 | 1,60 – 2,80 | 3 € – 6 € | M |  |
+| OPA1654 quad op-amp | 1 | 1,60 – 2,80 | 2 € – 3 € | M | curva e due CV |
 | fader 100 mm mono (Alps RS60N) | 1 | 8,80 – 12,50 | 9 € – 12 € | R |  |
-| passivi + PCB | 1 | a corpo | 30 € – 60 € | S |  |
-| **Totale** | | | **84 € – 166 €** | | |
+| levette X/OFF/Y sui 4 canali, passivi + PCB | 1 | a corpo | 25 € – 45 € | S |  |
+| **Totale** | | | **35 € – 60 €** | | |
 
 EQ grafico, uscite per via e sirena: non progettati, quindi non stimati.
 

@@ -78,7 +78,7 @@ Regole di simulazione (ognuna nasce da un errore già pagato; il contesto sta ne
 - Un `.param` scritto due volte in un netlist con `.step`: `.four` non stampa niente e il log non dà errore.
 - Non fermare LTspice con `pkill -f <nome netlist>`: uccide anche lo script. `drive2-chain` a 150 Hz non termina (causa ignota): usare 50 Hz o 1 kHz.
 
-## Stato corrente (2026-10-31, decisioni 1-159)
+## Stato corrente (2026-10-31, decisioni 1-160)
 
 Il design teorico (carta + simulazione) è completo per tutti i moduli. Il prototipo musicale in Max for Live (dec. 78) precede il millefori: P0 (`MC-CHANNEL`), P1 (`MC-FILTRO`, canale R corretto il 2026-10-15) e P2 (`MC-5WAY`: CROSSOVER A-E con E = impianto di Filippo 80/170/1,2k + 6k, GROWL VER DEC.99/LIBERO, NASTRO VER OGGI/COMPLETO/EXCITER/CLASSE A/LIBERO) costruiti, verificati e in ascolto da Filippo; P3 e P4 costruiti e verificati, da caricare in Live (P4 = `MC-MIC`: GAIN, EQ2, FX1-4 verso i bus di P3, MUTE, LED; pedali = effetti di Live: `MC-SEND` per canale, `MC-BUS` → effetto → `MC-RET` su 4 tracce FX, `MC-MASTER`; bus con `send~`/`receive~` che si sommano) (`proto-max/RISULTATI-P*.md`). Il blocco dei salti (todo 76) è superato: Prova 0 passata il 2026-10-31. Primo giro del libretto (`proto-max/tutorial-live.html`) fatto: decisioni 146-155 (isolator con curva PIONEER e incroci C; filtro OTA Butterworth, RES e DRIVE nuovi; 5-way E e GROWL LIBERO; EQ in serie scartato). Aperti: NASTRO (todo 213, versione COMPL. MEDI nuova), bus FX da rifare con l'instradamento di Live (todo 209: `send~`/`receive~` fra dispositivi M4L in Live sono muti). Generatori e prove in `proto-max/coefficienti/`: i `.genexpr/.maxpat/.amxd` non si toccano a mano. Gli acquisti sono sospesi fino al prototipo.
 
@@ -99,7 +99,7 @@ Review contro il benchmark (dec. 111): ibrido DJ / sound system / live, nessun f
 
 Documenti trasversali: `docs/fase1/gain-staging-sheet.md` (livelli e domini, referenza unica), `docs/06-ritaratura-rumore-71A.md` (budget di rumore e target ratificati), `docs/proto-max/piano.md` (prototipo Max).
 
-Numeri di sistema: rumore −81,9 dBu A-wtd a filtri OFF col fader a VCA (docs/06 §13; prima −82,9, §10: canale con isolator −92,9 col fader a VCA, 5-way −85,9) (target ≤ −78, dec. 89; condizioni d'uso accettate con FX e overdrive aperti, dec. 95/100); master +25,4…+25,6 dBu (requisito ≥ +24). VCA: THAT 218x fuori produzione, rotta clone CoolAudio V2181L, ~78 chip (FX 40 + 16 dei fader, dec. 126), trim in `docs/fase3/sistema-vca-trim.md`.
+Numeri di sistema: rumore −81,9 dBu A-wtd a filtri OFF col fader a VCA (docs/06 §13; prima −82,9, §10: canale con isolator −92,9 col fader a VCA, 5-way −85,9) (target ≤ −78, dec. 89; condizioni d'uso accettate con FX e overdrive aperti, dec. 95/100); master +25,4…+25,6 dBu (requisito ≥ +24). VCA: THAT 218x fuori produzione, rotta clone CoolAudio V2181L, ~74 chip (FX 40 + 16 dei fader, dec. 126; filtro 4, crossfader in CV senza VCA, dec. 159-160), trim in `docs/fase3/sistema-vca-trim.md`.
 
 Trappole di lettura:
 

@@ -226,6 +226,8 @@ Numero segmenti definitivo: al design del modulo metering.
 
 ### 3.8 [H] Fader + [I] out driver
 
+> **[REV 2026-10-31, dec. 160: crossfader solo in CV, sul VCA del fader; l'anello audio sparisce] ** Il canale non apre più l'anello: una levetta X/OFF/Y somma
+> alla CV del fader la CV XF_X o XF_Y dal backplane (c10-c11). Il testo che segue è storia.
 > **[REV 2026-10-14, dec. 111]** Tra [H] e [I] il canale apre un anello per
 > il modulo crossfader opzionale: XF_SEND (driver ≤ 50 Ω, slot 6) → XF_RET
 > (buffer ≥ 100 k, slot 7). Senza modulo lo chiude il ponticello JXF del

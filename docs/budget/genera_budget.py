@@ -267,9 +267,9 @@ PROTOTIPO = [
 ]
 
 OPZIONALI = [
-    ("Crossfader (dec. 111)", [
-        p("vca", 8), p("trim", 24), p("opa1654", 2), p("fader", 1),
-        a_corpo("passivi + PCB", 30, 60),
+    ("Crossfader (dec. 111, solo CV dalla dec. 160)", [
+        p("opa1654", 1, "curva e due CV"), p("fader", 1),
+        a_corpo("levette X/OFF/Y sui 4 canali, passivi + PCB", 25, 45),
     ]),
 ]
 

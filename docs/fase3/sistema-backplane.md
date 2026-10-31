@@ -58,7 +58,10 @@ inserisce nel segnale, il backplane porta un **ponticello di continuità**
 (link a innesto, una coppia L/R per punto) che si toglie quando il modulo
 c'è. Senza modulo il segnale passa sul rame, come oggi.
 
-1. **Crossfader — anello audio post-fader.** Il crossfader deve agire
+1. **[REV 2026-10-31, dec. 160: crossfader solo in CV, sul VCA del fader; l'anello audio sparisce] ** Il crossfader agisce sulla CV dei 2 VCA del fader: il canale somma alla CV
+   del fader la CV XF_X o XF_Y (levetta X/OFF/Y sul canale). Il modulo UTIL-XF manda solo le due
+   CV su c10-c11. Slot 6-7 del canale e ponticelli JXF non servono più: il testo sotto è storia.
+   **Crossfader — anello audio post-fader.** Il crossfader deve agire
    solo sul contributo al DJ bus: CUE, mandate FX e filtro restano
    pre-fader (SPECIFICA §4). Il VCA di gain del canale sta all'inizio della
    catena e non va usato (scartato: abbasserebbe anche cuffia e mandate).
@@ -89,7 +92,7 @@ c'è. Senza modulo il segnale passa sul rame, come oggi.
 
 | Classe | Riga b | Riga c |
 |---|---|---|
-| UTIL-XF (crossfader) | slot 1-4 = XF_IN CH1-4 (dagli slot 6 dei canali), slot 5-8 = XF_OUT CH1-4 (verso gli slot 7) | GLOBAL_MUTE |
+| UTIL-XF (crossfader) | ~~slot 1-4 = XF_IN CH1-4, slot 5-8 = XF_OUT CH1-4~~ nessuno (dec. 160) | c10-c11 = XF_X, XF_Y (CV 0-5 V, dec. 160) |
 | UTIL-GEQ (EQ grafico) | slot 1 = 5W_IN (dal 5-way), slot 2 = 5W_OUT (verso MSUM1), slot 3 = MS_IN (da INS_SEND), slot 4 = MS_OUT (verso INS_RET) | GLOBAL_MUTE |
 | UTIL-VIE (uscite per via) | slot 1 = VIE_TAP in (da b31-b32 del master) | GLOBAL_MUTE |
 | UTILITY | spare | spare |
@@ -178,8 +181,8 @@ Semantica degli slot PER CLASSE (slot 1 = b1-b3, slot 2 = b4-b6, …):
 | 3 | SEND TAP out (→FX-SEND) | ~~CH2 send in~~ HPF out → DJBUS (net)² | — | BUS3 net in¹ | MSUM3 in (FX2) | CUE3 in (CH3) | S2_OUT (net¹) |
 | 4 | ~~FILT_SEND out~~ BUS_HPF out L/R (net)² | ~~CH2 return out~~ LPF out → DJBUS (net)² | — | BUS4 net in¹ | MSUM4 in (FX3) | CUE4 in (CH4) | S3_OUT (net¹) |
 | 5 | ~~FILT_RET in~~ BUS_LPF out L/R (net)² | ~~CH3 send in~~ spare | — | RET1 out (→MSUM2) | MSUM5 in (FX4) | MON in (master) | S4_OUT (net¹) |
-| 6 | XF_SEND out (post-fader, dec. 111) | ~~CH3 return out~~ spare | — | RET2 out (→MSUM3) | MSUM6 in (mic) | — | — |
-| 7 | XF_RET in (dec. 111) | ~~CH4 send in~~ spare | — | RET3 out (→MSUM4) | MSUM7 in (generic) | — | — |
+| 6 | ~~XF_SEND out~~ spare (dec. 160) | ~~CH3 return out~~ spare | — | RET2 out (→MSUM3) | MSUM6 in (mic) | — | — |
+| 7 | ~~XF_RET in~~ spare (dec. 160) | ~~CH4 send in~~ spare | — | RET3 out (→MSUM4) | MSUM7 in (generic) | — | — |
 | 8 | — | ~~CH4 return out~~ spare | — | RET4 out (→MSUM5) | MON out L/R | — | — |
 | 9 | spare | spare | spare | spare | INS_SEND out (dec. 111) | spare | spare |
 | 10 | spare | spare | spare | spare | INS_RET in (dec. 111) | spare | spare |
@@ -188,8 +191,8 @@ Semantica degli slot PER CLASSE (slot 1 = b1-b3, slot 2 = b4-b6, …):
 multidrop come il DJ bus: ogni canale inietta con R 10k lato sorgente sul net scelto dalla
 levetta; il modulo filtro riceve sul virtual-earth (Rf 10k, Cf 10 pF) e reinietta le uscite
 delle due sezioni sul DJ bus con R 10k. I bit FILT_MODE (c1-c8) restano: servono al muto
-della sezione senza canali. Il crossfader opzionale (XF, slot 6-7) va rivisto: oggi il
-canale filtrato non passa dal crossfader [APERTO].
+della sezione senza canali. Crossfader: risolto dalla dec. 160 (agisce sulla CV del fader,
+quindi prima della levetta del filtro).
 
 ¹ **REV dec. 91 (2026-10-01)**: i bus FX S1-S4 sono NET MULTIDROP (stessa
 convenzione del DJ bus): i 4 moduli FX-SEND (out S1-S4), MIC e GEN
@@ -227,7 +230,7 @@ elettricamente corte (λ = km). Bilanciato solo verso l'esterno
 |---|---|---|
 | c1-c8 | FILT_MODE CH1-4 [1:0] | 8 bit: 2 per canale (HPF/OFF/LPF), dal pannello canale al modulo filtro [dec. 159: pilotano anche l'ADG di instradamento sul canale; al filtro servono per il muto della sezione]; livelli 0/+5 V, serie 10k, pull-down 100k lato filtro (stessa disciplina del pilotaggio kill §8.10 five-way); filtro con bit assente = OFF (bypass secco) |
 | c9 | GLOBAL_MUTE | dal controller mute del master (supervisore rail + timer, master-out §3.7): lo ascoltano i relay di uscita dei moduli che ne hanno uno + i buffer d'iniezione dei 4 FX-SEND (dec. 94(b): i send mutano col mute globale — nessuna eccitazione della matrice self-FB nelle transizioni). Il modulo CUE NON ascolta c9 (scelta di Filippo 2026-10-02, `sistema-cue.md` §6: la cuffia resta viva durante mute/guasti master; la protezione power del modulo cue è locale) |
-| c10-c13 | CV_BUS 0-5 V ×4 | convenzione d'interfaccia [BLOCCATO]: CV remoti (es. filter freq shared, utility); generazione nel dominio ±15 V LN (sheet §1) |
+| c10-c13 | CV_BUS 0-5 V ×4 | convenzione d'interfaccia [BLOCCATO]: CV remoti (es. filter freq shared, utility); [dec. 160: c10 = XF_X, c11 = XF_Y del crossfader opzionale]; generazione nel dominio ±15 V LN (sheet §1) |
 | c14-c15 | LED_DIM / SVC | dimming LED comune (PWM lento dal PSU) + linea di servizio spare |
 | c16, c20, c24, c28 | CTRL_GND | ritorni intercalati: ogni gruppo di segnali ha il suo ritorno adiacente |
 | c17 | AC_OK | **[REV 2026-10-28, scheda del master]** linea open collector dal PSU-IN (alto = rete presente, `sistema-psu-esterno.md` §2.5) verso il mute controller del master; la pull-up sta nel PSU-IN |
