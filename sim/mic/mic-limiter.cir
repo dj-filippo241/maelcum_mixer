@@ -1,0 +1,40 @@
+* MIC: limiter fisso nel VCA del MUTE (dec. 145, 2026-10-29) - forme nel tempo
+* Catena: nodo POST-EQ -> VCA (THAT2181/V2181, a 0 dB) -> uscita; dall'uscita:
+* raddrizzatore a doppia semionda (x0,5) -> picco (attacco Ratt*Ch, rilascio Rrel*Ch)
+* -> lisciatura Rs*Cs -> errore K*(Vpk - Vth) solo sopra soglia -> EC- (pin 3).
+* Il MUTE (rampa 1 ms a +0,61 V, dec. 111) si somma sullo stesso porto.
+* Il modello ha ecm = porto che taglia con tensione positiva (pin 3 EC-).
+* Raddrizzatore, picco e somma sono blocchi ideali: la loro versione con op-amp
+* sta nello schema (pcb/mic/mic.py); qui si fissano soglia, tempi e guadagno d'anello.
+.include ../lib/that2181.inc
+Vcc vp 0 15
+Vee vm 0 -15
+.param f=1k
+.param vth=2.18
+.param kk=0.25 vmax=10
+.param ratt=1k rrel=1Meg ch=1u rs=100 cs=1u
+* inviluppo d'ingresso (picco, V): 0 dBu, poi grido a +20 dBu da 0,1 a 0,4 s,
+* poi di nuovo 0 dBu; a 0,9 s il MUTE
+Bin in 0 V=table(time, 0,1.095, 0.0999,1.095, 0.1,10.95, 0.4,10.95, 0.4001,1.095, 1,1.095)*sin(2*pi*f*time)
+Vmute mu 0 PWL(0 0 0.9 0 0.901 0.61 1 0.61)
+X1 in out 0 ec vp vm THAT2181
+Brect rect 0 V=0.5*abs(V(out))
+Bch 0 pk I=max(V(rect)-V(pk),0)/{ratt}
+Ch pk 0 {ch}
+Rrel pk 0 {rrel}
+Rs pk sm {rs}
+Cs sm 0 {cs}
+* nessun tetto (vmax alto): con la lisciatura di 0,1 ms non serve; con 0,15 V i numeri erano identici (2026-10-31)
+Bvc vc 0 V=min({kk}*max(V(sm)-{vth},0),{vmax})
+Bec ec 0 V=V(vc)+V(mu)
+.tran 0 1 0 10u
+.meas tran pk_pre MAX ABS(V(out)) FROM 0.05 TO 0.0999
+.meas tran pk_over MAX ABS(V(out)) FROM 0.1 TO 0.11
+.meas tran pk_10ms MAX ABS(V(out)) FROM 0.11 TO 0.12
+.meas tran pk_hold MAX ABS(V(out)) FROM 0.35 TO 0.4
+.meas tran gr_hold AVG V(ec) FROM 0.35 TO 0.4
+.meas tran pk_rel50 MAX ABS(V(out)) FROM 0.45 TO 0.46
+.meas tran pk_rel300 MAX ABS(V(out)) FROM 0.7 TO 0.71
+.meas tran pk_rel480 MAX ABS(V(out)) FROM 0.88 TO 0.89
+.meas tran pk_mute MAX ABS(V(out)) FROM 0.91 TO 1
+.end

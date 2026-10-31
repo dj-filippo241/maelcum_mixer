@@ -1082,9 +1082,44 @@ class Design:
             return {"saltato": "manca pcb/tools/audiocheck.py"}
         return audiocheck.check(pcb, getattr(self, "audio_rules", None))
 
-    def build(self, route=True, passes=40):
+    def build_schema(self):
+        """Solo schema, ERC, confronto col netlist e distinta: nessuna PCB. Riepilogo a parte
+        (riepilogo-schema.json), così un giro di solo schema non si confronta con uno completo."""
+        os.makedirs(os.path.join(self.outdir, "out"), exist_ok=True)
+        rp = os.path.join(self.outdir, "out", "riepilogo-schema.json")
+        prev = json.load(open(rp)) if os.path.exists(rp) else None
+        res = {"modulo": self.name, "componenti": len(self.parts), "reti": len(self.netmap())}
+        res["controllo_netlist"] = self.check()
+        sch = self.write_schematic()
+        erc, diff = self.erc_and_compare(sch)
+        res["erc"] = {"%s/%s" % k: v for k, v in erc.items()}
+        res["reti_diverse_schema"] = diff
+        res["routing"], res["drc"] = "saltato (solo schema)", {}
+        res["bom"] = os.path.relpath(self.bom(), self.outdir)
+        res["note"] = self.notes
+        err, peggio = self.verdetto(res, prev)
+        res["esito"] = "SCHEMA NON PASSA" if err else "SCHEMA PASSA"
+        res["errori"], res["peggiorato"] = err, peggio
+        with open(rp, "w") as f:
+            json.dump(res, f, indent=1, ensure_ascii=False)
+        print(json.dumps(res, indent=1, ensure_ascii=False))
+        print("\n%s: %s" % (self.name, res["esito"]))
+        for e in err:
+            print("  ERRORE  " + e)
+        for e in peggio:
+            print("  PEGGIO  " + e)
+        if err:
+            sys.exit(1)
+        return res
+
+    def build(self, route=True, passes=40, pcb=None):
         """Tutta la catena. Esce con codice 1 se la scheda non passa: un errore non resta
-        sepolto nel JSON."""
+        sepolto nel JSON. Con pcb=False (o --solo-schema) si ferma a schema, ERC e distinta:
+        l'esito dice «SCHEMA PASSA», non che la scheda passa."""
+        if pcb is None:
+            pcb = "--solo-schema" not in sys.argv
+        if not pcb:
+            return self.build_schema()
         os.makedirs(os.path.join(self.outdir, "out"), exist_ok=True)
         rp = os.path.join(self.outdir, "out", "riepilogo.json")
         prev = json.load(open(rp)) if os.path.exists(rp) else None

@@ -1,0 +1,35 @@
+* MIC: limiter fisso, distorsione a regime sopra soglia (dec. 145)
+* Catena: nodo POST-EQ -> VCA (THAT2181/V2181, a 0 dB) -> uscita; dall'uscita:
+* raddrizzatore a doppia semionda (x0,5) -> picco (attacco Ratt*Ch, rilascio Rrel*Ch)
+* -> lisciatura Rs*Cs -> errore K*(Vpk - Vth) solo sopra soglia -> EC- (pin 3).
+* Il MUTE (rampa 1 ms a +0,61 V, dec. 111) si somma sullo stesso porto.
+* Il modello ha ecm = porto che taglia con tensione positiva (pin 3 EC-).
+* Raddrizzatore, picco e somma sono blocchi ideali: la loro versione con op-amp
+* sta nello schema (pcb/mic/mic.py); qui si fissano soglia, tempi e guadagno d'anello.
+.include ../lib/that2181.inc
+Vcc vp 0 15
+Vee vm 0 -15
+.param f=1k amp=10.95
+.param vth=2.18
+.param kk=0.25 vmax=10
+.param ratt=1k rrel=1Meg ch=1u rs=100 cs=1u
+* inviluppo d'ingresso (picco, V): 0 dBu, poi grido a +20 dBu da 0,1 a 0,4 s,
+* poi di nuovo 0 dBu; a 0,9 s il MUTE
+Bin in 0 V={amp}*sin(2*pi*f*time)
+Vmute mu 0 0
+X1 in out 0 ec vp vm THAT2181
+Brect rect 0 V=0.5*abs(V(out))
+Bch 0 pk I=max(V(rect)-V(pk),0)/{ratt}
+Ch pk 0 {ch}
+Rrel pk 0 {rrel}
+Rs pk sm {rs}
+Cs sm 0 {cs}
+* nessun tetto (vmax alto): con la lisciatura di 0,1 ms non serve; con 0,15 V i numeri erano identici (2026-10-31)
+Bvc vc 0 V=min({kk}*max(V(sm)-{vth},0),{vmax})
+Bec ec 0 V=V(vc)+V(mu)
+.step param f LIST 100 150 1k 5k
+.tran 0 2 1.9 2u
+.four {f} 9 V(out)
+.meas tran pk MAX ABS(V(out))
+.meas tran grs AVG V(ec)
+.end

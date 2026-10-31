@@ -372,3 +372,53 @@ Solo il modulo MIC (il MONO no, risposta 6 della review `docs/08`).
   < 0,1 dB.
 - **Corrente**: +5,5 mA sul ramo audio per modulo MIC.
 - Il tasto e l'eventuale LED sono comandi di pannello di Filippo (voce 40).
+
+## REV 2026-10-31 — decisione 145: limiter fisso sul MIC [PROVVISORIO]
+
+Solo il modulo MIC. Nessun comando: soglia e tempi tarati dentro.
+Numeri e varianti: `sim/mic/RISULTATI-mic-limiter.md`.
+
+- **Dove**: nel VCA del MUTE (REV dec. 111), stesso punto: dopo l'EQ2, prima
+  dello split verso MSUM e verso i 4 pot send. Il limiter tiene anche le mandate.
+  Il LED resta pre-EQ: mostra il livello vero del mic, anche quando il limiter lavora.
+- **Come suona** (variante 2, scelta di Filippo): finché l'MC parla normale non succede
+  niente. Su un urlo il volume si ferma a ~+13 dBu in 2 ms; la frase dopo parte un filo
+  più bassa (−4 dB per ~50 ms) e torna piena in 300 ms. Sulla voce grave, solo mentre
+  limita, una leggera ruvidezza (0,8 % a 100 Hz).
+- **Anello** (retroazione: il rilevatore legge l'uscita del VCA):
+
+```
+POST-EQ ── 20k ──► VCA V2181 (pin 1) ──► I/V OPA1654, 20k // 47p ──► POST
+                    pin 2 a massa · pin 4 trim di simmetria (vca-trim §3.1)
+                    pin 5/7 = ±15 V LN · pin 3 = EC− (positivo taglia)
+
+POST ──► raddrizzatore doppia semionda, 2 sezioni OPA1654:
+         A: invertente 10k/10k, D1 (A = HW, K = uscita), D2 (A = uscita, K = −in)
+            → HW = −POST per POST > 0, 0 altrimenti
+         B: somma invertente: POST/20k + HW/10k, Rf 10k → RECT = +0,5·|POST|
+RECT ──► superdiodo (OPA1654, diodo nell'anello) → Ratt 1k → PK
+         Ch 1 µF + Rrel 1 MΩ verso massa; Rs 100 Ω + Cs 1 µF → SM
+SM   ──► sottrattore OPA1654: D = G·(VTH − SM); VTH = 2,18 V da partitore sul +15 LN
+     ──► mezza onda invertente di precisione (OPA1654) → LIM = G·max(SM − VTH, 0)
+         (a riposo LIM è a massa virtuale attraverso Rf: zero vero, nessuna
+         riduzione residua)
+LIM ── Ra ──┐
+MUTE_CV ─Rb─┼── pin 3 EC−      Rc da pin 3 a massa
+```
+
+- **Somma al pin 3**: Ra 1k, Rb 2k, Rc 1k. Per LIM il partitore vale 0,40: G = 0,625
+  dà K = 0,25 al pin, come in simulazione. Per MUTE_CV, a limiter fermo, LIM sta a
+  massa solo attraverso Ra + Rf (11k): il partitore vale 0,31 (0,20 con LIM attivo).
+  MUTE_CV 2,5 V → +0,79 V al pin = −129 dB, sotto il ΔEc massimo assoluto di 1 V
+  (vca-trim §2). Con 3,5 V si arrivava a 1,1 V: oltre il massimo. MUTE_CV: tasto →
+  partitore dal +5 V → RC 1 ms (rampa della dec. 111).
+- **Polarità**: l'I/V del VCA inverte. Si compensa scambiando gli ingressi del
+  differenziale dopo l'INA (§3.1): costo zero, il modulo resta non invertente.
+- **Silicio in più sul MIC**: V2181 ×1 (c'era già per il MUTE), 6 sezioni OPA1654
+  (I/V, raddrizzatore ×2, superdiodo, sottrattore, mezza onda) = 2 quad, 3 diodi
+  1N4148W più 1 nel superdiodo, trimmer di simmetria. La §8 va letta con questa riga.
+- **Tetto della riduzione**: nessuno. Con la lisciatura di 0,1 ms la simulazione non
+  lo chiede (con 25 dB di tetto i numeri erano identici).
+- **Non simulati**: raddrizzatore e picco con op-amp veri, offset del rilevatore
+  (1 mV al pin = 0,16 dB), soglia contro le tolleranze. Banco.
+- **Prototipo**: MC-MIC non ha ancora il limiter; va aggiunto per sentirlo.
