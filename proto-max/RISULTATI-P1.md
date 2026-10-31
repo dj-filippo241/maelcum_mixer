@@ -270,3 +270,8 @@ Fischio (core OTA, modello, fc 200 Hz / 1 kHz / 5 kHz): con gres -0,75
 +0,5 / +0,4 / 0,0 dBu e -2,4 / -2,4 / -1,9 semitoni. Parte verso il 94 %.
 Hardware: la curva esponenziale si fa con un pot logaritmico; da verificare
 nel design del filtro (dec. 102 b) quando la law si conferma.
+
+Seconda prova (stesso giorno): Filippo «risonanza alzala un po nella
+curva». RES_G90 1/6 -> 1/8: Q / Q base 2,0 a 30 %, 3,17 a 50 %, 5,04 a
+70 %, 6,35 a 80 %, 7,13 a 85 %, 8,0 a 90 %; fischio da ~93 %, fine corsa
+invariata (-0,25).

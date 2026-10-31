@@ -296,3 +296,6 @@ Filippo: «incroci da rivedere: vorrei un MID-HIGH più ampio verso il basso
 MC-CHANNEL, tutte LR4 come A: A 400 = 150 / 400 / 2500 Hz, A 450 = 150 /
 450 / 2500 Hz. Le voci si chiamano ora A 500, C 350, D 700, A 400, A 450
 (il numero e l'incrocio fra LOW-MID e MID-HIGH). MC-CHANNEL-S resta su A.
+
+Esito: Filippo sceglie **C** (dec. 152). MC-CHANNEL-S passa da A a C;
+A 400 e A 450 restano nel selettore della versione completa.

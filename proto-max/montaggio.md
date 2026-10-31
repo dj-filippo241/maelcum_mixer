@@ -28,7 +28,8 @@ Se Live segnala un errore, o il suono non passa, vai al §3.
   riporta al valore iniziale.
 - GAIN scende lineare in dB: a 25 % vale −50 dB. Sul pannello vero il
   GAIN ha la stessa law (shaper del VCA, `cdj-line-channel.md` §3.2).
-- **INCROCI**: A = 150 / 500 / 2500 Hz (partenza), C = 150 dolce /
+- **INCROCI** (scelta: C, dec. 152; A 400 = 150 / 400 / 2500 e A 450 =
+  150 / 450 / 2500 aggiunte il 2026-10-31): A = 150 / 500 / 2500 Hz (partenza), C = 150 dolce /
   350 / 3150 Hz, D = 150 dolce / 700 / 3150 Hz (B scartata con A, dec.
   114). Il cambio passa con una dissolvenza di 20 ms, senza click.
   Serve per la voce B7: confrontali a orecchio.
@@ -179,7 +180,7 @@ selettori non ci sono più; i comandi del pannello vero restano.
 
 | Dispositivo | Scelte fissate | Comandi |
 |---|---|---|
-| `MC-CHANNEL-S` | ISOLATOR, INCROCI A 150/500/2500, CURVA PIONEER | GAIN, 4 bande, FADER |
+| `MC-CHANNEL-S` | ISOLATOR, INCROCI C 150d/350/3150 (dec. 152), CURVA PIONEER | GAIN, 4 bande, FADER |
 | `MC-FILTRO-S` | CORE PULITO (c-B), PENDENZA BUTTERWORTH | FREQ, RES, DRIVE ×2, MODO, LIMITATORE (2+2 / 3+3 / OTA, da ascoltare) |
 | `MC-5WAY-S` | CROSSOVER E 80/170/1,2k/6k, GROWL LIBERO, NASTRO EXCITER | KILL, GAIN, POS, WIDTH ×5, GROWL, NASTRO |
 

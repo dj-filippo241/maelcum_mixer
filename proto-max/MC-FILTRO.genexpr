@@ -266,7 +266,7 @@ g_hp1 = tan(pi * f_hp / m1 / sr4);
 g_hp2 = tan(pi * f_hp / m2 / sr4);
 od_hp = pow(s_drive_hp / 100, 1.0);
 tr = s_res_hp / 100;
-gr = (tr <= 0.9) * pow(0.16666666666666666, tr / 0.9) + (tr > 0.9) * (0.16666666666666666 + -0.41666666666666663 * (tr - 0.9) / 0.1);
+gr = (tr <= 0.9) * pow(0.125, tr / 0.9) + (tr > 0.9) * (0.125 + -0.375 * (tr - 0.9) / 0.1);
 d_hp = (gr > 0) * gr * q2i + (gr <= 0) * 1.4142135623730951 * gr;
 // sezione LP: FREQ dec. 102 (a), RES dec. 102 (b)
 th = s_freq_lp / 100;
@@ -275,7 +275,7 @@ g_lp1 = tan(pi * f_lp * m1 / sr4);
 g_lp2 = tan(pi * f_lp * m2 / sr4);
 od_lp = pow(s_drive_lp / 100, 1.0);
 tr = s_res_lp / 100;
-gr = (tr <= 0.9) * pow(0.16666666666666666, tr / 0.9) + (tr > 0.9) * (0.16666666666666666 + -0.41666666666666663 * (tr - 0.9) / 0.1);
+gr = (tr <= 0.9) * pow(0.125, tr / 0.9) + (tr > 0.9) * (0.125 + -0.375 * (tr - 0.9) / 0.1);
 d_lp = (gr > 0) * gr * q2i + (gr <= 0) * 1.4142135623730951 * gr;
 
 // livelli: 1,0 digitale = 4.361 V (0 dBu = -12 dBFS)

@@ -6,7 +6,7 @@ Scrive in proto-max/:
   MC-CHANNEL.maxpat   patch Max (riserva: si apre e si copia in un dispositivo)
   MC-CHANNEL.amxd     dispositivo Max for Live pronto (doppio clic o trascina in Live)
 Con --semplice scrive MC-CHANNEL-S: le scelte d'ascolto di Filippo
-(2026-10-21) fissate, senza selettori: INCROCI A, CURVA PIONEER, ISOLATOR.
+(2026-10-21) fissate, senza selettori: INCROCI C (dec. 152, era A), CURVA PIONEER, ISOLATOR.
 
 I numeri vengono da canale.py. Il codice gen~ usa solo assegnazioni,
 peek/poke e due funzioni senza stato proprio: cosi prova_gen.py lo traduce
@@ -50,7 +50,7 @@ BANDE = ["low", "lowmid", "midhigh", "high"]
 SOGLIA_ON = 1e-5
 # versione semplice (Filippo 2026-10-21): scelte fissate, niente selettori
 SEMPLICE = False
-SCELTA_INCROCI = "A"
+SCELTA_INCROCI = "C"             # 2026-10-31, dec. 152 (era A)
 
 
 # ---------------------------------------------------------------- gen~ ---
@@ -509,7 +509,7 @@ def patch(codice):
                          presentation_rect=[8, 62, 250, 40],
                          patching_rect=[20, 440, 250, 36], linecount=3,
                          text="50% = 0 dB. Versione semplice: ISOLATOR, "
-                              "INCROCI A 150/500/2500, CURVA PIONEER."))
+                              "INCROCI C 150d/350/3150, CURVA PIONEER."))
         return finestra(boxes, lines, parametri)
     ng, nl, voci = SELETTORE
     comando(6, "obj-sel", ng, nl, "live.tab", [8, 62, 240, 30],
