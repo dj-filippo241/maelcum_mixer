@@ -25,7 +25,7 @@ Origine delle decisioni: **[F]** = detta da Filippo · **[R]** = dal resoconto C
 
 KiCad 10.0.7 sta in `/Applications/KiCad` (copiato dal .dmg: `brew install --cask kicad` vuole sudo e fallisce senza terminale; Homebrew non lo gestisce). CLI: `/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli`. Schemi e PCB ripartiti il 2026-10-27 (richiesta di Filippo): ogni scheda nasce da `pcb/<modulo>/<modulo>.py` col generatore `pcb/tools/pcbgen.py` (schema, PCB 4 strati, Freerouting, ERC/DRC) e si rigenera, non si ritocca a mano. Fatta: FX-SEND (bozza, `pcb/fx-send/NOTE.md`). In corso: master, scheda di segnale scritta, NON PASSA per spazio (`pcb/master/NOTE.md`, todo 199).
 
-Generare una scheda (Python di KiCad, ~4 min):
+Generare una scheda (Python di KiCad, ~4 min; con `--solo-schema` solo schema, ERC e distinta, esito «SCHEMA PASSA», pochi secondi):
 
 ```bash
 /Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/3.9/bin/python3 pcb/fx-send/fx-send.py
@@ -75,9 +75,10 @@ Regole di simulazione (ognuna nasce da un errore già pagato; il contesto sta ne
 - SVF con OTA della RES a Iabc quasi zero: il `.op` non converge (9 minuti a vuoto). Usare `.tran ... uic` e misurare il segnale con `PP`, non `RMS`: col partitore l'offset dell'OTA sale di 1/k.
 - Regolatori in anello (LDO del box, `sim/system/psu-box-*`): mai `uic`; accensione da zero, così il `.op` è banale. Con `uic`, con `limit()` brusco o con diodi a N 0,05, LTspice non termina.
 - `perl -e 'alarm ...'` ferma lo script ma non `LTspice.exe` dentro wine: il processo resta al 300 % di CPU. Controllare con `ps aux | grep -i LTspice.exe` e chiuderlo per PID.
+- Un `.param` scritto due volte in un netlist con `.step`: `.four` non stampa niente e il log non dà errore.
 - Non fermare LTspice con `pkill -f <nome netlist>`: uccide anche lo script. `drive2-chain` a 150 Hz non termina (causa ignota): usare 50 Hz o 1 kHz.
 
-## Stato corrente (2026-10-28, decisioni 1-141)
+## Stato corrente (2026-10-31, decisioni 1-145)
 
 Il design teorico (carta + simulazione) è completo per tutti i moduli. Il prototipo musicale in Max for Live (dec. 78) precede il millefori: P0 (`MC-CHANNEL`), P1 (`MC-FILTRO`, canale R corretto il 2026-10-15) e P2 (`MC-5WAY`: CROSSOVER A-E con E = impianto di Filippo 80/170/1,2k + 6k, GROWL VER DEC.99/LIBERO, NASTRO VER OGGI/COMPLETO/EXCITER/CLASSE A/LIBERO) costruiti, verificati e in ascolto da Filippo; P3 e P4 costruiti e verificati, da caricare in Live (P4 = `MC-MIC`: GAIN, EQ2, FX1-4 verso i bus di P3, MUTE, LED; pedali = effetti di Live: `MC-SEND` per canale, `MC-BUS` → effetto → `MC-RET` su 4 tracce FX, `MC-MASTER`; bus con `send~`/`receive~` che si sommano) (`proto-max/RISULTATI-P*.md`). Il prototipo è completo ma BLOCCATO (2026-10-15, todo 76): in Live l'audio salta muovendo le manopole, soprattutto il filtro, e a tratti distorce forte. Non è la CPU (salti anche con buffer 2048) né il sample rate. Finché non si ripara, nessun ascolto del gruppo B vale. Prossimo: trovare la causa (ipotesi e prove nell'ultimo handoff). Generatori e prove in `proto-max/coefficienti/`: i `.genexpr/.maxpat/.amxd` non si toccano a mano. Gli acquisti sono sospesi fino al prototipo.
 
@@ -89,7 +90,7 @@ Il design teorico (carta + simulazione) è completo per tutti i moduli. Il proto
 | Master out | v0.3 DEFINITIVA (bootstrap rail OPA1612, dec. 83/86) | `docs/fase1/master-out.md` | `sim/master-out/compB-*` |
 | Filtro | v0.2; un percorso per canale (dec. 101, 8 core); law Xone:96 (dec. 102), HPF da 20 Hz (dec. 137); overdrive v0.2 §5ter (dec. 99); core OTA (a′) con partitore 1/30 §5quater (dec. 109: il core nudo non funziona col chip reale; B1 aperta); numeri col chip reale accettati (dec. 110: oscillazione ~+5 dBu, calo di nota = carattere); core PULITO (c-B) a 4 poli progettato (RISULTATI-cb-4p): limitatore 2+2 / 3+3 / nell'OTA della RES (si spegne a RES zero), selettore LIMITATORE nel prototipo | `docs/fase2/filter-module.md` | `sim/filtro/` |
 | 5-way | v0.3; celle v0.2.1; kill a switch §8.10 (dec. 88); drive v0.4 GROWL + NASTRO §5bis (dec. 99); WIDTH continuo Q3…Q0,3 §4.3 (dec. 117) | `docs/fase2/five-way-module.md` | `sim/five-way/` |
-| Mic e Mono | v0.1, due moduli separati, max 4 (dec. 97) | `docs/fase4/mic-mono-moduli.md` | `sim/mic/` |
+| Mic e Mono | v0.1, due moduli separati, max 4 (dec. 97); MIC: MUTE (dec. 111) e limiter fisso nel VCA del MUTE (dec. 145, REV 2026-10-31) | `docs/fase4/mic-mono-moduli.md` | `sim/mic/` |
 | Sistema | PSU ~420 VA con riserva (dec. 131: W1 7,0 A, W2 1,5 A, ramo audio 2,12-2,70 A ricontato dal basso; prima dec. 93/98/106/115; alimentatore ESTERNO con pre-regolatori, dec. 113, progettato in `sistema-psu-esterno.md`: LDO discreti ±22,0/±19 V, AC_OK, PSU-IN; ~83-97 W nel mixer, due ventole a termostato, dec. 112), grounding, backplane, metering (dec. 81/90), CUE (dec. 96), shaper, inventario comandi | `docs/fase3/` | `sim/system/` (box: `psu-box-*`, senza `uic`), `sim/meter/`, `sim/shaper/` |
 
 Hardware dei comandi (dec. 118-129, sessione del 2026-10-22): manopole 14 mm disassate come sul Xone:DB4 (EQ secondari e reroute 9 mm), fader mono 100 mm che comandano 2 VCA (dec. 126), kill a levetta ON-OFF-(ON), EQ di canale senza contatto di fondo corsa (dec. 127), curve dei pot provvisorie fino all'ascolto (dec. 129). Tabella: `docs/fase3/sistema-comandi.md`; render con colori standard (un colore per tipo di oggetto, per Illustrator): `docs/pannelli/`.
