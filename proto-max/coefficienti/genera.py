@@ -1,6 +1,6 @@
 """Genera il dispositivo MC-CHANNEL (prototipo Max P0).
 
-Uso:  python3 proto-max/coefficienti/genera.py [--semplice]
+Uso:  python3 proto-max/coefficienti/genera.py [--semplice | --prova]
 Scrive in proto-max/:
   MC-CHANNEL.genexpr  codice gen~ (si legge e si confronta)
   MC-CHANNEL.maxpat   patch Max (riserva: si apre e si copia in un dispositivo)
@@ -47,6 +47,10 @@ BANDE = ["low", "lowmid", "midhigh", "high"]
 SOGLIA_ON = 1e-5
 # versione semplice (Filippo 2026-10-21): scelte fissate, niente selettori
 SEMPLICE = False
+# versione di prova (2026-10-31, todo 210): selettore STADI SERIE per
+# trovare lo stadio che in gen~ oscilla. Non e un comando del design.
+PROVA = False
+STADI = ("stadi", "STADI SERIE", ["0 filo", "1 LOW", "2 +LM", "3 +MH", "4 tutto"])
 SCELTA_INCROCI = "A"
 
 
@@ -203,6 +207,8 @@ def genexpr():
         r(f"Param {SELETTORE[0]}(0, min=0, max={len(VARIANTI) - 1});")
         r(f"Param {CURVA[0]}(0, min=0, max=1);")
         r(f"Param {EQTIPO[0]}(0, min=0, max=1);")
+        if PROVA:
+            r(f"Param {STADI[0]}(4, min=0, max=4);")
     pos_data = len(g.righe)
     r("@@DATA@@")
     for nome, _, ini in MANOPOLE + [FADER]:
@@ -324,13 +330,37 @@ def genexpr():
             inizio = g.n_st
             g.r(f"{q}4 = 0;")
             g.r("if (on_S) {")
-            g.bq_nome(f"{q}1", u, "sl")
-            g.bq_nome(f"{q}b", f"{q}1", "slm")
-            g.r(f"{q}2 = {q}1 + sr_clm * {q}b;")
-            g.bq_nome(f"{q}b", f"{q}2", "smh")
-            g.r(f"{q}3 = {q}2 + sr_cmh * {q}b;")
-            g.bq_nome(f"{q}b", f"{q}3", "shi")
-            g.r(f"{q}4 = {q}3 - sr_chi * {q}b;")
+            if PROVA:
+                # ogni stadio si calcola solo se acceso; spento = filo
+                n0 = g.n_st
+                g.r(f"{q}1 = {u};")
+                g.r(f"if ({STADI[0]} >= 1) {{")
+                g.bq_nome(f"{q}1", u, "sl")
+                g.r("}")
+                g.r(f"{q}2 = {q}1;")
+                g.r(f"if ({STADI[0]} >= 2) {{")
+                g.bq_nome(f"{q}b", f"{q}1", "slm")
+                g.r(f"{q}2 = {q}1 + sr_clm * {q}b;")
+                g.r("}")
+                g.r(f"{q}3 = {q}2;")
+                g.r(f"if ({STADI[0]} >= 3) {{")
+                g.bq_nome(f"{q}b", f"{q}2", "smh")
+                g.r(f"{q}3 = {q}2 + sr_cmh * {q}b;")
+                g.r("}")
+                g.r(f"{q}4 = {q}3;")
+                g.r(f"if ({STADI[0]} >= 4) {{")
+                g.bq_nome(f"{q}b", f"{q}3", "shi")
+                g.r(f"{q}4 = {q}3 - sr_chi * {q}b;")
+                g.r("}")
+                assert g.n_st == n0 + 8
+            else:
+                g.bq_nome(f"{q}1", u, "sl")
+                g.bq_nome(f"{q}b", f"{q}1", "slm")
+                g.r(f"{q}2 = {q}1 + sr_clm * {q}b;")
+                g.bq_nome(f"{q}b", f"{q}2", "smh")
+                g.r(f"{q}3 = {q}2 + sr_cmh * {q}b;")
+                g.bq_nome(f"{q}b", f"{q}3", "shi")
+                g.r(f"{q}4 = {q}3 - sr_chi * {q}b;")
             g.r("}")
             stati["S"] = (inizio, g.n_st)
             termini.append(f"w_S * {q}4")
@@ -545,6 +575,13 @@ def patch(codice):
             {"parameter_type": 2, "parameter_enum": voci,
              "parameter_mmax": float(len(voci) - 1),
              "parameter_initial": [0], "parameter_unitstyle": 0})
+    if PROVA:
+        ng, nl, voci = STADI
+        comando(9, "obj-sta", ng, nl, "live.tab", [8, 170, 294, 18],
+                {"parameter_type": 2, "parameter_enum": voci,
+                 "parameter_mmax": float(len(voci) - 1),
+                 "parameter_initial": [len(voci) - 1],
+                 "parameter_unitstyle": 0})
     boxes.append(box("obj-nota", maxclass="live.comment", numinlets=1,
                      numoutlets=0, presentation=1,
                      presentation_rect=[8, 140, 250, 28],
@@ -561,7 +598,7 @@ def finestra(boxes, lines, parametri):
                        "architecture": "x64", "modernui": 1},
         "classnamespace": "box",
         "rect": [100.0, 100.0, 900.0, 520.0],
-        "openrect": [0.0, 0.0, 0.0, 169.0],
+        "openrect": [0.0, 0.0, 0.0, 196.0 if PROVA else 169.0],
         "bglocked": 0, "openinpresentation": 1,
         "default_fontsize": 10.0, "default_fontface": 0,
         "default_fontname": "Arial Bold",
@@ -585,9 +622,11 @@ def amxd(dati_json):
 
 
 def main():
-    global SEMPLICE, NOME
+    global SEMPLICE, NOME, PROVA
     if "--semplice" in sys.argv[1:]:
         SEMPLICE, NOME = True, NOME + "-S"
+    elif "--prova" in sys.argv[1:]:
+        PROVA, NOME = True, NOME + "-PROVA"
     codice = genexpr()
     with open(os.path.join(USCITA, f"{NOME}.genexpr"), "w") as f:
         f.write(codice)

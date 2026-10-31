@@ -1,0 +1,1442 @@
+// MC-CHANNEL-PROVA - prototipo Max P0 del canale maelcum_mixer.
+// GENERATO da proto-max/coefficienti/genera.py: non modificare a mano.
+// GAIN -inf..0..+10 dB, isolator a 4 bande (0..+6 dB, silenzio a
+// fondo corsa), fader. Banca a 4x della frequenza di campionamento.
+
+// biquad in forma trasposta II; stato in m[i], m[i+1]
+bq(m, i, x, b0, b1, b2, a1, a2) {
+	y = b0 * x + peek(m, i);
+	poke(m, b1 * x - a1 * y + peek(m, i + 1), i);
+	poke(m, b2 * x - a2 * y, i + 1);
+	return y;
+}
+
+// allpass del 1o ordine del halfband; stato in m[i] (x), m[i+1] (y)
+ap(m, i, x, c) {
+	y = c * (x - peek(m, i + 1)) + peek(m, i);
+	poke(m, x, i);
+	poke(m, y, i + 1);
+	return y;
+}
+
+Param gain(50.0, min=0, max=100);
+Param low(50.0, min=0, max=100);
+Param lowmid(50.0, min=0, max=100);
+Param midhigh(50.0, min=0, max=100);
+Param high(50.0, min=0, max=100);
+Param fader(100.0, min=0, max=100);
+Param incroci(0, min=0, max=2);
+Param curva(0, min=0, max=1);
+Param eqtipo(0, min=0, max=1);
+Param stadi(4, min=0, max=4);
+Data st(180);
+Data hb(128);
+History s_gain(50.0);
+History s_low(50.0);
+History s_lowmid(50.0);
+History s_midhigh(50.0);
+History s_high(50.0);
+History s_fader(100.0);
+History s_x(0);
+History s_c(0);
+History s_t(0);
+
+// manopole lisciate: 10 ms (selettore 20 ms, dissolvenza A/B)
+t10 = exp(-1 / (0.010 * samplerate));
+t20 = exp(-1 / (0.020 * samplerate));
+s_gain = gain + t10 * (s_gain - gain);
+s_low = low + t10 * (s_low - low);
+s_lowmid = lowmid + t10 * (s_lowmid - lowmid);
+s_midhigh = midhigh + t10 * (s_midhigh - midhigh);
+s_high = high + t10 * (s_high - high);
+s_fader = fader + t10 * (s_fader - fader);
+s_x = incroci + t20 * (s_x - incroci);
+s_c = curva + t20 * (s_c - curva);
+s_t = eqtipo + t20 * (s_t - eqtipo);
+
+// GAIN: fondo corsa muto, meta CCW -100..0 dB, meta CW 0..+10 dB
+tg = s_gain / 100;
+g_gain = pow(10, min(200 * tg - 100, 20 * tg - 10) / 20) * (tg > 0);
+// bande: pot lineare x2, oppure curva Pioneer ideale (docs/09 §7):
+// taglio (2 theta)^1,5, boost uguale; a fondo corsa il contatto da silenzio
+x_low = 2 * s_low / 100;
+g_low = ((1 - s_c) * x_low + s_c * (pow(min(x_low, 1), 1.5) + max(x_low - 1, 0))) * max(low > 0, s_low > 0.001);
+x_lowmid = 2 * s_lowmid / 100;
+g_lowmid = ((1 - s_c) * x_lowmid + s_c * (pow(min(x_lowmid, 1), 1.5) + max(x_lowmid - 1, 0))) * max(lowmid > 0, s_lowmid > 0.001);
+x_midhigh = 2 * s_midhigh / 100;
+g_midhigh = ((1 - s_c) * x_midhigh + s_c * (pow(min(x_midhigh, 1), 1.5) + max(x_midhigh - 1, 0))) * max(midhigh > 0, s_midhigh > 0.001);
+x_high = 2 * s_high / 100;
+g_high = ((1 - s_c) * x_high + s_c * (pow(min(x_high, 1), 1.5) + max(x_high - 1, 0))) * max(high > 0, s_high > 0.001);
+// fader [PROVVISORIO]: curva quadratica, -12 dB a meta corsa
+tf = s_fader / 100;
+g_fader = tf * tf;
+
+// coefficienti degli incroci (bilineare con prewarp)
+// LR4: Q 0,7071 due volte; LR2: Q 0,5 una volta
+sr4 = samplerate * 4;
+A1_k = tan(pi * 150.0 / sr4);
+A1_kk = A1_k * A1_k;
+A1_n = 1 / (1 + A1_k * 1.4142135623730951 + A1_kk);
+A1_a1 = 2 * (A1_kk - 1) * A1_n;
+A1_a2 = (1 - A1_k * 1.4142135623730951 + A1_kk) * A1_n;
+A1_lb = A1_kk * A1_n;
+A2_k = tan(pi * 500.0 / sr4);
+A2_kk = A2_k * A2_k;
+A2_n = 1 / (1 + A2_k * 1.4142135623730951 + A2_kk);
+A2_a1 = 2 * (A2_kk - 1) * A2_n;
+A2_a2 = (1 - A2_k * 1.4142135623730951 + A2_kk) * A2_n;
+A2_lb = A2_kk * A2_n;
+A3_k = tan(pi * 2500.0 / sr4);
+A3_kk = A3_k * A3_k;
+A3_n = 1 / (1 + A3_k * 1.4142135623730951 + A3_kk);
+A3_a1 = 2 * (A3_kk - 1) * A3_n;
+A3_a2 = (1 - A3_k * 1.4142135623730951 + A3_kk) * A3_n;
+A3_lb = A3_kk * A3_n;
+C1_k = tan(pi * 150.0 / sr4);
+C1_kk = C1_k * C1_k;
+C1_n = 1 / (1 + C1_k * 2.0 + C1_kk);
+C1_a1 = 2 * (C1_kk - 1) * C1_n;
+C1_a2 = (1 - C1_k * 2.0 + C1_kk) * C1_n;
+C1_lb = C1_kk * C1_n;
+C2_k = tan(pi * 350.0 / sr4);
+C2_kk = C2_k * C2_k;
+C2_n = 1 / (1 + C2_k * 1.4142135623730951 + C2_kk);
+C2_a1 = 2 * (C2_kk - 1) * C2_n;
+C2_a2 = (1 - C2_k * 1.4142135623730951 + C2_kk) * C2_n;
+C2_lb = C2_kk * C2_n;
+C3_k = tan(pi * 3150.0 / sr4);
+C3_kk = C3_k * C3_k;
+C3_n = 1 / (1 + C3_k * 1.4142135623730951 + C3_kk);
+C3_a1 = 2 * (C3_kk - 1) * C3_n;
+C3_a2 = (1 - C3_k * 1.4142135623730951 + C3_kk) * C3_n;
+C3_lb = C3_kk * C3_n;
+D1_k = tan(pi * 150.0 / sr4);
+D1_kk = D1_k * D1_k;
+D1_n = 1 / (1 + D1_k * 2.0 + D1_kk);
+D1_a1 = 2 * (D1_kk - 1) * D1_n;
+D1_a2 = (1 - D1_k * 2.0 + D1_kk) * D1_n;
+D1_lb = D1_kk * D1_n;
+D2_k = tan(pi * 700.0 / sr4);
+D2_kk = D2_k * D2_k;
+D2_n = 1 / (1 + D2_k * 1.4142135623730951 + D2_kk);
+D2_a1 = 2 * (D2_kk - 1) * D2_n;
+D2_a2 = (1 - D2_k * 1.4142135623730951 + D2_kk) * D2_n;
+D2_lb = D2_kk * D2_n;
+D3_k = tan(pi * 3150.0 / sr4);
+D3_kk = D3_k * D3_k;
+D3_n = 1 / (1 + D3_k * 1.4142135623730951 + D3_kk);
+D3_a1 = 2 * (D3_kk - 1) * D3_n;
+D3_a2 = (1 - D3_k * 1.4142135623730951 + D3_kk) * D3_n;
+D3_lb = D3_kk * D3_n;
+
+// EQ in serie (B5, archiviato: confronto a orecchio). Law eq-serie §10:
+// LOW e HIGH a tratti (kill negli ultimi 5 %), medi pot lineare caricato
+sk = 2 * sr4;
+sk2 = sk * sk;
+sr_tl = s_low / 100;
+sr_xl = 0.999 - 0.029000 * min(max(sr_tl / 0.05, 0), 1) - 0.470000 * min(max((sr_tl - 0.05) / 0.45, 0), 1) - 0.177000 * min(max((sr_tl - 0.5) / 0.5, 0), 1);
+sr_th = s_high / 100;
+sr_xh = 0.999 - 0.029000 * min(max(sr_th / 0.05, 0), 1) - 0.470000 * min(max((sr_th - 0.05) / 0.45, 0), 1) - 0.177000 * min(max((sr_th - 0.5) / 0.5, 0), 1);
+sr_gh = (1000.0 + (1 - sr_xh) * 31000.0) / (1000.0 + sr_xh * 31000.0);
+sr_chi = (sr_th <= 0.5) * (1 - sr_gh) / 0.9677500078200757 - (sr_th > 0.5) * (sr_gh - 1) / 0.9964587305911197;
+sr_tlm = s_lowmid / 100;
+sr_clm = (1 - 2 * sr_tlm) / (1 + 0.20040080160320642 * sr_tlm * (1 - sr_tlm));
+sr_tmh = s_midhigh / 100;
+sr_cmh = (1 - 2 * sr_tmh) / (1 + 0.20040080160320642 * sr_tmh * (1 - sr_tmh));
+// cella LOW: Baxandall, (R + Zb) / (R + Za)
+sr_ra = 31000.0 * sr_xl + 0.001;
+sr_rb = 31000.0 * (1 - sr_xl) + 0.001;
+sr_na0 = 1000.0 + sr_rb;
+sr_na1 = 9.999999999999999e-05 * sr_rb;
+sr_ta = sr_ra * 1e-07;
+sr_nb0 = 1000.0 + sr_ra;
+sr_nb1 = 9.999999999999999e-05 * sr_ra;
+sr_tb = sr_rb * 1e-07;
+sl_ai = 1 / (sr_nb0 + (sr_nb1 + sr_nb0 * sr_tb) * sk + (sr_nb1 * sr_tb) * sk2);
+sl_b0 = (sr_na0 + (sr_na1 + sr_na0 * sr_ta) * sk + (sr_na1 * sr_ta) * sk2) * sl_ai;
+sl_b1 = (2 * (sr_na0) - 2 * (sr_na1 * sr_ta) * sk2) * sl_ai;
+sl_b2 = (sr_na0 - (sr_na1 + sr_na0 * sr_ta) * sk + (sr_na1 * sr_ta) * sk2) * sl_ai;
+sl_a1 = (2 * (sr_nb0) - 2 * (sr_nb1 * sr_tb) * sk2) * sl_ai;
+sl_a2 = (sr_nb0 - (sr_nb1 + sr_nb0 * sr_tb) * sk + (sr_nb1 * sr_tb) * sk2) * sl_ai;
+// passa-banda MFB dei medi e passa-alto Sallen-Key della HIGH
+slm_ai = 1 / (0.0002506397711877164 + (2e-07) * sk + (1.0199999999999998e-10) * sk2);
+slm_b0 = (0.0 + (-1.9960861056751465e-07) * sk + (0.0) * sk2) * slm_ai;
+slm_b1 = (2 * (0.0) - 2 * (0.0) * sk2) * slm_ai;
+slm_b2 = (0.0 - (-1.9960861056751465e-07) * sk + (0.0) * sk2) * slm_ai;
+slm_a1 = (2 * (0.0002506397711877164) - 2 * (1.0199999999999998e-10) * sk2) * slm_ai;
+slm_a2 = (0.0002506397711877164 - (2e-07) * sk + (1.0199999999999998e-10) * sk2) * slm_ai;
+smh_ai = 1 / (0.00037474795712618065 + (6.6e-08) * sk + (9.430739999999999e-12) * sk2);
+smh_b0 = (0.0 + (-6.615277777777777e-08) * sk + (0.0) * sk2) * smh_ai;
+smh_b1 = (2 * (0.0) - 2 * (0.0) * sk2) * smh_ai;
+smh_b2 = (0.0 - (-6.615277777777777e-08) * sk + (0.0) * sk2) * smh_ai;
+smh_a1 = (2 * (0.00037474795712618065) - 2 * (9.430739999999999e-12) * sk2) * smh_ai;
+smh_a2 = (0.00037474795712618065 - (6.6e-08) * sk + (9.430739999999999e-12) * sk2) * smh_ai;
+shi_ai = 1 / (0.0004347826086956522 + (2e-08) * sk + (4.600000000000001e-13) * sk2);
+shi_b0 = (0.0 + (0.0) * sk + (4.600000000000001e-13) * sk2) * shi_ai;
+shi_b1 = (2 * (0.0) - 2 * (4.600000000000001e-13) * sk2) * shi_ai;
+shi_b2 = (0.0 - (0.0) * sk + (4.600000000000001e-13) * sk2) * shi_ai;
+shi_a1 = (2 * (0.0004347826086956522) - 2 * (4.600000000000001e-13) * sk2) * shi_ai;
+shi_a2 = (0.0004347826086956522 - (2e-08) * sk + (4.600000000000001e-13) * sk2) * shi_ai;
+
+// pesi: dissolvenza fra varianti vicine (1 - |s_x - i|) e fra isolator e serie
+w_A = max(0, 1 - abs(s_x - 0)) * (1 - s_t);
+on_A = w_A > 1e-05;
+w_C = max(0, 1 - abs(s_x - 1)) * (1 - s_t);
+on_C = w_C > 1e-05;
+w_D = max(0, 1 - abs(s_x - 2)) * (1 - s_t);
+on_D = w_D > 1e-05;
+w_S = s_t;
+on_S = w_S > 1e-05;
+
+// ===== lato L =====
+L_e = in1;
+L_o = in1;
+L_e = ap(hb, 0, L_e, 0.019059005558478156);
+L_e = ap(hb, 4, L_e, 0.1559582483500435);
+L_e = ap(hb, 8, L_e, 0.3650536901969154);
+L_e = ap(hb, 12, L_e, 0.5755010797915323);
+L_e = ap(hb, 16, L_e, 0.7526447471286863);
+L_e = ap(hb, 20, L_e, 0.8980636464339091);
+L_o = ap(hb, 2, L_o, 0.07350243453590219);
+L_o = ap(hb, 6, L_o, 0.25649919975582064);
+L_o = ap(hb, 10, L_o, 0.47327898479453656);
+L_o = ap(hb, 14, L_o, 0.6688095014357188);
+L_o = ap(hb, 18, L_o, 0.8282265929955738);
+L_o = ap(hb, 22, L_o, 0.9656701590349398);
+L_u0 = L_e;
+L_u1 = L_e;
+L_u0 = ap(hb, 24, L_u0, 0.04245470986526787);
+L_u0 = ap(hb, 28, L_u0, 0.39331989319033134);
+L_u1 = ap(hb, 26, L_u1, 0.17073985049750015);
+L_u1 = ap(hb, 30, L_u1, 0.7457135887202412);
+L_u2 = L_o;
+L_u3 = L_o;
+L_u2 = ap(hb, 24, L_u2, 0.04245470986526787);
+L_u2 = ap(hb, 28, L_u2, 0.39331989319033134);
+L_u3 = ap(hb, 26, L_u3, 0.17073985049750015);
+L_u3 = ap(hb, 30, L_u3, 0.7457135887202412);
+L0A = 0;
+if (on_A) {
+L0Al = bq(st, 0, L_u0, A1_lb, 2 * A1_lb, A1_lb, A1_a1, A1_a2);
+L0Al = bq(st, 2, L0Al, A1_lb, 2 * A1_lb, A1_lb, A1_a1, A1_a2);
+L0Al = bq(st, 4, L0Al, A2_a2, A2_a1, 1, A2_a1, A2_a2);
+L0Al = bq(st, 6, L0Al, A3_a2, A3_a1, 1, A3_a1, A3_a2);
+L0Ah1 = bq(st, 8, L_u0, A1_n, -2 * A1_n, A1_n, A1_a1, A1_a2);
+L0Ah1 = bq(st, 10, L0Ah1, A1_n, -2 * A1_n, A1_n, A1_a1, A1_a2);
+L0Alm = bq(st, 12, L0Ah1, A2_lb, 2 * A2_lb, A2_lb, A2_a1, A2_a2);
+L0Alm = bq(st, 14, L0Alm, A2_lb, 2 * A2_lb, A2_lb, A2_a1, A2_a2);
+L0Alm = bq(st, 16, L0Alm, A3_a2, A3_a1, 1, A3_a1, A3_a2);
+L0Ah2 = bq(st, 18, L0Ah1, A2_n, -2 * A2_n, A2_n, A2_a1, A2_a2);
+L0Ah2 = bq(st, 20, L0Ah2, A2_n, -2 * A2_n, A2_n, A2_a1, A2_a2);
+L0Amh = bq(st, 22, L0Ah2, A3_lb, 2 * A3_lb, A3_lb, A3_a1, A3_a2);
+L0Amh = bq(st, 24, L0Amh, A3_lb, 2 * A3_lb, A3_lb, A3_a1, A3_a2);
+L0Ahi = bq(st, 26, L0Ah2, A3_n, -2 * A3_n, A3_n, A3_a1, A3_a2);
+L0Ahi = bq(st, 28, L0Ahi, A3_n, -2 * A3_n, A3_n, A3_a1, A3_a2);
+L0A = g_low * L0Al + g_lowmid * L0Alm + g_midhigh * L0Amh + g_high * L0Ahi;
+}
+L0C = 0;
+if (on_C) {
+L0Cl = bq(st, 30, L_u0, C1_lb, 2 * C1_lb, C1_lb, C1_a1, C1_a2);
+L0Cl = bq(st, 32, L0Cl, C2_a2, C2_a1, 1, C2_a1, C2_a2);
+L0Cl = bq(st, 34, L0Cl, C3_a2, C3_a1, 1, C3_a1, C3_a2);
+L0Ch1 = bq(st, 36, L_u0, C1_n, -2 * C1_n, C1_n, C1_a1, C1_a2);
+L0Ch1 = -L0Ch1;
+L0Clm = bq(st, 38, L0Ch1, C2_lb, 2 * C2_lb, C2_lb, C2_a1, C2_a2);
+L0Clm = bq(st, 40, L0Clm, C2_lb, 2 * C2_lb, C2_lb, C2_a1, C2_a2);
+L0Clm = bq(st, 42, L0Clm, C3_a2, C3_a1, 1, C3_a1, C3_a2);
+L0Ch2 = bq(st, 44, L0Ch1, C2_n, -2 * C2_n, C2_n, C2_a1, C2_a2);
+L0Ch2 = bq(st, 46, L0Ch2, C2_n, -2 * C2_n, C2_n, C2_a1, C2_a2);
+L0Cmh = bq(st, 48, L0Ch2, C3_lb, 2 * C3_lb, C3_lb, C3_a1, C3_a2);
+L0Cmh = bq(st, 50, L0Cmh, C3_lb, 2 * C3_lb, C3_lb, C3_a1, C3_a2);
+L0Chi = bq(st, 52, L0Ch2, C3_n, -2 * C3_n, C3_n, C3_a1, C3_a2);
+L0Chi = bq(st, 54, L0Chi, C3_n, -2 * C3_n, C3_n, C3_a1, C3_a2);
+L0C = g_low * L0Cl + g_lowmid * L0Clm + g_midhigh * L0Cmh + g_high * L0Chi;
+}
+L0D = 0;
+if (on_D) {
+L0Dl = bq(st, 56, L_u0, D1_lb, 2 * D1_lb, D1_lb, D1_a1, D1_a2);
+L0Dl = bq(st, 58, L0Dl, D2_a2, D2_a1, 1, D2_a1, D2_a2);
+L0Dl = bq(st, 60, L0Dl, D3_a2, D3_a1, 1, D3_a1, D3_a2);
+L0Dh1 = bq(st, 62, L_u0, D1_n, -2 * D1_n, D1_n, D1_a1, D1_a2);
+L0Dh1 = -L0Dh1;
+L0Dlm = bq(st, 64, L0Dh1, D2_lb, 2 * D2_lb, D2_lb, D2_a1, D2_a2);
+L0Dlm = bq(st, 66, L0Dlm, D2_lb, 2 * D2_lb, D2_lb, D2_a1, D2_a2);
+L0Dlm = bq(st, 68, L0Dlm, D3_a2, D3_a1, 1, D3_a1, D3_a2);
+L0Dh2 = bq(st, 70, L0Dh1, D2_n, -2 * D2_n, D2_n, D2_a1, D2_a2);
+L0Dh2 = bq(st, 72, L0Dh2, D2_n, -2 * D2_n, D2_n, D2_a1, D2_a2);
+L0Dmh = bq(st, 74, L0Dh2, D3_lb, 2 * D3_lb, D3_lb, D3_a1, D3_a2);
+L0Dmh = bq(st, 76, L0Dmh, D3_lb, 2 * D3_lb, D3_lb, D3_a1, D3_a2);
+L0Dhi = bq(st, 78, L0Dh2, D3_n, -2 * D3_n, D3_n, D3_a1, D3_a2);
+L0Dhi = bq(st, 80, L0Dhi, D3_n, -2 * D3_n, D3_n, D3_a1, D3_a2);
+L0D = g_low * L0Dl + g_lowmid * L0Dlm + g_midhigh * L0Dmh + g_high * L0Dhi;
+}
+L0s4 = 0;
+if (on_S) {
+L0s1 = L_u0;
+if (stadi >= 1) {
+L0s1 = bq(st, 82, L_u0, sl_b0, sl_b1, sl_b2, sl_a1, sl_a2);
+}
+L0s2 = L0s1;
+if (stadi >= 2) {
+L0sb = bq(st, 84, L0s1, slm_b0, slm_b1, slm_b2, slm_a1, slm_a2);
+L0s2 = L0s1 + sr_clm * L0sb;
+}
+L0s3 = L0s2;
+if (stadi >= 3) {
+L0sb = bq(st, 86, L0s2, smh_b0, smh_b1, smh_b2, smh_a1, smh_a2);
+L0s3 = L0s2 + sr_cmh * L0sb;
+}
+L0s4 = L0s3;
+if (stadi >= 4) {
+L0sb = bq(st, 88, L0s3, shi_b0, shi_b1, shi_b2, shi_a1, shi_a2);
+L0s4 = L0s3 - sr_chi * L0sb;
+}
+}
+L_y0 = w_A * L0A + w_C * L0C + w_D * L0D + w_S * L0s4;
+L1A = 0;
+if (on_A) {
+L1Al = bq(st, 0, L_u1, A1_lb, 2 * A1_lb, A1_lb, A1_a1, A1_a2);
+L1Al = bq(st, 2, L1Al, A1_lb, 2 * A1_lb, A1_lb, A1_a1, A1_a2);
+L1Al = bq(st, 4, L1Al, A2_a2, A2_a1, 1, A2_a1, A2_a2);
+L1Al = bq(st, 6, L1Al, A3_a2, A3_a1, 1, A3_a1, A3_a2);
+L1Ah1 = bq(st, 8, L_u1, A1_n, -2 * A1_n, A1_n, A1_a1, A1_a2);
+L1Ah1 = bq(st, 10, L1Ah1, A1_n, -2 * A1_n, A1_n, A1_a1, A1_a2);
+L1Alm = bq(st, 12, L1Ah1, A2_lb, 2 * A2_lb, A2_lb, A2_a1, A2_a2);
+L1Alm = bq(st, 14, L1Alm, A2_lb, 2 * A2_lb, A2_lb, A2_a1, A2_a2);
+L1Alm = bq(st, 16, L1Alm, A3_a2, A3_a1, 1, A3_a1, A3_a2);
+L1Ah2 = bq(st, 18, L1Ah1, A2_n, -2 * A2_n, A2_n, A2_a1, A2_a2);
+L1Ah2 = bq(st, 20, L1Ah2, A2_n, -2 * A2_n, A2_n, A2_a1, A2_a2);
+L1Amh = bq(st, 22, L1Ah2, A3_lb, 2 * A3_lb, A3_lb, A3_a1, A3_a2);
+L1Amh = bq(st, 24, L1Amh, A3_lb, 2 * A3_lb, A3_lb, A3_a1, A3_a2);
+L1Ahi = bq(st, 26, L1Ah2, A3_n, -2 * A3_n, A3_n, A3_a1, A3_a2);
+L1Ahi = bq(st, 28, L1Ahi, A3_n, -2 * A3_n, A3_n, A3_a1, A3_a2);
+L1A = g_low * L1Al + g_lowmid * L1Alm + g_midhigh * L1Amh + g_high * L1Ahi;
+}
+L1C = 0;
+if (on_C) {
+L1Cl = bq(st, 30, L_u1, C1_lb, 2 * C1_lb, C1_lb, C1_a1, C1_a2);
+L1Cl = bq(st, 32, L1Cl, C2_a2, C2_a1, 1, C2_a1, C2_a2);
+L1Cl = bq(st, 34, L1Cl, C3_a2, C3_a1, 1, C3_a1, C3_a2);
+L1Ch1 = bq(st, 36, L_u1, C1_n, -2 * C1_n, C1_n, C1_a1, C1_a2);
+L1Ch1 = -L1Ch1;
+L1Clm = bq(st, 38, L1Ch1, C2_lb, 2 * C2_lb, C2_lb, C2_a1, C2_a2);
+L1Clm = bq(st, 40, L1Clm, C2_lb, 2 * C2_lb, C2_lb, C2_a1, C2_a2);
+L1Clm = bq(st, 42, L1Clm, C3_a2, C3_a1, 1, C3_a1, C3_a2);
+L1Ch2 = bq(st, 44, L1Ch1, C2_n, -2 * C2_n, C2_n, C2_a1, C2_a2);
+L1Ch2 = bq(st, 46, L1Ch2, C2_n, -2 * C2_n, C2_n, C2_a1, C2_a2);
+L1Cmh = bq(st, 48, L1Ch2, C3_lb, 2 * C3_lb, C3_lb, C3_a1, C3_a2);
+L1Cmh = bq(st, 50, L1Cmh, C3_lb, 2 * C3_lb, C3_lb, C3_a1, C3_a2);
+L1Chi = bq(st, 52, L1Ch2, C3_n, -2 * C3_n, C3_n, C3_a1, C3_a2);
+L1Chi = bq(st, 54, L1Chi, C3_n, -2 * C3_n, C3_n, C3_a1, C3_a2);
+L1C = g_low * L1Cl + g_lowmid * L1Clm + g_midhigh * L1Cmh + g_high * L1Chi;
+}
+L1D = 0;
+if (on_D) {
+L1Dl = bq(st, 56, L_u1, D1_lb, 2 * D1_lb, D1_lb, D1_a1, D1_a2);
+L1Dl = bq(st, 58, L1Dl, D2_a2, D2_a1, 1, D2_a1, D2_a2);
+L1Dl = bq(st, 60, L1Dl, D3_a2, D3_a1, 1, D3_a1, D3_a2);
+L1Dh1 = bq(st, 62, L_u1, D1_n, -2 * D1_n, D1_n, D1_a1, D1_a2);
+L1Dh1 = -L1Dh1;
+L1Dlm = bq(st, 64, L1Dh1, D2_lb, 2 * D2_lb, D2_lb, D2_a1, D2_a2);
+L1Dlm = bq(st, 66, L1Dlm, D2_lb, 2 * D2_lb, D2_lb, D2_a1, D2_a2);
+L1Dlm = bq(st, 68, L1Dlm, D3_a2, D3_a1, 1, D3_a1, D3_a2);
+L1Dh2 = bq(st, 70, L1Dh1, D2_n, -2 * D2_n, D2_n, D2_a1, D2_a2);
+L1Dh2 = bq(st, 72, L1Dh2, D2_n, -2 * D2_n, D2_n, D2_a1, D2_a2);
+L1Dmh = bq(st, 74, L1Dh2, D3_lb, 2 * D3_lb, D3_lb, D3_a1, D3_a2);
+L1Dmh = bq(st, 76, L1Dmh, D3_lb, 2 * D3_lb, D3_lb, D3_a1, D3_a2);
+L1Dhi = bq(st, 78, L1Dh2, D3_n, -2 * D3_n, D3_n, D3_a1, D3_a2);
+L1Dhi = bq(st, 80, L1Dhi, D3_n, -2 * D3_n, D3_n, D3_a1, D3_a2);
+L1D = g_low * L1Dl + g_lowmid * L1Dlm + g_midhigh * L1Dmh + g_high * L1Dhi;
+}
+L1s4 = 0;
+if (on_S) {
+L1s1 = L_u1;
+if (stadi >= 1) {
+L1s1 = bq(st, 82, L_u1, sl_b0, sl_b1, sl_b2, sl_a1, sl_a2);
+}
+L1s2 = L1s1;
+if (stadi >= 2) {
+L1sb = bq(st, 84, L1s1, slm_b0, slm_b1, slm_b2, slm_a1, slm_a2);
+L1s2 = L1s1 + sr_clm * L1sb;
+}
+L1s3 = L1s2;
+if (stadi >= 3) {
+L1sb = bq(st, 86, L1s2, smh_b0, smh_b1, smh_b2, smh_a1, smh_a2);
+L1s3 = L1s2 + sr_cmh * L1sb;
+}
+L1s4 = L1s3;
+if (stadi >= 4) {
+L1sb = bq(st, 88, L1s3, shi_b0, shi_b1, shi_b2, shi_a1, shi_a2);
+L1s4 = L1s3 - sr_chi * L1sb;
+}
+}
+L_y1 = w_A * L1A + w_C * L1C + w_D * L1D + w_S * L1s4;
+L2A = 0;
+if (on_A) {
+L2Al = bq(st, 0, L_u2, A1_lb, 2 * A1_lb, A1_lb, A1_a1, A1_a2);
+L2Al = bq(st, 2, L2Al, A1_lb, 2 * A1_lb, A1_lb, A1_a1, A1_a2);
+L2Al = bq(st, 4, L2Al, A2_a2, A2_a1, 1, A2_a1, A2_a2);
+L2Al = bq(st, 6, L2Al, A3_a2, A3_a1, 1, A3_a1, A3_a2);
+L2Ah1 = bq(st, 8, L_u2, A1_n, -2 * A1_n, A1_n, A1_a1, A1_a2);
+L2Ah1 = bq(st, 10, L2Ah1, A1_n, -2 * A1_n, A1_n, A1_a1, A1_a2);
+L2Alm = bq(st, 12, L2Ah1, A2_lb, 2 * A2_lb, A2_lb, A2_a1, A2_a2);
+L2Alm = bq(st, 14, L2Alm, A2_lb, 2 * A2_lb, A2_lb, A2_a1, A2_a2);
+L2Alm = bq(st, 16, L2Alm, A3_a2, A3_a1, 1, A3_a1, A3_a2);
+L2Ah2 = bq(st, 18, L2Ah1, A2_n, -2 * A2_n, A2_n, A2_a1, A2_a2);
+L2Ah2 = bq(st, 20, L2Ah2, A2_n, -2 * A2_n, A2_n, A2_a1, A2_a2);
+L2Amh = bq(st, 22, L2Ah2, A3_lb, 2 * A3_lb, A3_lb, A3_a1, A3_a2);
+L2Amh = bq(st, 24, L2Amh, A3_lb, 2 * A3_lb, A3_lb, A3_a1, A3_a2);
+L2Ahi = bq(st, 26, L2Ah2, A3_n, -2 * A3_n, A3_n, A3_a1, A3_a2);
+L2Ahi = bq(st, 28, L2Ahi, A3_n, -2 * A3_n, A3_n, A3_a1, A3_a2);
+L2A = g_low * L2Al + g_lowmid * L2Alm + g_midhigh * L2Amh + g_high * L2Ahi;
+}
+L2C = 0;
+if (on_C) {
+L2Cl = bq(st, 30, L_u2, C1_lb, 2 * C1_lb, C1_lb, C1_a1, C1_a2);
+L2Cl = bq(st, 32, L2Cl, C2_a2, C2_a1, 1, C2_a1, C2_a2);
+L2Cl = bq(st, 34, L2Cl, C3_a2, C3_a1, 1, C3_a1, C3_a2);
+L2Ch1 = bq(st, 36, L_u2, C1_n, -2 * C1_n, C1_n, C1_a1, C1_a2);
+L2Ch1 = -L2Ch1;
+L2Clm = bq(st, 38, L2Ch1, C2_lb, 2 * C2_lb, C2_lb, C2_a1, C2_a2);
+L2Clm = bq(st, 40, L2Clm, C2_lb, 2 * C2_lb, C2_lb, C2_a1, C2_a2);
+L2Clm = bq(st, 42, L2Clm, C3_a2, C3_a1, 1, C3_a1, C3_a2);
+L2Ch2 = bq(st, 44, L2Ch1, C2_n, -2 * C2_n, C2_n, C2_a1, C2_a2);
+L2Ch2 = bq(st, 46, L2Ch2, C2_n, -2 * C2_n, C2_n, C2_a1, C2_a2);
+L2Cmh = bq(st, 48, L2Ch2, C3_lb, 2 * C3_lb, C3_lb, C3_a1, C3_a2);
+L2Cmh = bq(st, 50, L2Cmh, C3_lb, 2 * C3_lb, C3_lb, C3_a1, C3_a2);
+L2Chi = bq(st, 52, L2Ch2, C3_n, -2 * C3_n, C3_n, C3_a1, C3_a2);
+L2Chi = bq(st, 54, L2Chi, C3_n, -2 * C3_n, C3_n, C3_a1, C3_a2);
+L2C = g_low * L2Cl + g_lowmid * L2Clm + g_midhigh * L2Cmh + g_high * L2Chi;
+}
+L2D = 0;
+if (on_D) {
+L2Dl = bq(st, 56, L_u2, D1_lb, 2 * D1_lb, D1_lb, D1_a1, D1_a2);
+L2Dl = bq(st, 58, L2Dl, D2_a2, D2_a1, 1, D2_a1, D2_a2);
+L2Dl = bq(st, 60, L2Dl, D3_a2, D3_a1, 1, D3_a1, D3_a2);
+L2Dh1 = bq(st, 62, L_u2, D1_n, -2 * D1_n, D1_n, D1_a1, D1_a2);
+L2Dh1 = -L2Dh1;
+L2Dlm = bq(st, 64, L2Dh1, D2_lb, 2 * D2_lb, D2_lb, D2_a1, D2_a2);
+L2Dlm = bq(st, 66, L2Dlm, D2_lb, 2 * D2_lb, D2_lb, D2_a1, D2_a2);
+L2Dlm = bq(st, 68, L2Dlm, D3_a2, D3_a1, 1, D3_a1, D3_a2);
+L2Dh2 = bq(st, 70, L2Dh1, D2_n, -2 * D2_n, D2_n, D2_a1, D2_a2);
+L2Dh2 = bq(st, 72, L2Dh2, D2_n, -2 * D2_n, D2_n, D2_a1, D2_a2);
+L2Dmh = bq(st, 74, L2Dh2, D3_lb, 2 * D3_lb, D3_lb, D3_a1, D3_a2);
+L2Dmh = bq(st, 76, L2Dmh, D3_lb, 2 * D3_lb, D3_lb, D3_a1, D3_a2);
+L2Dhi = bq(st, 78, L2Dh2, D3_n, -2 * D3_n, D3_n, D3_a1, D3_a2);
+L2Dhi = bq(st, 80, L2Dhi, D3_n, -2 * D3_n, D3_n, D3_a1, D3_a2);
+L2D = g_low * L2Dl + g_lowmid * L2Dlm + g_midhigh * L2Dmh + g_high * L2Dhi;
+}
+L2s4 = 0;
+if (on_S) {
+L2s1 = L_u2;
+if (stadi >= 1) {
+L2s1 = bq(st, 82, L_u2, sl_b0, sl_b1, sl_b2, sl_a1, sl_a2);
+}
+L2s2 = L2s1;
+if (stadi >= 2) {
+L2sb = bq(st, 84, L2s1, slm_b0, slm_b1, slm_b2, slm_a1, slm_a2);
+L2s2 = L2s1 + sr_clm * L2sb;
+}
+L2s3 = L2s2;
+if (stadi >= 3) {
+L2sb = bq(st, 86, L2s2, smh_b0, smh_b1, smh_b2, smh_a1, smh_a2);
+L2s3 = L2s2 + sr_cmh * L2sb;
+}
+L2s4 = L2s3;
+if (stadi >= 4) {
+L2sb = bq(st, 88, L2s3, shi_b0, shi_b1, shi_b2, shi_a1, shi_a2);
+L2s4 = L2s3 - sr_chi * L2sb;
+}
+}
+L_y2 = w_A * L2A + w_C * L2C + w_D * L2D + w_S * L2s4;
+L3A = 0;
+if (on_A) {
+L3Al = bq(st, 0, L_u3, A1_lb, 2 * A1_lb, A1_lb, A1_a1, A1_a2);
+L3Al = bq(st, 2, L3Al, A1_lb, 2 * A1_lb, A1_lb, A1_a1, A1_a2);
+L3Al = bq(st, 4, L3Al, A2_a2, A2_a1, 1, A2_a1, A2_a2);
+L3Al = bq(st, 6, L3Al, A3_a2, A3_a1, 1, A3_a1, A3_a2);
+L3Ah1 = bq(st, 8, L_u3, A1_n, -2 * A1_n, A1_n, A1_a1, A1_a2);
+L3Ah1 = bq(st, 10, L3Ah1, A1_n, -2 * A1_n, A1_n, A1_a1, A1_a2);
+L3Alm = bq(st, 12, L3Ah1, A2_lb, 2 * A2_lb, A2_lb, A2_a1, A2_a2);
+L3Alm = bq(st, 14, L3Alm, A2_lb, 2 * A2_lb, A2_lb, A2_a1, A2_a2);
+L3Alm = bq(st, 16, L3Alm, A3_a2, A3_a1, 1, A3_a1, A3_a2);
+L3Ah2 = bq(st, 18, L3Ah1, A2_n, -2 * A2_n, A2_n, A2_a1, A2_a2);
+L3Ah2 = bq(st, 20, L3Ah2, A2_n, -2 * A2_n, A2_n, A2_a1, A2_a2);
+L3Amh = bq(st, 22, L3Ah2, A3_lb, 2 * A3_lb, A3_lb, A3_a1, A3_a2);
+L3Amh = bq(st, 24, L3Amh, A3_lb, 2 * A3_lb, A3_lb, A3_a1, A3_a2);
+L3Ahi = bq(st, 26, L3Ah2, A3_n, -2 * A3_n, A3_n, A3_a1, A3_a2);
+L3Ahi = bq(st, 28, L3Ahi, A3_n, -2 * A3_n, A3_n, A3_a1, A3_a2);
+L3A = g_low * L3Al + g_lowmid * L3Alm + g_midhigh * L3Amh + g_high * L3Ahi;
+}
+L3C = 0;
+if (on_C) {
+L3Cl = bq(st, 30, L_u3, C1_lb, 2 * C1_lb, C1_lb, C1_a1, C1_a2);
+L3Cl = bq(st, 32, L3Cl, C2_a2, C2_a1, 1, C2_a1, C2_a2);
+L3Cl = bq(st, 34, L3Cl, C3_a2, C3_a1, 1, C3_a1, C3_a2);
+L3Ch1 = bq(st, 36, L_u3, C1_n, -2 * C1_n, C1_n, C1_a1, C1_a2);
+L3Ch1 = -L3Ch1;
+L3Clm = bq(st, 38, L3Ch1, C2_lb, 2 * C2_lb, C2_lb, C2_a1, C2_a2);
+L3Clm = bq(st, 40, L3Clm, C2_lb, 2 * C2_lb, C2_lb, C2_a1, C2_a2);
+L3Clm = bq(st, 42, L3Clm, C3_a2, C3_a1, 1, C3_a1, C3_a2);
+L3Ch2 = bq(st, 44, L3Ch1, C2_n, -2 * C2_n, C2_n, C2_a1, C2_a2);
+L3Ch2 = bq(st, 46, L3Ch2, C2_n, -2 * C2_n, C2_n, C2_a1, C2_a2);
+L3Cmh = bq(st, 48, L3Ch2, C3_lb, 2 * C3_lb, C3_lb, C3_a1, C3_a2);
+L3Cmh = bq(st, 50, L3Cmh, C3_lb, 2 * C3_lb, C3_lb, C3_a1, C3_a2);
+L3Chi = bq(st, 52, L3Ch2, C3_n, -2 * C3_n, C3_n, C3_a1, C3_a2);
+L3Chi = bq(st, 54, L3Chi, C3_n, -2 * C3_n, C3_n, C3_a1, C3_a2);
+L3C = g_low * L3Cl + g_lowmid * L3Clm + g_midhigh * L3Cmh + g_high * L3Chi;
+}
+L3D = 0;
+if (on_D) {
+L3Dl = bq(st, 56, L_u3, D1_lb, 2 * D1_lb, D1_lb, D1_a1, D1_a2);
+L3Dl = bq(st, 58, L3Dl, D2_a2, D2_a1, 1, D2_a1, D2_a2);
+L3Dl = bq(st, 60, L3Dl, D3_a2, D3_a1, 1, D3_a1, D3_a2);
+L3Dh1 = bq(st, 62, L_u3, D1_n, -2 * D1_n, D1_n, D1_a1, D1_a2);
+L3Dh1 = -L3Dh1;
+L3Dlm = bq(st, 64, L3Dh1, D2_lb, 2 * D2_lb, D2_lb, D2_a1, D2_a2);
+L3Dlm = bq(st, 66, L3Dlm, D2_lb, 2 * D2_lb, D2_lb, D2_a1, D2_a2);
+L3Dlm = bq(st, 68, L3Dlm, D3_a2, D3_a1, 1, D3_a1, D3_a2);
+L3Dh2 = bq(st, 70, L3Dh1, D2_n, -2 * D2_n, D2_n, D2_a1, D2_a2);
+L3Dh2 = bq(st, 72, L3Dh2, D2_n, -2 * D2_n, D2_n, D2_a1, D2_a2);
+L3Dmh = bq(st, 74, L3Dh2, D3_lb, 2 * D3_lb, D3_lb, D3_a1, D3_a2);
+L3Dmh = bq(st, 76, L3Dmh, D3_lb, 2 * D3_lb, D3_lb, D3_a1, D3_a2);
+L3Dhi = bq(st, 78, L3Dh2, D3_n, -2 * D3_n, D3_n, D3_a1, D3_a2);
+L3Dhi = bq(st, 80, L3Dhi, D3_n, -2 * D3_n, D3_n, D3_a1, D3_a2);
+L3D = g_low * L3Dl + g_lowmid * L3Dlm + g_midhigh * L3Dmh + g_high * L3Dhi;
+}
+L3s4 = 0;
+if (on_S) {
+L3s1 = L_u3;
+if (stadi >= 1) {
+L3s1 = bq(st, 82, L_u3, sl_b0, sl_b1, sl_b2, sl_a1, sl_a2);
+}
+L3s2 = L3s1;
+if (stadi >= 2) {
+L3sb = bq(st, 84, L3s1, slm_b0, slm_b1, slm_b2, slm_a1, slm_a2);
+L3s2 = L3s1 + sr_clm * L3sb;
+}
+L3s3 = L3s2;
+if (stadi >= 3) {
+L3sb = bq(st, 86, L3s2, smh_b0, smh_b1, smh_b2, smh_a1, smh_a2);
+L3s3 = L3s2 + sr_cmh * L3sb;
+}
+L3s4 = L3s3;
+if (stadi >= 4) {
+L3sb = bq(st, 88, L3s3, shi_b0, shi_b1, shi_b2, shi_a1, shi_a2);
+L3s4 = L3s3 - sr_chi * L3sb;
+}
+}
+L_y3 = w_A * L3A + w_C * L3C + w_D * L3D + w_S * L3s4;
+if (on_A == 0) {
+poke(st, 0, 0);
+poke(st, 0, 1);
+poke(st, 0, 2);
+poke(st, 0, 3);
+poke(st, 0, 4);
+poke(st, 0, 5);
+poke(st, 0, 6);
+poke(st, 0, 7);
+poke(st, 0, 8);
+poke(st, 0, 9);
+poke(st, 0, 10);
+poke(st, 0, 11);
+poke(st, 0, 12);
+poke(st, 0, 13);
+poke(st, 0, 14);
+poke(st, 0, 15);
+poke(st, 0, 16);
+poke(st, 0, 17);
+poke(st, 0, 18);
+poke(st, 0, 19);
+poke(st, 0, 20);
+poke(st, 0, 21);
+poke(st, 0, 22);
+poke(st, 0, 23);
+poke(st, 0, 24);
+poke(st, 0, 25);
+poke(st, 0, 26);
+poke(st, 0, 27);
+poke(st, 0, 28);
+poke(st, 0, 29);
+}
+if (on_C == 0) {
+poke(st, 0, 30);
+poke(st, 0, 31);
+poke(st, 0, 32);
+poke(st, 0, 33);
+poke(st, 0, 34);
+poke(st, 0, 35);
+poke(st, 0, 36);
+poke(st, 0, 37);
+poke(st, 0, 38);
+poke(st, 0, 39);
+poke(st, 0, 40);
+poke(st, 0, 41);
+poke(st, 0, 42);
+poke(st, 0, 43);
+poke(st, 0, 44);
+poke(st, 0, 45);
+poke(st, 0, 46);
+poke(st, 0, 47);
+poke(st, 0, 48);
+poke(st, 0, 49);
+poke(st, 0, 50);
+poke(st, 0, 51);
+poke(st, 0, 52);
+poke(st, 0, 53);
+poke(st, 0, 54);
+poke(st, 0, 55);
+}
+if (on_D == 0) {
+poke(st, 0, 56);
+poke(st, 0, 57);
+poke(st, 0, 58);
+poke(st, 0, 59);
+poke(st, 0, 60);
+poke(st, 0, 61);
+poke(st, 0, 62);
+poke(st, 0, 63);
+poke(st, 0, 64);
+poke(st, 0, 65);
+poke(st, 0, 66);
+poke(st, 0, 67);
+poke(st, 0, 68);
+poke(st, 0, 69);
+poke(st, 0, 70);
+poke(st, 0, 71);
+poke(st, 0, 72);
+poke(st, 0, 73);
+poke(st, 0, 74);
+poke(st, 0, 75);
+poke(st, 0, 76);
+poke(st, 0, 77);
+poke(st, 0, 78);
+poke(st, 0, 79);
+poke(st, 0, 80);
+poke(st, 0, 81);
+}
+if (on_S == 0) {
+poke(st, 0, 82);
+poke(st, 0, 83);
+poke(st, 0, 84);
+poke(st, 0, 85);
+poke(st, 0, 86);
+poke(st, 0, 87);
+poke(st, 0, 88);
+poke(st, 0, 89);
+}
+d0 = L_y1;
+d1 = L_y0;
+d0 = ap(hb, 32, d0, 0.04245470986526787);
+d0 = ap(hb, 36, d0, 0.39331989319033134);
+d1 = ap(hb, 34, d1, 0.17073985049750015);
+d1 = ap(hb, 38, d1, 0.7457135887202412);
+L_v0 = 0.5 * (d0 + d1);
+d0 = L_y3;
+d1 = L_y2;
+d0 = ap(hb, 32, d0, 0.04245470986526787);
+d0 = ap(hb, 36, d0, 0.39331989319033134);
+d1 = ap(hb, 34, d1, 0.17073985049750015);
+d1 = ap(hb, 38, d1, 0.7457135887202412);
+L_v1 = 0.5 * (d0 + d1);
+d0 = L_v1;
+d1 = L_v0;
+d0 = ap(hb, 40, d0, 0.019059005558478156);
+d0 = ap(hb, 44, d0, 0.1559582483500435);
+d0 = ap(hb, 48, d0, 0.3650536901969154);
+d0 = ap(hb, 52, d0, 0.5755010797915323);
+d0 = ap(hb, 56, d0, 0.7526447471286863);
+d0 = ap(hb, 60, d0, 0.8980636464339091);
+d1 = ap(hb, 42, d1, 0.07350243453590219);
+d1 = ap(hb, 46, d1, 0.25649919975582064);
+d1 = ap(hb, 50, d1, 0.47327898479453656);
+d1 = ap(hb, 54, d1, 0.6688095014357188);
+d1 = ap(hb, 58, d1, 0.8282265929955738);
+d1 = ap(hb, 62, d1, 0.9656701590349398);
+L_w = 0.5 * (d0 + d1);
+L_out = g_gain * g_fader * L_w;
+
+// ===== lato R =====
+R_e = in2;
+R_o = in2;
+R_e = ap(hb, 64, R_e, 0.019059005558478156);
+R_e = ap(hb, 68, R_e, 0.1559582483500435);
+R_e = ap(hb, 72, R_e, 0.3650536901969154);
+R_e = ap(hb, 76, R_e, 0.5755010797915323);
+R_e = ap(hb, 80, R_e, 0.7526447471286863);
+R_e = ap(hb, 84, R_e, 0.8980636464339091);
+R_o = ap(hb, 66, R_o, 0.07350243453590219);
+R_o = ap(hb, 70, R_o, 0.25649919975582064);
+R_o = ap(hb, 74, R_o, 0.47327898479453656);
+R_o = ap(hb, 78, R_o, 0.6688095014357188);
+R_o = ap(hb, 82, R_o, 0.8282265929955738);
+R_o = ap(hb, 86, R_o, 0.9656701590349398);
+R_u0 = R_e;
+R_u1 = R_e;
+R_u0 = ap(hb, 88, R_u0, 0.04245470986526787);
+R_u0 = ap(hb, 92, R_u0, 0.39331989319033134);
+R_u1 = ap(hb, 90, R_u1, 0.17073985049750015);
+R_u1 = ap(hb, 94, R_u1, 0.7457135887202412);
+R_u2 = R_o;
+R_u3 = R_o;
+R_u2 = ap(hb, 88, R_u2, 0.04245470986526787);
+R_u2 = ap(hb, 92, R_u2, 0.39331989319033134);
+R_u3 = ap(hb, 90, R_u3, 0.17073985049750015);
+R_u3 = ap(hb, 94, R_u3, 0.7457135887202412);
+R0A = 0;
+if (on_A) {
+R0Al = bq(st, 90, R_u0, A1_lb, 2 * A1_lb, A1_lb, A1_a1, A1_a2);
+R0Al = bq(st, 92, R0Al, A1_lb, 2 * A1_lb, A1_lb, A1_a1, A1_a2);
+R0Al = bq(st, 94, R0Al, A2_a2, A2_a1, 1, A2_a1, A2_a2);
+R0Al = bq(st, 96, R0Al, A3_a2, A3_a1, 1, A3_a1, A3_a2);
+R0Ah1 = bq(st, 98, R_u0, A1_n, -2 * A1_n, A1_n, A1_a1, A1_a2);
+R0Ah1 = bq(st, 100, R0Ah1, A1_n, -2 * A1_n, A1_n, A1_a1, A1_a2);
+R0Alm = bq(st, 102, R0Ah1, A2_lb, 2 * A2_lb, A2_lb, A2_a1, A2_a2);
+R0Alm = bq(st, 104, R0Alm, A2_lb, 2 * A2_lb, A2_lb, A2_a1, A2_a2);
+R0Alm = bq(st, 106, R0Alm, A3_a2, A3_a1, 1, A3_a1, A3_a2);
+R0Ah2 = bq(st, 108, R0Ah1, A2_n, -2 * A2_n, A2_n, A2_a1, A2_a2);
+R0Ah2 = bq(st, 110, R0Ah2, A2_n, -2 * A2_n, A2_n, A2_a1, A2_a2);
+R0Amh = bq(st, 112, R0Ah2, A3_lb, 2 * A3_lb, A3_lb, A3_a1, A3_a2);
+R0Amh = bq(st, 114, R0Amh, A3_lb, 2 * A3_lb, A3_lb, A3_a1, A3_a2);
+R0Ahi = bq(st, 116, R0Ah2, A3_n, -2 * A3_n, A3_n, A3_a1, A3_a2);
+R0Ahi = bq(st, 118, R0Ahi, A3_n, -2 * A3_n, A3_n, A3_a1, A3_a2);
+R0A = g_low * R0Al + g_lowmid * R0Alm + g_midhigh * R0Amh + g_high * R0Ahi;
+}
+R0C = 0;
+if (on_C) {
+R0Cl = bq(st, 120, R_u0, C1_lb, 2 * C1_lb, C1_lb, C1_a1, C1_a2);
+R0Cl = bq(st, 122, R0Cl, C2_a2, C2_a1, 1, C2_a1, C2_a2);
+R0Cl = bq(st, 124, R0Cl, C3_a2, C3_a1, 1, C3_a1, C3_a2);
+R0Ch1 = bq(st, 126, R_u0, C1_n, -2 * C1_n, C1_n, C1_a1, C1_a2);
+R0Ch1 = -R0Ch1;
+R0Clm = bq(st, 128, R0Ch1, C2_lb, 2 * C2_lb, C2_lb, C2_a1, C2_a2);
+R0Clm = bq(st, 130, R0Clm, C2_lb, 2 * C2_lb, C2_lb, C2_a1, C2_a2);
+R0Clm = bq(st, 132, R0Clm, C3_a2, C3_a1, 1, C3_a1, C3_a2);
+R0Ch2 = bq(st, 134, R0Ch1, C2_n, -2 * C2_n, C2_n, C2_a1, C2_a2);
+R0Ch2 = bq(st, 136, R0Ch2, C2_n, -2 * C2_n, C2_n, C2_a1, C2_a2);
+R0Cmh = bq(st, 138, R0Ch2, C3_lb, 2 * C3_lb, C3_lb, C3_a1, C3_a2);
+R0Cmh = bq(st, 140, R0Cmh, C3_lb, 2 * C3_lb, C3_lb, C3_a1, C3_a2);
+R0Chi = bq(st, 142, R0Ch2, C3_n, -2 * C3_n, C3_n, C3_a1, C3_a2);
+R0Chi = bq(st, 144, R0Chi, C3_n, -2 * C3_n, C3_n, C3_a1, C3_a2);
+R0C = g_low * R0Cl + g_lowmid * R0Clm + g_midhigh * R0Cmh + g_high * R0Chi;
+}
+R0D = 0;
+if (on_D) {
+R0Dl = bq(st, 146, R_u0, D1_lb, 2 * D1_lb, D1_lb, D1_a1, D1_a2);
+R0Dl = bq(st, 148, R0Dl, D2_a2, D2_a1, 1, D2_a1, D2_a2);
+R0Dl = bq(st, 150, R0Dl, D3_a2, D3_a1, 1, D3_a1, D3_a2);
+R0Dh1 = bq(st, 152, R_u0, D1_n, -2 * D1_n, D1_n, D1_a1, D1_a2);
+R0Dh1 = -R0Dh1;
+R0Dlm = bq(st, 154, R0Dh1, D2_lb, 2 * D2_lb, D2_lb, D2_a1, D2_a2);
+R0Dlm = bq(st, 156, R0Dlm, D2_lb, 2 * D2_lb, D2_lb, D2_a1, D2_a2);
+R0Dlm = bq(st, 158, R0Dlm, D3_a2, D3_a1, 1, D3_a1, D3_a2);
+R0Dh2 = bq(st, 160, R0Dh1, D2_n, -2 * D2_n, D2_n, D2_a1, D2_a2);
+R0Dh2 = bq(st, 162, R0Dh2, D2_n, -2 * D2_n, D2_n, D2_a1, D2_a2);
+R0Dmh = bq(st, 164, R0Dh2, D3_lb, 2 * D3_lb, D3_lb, D3_a1, D3_a2);
+R0Dmh = bq(st, 166, R0Dmh, D3_lb, 2 * D3_lb, D3_lb, D3_a1, D3_a2);
+R0Dhi = bq(st, 168, R0Dh2, D3_n, -2 * D3_n, D3_n, D3_a1, D3_a2);
+R0Dhi = bq(st, 170, R0Dhi, D3_n, -2 * D3_n, D3_n, D3_a1, D3_a2);
+R0D = g_low * R0Dl + g_lowmid * R0Dlm + g_midhigh * R0Dmh + g_high * R0Dhi;
+}
+R0s4 = 0;
+if (on_S) {
+R0s1 = R_u0;
+if (stadi >= 1) {
+R0s1 = bq(st, 172, R_u0, sl_b0, sl_b1, sl_b2, sl_a1, sl_a2);
+}
+R0s2 = R0s1;
+if (stadi >= 2) {
+R0sb = bq(st, 174, R0s1, slm_b0, slm_b1, slm_b2, slm_a1, slm_a2);
+R0s2 = R0s1 + sr_clm * R0sb;
+}
+R0s3 = R0s2;
+if (stadi >= 3) {
+R0sb = bq(st, 176, R0s2, smh_b0, smh_b1, smh_b2, smh_a1, smh_a2);
+R0s3 = R0s2 + sr_cmh * R0sb;
+}
+R0s4 = R0s3;
+if (stadi >= 4) {
+R0sb = bq(st, 178, R0s3, shi_b0, shi_b1, shi_b2, shi_a1, shi_a2);
+R0s4 = R0s3 - sr_chi * R0sb;
+}
+}
+R_y0 = w_A * R0A + w_C * R0C + w_D * R0D + w_S * R0s4;
+R1A = 0;
+if (on_A) {
+R1Al = bq(st, 90, R_u1, A1_lb, 2 * A1_lb, A1_lb, A1_a1, A1_a2);
+R1Al = bq(st, 92, R1Al, A1_lb, 2 * A1_lb, A1_lb, A1_a1, A1_a2);
+R1Al = bq(st, 94, R1Al, A2_a2, A2_a1, 1, A2_a1, A2_a2);
+R1Al = bq(st, 96, R1Al, A3_a2, A3_a1, 1, A3_a1, A3_a2);
+R1Ah1 = bq(st, 98, R_u1, A1_n, -2 * A1_n, A1_n, A1_a1, A1_a2);
+R1Ah1 = bq(st, 100, R1Ah1, A1_n, -2 * A1_n, A1_n, A1_a1, A1_a2);
+R1Alm = bq(st, 102, R1Ah1, A2_lb, 2 * A2_lb, A2_lb, A2_a1, A2_a2);
+R1Alm = bq(st, 104, R1Alm, A2_lb, 2 * A2_lb, A2_lb, A2_a1, A2_a2);
+R1Alm = bq(st, 106, R1Alm, A3_a2, A3_a1, 1, A3_a1, A3_a2);
+R1Ah2 = bq(st, 108, R1Ah1, A2_n, -2 * A2_n, A2_n, A2_a1, A2_a2);
+R1Ah2 = bq(st, 110, R1Ah2, A2_n, -2 * A2_n, A2_n, A2_a1, A2_a2);
+R1Amh = bq(st, 112, R1Ah2, A3_lb, 2 * A3_lb, A3_lb, A3_a1, A3_a2);
+R1Amh = bq(st, 114, R1Amh, A3_lb, 2 * A3_lb, A3_lb, A3_a1, A3_a2);
+R1Ahi = bq(st, 116, R1Ah2, A3_n, -2 * A3_n, A3_n, A3_a1, A3_a2);
+R1Ahi = bq(st, 118, R1Ahi, A3_n, -2 * A3_n, A3_n, A3_a1, A3_a2);
+R1A = g_low * R1Al + g_lowmid * R1Alm + g_midhigh * R1Amh + g_high * R1Ahi;
+}
+R1C = 0;
+if (on_C) {
+R1Cl = bq(st, 120, R_u1, C1_lb, 2 * C1_lb, C1_lb, C1_a1, C1_a2);
+R1Cl = bq(st, 122, R1Cl, C2_a2, C2_a1, 1, C2_a1, C2_a2);
+R1Cl = bq(st, 124, R1Cl, C3_a2, C3_a1, 1, C3_a1, C3_a2);
+R1Ch1 = bq(st, 126, R_u1, C1_n, -2 * C1_n, C1_n, C1_a1, C1_a2);
+R1Ch1 = -R1Ch1;
+R1Clm = bq(st, 128, R1Ch1, C2_lb, 2 * C2_lb, C2_lb, C2_a1, C2_a2);
+R1Clm = bq(st, 130, R1Clm, C2_lb, 2 * C2_lb, C2_lb, C2_a1, C2_a2);
+R1Clm = bq(st, 132, R1Clm, C3_a2, C3_a1, 1, C3_a1, C3_a2);
+R1Ch2 = bq(st, 134, R1Ch1, C2_n, -2 * C2_n, C2_n, C2_a1, C2_a2);
+R1Ch2 = bq(st, 136, R1Ch2, C2_n, -2 * C2_n, C2_n, C2_a1, C2_a2);
+R1Cmh = bq(st, 138, R1Ch2, C3_lb, 2 * C3_lb, C3_lb, C3_a1, C3_a2);
+R1Cmh = bq(st, 140, R1Cmh, C3_lb, 2 * C3_lb, C3_lb, C3_a1, C3_a2);
+R1Chi = bq(st, 142, R1Ch2, C3_n, -2 * C3_n, C3_n, C3_a1, C3_a2);
+R1Chi = bq(st, 144, R1Chi, C3_n, -2 * C3_n, C3_n, C3_a1, C3_a2);
+R1C = g_low * R1Cl + g_lowmid * R1Clm + g_midhigh * R1Cmh + g_high * R1Chi;
+}
+R1D = 0;
+if (on_D) {
+R1Dl = bq(st, 146, R_u1, D1_lb, 2 * D1_lb, D1_lb, D1_a1, D1_a2);
+R1Dl = bq(st, 148, R1Dl, D2_a2, D2_a1, 1, D2_a1, D2_a2);
+R1Dl = bq(st, 150, R1Dl, D3_a2, D3_a1, 1, D3_a1, D3_a2);
+R1Dh1 = bq(st, 152, R_u1, D1_n, -2 * D1_n, D1_n, D1_a1, D1_a2);
+R1Dh1 = -R1Dh1;
+R1Dlm = bq(st, 154, R1Dh1, D2_lb, 2 * D2_lb, D2_lb, D2_a1, D2_a2);
+R1Dlm = bq(st, 156, R1Dlm, D2_lb, 2 * D2_lb, D2_lb, D2_a1, D2_a2);
+R1Dlm = bq(st, 158, R1Dlm, D3_a2, D3_a1, 1, D3_a1, D3_a2);
+R1Dh2 = bq(st, 160, R1Dh1, D2_n, -2 * D2_n, D2_n, D2_a1, D2_a2);
+R1Dh2 = bq(st, 162, R1Dh2, D2_n, -2 * D2_n, D2_n, D2_a1, D2_a2);
+R1Dmh = bq(st, 164, R1Dh2, D3_lb, 2 * D3_lb, D3_lb, D3_a1, D3_a2);
+R1Dmh = bq(st, 166, R1Dmh, D3_lb, 2 * D3_lb, D3_lb, D3_a1, D3_a2);
+R1Dhi = bq(st, 168, R1Dh2, D3_n, -2 * D3_n, D3_n, D3_a1, D3_a2);
+R1Dhi = bq(st, 170, R1Dhi, D3_n, -2 * D3_n, D3_n, D3_a1, D3_a2);
+R1D = g_low * R1Dl + g_lowmid * R1Dlm + g_midhigh * R1Dmh + g_high * R1Dhi;
+}
+R1s4 = 0;
+if (on_S) {
+R1s1 = R_u1;
+if (stadi >= 1) {
+R1s1 = bq(st, 172, R_u1, sl_b0, sl_b1, sl_b2, sl_a1, sl_a2);
+}
+R1s2 = R1s1;
+if (stadi >= 2) {
+R1sb = bq(st, 174, R1s1, slm_b0, slm_b1, slm_b2, slm_a1, slm_a2);
+R1s2 = R1s1 + sr_clm * R1sb;
+}
+R1s3 = R1s2;
+if (stadi >= 3) {
+R1sb = bq(st, 176, R1s2, smh_b0, smh_b1, smh_b2, smh_a1, smh_a2);
+R1s3 = R1s2 + sr_cmh * R1sb;
+}
+R1s4 = R1s3;
+if (stadi >= 4) {
+R1sb = bq(st, 178, R1s3, shi_b0, shi_b1, shi_b2, shi_a1, shi_a2);
+R1s4 = R1s3 - sr_chi * R1sb;
+}
+}
+R_y1 = w_A * R1A + w_C * R1C + w_D * R1D + w_S * R1s4;
+R2A = 0;
+if (on_A) {
+R2Al = bq(st, 90, R_u2, A1_lb, 2 * A1_lb, A1_lb, A1_a1, A1_a2);
+R2Al = bq(st, 92, R2Al, A1_lb, 2 * A1_lb, A1_lb, A1_a1, A1_a2);
+R2Al = bq(st, 94, R2Al, A2_a2, A2_a1, 1, A2_a1, A2_a2);
+R2Al = bq(st, 96, R2Al, A3_a2, A3_a1, 1, A3_a1, A3_a2);
+R2Ah1 = bq(st, 98, R_u2, A1_n, -2 * A1_n, A1_n, A1_a1, A1_a2);
+R2Ah1 = bq(st, 100, R2Ah1, A1_n, -2 * A1_n, A1_n, A1_a1, A1_a2);
+R2Alm = bq(st, 102, R2Ah1, A2_lb, 2 * A2_lb, A2_lb, A2_a1, A2_a2);
+R2Alm = bq(st, 104, R2Alm, A2_lb, 2 * A2_lb, A2_lb, A2_a1, A2_a2);
+R2Alm = bq(st, 106, R2Alm, A3_a2, A3_a1, 1, A3_a1, A3_a2);
+R2Ah2 = bq(st, 108, R2Ah1, A2_n, -2 * A2_n, A2_n, A2_a1, A2_a2);
+R2Ah2 = bq(st, 110, R2Ah2, A2_n, -2 * A2_n, A2_n, A2_a1, A2_a2);
+R2Amh = bq(st, 112, R2Ah2, A3_lb, 2 * A3_lb, A3_lb, A3_a1, A3_a2);
+R2Amh = bq(st, 114, R2Amh, A3_lb, 2 * A3_lb, A3_lb, A3_a1, A3_a2);
+R2Ahi = bq(st, 116, R2Ah2, A3_n, -2 * A3_n, A3_n, A3_a1, A3_a2);
+R2Ahi = bq(st, 118, R2Ahi, A3_n, -2 * A3_n, A3_n, A3_a1, A3_a2);
+R2A = g_low * R2Al + g_lowmid * R2Alm + g_midhigh * R2Amh + g_high * R2Ahi;
+}
+R2C = 0;
+if (on_C) {
+R2Cl = bq(st, 120, R_u2, C1_lb, 2 * C1_lb, C1_lb, C1_a1, C1_a2);
+R2Cl = bq(st, 122, R2Cl, C2_a2, C2_a1, 1, C2_a1, C2_a2);
+R2Cl = bq(st, 124, R2Cl, C3_a2, C3_a1, 1, C3_a1, C3_a2);
+R2Ch1 = bq(st, 126, R_u2, C1_n, -2 * C1_n, C1_n, C1_a1, C1_a2);
+R2Ch1 = -R2Ch1;
+R2Clm = bq(st, 128, R2Ch1, C2_lb, 2 * C2_lb, C2_lb, C2_a1, C2_a2);
+R2Clm = bq(st, 130, R2Clm, C2_lb, 2 * C2_lb, C2_lb, C2_a1, C2_a2);
+R2Clm = bq(st, 132, R2Clm, C3_a2, C3_a1, 1, C3_a1, C3_a2);
+R2Ch2 = bq(st, 134, R2Ch1, C2_n, -2 * C2_n, C2_n, C2_a1, C2_a2);
+R2Ch2 = bq(st, 136, R2Ch2, C2_n, -2 * C2_n, C2_n, C2_a1, C2_a2);
+R2Cmh = bq(st, 138, R2Ch2, C3_lb, 2 * C3_lb, C3_lb, C3_a1, C3_a2);
+R2Cmh = bq(st, 140, R2Cmh, C3_lb, 2 * C3_lb, C3_lb, C3_a1, C3_a2);
+R2Chi = bq(st, 142, R2Ch2, C3_n, -2 * C3_n, C3_n, C3_a1, C3_a2);
+R2Chi = bq(st, 144, R2Chi, C3_n, -2 * C3_n, C3_n, C3_a1, C3_a2);
+R2C = g_low * R2Cl + g_lowmid * R2Clm + g_midhigh * R2Cmh + g_high * R2Chi;
+}
+R2D = 0;
+if (on_D) {
+R2Dl = bq(st, 146, R_u2, D1_lb, 2 * D1_lb, D1_lb, D1_a1, D1_a2);
+R2Dl = bq(st, 148, R2Dl, D2_a2, D2_a1, 1, D2_a1, D2_a2);
+R2Dl = bq(st, 150, R2Dl, D3_a2, D3_a1, 1, D3_a1, D3_a2);
+R2Dh1 = bq(st, 152, R_u2, D1_n, -2 * D1_n, D1_n, D1_a1, D1_a2);
+R2Dh1 = -R2Dh1;
+R2Dlm = bq(st, 154, R2Dh1, D2_lb, 2 * D2_lb, D2_lb, D2_a1, D2_a2);
+R2Dlm = bq(st, 156, R2Dlm, D2_lb, 2 * D2_lb, D2_lb, D2_a1, D2_a2);
+R2Dlm = bq(st, 158, R2Dlm, D3_a2, D3_a1, 1, D3_a1, D3_a2);
+R2Dh2 = bq(st, 160, R2Dh1, D2_n, -2 * D2_n, D2_n, D2_a1, D2_a2);
+R2Dh2 = bq(st, 162, R2Dh2, D2_n, -2 * D2_n, D2_n, D2_a1, D2_a2);
+R2Dmh = bq(st, 164, R2Dh2, D3_lb, 2 * D3_lb, D3_lb, D3_a1, D3_a2);
+R2Dmh = bq(st, 166, R2Dmh, D3_lb, 2 * D3_lb, D3_lb, D3_a1, D3_a2);
+R2Dhi = bq(st, 168, R2Dh2, D3_n, -2 * D3_n, D3_n, D3_a1, D3_a2);
+R2Dhi = bq(st, 170, R2Dhi, D3_n, -2 * D3_n, D3_n, D3_a1, D3_a2);
+R2D = g_low * R2Dl + g_lowmid * R2Dlm + g_midhigh * R2Dmh + g_high * R2Dhi;
+}
+R2s4 = 0;
+if (on_S) {
+R2s1 = R_u2;
+if (stadi >= 1) {
+R2s1 = bq(st, 172, R_u2, sl_b0, sl_b1, sl_b2, sl_a1, sl_a2);
+}
+R2s2 = R2s1;
+if (stadi >= 2) {
+R2sb = bq(st, 174, R2s1, slm_b0, slm_b1, slm_b2, slm_a1, slm_a2);
+R2s2 = R2s1 + sr_clm * R2sb;
+}
+R2s3 = R2s2;
+if (stadi >= 3) {
+R2sb = bq(st, 176, R2s2, smh_b0, smh_b1, smh_b2, smh_a1, smh_a2);
+R2s3 = R2s2 + sr_cmh * R2sb;
+}
+R2s4 = R2s3;
+if (stadi >= 4) {
+R2sb = bq(st, 178, R2s3, shi_b0, shi_b1, shi_b2, shi_a1, shi_a2);
+R2s4 = R2s3 - sr_chi * R2sb;
+}
+}
+R_y2 = w_A * R2A + w_C * R2C + w_D * R2D + w_S * R2s4;
+R3A = 0;
+if (on_A) {
+R3Al = bq(st, 90, R_u3, A1_lb, 2 * A1_lb, A1_lb, A1_a1, A1_a2);
+R3Al = bq(st, 92, R3Al, A1_lb, 2 * A1_lb, A1_lb, A1_a1, A1_a2);
+R3Al = bq(st, 94, R3Al, A2_a2, A2_a1, 1, A2_a1, A2_a2);
+R3Al = bq(st, 96, R3Al, A3_a2, A3_a1, 1, A3_a1, A3_a2);
+R3Ah1 = bq(st, 98, R_u3, A1_n, -2 * A1_n, A1_n, A1_a1, A1_a2);
+R3Ah1 = bq(st, 100, R3Ah1, A1_n, -2 * A1_n, A1_n, A1_a1, A1_a2);
+R3Alm = bq(st, 102, R3Ah1, A2_lb, 2 * A2_lb, A2_lb, A2_a1, A2_a2);
+R3Alm = bq(st, 104, R3Alm, A2_lb, 2 * A2_lb, A2_lb, A2_a1, A2_a2);
+R3Alm = bq(st, 106, R3Alm, A3_a2, A3_a1, 1, A3_a1, A3_a2);
+R3Ah2 = bq(st, 108, R3Ah1, A2_n, -2 * A2_n, A2_n, A2_a1, A2_a2);
+R3Ah2 = bq(st, 110, R3Ah2, A2_n, -2 * A2_n, A2_n, A2_a1, A2_a2);
+R3Amh = bq(st, 112, R3Ah2, A3_lb, 2 * A3_lb, A3_lb, A3_a1, A3_a2);
+R3Amh = bq(st, 114, R3Amh, A3_lb, 2 * A3_lb, A3_lb, A3_a1, A3_a2);
+R3Ahi = bq(st, 116, R3Ah2, A3_n, -2 * A3_n, A3_n, A3_a1, A3_a2);
+R3Ahi = bq(st, 118, R3Ahi, A3_n, -2 * A3_n, A3_n, A3_a1, A3_a2);
+R3A = g_low * R3Al + g_lowmid * R3Alm + g_midhigh * R3Amh + g_high * R3Ahi;
+}
+R3C = 0;
+if (on_C) {
+R3Cl = bq(st, 120, R_u3, C1_lb, 2 * C1_lb, C1_lb, C1_a1, C1_a2);
+R3Cl = bq(st, 122, R3Cl, C2_a2, C2_a1, 1, C2_a1, C2_a2);
+R3Cl = bq(st, 124, R3Cl, C3_a2, C3_a1, 1, C3_a1, C3_a2);
+R3Ch1 = bq(st, 126, R_u3, C1_n, -2 * C1_n, C1_n, C1_a1, C1_a2);
+R3Ch1 = -R3Ch1;
+R3Clm = bq(st, 128, R3Ch1, C2_lb, 2 * C2_lb, C2_lb, C2_a1, C2_a2);
+R3Clm = bq(st, 130, R3Clm, C2_lb, 2 * C2_lb, C2_lb, C2_a1, C2_a2);
+R3Clm = bq(st, 132, R3Clm, C3_a2, C3_a1, 1, C3_a1, C3_a2);
+R3Ch2 = bq(st, 134, R3Ch1, C2_n, -2 * C2_n, C2_n, C2_a1, C2_a2);
+R3Ch2 = bq(st, 136, R3Ch2, C2_n, -2 * C2_n, C2_n, C2_a1, C2_a2);
+R3Cmh = bq(st, 138, R3Ch2, C3_lb, 2 * C3_lb, C3_lb, C3_a1, C3_a2);
+R3Cmh = bq(st, 140, R3Cmh, C3_lb, 2 * C3_lb, C3_lb, C3_a1, C3_a2);
+R3Chi = bq(st, 142, R3Ch2, C3_n, -2 * C3_n, C3_n, C3_a1, C3_a2);
+R3Chi = bq(st, 144, R3Chi, C3_n, -2 * C3_n, C3_n, C3_a1, C3_a2);
+R3C = g_low * R3Cl + g_lowmid * R3Clm + g_midhigh * R3Cmh + g_high * R3Chi;
+}
+R3D = 0;
+if (on_D) {
+R3Dl = bq(st, 146, R_u3, D1_lb, 2 * D1_lb, D1_lb, D1_a1, D1_a2);
+R3Dl = bq(st, 148, R3Dl, D2_a2, D2_a1, 1, D2_a1, D2_a2);
+R3Dl = bq(st, 150, R3Dl, D3_a2, D3_a1, 1, D3_a1, D3_a2);
+R3Dh1 = bq(st, 152, R_u3, D1_n, -2 * D1_n, D1_n, D1_a1, D1_a2);
+R3Dh1 = -R3Dh1;
+R3Dlm = bq(st, 154, R3Dh1, D2_lb, 2 * D2_lb, D2_lb, D2_a1, D2_a2);
+R3Dlm = bq(st, 156, R3Dlm, D2_lb, 2 * D2_lb, D2_lb, D2_a1, D2_a2);
+R3Dlm = bq(st, 158, R3Dlm, D3_a2, D3_a1, 1, D3_a1, D3_a2);
+R3Dh2 = bq(st, 160, R3Dh1, D2_n, -2 * D2_n, D2_n, D2_a1, D2_a2);
+R3Dh2 = bq(st, 162, R3Dh2, D2_n, -2 * D2_n, D2_n, D2_a1, D2_a2);
+R3Dmh = bq(st, 164, R3Dh2, D3_lb, 2 * D3_lb, D3_lb, D3_a1, D3_a2);
+R3Dmh = bq(st, 166, R3Dmh, D3_lb, 2 * D3_lb, D3_lb, D3_a1, D3_a2);
+R3Dhi = bq(st, 168, R3Dh2, D3_n, -2 * D3_n, D3_n, D3_a1, D3_a2);
+R3Dhi = bq(st, 170, R3Dhi, D3_n, -2 * D3_n, D3_n, D3_a1, D3_a2);
+R3D = g_low * R3Dl + g_lowmid * R3Dlm + g_midhigh * R3Dmh + g_high * R3Dhi;
+}
+R3s4 = 0;
+if (on_S) {
+R3s1 = R_u3;
+if (stadi >= 1) {
+R3s1 = bq(st, 172, R_u3, sl_b0, sl_b1, sl_b2, sl_a1, sl_a2);
+}
+R3s2 = R3s1;
+if (stadi >= 2) {
+R3sb = bq(st, 174, R3s1, slm_b0, slm_b1, slm_b2, slm_a1, slm_a2);
+R3s2 = R3s1 + sr_clm * R3sb;
+}
+R3s3 = R3s2;
+if (stadi >= 3) {
+R3sb = bq(st, 176, R3s2, smh_b0, smh_b1, smh_b2, smh_a1, smh_a2);
+R3s3 = R3s2 + sr_cmh * R3sb;
+}
+R3s4 = R3s3;
+if (stadi >= 4) {
+R3sb = bq(st, 178, R3s3, shi_b0, shi_b1, shi_b2, shi_a1, shi_a2);
+R3s4 = R3s3 - sr_chi * R3sb;
+}
+}
+R_y3 = w_A * R3A + w_C * R3C + w_D * R3D + w_S * R3s4;
+if (on_A == 0) {
+poke(st, 0, 90);
+poke(st, 0, 91);
+poke(st, 0, 92);
+poke(st, 0, 93);
+poke(st, 0, 94);
+poke(st, 0, 95);
+poke(st, 0, 96);
+poke(st, 0, 97);
+poke(st, 0, 98);
+poke(st, 0, 99);
+poke(st, 0, 100);
+poke(st, 0, 101);
+poke(st, 0, 102);
+poke(st, 0, 103);
+poke(st, 0, 104);
+poke(st, 0, 105);
+poke(st, 0, 106);
+poke(st, 0, 107);
+poke(st, 0, 108);
+poke(st, 0, 109);
+poke(st, 0, 110);
+poke(st, 0, 111);
+poke(st, 0, 112);
+poke(st, 0, 113);
+poke(st, 0, 114);
+poke(st, 0, 115);
+poke(st, 0, 116);
+poke(st, 0, 117);
+poke(st, 0, 118);
+poke(st, 0, 119);
+}
+if (on_C == 0) {
+poke(st, 0, 120);
+poke(st, 0, 121);
+poke(st, 0, 122);
+poke(st, 0, 123);
+poke(st, 0, 124);
+poke(st, 0, 125);
+poke(st, 0, 126);
+poke(st, 0, 127);
+poke(st, 0, 128);
+poke(st, 0, 129);
+poke(st, 0, 130);
+poke(st, 0, 131);
+poke(st, 0, 132);
+poke(st, 0, 133);
+poke(st, 0, 134);
+poke(st, 0, 135);
+poke(st, 0, 136);
+poke(st, 0, 137);
+poke(st, 0, 138);
+poke(st, 0, 139);
+poke(st, 0, 140);
+poke(st, 0, 141);
+poke(st, 0, 142);
+poke(st, 0, 143);
+poke(st, 0, 144);
+poke(st, 0, 145);
+}
+if (on_D == 0) {
+poke(st, 0, 146);
+poke(st, 0, 147);
+poke(st, 0, 148);
+poke(st, 0, 149);
+poke(st, 0, 150);
+poke(st, 0, 151);
+poke(st, 0, 152);
+poke(st, 0, 153);
+poke(st, 0, 154);
+poke(st, 0, 155);
+poke(st, 0, 156);
+poke(st, 0, 157);
+poke(st, 0, 158);
+poke(st, 0, 159);
+poke(st, 0, 160);
+poke(st, 0, 161);
+poke(st, 0, 162);
+poke(st, 0, 163);
+poke(st, 0, 164);
+poke(st, 0, 165);
+poke(st, 0, 166);
+poke(st, 0, 167);
+poke(st, 0, 168);
+poke(st, 0, 169);
+poke(st, 0, 170);
+poke(st, 0, 171);
+}
+if (on_S == 0) {
+poke(st, 0, 172);
+poke(st, 0, 173);
+poke(st, 0, 174);
+poke(st, 0, 175);
+poke(st, 0, 176);
+poke(st, 0, 177);
+poke(st, 0, 178);
+poke(st, 0, 179);
+}
+d0 = R_y1;
+d1 = R_y0;
+d0 = ap(hb, 96, d0, 0.04245470986526787);
+d0 = ap(hb, 100, d0, 0.39331989319033134);
+d1 = ap(hb, 98, d1, 0.17073985049750015);
+d1 = ap(hb, 102, d1, 0.7457135887202412);
+R_v0 = 0.5 * (d0 + d1);
+d0 = R_y3;
+d1 = R_y2;
+d0 = ap(hb, 96, d0, 0.04245470986526787);
+d0 = ap(hb, 100, d0, 0.39331989319033134);
+d1 = ap(hb, 98, d1, 0.17073985049750015);
+d1 = ap(hb, 102, d1, 0.7457135887202412);
+R_v1 = 0.5 * (d0 + d1);
+d0 = R_v1;
+d1 = R_v0;
+d0 = ap(hb, 104, d0, 0.019059005558478156);
+d0 = ap(hb, 108, d0, 0.1559582483500435);
+d0 = ap(hb, 112, d0, 0.3650536901969154);
+d0 = ap(hb, 116, d0, 0.5755010797915323);
+d0 = ap(hb, 120, d0, 0.7526447471286863);
+d0 = ap(hb, 124, d0, 0.8980636464339091);
+d1 = ap(hb, 106, d1, 0.07350243453590219);
+d1 = ap(hb, 110, d1, 0.25649919975582064);
+d1 = ap(hb, 114, d1, 0.47327898479453656);
+d1 = ap(hb, 118, d1, 0.6688095014357188);
+d1 = ap(hb, 122, d1, 0.8282265929955738);
+d1 = ap(hb, 126, d1, 0.9656701590349398);
+R_w = 0.5 * (d0 + d1);
+R_out = g_gain * g_fader * R_w;
+
+// protezione del prototipo: campione non valido -> stati a zero, silenzio
+bad = isnan(L_out) + isnan(R_out) + (abs(L_out) > 64) + (abs(R_out) > 64);
+if (bad > 0) {
+poke(st, 0, 0);
+poke(st, 0, 1);
+poke(st, 0, 2);
+poke(st, 0, 3);
+poke(st, 0, 4);
+poke(st, 0, 5);
+poke(st, 0, 6);
+poke(st, 0, 7);
+poke(st, 0, 8);
+poke(st, 0, 9);
+poke(st, 0, 10);
+poke(st, 0, 11);
+poke(st, 0, 12);
+poke(st, 0, 13);
+poke(st, 0, 14);
+poke(st, 0, 15);
+poke(st, 0, 16);
+poke(st, 0, 17);
+poke(st, 0, 18);
+poke(st, 0, 19);
+poke(st, 0, 20);
+poke(st, 0, 21);
+poke(st, 0, 22);
+poke(st, 0, 23);
+poke(st, 0, 24);
+poke(st, 0, 25);
+poke(st, 0, 26);
+poke(st, 0, 27);
+poke(st, 0, 28);
+poke(st, 0, 29);
+poke(st, 0, 30);
+poke(st, 0, 31);
+poke(st, 0, 32);
+poke(st, 0, 33);
+poke(st, 0, 34);
+poke(st, 0, 35);
+poke(st, 0, 36);
+poke(st, 0, 37);
+poke(st, 0, 38);
+poke(st, 0, 39);
+poke(st, 0, 40);
+poke(st, 0, 41);
+poke(st, 0, 42);
+poke(st, 0, 43);
+poke(st, 0, 44);
+poke(st, 0, 45);
+poke(st, 0, 46);
+poke(st, 0, 47);
+poke(st, 0, 48);
+poke(st, 0, 49);
+poke(st, 0, 50);
+poke(st, 0, 51);
+poke(st, 0, 52);
+poke(st, 0, 53);
+poke(st, 0, 54);
+poke(st, 0, 55);
+poke(st, 0, 56);
+poke(st, 0, 57);
+poke(st, 0, 58);
+poke(st, 0, 59);
+poke(st, 0, 60);
+poke(st, 0, 61);
+poke(st, 0, 62);
+poke(st, 0, 63);
+poke(st, 0, 64);
+poke(st, 0, 65);
+poke(st, 0, 66);
+poke(st, 0, 67);
+poke(st, 0, 68);
+poke(st, 0, 69);
+poke(st, 0, 70);
+poke(st, 0, 71);
+poke(st, 0, 72);
+poke(st, 0, 73);
+poke(st, 0, 74);
+poke(st, 0, 75);
+poke(st, 0, 76);
+poke(st, 0, 77);
+poke(st, 0, 78);
+poke(st, 0, 79);
+poke(st, 0, 80);
+poke(st, 0, 81);
+poke(st, 0, 82);
+poke(st, 0, 83);
+poke(st, 0, 84);
+poke(st, 0, 85);
+poke(st, 0, 86);
+poke(st, 0, 87);
+poke(st, 0, 88);
+poke(st, 0, 89);
+poke(st, 0, 90);
+poke(st, 0, 91);
+poke(st, 0, 92);
+poke(st, 0, 93);
+poke(st, 0, 94);
+poke(st, 0, 95);
+poke(st, 0, 96);
+poke(st, 0, 97);
+poke(st, 0, 98);
+poke(st, 0, 99);
+poke(st, 0, 100);
+poke(st, 0, 101);
+poke(st, 0, 102);
+poke(st, 0, 103);
+poke(st, 0, 104);
+poke(st, 0, 105);
+poke(st, 0, 106);
+poke(st, 0, 107);
+poke(st, 0, 108);
+poke(st, 0, 109);
+poke(st, 0, 110);
+poke(st, 0, 111);
+poke(st, 0, 112);
+poke(st, 0, 113);
+poke(st, 0, 114);
+poke(st, 0, 115);
+poke(st, 0, 116);
+poke(st, 0, 117);
+poke(st, 0, 118);
+poke(st, 0, 119);
+poke(st, 0, 120);
+poke(st, 0, 121);
+poke(st, 0, 122);
+poke(st, 0, 123);
+poke(st, 0, 124);
+poke(st, 0, 125);
+poke(st, 0, 126);
+poke(st, 0, 127);
+poke(st, 0, 128);
+poke(st, 0, 129);
+poke(st, 0, 130);
+poke(st, 0, 131);
+poke(st, 0, 132);
+poke(st, 0, 133);
+poke(st, 0, 134);
+poke(st, 0, 135);
+poke(st, 0, 136);
+poke(st, 0, 137);
+poke(st, 0, 138);
+poke(st, 0, 139);
+poke(st, 0, 140);
+poke(st, 0, 141);
+poke(st, 0, 142);
+poke(st, 0, 143);
+poke(st, 0, 144);
+poke(st, 0, 145);
+poke(st, 0, 146);
+poke(st, 0, 147);
+poke(st, 0, 148);
+poke(st, 0, 149);
+poke(st, 0, 150);
+poke(st, 0, 151);
+poke(st, 0, 152);
+poke(st, 0, 153);
+poke(st, 0, 154);
+poke(st, 0, 155);
+poke(st, 0, 156);
+poke(st, 0, 157);
+poke(st, 0, 158);
+poke(st, 0, 159);
+poke(st, 0, 160);
+poke(st, 0, 161);
+poke(st, 0, 162);
+poke(st, 0, 163);
+poke(st, 0, 164);
+poke(st, 0, 165);
+poke(st, 0, 166);
+poke(st, 0, 167);
+poke(st, 0, 168);
+poke(st, 0, 169);
+poke(st, 0, 170);
+poke(st, 0, 171);
+poke(st, 0, 172);
+poke(st, 0, 173);
+poke(st, 0, 174);
+poke(st, 0, 175);
+poke(st, 0, 176);
+poke(st, 0, 177);
+poke(st, 0, 178);
+poke(st, 0, 179);
+poke(hb, 0, 0);
+poke(hb, 0, 1);
+poke(hb, 0, 2);
+poke(hb, 0, 3);
+poke(hb, 0, 4);
+poke(hb, 0, 5);
+poke(hb, 0, 6);
+poke(hb, 0, 7);
+poke(hb, 0, 8);
+poke(hb, 0, 9);
+poke(hb, 0, 10);
+poke(hb, 0, 11);
+poke(hb, 0, 12);
+poke(hb, 0, 13);
+poke(hb, 0, 14);
+poke(hb, 0, 15);
+poke(hb, 0, 16);
+poke(hb, 0, 17);
+poke(hb, 0, 18);
+poke(hb, 0, 19);
+poke(hb, 0, 20);
+poke(hb, 0, 21);
+poke(hb, 0, 22);
+poke(hb, 0, 23);
+poke(hb, 0, 24);
+poke(hb, 0, 25);
+poke(hb, 0, 26);
+poke(hb, 0, 27);
+poke(hb, 0, 28);
+poke(hb, 0, 29);
+poke(hb, 0, 30);
+poke(hb, 0, 31);
+poke(hb, 0, 32);
+poke(hb, 0, 33);
+poke(hb, 0, 34);
+poke(hb, 0, 35);
+poke(hb, 0, 36);
+poke(hb, 0, 37);
+poke(hb, 0, 38);
+poke(hb, 0, 39);
+poke(hb, 0, 40);
+poke(hb, 0, 41);
+poke(hb, 0, 42);
+poke(hb, 0, 43);
+poke(hb, 0, 44);
+poke(hb, 0, 45);
+poke(hb, 0, 46);
+poke(hb, 0, 47);
+poke(hb, 0, 48);
+poke(hb, 0, 49);
+poke(hb, 0, 50);
+poke(hb, 0, 51);
+poke(hb, 0, 52);
+poke(hb, 0, 53);
+poke(hb, 0, 54);
+poke(hb, 0, 55);
+poke(hb, 0, 56);
+poke(hb, 0, 57);
+poke(hb, 0, 58);
+poke(hb, 0, 59);
+poke(hb, 0, 60);
+poke(hb, 0, 61);
+poke(hb, 0, 62);
+poke(hb, 0, 63);
+poke(hb, 0, 64);
+poke(hb, 0, 65);
+poke(hb, 0, 66);
+poke(hb, 0, 67);
+poke(hb, 0, 68);
+poke(hb, 0, 69);
+poke(hb, 0, 70);
+poke(hb, 0, 71);
+poke(hb, 0, 72);
+poke(hb, 0, 73);
+poke(hb, 0, 74);
+poke(hb, 0, 75);
+poke(hb, 0, 76);
+poke(hb, 0, 77);
+poke(hb, 0, 78);
+poke(hb, 0, 79);
+poke(hb, 0, 80);
+poke(hb, 0, 81);
+poke(hb, 0, 82);
+poke(hb, 0, 83);
+poke(hb, 0, 84);
+poke(hb, 0, 85);
+poke(hb, 0, 86);
+poke(hb, 0, 87);
+poke(hb, 0, 88);
+poke(hb, 0, 89);
+poke(hb, 0, 90);
+poke(hb, 0, 91);
+poke(hb, 0, 92);
+poke(hb, 0, 93);
+poke(hb, 0, 94);
+poke(hb, 0, 95);
+poke(hb, 0, 96);
+poke(hb, 0, 97);
+poke(hb, 0, 98);
+poke(hb, 0, 99);
+poke(hb, 0, 100);
+poke(hb, 0, 101);
+poke(hb, 0, 102);
+poke(hb, 0, 103);
+poke(hb, 0, 104);
+poke(hb, 0, 105);
+poke(hb, 0, 106);
+poke(hb, 0, 107);
+poke(hb, 0, 108);
+poke(hb, 0, 109);
+poke(hb, 0, 110);
+poke(hb, 0, 111);
+poke(hb, 0, 112);
+poke(hb, 0, 113);
+poke(hb, 0, 114);
+poke(hb, 0, 115);
+poke(hb, 0, 116);
+poke(hb, 0, 117);
+poke(hb, 0, 118);
+poke(hb, 0, 119);
+poke(hb, 0, 120);
+poke(hb, 0, 121);
+poke(hb, 0, 122);
+poke(hb, 0, 123);
+poke(hb, 0, 124);
+poke(hb, 0, 125);
+poke(hb, 0, 126);
+poke(hb, 0, 127);
+L_out = 0;
+R_out = 0;
+}
+out1 = L_out;
+out2 = R_out;
