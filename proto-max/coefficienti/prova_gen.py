@@ -42,7 +42,7 @@ class Gen:
 
     def __init__(self, testo, fs):
         self.ns = {"bq": bq, "ap": ap, "tan": math.tan, "exp": math.exp,
-                   "pow": math.pow, "max": max, "abs": abs, "pi": math.pi, "samplerate": fs,
+                   "pow": math.pow, "max": max, "isnan": lambda v: float(math.isnan(v)), "abs": abs, "pi": math.pi, "samplerate": fs,
                    "poke": lambda d, v, i: d.__setitem__(int(i), v)}
         corpo, in_funzione, liv = [], False, 0
         for riga in testo.splitlines():

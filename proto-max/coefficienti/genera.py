@@ -344,10 +344,30 @@ def genexpr():
         g.giu(f"{lato}_v0", f"{lato}_y0", f"{lato}_y1", 2, (lato, "giu", 2))
         g.giu(f"{lato}_v1", f"{lato}_y2", f"{lato}_y3", 2, (lato, "giu", 2))
         g.giu(f"{lato}_w", f"{lato}_v0", f"{lato}_v1", 1, (lato, "giu", 1))
-        r(f"{uscita} = g_gain * g_fader * {lato}_w;")
+        r(f"{lato}_out = g_gain * g_fader * {lato}_w;")
         r()
+    protezione(g)
     g.righe[pos_data] = (f"Data st({g.n_st});\nData hb({g.n_hb});")
     return "\n".join(g.righe) + "\n"
+
+
+def protezione(g):
+    """Solo prototipo (2026-10-31): un campione non valido (NaN, infinito o
+    oltre +36 dBFS) azzera tutti gli stati ed esce silenzio. Senza, un solo
+    NaN avvelena il mixer della traccia di Live (va cancellata la traccia)."""
+    r = g.r
+    r("// protezione del prototipo: campione non valido -> stati a zero, silenzio")
+    r("bad = isnan(L_out) + isnan(R_out) + (abs(L_out) > 64) + (abs(R_out) > 64);")
+    r("if (bad > 0) {")
+    for j in range(g.n_st):
+        r(f"poke(st, 0, {j});")
+    for j in range(g.n_hb):
+        r(f"poke(hb, 0, {j});")
+    r("L_out = 0;")
+    r("R_out = 0;")
+    r("}")
+    r("out1 = L_out;")
+    r("out2 = R_out;")
 
 
 def genexpr_isolator(g, chiave):
@@ -390,9 +410,10 @@ def genexpr_isolator(g, chiave):
         g.giu(f"{lato}_v0", f"{lato}_y0", f"{lato}_y1", 2, (lato, "giu", 2))
         g.giu(f"{lato}_v1", f"{lato}_y2", f"{lato}_y3", 2, (lato, "giu", 2))
         g.giu(f"{lato}_w", f"{lato}_v0", f"{lato}_v1", 1, (lato, "giu", 1))
-        r(f"{uscita} = g_gain * g_fader * {lato}_w;")
+        r(f"{lato}_out = g_gain * g_fader * {lato}_w;")
         r()
     pos_data = g.righe.index("@@DATA@@")
+    protezione(g)
     g.righe[pos_data] = (f"Data st({g.n_st});\nData hb({g.n_hb});")
     return "\n".join(g.righe) + "\n"
 
