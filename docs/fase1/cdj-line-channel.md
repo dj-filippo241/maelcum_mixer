@@ -45,7 +45,7 @@
   level −∞..0; assign MULTIPLI simultanei S1-S4 con precision analogue switch
 - Filtro [BLOCCATO]: switch 3 vie HPF/OFF/LPF sul canale; audio via send/return al modulo
   filtro; break-before-make + ramp 1-5 ms (nel modulo filtro)
-- METER DJ [PROVVISORIO dalla dec. 159(e): pre-fader, senza filtro; prima BLOCCATO post-filter/overdrive, pre-fader]; peak con persistenza; calibrazione
+- METER DJ [BLOCCATO, dec. 159(e) e 161(b): pre-fader, senza filtro; prima BLOCCATO post-filter/overdrive, pre-fader]; peak con persistenza; calibrazione
   identica tra canali (trim di calibrazione previsti)
 - FADER [BLOCCATO]: slider conduttivo-plastica stereo linked ≤0,5 dB; buffer ≤50 Ω
 - Livelli: gain-staging sheet §2 (dominio audio ±18 V; ±15 V LN per CV/meter/phono futura)
@@ -219,13 +219,14 @@ modulo filtro non esiste, il prototipo canale si collauda con send e return pont
 sul backplane (bypass) — il canale funziona dry, tutto il resto si valida lo stesso.
 
 ### 3.7 [G] Meter DJ
-[REV dec. 159(e), PROVVISORIO: pre-fader, dopo l'EQ; non vede più il filtro.] Prima: post-filter (return), pre-fader. Peak detector attacco <1 ms, persistenza/hold con decay
+[REV dec. 159(e) e 161(b), BLOCCATO: pre-fader, dopo l'EQ; non vede più il filtro.] Prima: post-filter (return), pre-fader. Peak detector attacco <1 ms, persistenza/hold con decay
 lento; [PROVVISORIO] 10 segmenti ×3 dB per lato (LM3915, range −24…+12 dBu) + LED purple
 di clip con latch 300-500 ms. Trim di calibrazione per l'identicità tra canali (voce 54).
 Numero segmenti definitivo: al design del modulo metering.
 
 ### 3.8 [H] Fader + [I] out driver
 
+> **[SUPERATO dalla dec. 161 (2026-10-31): niente crossfader, nemmeno opzionale] ** Niente anello e niente levetta X/OFF/Y: il fader va dritto alla levetta del filtro.
 > **[REV 2026-10-31, dec. 160: crossfader solo in CV, sul VCA del fader; l'anello audio sparisce] ** Il canale non apre più l'anello: una levetta X/OFF/Y somma
 > alla CV del fader la CV XF_X o XF_Y dal backplane (c10-c11). Il testo che segue è storia.
 > **[REV 2026-10-14, dec. 111]** Tra [H] e [I] il canale apre un anello per

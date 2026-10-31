@@ -144,7 +144,7 @@ Dati e netlist: `sim/system/RISULTATI-dec111.md`.
 **Moduli opzionali predisposti (todo 47).** Stima d'assorbimento sul ramo
 audio ±18 V: EQ grafico stereo 12 bande ~50 mA per inserzione (fino a 2:
 master e dopo il 5-way, ~100 mA); uscite per via (crossover LR4 stereo
-allineato + 10 driver bilanciati) ~150 mA; [dec. 160: il crossfader non ha più audio né VCA, ~5 mA; i ~90 mA qui sotto restano come riserva] crossfader (8 VCA 218x +
+allineato + 10 driver bilanciati) ~150 mA; [dec. 161: crossfader tolto; i ~90 mA qui sotto restano come riserva] crossfader (8 VCA 218x +
 op-amp, anello audio post-fader, `sistema-backplane.md` REV dec. 111)
 ~75 mA; driver + buffer dell'anello nei 4 canali ~15 mA; sirena = slot
 MONO già contato. Ramo audio: **1,4 → ~1,7 A** per ramo. Simulato (`psu-w1-opt.cir`): con W1 3,0 A

@@ -101,13 +101,13 @@ canale S) e MUTE del mic. Basta la simmetria.
 | Overdrive filtro (una cella per lato e sezione, dec. 159; erano 8) | 4 | 4 | ≤ 0,5 dB [PROVVISORIO] |
 | MONO master (canale S) | 1 | — | — |
 | MUTE mic | 1 per modulo mic | — | — |
-| Crossfader (modulo opzionale): 0 dalla dec. 160, usa i VCA del fader (erano 8) | 0 | — | — |
+| ~~Crossfader (modulo opzionale)~~ tolto dalla dec. 161 (erano 8 VCA) | 0 | — | — |
 
 Totale: **62 chip** nel mixer base con un mic (più 8 col crossfader).
 **[REV 2026-10-22, dec. 126]** +16 VCA dei fader (4 canali + 4 ritorni,
 stereo): **~78 chip**, lotto ~95-105 pezzi (`sim/cdj/RISULTATI-fader-vca.md`).
-**[REV 2026-10-31, dec. 159 e 160]** Overdrive del filtro 8 → 4, crossfader 8 → 0: **~74 chip**
-anche col crossfader (prima ~86 con il crossfader).
+**[REV 2026-10-31, dec. 159 e 160]** Overdrive del filtro 8 → 4; crossfader tolto (dec. 161): **~74 chip**
+(prima ~78, ~86 col crossfader).
 Ogni coppia ha **una CV sola** (dec. 91: «stereo linked»).
 
 **FINDING — conteggio dei VCA del modulo FX.** `fx-module.md` §7 conta
