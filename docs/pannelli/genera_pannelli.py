@@ -569,7 +569,9 @@ def main():
     html = ["<meta charset='utf-8'><title>Pannelli maelcum mixer</title>",
             "<style>@page{size:A3 portrait;margin:10mm} body{margin:0} "
             "img{display:block;width:100%;max-height:400mm;object-fit:contain;break-after:page}</style>"]
-    for f in ("moduli.svg", "setup-ridotto.svg", "setup-completo.svg"):
+    import proposte_disposizione   # proposte di disposizione con le schede (todo 203, 2026-10-31)
+    proposte = [f for f, _, _ in proposte_disposizione.tutte()]
+    for f in ["moduli.svg", "setup-ridotto.svg", "setup-completo.svg"] + proposte:
         html.append(f"<img src='{f}'>")
     open(os.path.join(QUI, "pannelli.html"), "w", encoding="utf-8").write("\n".join(html))
     chrome = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"

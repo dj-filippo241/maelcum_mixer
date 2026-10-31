@@ -45,6 +45,20 @@ Le percentuali dicono quanta parte della capienza al 70 % è usata.
    lato solo; (b) le due schede d'uscita sotto un'altra zona libera, collegate col cavo J2;
    (c) misurare prima il conteggio vero delle schede d'uscita (#206): la stima ~320 può scendere.
 
+## Proposte di disposizione (31/10, Filippo: «puoi spostare la posizione di tutti i moduli»)
+
+Fogli in `docs/pannelli/pannelli.pdf` (pagine 4-7), da `docs/pannelli/proposte_disposizione.py`.
+Ogni modulo porta il numero di schede e quanto sono piene; i moduli restano com'erano.
+
+| Foglio | Disposizione | Pannello | Schede | Casi rossi |
+|---|---|---|---|---|
+| Oggi | come il 21/10 | 13U | 42 | filtro, FX-SEND, master |
+| A | filtro al centro sotto i ritorni FX; master 108, 5-way 280 | 12U | 33 | nessuno |
+| B | filtro a sinistra sotto MIC/MONO; centro cieco libero | 12U | 31 | nessuno |
+| C | canali al centro; ritorni FX e filtro a sinistra; MIC/MONO a destra | 12U | 33 | nessuno |
+
+Spostare il filtro dalla colonna dei canali libera 75 mm: il pannello scende da 13U a 12U.
+
 ## Conseguenze
 
 - **Backplane.** Le schede si innestano a y diverse (fondo, metà, davanti) e il fondo resta
