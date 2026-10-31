@@ -190,4 +190,11 @@ più il proprio segnale filtrato. Nello Xone infatti il filtro lavora su un subm
 (post-fader): è l'unico modo di farlo con 2 core. La B′ mantiene invece il controllo
 individuale pre-fader, al costo di 4 core.
 
+**[VERIFICATO 2026-10-31, dec. 159]** Il diagramma a blocchi del manuale Xone:92 Mk2 (p. 26)
+conferma: VCA del fader → FILTER SELECT 1/OFF/2 → bus FILTER 1 MIX e FILTER 2 MIX → un VCF per
+bus. Con la dec. 159 maelcum fa lo stesso: i core diventano 4 (uno stereo per sezione HPF e
+LPF) sulla somma dopo il fader. Il controllo individuale dei fader resta: il fader sta prima
+del filtro. Il ragionamento qui sopra («la B′ mantiene il controllo individuale pre-fader») è
+superato.
+
 HPF min: 10 Hz (decisione 68, derivata dal requisito infrasub, verifica in simulazione). [SUPERATO dalla dec. 137, 2026-10-27: HPF min 20 Hz.]

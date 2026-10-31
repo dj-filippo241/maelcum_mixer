@@ -40,9 +40,9 @@ MODULI = [
     ("MIC", 1, 215, "stima: 15 chip + limiter dec. 145", 110, 300.5, 36, ""),
     ("MONO", 3, 120, "stima: 10 chip", 110, 300.5, 36, ""),
     ("FX-RET", 4, 300, "stima: 20 chip, 41 trim, shaper", 110, 374.5, 36, ""),
-    ("CANALE", 4, 350, "stima: 27 chip, 21 trim, RIAA", 110, 402.5, 36, ""),
+    ("CANALE", 4, 362, "stima: 28 chip, 21 trim, RIAA; +1 switch dec. 159", 110, 402.5, 36, ""),
     ("FX-SEND", 4, 120, "vero (fx-send.py)", 402.5, 489.5, 36, ""),
-    ("FILTRO", 1, 800, "stima: 60 chip, 54 trim, 32 C di film", 489.5, 564.5, 144, ""),
+    ("FILTRO", 1, 450, "stima dec. 159: 33 chip, 27 trim, 16 C di film (era 800 a 8 core)", 489.5, 564.5, 144, ""),
 ]
 
 # zone di pannello cieco nel setup completo: sotto MIC/MONO e sotto i ritorni FX

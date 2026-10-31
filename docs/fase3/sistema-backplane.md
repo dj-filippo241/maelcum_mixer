@@ -115,9 +115,9 @@ margine ≥2,7× (≥4× sul tipico 0,9 A).
 
 | Classe | Qtà moduli | Connettori | Note |
 |---|---|---|---|
-| CDJ CH1-4 | 4 | 1×C96 | out DJ bus, cue, send tap (→FX-SEND, dec. 91), filter I/F + mode bit |
+| CDJ CH1-4 | 4 | 1×C96 | out DJ bus, cue, send tap (→FX-SEND, dec. 91), out bus HPF e bus LPF + mode bit (dec. 159) |
 | FX-SEND | 4 | 1×C96 | micro-modulo send (dec. 91a): EQ2+level+assign di UN canale; bottoni via harness dal pannello canale |
-| FILTRO | 1 | 1×C96 | 4 canali × (send in + return out) = 8 slot stereo, 8 mode bit in |
+| FILTRO | 1 | 1×C96 | [dec. 159] bus HPF in, bus LPF in, 2 uscite sul DJ bus = 4 slot stereo, 8 mode bit in (muto della sezione) |
 | 5-WAY | 1 | 1×C96 | DJ bus in → out MASTER SUM |
 | FX | 1 | 1×C96 | 4 bus-net in (multidrop, dec. 91) + 4 return out = 8 slot stereo |
 | MASTER | 1 | 1×C96 | 7 contributori MASTER SUM + MON out verso CUE |
@@ -173,16 +173,23 @@ Semantica degli slot PER CLASSE (slot 1 = b1-b3, slot 2 = b4-b6, …):
 
 | Slot | CDJ (CHn) | FILTRO | 5-WAY | FX | MASTER | CUE | MIC/GEN |
 |---|---|---|---|---|---|---|---|
-| 1 | DJBUS out L/R | CH1 send in | DJBUS in L/R | BUS1 net in¹ | MSUM1 in (5-way) | CUE1 in (CH1) | MSUM out |
-| 2 | CUE out L/R | CH1 return out | MSUM out L/R | BUS2 net in¹ | MSUM2 in (FX1) | CUE2 in (CH2) | S1_OUT (net¹) |
-| 3 | SEND TAP out (→FX-SEND) | CH2 send in | — | BUS3 net in¹ | MSUM3 in (FX2) | CUE3 in (CH3) | S2_OUT (net¹) |
-| 4 | FILT_SEND out L/R | CH2 return out | — | BUS4 net in¹ | MSUM4 in (FX3) | CUE4 in (CH4) | S3_OUT (net¹) |
-| 5 | FILT_RET in L/R | CH3 send in | — | RET1 out (→MSUM2) | MSUM5 in (FX4) | MON in (master) | S4_OUT (net¹) |
-| 6 | XF_SEND out (post-fader, dec. 111) | CH3 return out | — | RET2 out (→MSUM3) | MSUM6 in (mic) | — | — |
-| 7 | XF_RET in (dec. 111) | CH4 send in | — | RET3 out (→MSUM4) | MSUM7 in (generic) | — | — |
-| 8 | — | CH4 return out | — | RET4 out (→MSUM5) | MON out L/R | — | — |
+| 1 | DJBUS out L/R | ~~CH1 send in~~ BUS_HPF in (net)² | DJBUS in L/R | BUS1 net in¹ | MSUM1 in (5-way) | CUE1 in (CH1) | MSUM out |
+| 2 | CUE out L/R | ~~CH1 return out~~ BUS_LPF in (net)² | MSUM out L/R | BUS2 net in¹ | MSUM2 in (FX1) | CUE2 in (CH2) | S1_OUT (net¹) |
+| 3 | SEND TAP out (→FX-SEND) | ~~CH2 send in~~ HPF out → DJBUS (net)² | — | BUS3 net in¹ | MSUM3 in (FX2) | CUE3 in (CH3) | S2_OUT (net¹) |
+| 4 | ~~FILT_SEND out~~ BUS_HPF out L/R (net)² | ~~CH2 return out~~ LPF out → DJBUS (net)² | — | BUS4 net in¹ | MSUM4 in (FX3) | CUE4 in (CH4) | S3_OUT (net¹) |
+| 5 | ~~FILT_RET in~~ BUS_LPF out L/R (net)² | ~~CH3 send in~~ spare | — | RET1 out (→MSUM2) | MSUM5 in (FX4) | MON in (master) | S4_OUT (net¹) |
+| 6 | XF_SEND out (post-fader, dec. 111) | ~~CH3 return out~~ spare | — | RET2 out (→MSUM3) | MSUM6 in (mic) | — | — |
+| 7 | XF_RET in (dec. 111) | ~~CH4 send in~~ spare | — | RET3 out (→MSUM4) | MSUM7 in (generic) | — | — |
+| 8 | — | ~~CH4 return out~~ spare | — | RET4 out (→MSUM5) | MON out L/R | — | — |
 | 9 | spare | spare | spare | spare | INS_SEND out (dec. 111) | spare | spare |
 | 10 | spare | spare | spare | spare | INS_RET in (dec. 111) | spare | spare |
+
+² **REV dec. 159 (2026-10-31)**: il filtro lavora dopo il fader. I bus HPF e LPF sono net
+multidrop come il DJ bus: ogni canale inietta con R 10k lato sorgente sul net scelto dalla
+levetta; il modulo filtro riceve sul virtual-earth (Rf 10k, Cf 10 pF) e reinietta le uscite
+delle due sezioni sul DJ bus con R 10k. I bit FILT_MODE (c1-c8) restano: servono al muto
+della sezione senza canali. Il crossfader opzionale (XF, slot 6-7) va rivisto: oggi il
+canale filtrato non passa dal crossfader [APERTO].
 
 ¹ **REV dec. 91 (2026-10-01)**: i bus FX S1-S4 sono NET MULTIDROP (stessa
 convenzione del DJ bus): i 4 moduli FX-SEND (out S1-S4), MIC e GEN
@@ -218,7 +225,7 @@ elettricamente corte (λ = km). Bilanciato solo verso l'esterno
 
 | Pos | Segnale | Note |
 |---|---|---|
-| c1-c8 | FILT_MODE CH1-4 [1:0] | 8 bit: 2 per canale (HPF/OFF/LPF), dal pannello canale al modulo filtro; livelli 0/+5 V, serie 10k, pull-down 100k lato filtro (stessa disciplina del pilotaggio kill §8.10 five-way); filtro con bit assente = OFF (bypass secco) |
+| c1-c8 | FILT_MODE CH1-4 [1:0] | 8 bit: 2 per canale (HPF/OFF/LPF), dal pannello canale al modulo filtro [dec. 159: pilotano anche l'ADG di instradamento sul canale; al filtro servono per il muto della sezione]; livelli 0/+5 V, serie 10k, pull-down 100k lato filtro (stessa disciplina del pilotaggio kill §8.10 five-way); filtro con bit assente = OFF (bypass secco) |
 | c9 | GLOBAL_MUTE | dal controller mute del master (supervisore rail + timer, master-out §3.7): lo ascoltano i relay di uscita dei moduli che ne hanno uno + i buffer d'iniezione dei 4 FX-SEND (dec. 94(b): i send mutano col mute globale — nessuna eccitazione della matrice self-FB nelle transizioni). Il modulo CUE NON ascolta c9 (scelta di Filippo 2026-10-02, `sistema-cue.md` §6: la cuffia resta viva durante mute/guasti master; la protezione power del modulo cue è locale) |
 | c10-c13 | CV_BUS 0-5 V ×4 | convenzione d'interfaccia [BLOCCATO]: CV remoti (es. filter freq shared, utility); generazione nel dominio ±15 V LN (sheet §1) |
 | c14-c15 | LED_DIM / SVC | dimming LED comune (PWM lento dal PSU) + linea di servizio spare |
@@ -232,7 +239,7 @@ elettricamente corte (λ = km). Bilanciato solo verso l'esterno
 |---|---|---|---|---|---|
 | CDJ ×4 | ±113/±160 mA cad. [REV 2026-10-13, dec. 105: +24 sezioni per l'EQ isolator, ~2 mA l'una; era ±65/±110] | ±17/±40 cad. (phono LN) | — | ~20 mA | op-amp ~56 sezioni (EQ isolator 48 + somme, servo, buffer) + 1-3 VCA |
 | 5-WAY | ±250/±350 mA | ~5/10 (Iq 78L15 switch) | — | ~20 mA | ~35 quad + 2 VCA + 3 switch IC (µA) |
-| FILTRO | ±110/±150 mA | ±65-100/±190 (OTA + riserva c-B) | — | ~20 mA | 8 core OTA (Iabc!) + ~20 quad |
+| FILTRO | ±110/±150 mA | ±65-100/±190 (OTA + riserva c-B) | — | ~20 mA | 8 core OTA (Iabc!) + ~20 quad [dec. 159: 4 core + ~12 quad; correnti da ridurre al ricalcolo PSU, per ora restano come riserva] |
 | FX | ±180/±300 mA [PROVV] | — | — | ~20 mA | 20 VCA 218x (16 matrice + 4 ritorno gain, dec. 91b) + op-amp |
 | FX-SEND ×4 (dec. 91) | ±40/±60 mA cad. | ~5/10 cad. (78L15 switch) | — | ~10 mA | ~18 sezioni op-amp + 2 switch IC (µA) |
 | MASTER | — (LDO ±18/±15 locali da [M]) | — | ±130/±170 | ~30 mA | HV stage Iq 40 mA×2 + summing/meter + LDO locali |

@@ -26,7 +26,11 @@
 
 ## 1. Requisiti (valori locked aggiornati)
 
-- Catena [BLOCCATO]: RCA stereo → protezione → buffer → GAIN → EQ 4 bande → split post-EQ:
+- **[REV 2026-10-31, dec. 159]** Catena nuova: … → EQ → split post-EQ (CUE, FX SEND,
+  invariati) → METER DJ → FADER → interruttore HPF/OFF/LPF dopo il fader: DJ bus, bus HPF
+  o bus LPF (net multidrop, R 10k). Il filtro filtra la somma dei canali assegnati (§3.6).
+  Il send/return del filtro sparisce. La catena qui sotto resta come storia.
+- Catena [SUPERATO dalla dec. 159]: RCA stereo → protezione → buffer → GAIN → EQ 4 bande → split post-EQ:
   (1) CUE, (2) FX SEND, (3) dry → FILTER SEND/RETURN (modulo filtro esterno, decisione 60)
   → METER DJ → FADER → out driver ≤50 Ω → DJ BUS
 - GAIN [BLOCCATO]: −∞ → 0 (detent) → +10 dB; stereo linked; tracking ≤0,5 dB
@@ -41,7 +45,7 @@
   level −∞..0; assign MULTIPLI simultanei S1-S4 con precision analogue switch
 - Filtro [BLOCCATO]: switch 3 vie HPF/OFF/LPF sul canale; audio via send/return al modulo
   filtro; break-before-make + ramp 1-5 ms (nel modulo filtro)
-- METER DJ [BLOCCATO]: post-filter/overdrive, pre-fader; peak con persistenza; calibrazione
+- METER DJ [PROVVISORIO dalla dec. 159(e): pre-fader, senza filtro; prima BLOCCATO post-filter/overdrive, pre-fader]; peak con persistenza; calibrazione
   identica tra canali (trim di calibrazione previsti)
 - FADER [BLOCCATO]: slider conduttivo-plastica stereo linked ≤0,5 dB; buffer ≤50 Ω
 - Livelli: gain-staging sheet §2 (dominio audio ±18 V; ±15 V LN per CV/meter/phono futura)
@@ -200,13 +204,22 @@ law dedicate, assign con precision switch — design traslato nel
 micro-modulo senza modifiche elettriche di comportamento.]
 
 ### 3.6 [F] Interfaccia filtro (modulo esterno)
+
+**[REV 2026-10-31, dec. 159]** Dopo il fader il canale ha tre uscite su tre net
+multidrop: DJ bus, bus HPF, bus LPF (R 10k lato sorgente ciascuna). L'interruttore
+HPF/OFF/LPF pilota un ADG (PROVVISORIO, tipo ADG1434) con break-before-make e rampa
+1-5 ms: la commutazione morbida passa dal modulo filtro al canale. I 2 bit di modo
+restano sulla riga c: al modulo filtro servono per zittire la sezione senza canali.
+Backplane: lo slot 4 (FILT_SEND) diventa BUS_HPF out, lo slot 5 (FILT_RET) BUS_LPF
+out. **Fase 1**: senza modulo filtro l'interruttore resta su OFF; nessun ponticello.
+Il testo sotto vale come storia.
 Send/return stereo via backplane + 2 bit di modo (HPF/OFF/LPF) sulla sezione control.
 Il break-before-make e la rampa vivono nel modulo filtro. **Nota fase 1**: finché il
 modulo filtro non esiste, il prototipo canale si collauda con send e return ponticellati
 sul backplane (bypass) — il canale funziona dry, tutto il resto si valida lo stesso.
 
 ### 3.7 [G] Meter DJ
-Post-filter (return), pre-fader. Peak detector attacco <1 ms, persistenza/hold con decay
+[REV dec. 159(e), PROVVISORIO: pre-fader, dopo l'EQ; non vede più il filtro.] Prima: post-filter (return), pre-fader. Peak detector attacco <1 ms, persistenza/hold con decay
 lento; [PROVVISORIO] 10 segmenti ×3 dB per lato (LM3915, range −24…+12 dBu) + LED purple
 di clip con latch 300-500 ms. Trim di calibrazione per l'identicità tra canali (voce 54).
 Numero segmenti definitivo: al design del modulo metering.

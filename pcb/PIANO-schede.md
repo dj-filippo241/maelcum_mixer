@@ -1,6 +1,7 @@
 # Piano delle schede (todo 203) — bozza del 2026-10-31
 
-Calcolo: `python3 pcb/tools/piano_schede.py`. Ipotesi nel file: dec. 156-158, setup completo,
+Calcolo: `python3 pcb/tools/piano_schede.py`. **REV 2026-10-31, dec. 159**: filtro dopo il fader, 4 core: ~800 → ~450 componenti; canale +1 switch (~362).
+Ipotesi nel file: dec. 156-158, setup completo,
 schede verticali sotto il proprio modulo, passo minimo 25 mm fra schede affiancate.
 
 ## Il telaio
@@ -24,9 +25,9 @@ parti discrete. Incertezza ±30 %.
 | MIC | 1 | ~215 | 173 → 151 | 280 | 1 | 1 | ok (77 %) |
 | MONO | 3 | ~120 | 173 → 151 | 280 | 1 | 1 | ok |
 | FX-RET | 4 | ~300 | 173 → 142 | 379 | 1 | 1 | ok (79 %) |
-| CANALE | 4 | ~350 | 173 → 139 | 415 | 1 | 1 | ok (84 %): da tenere d'occhio |
+| CANALE | 4 | ~362 | 173 → 139 | 415 | 1 | 1 | ok (87 %): da tenere d'occhio |
 | FX-SEND | 4 | 120 | 139 → 129 | 106 | 2 | 1 | **stretto** |
-| FILTRO | 1 | ~800 | 129 → 121 | 85 | 10 | 5 (144 mm) | **non sta** |
+| FILTRO | 1 | ~450 (dec. 159; era ~800) | 129 → 121 | 85 | 6 | 5 (144 mm) | **non sta, di poco** |
 
 Le percentuali dicono quanta parte della capienza al 70 % è usata.
 
@@ -35,7 +36,7 @@ Le percentuali dicono quanta parte della capienza al 70 % è usata.
 **Spazio libero che c'è già.** Nel setup completo due zone di pannello sono cieche: sotto MIC/MONO
 (144 × 264 mm) e sotto i ritorni FX (144 × 190 mm). Sotto ci stanno ~1.600 e ~1.100 componenti.
 
-1. **FILTRO** (~800 componenti, ne stanno 425). Strada proposta: le sue schede vanno sotto il
+1. **FILTRO** (~450 componenti dopo la dec. 159, ne stanno 425; prima ~800). Strada proposta: le sue schede vanno sotto il
    pannello cieco dei ritorni FX, accanto (4 schede, capienza ~900). I pot restano sul pannello
    del filtro, con la scheda comandi e un cavo piatto (dec. 136). Il pannello non cambia.
 2. **FX-SEND** (120 contro 106). Se il filtro va nel cieco, lo spazio sotto il pannello del filtro
@@ -53,10 +54,10 @@ master può cambiare; i comandi restano quelli.
 
 | Foglio | Disposizione | Pannello | Schede | Casi rossi |
 |---|---|---|---|---|
-| Oggi | come il 21/10 | 13U | 42 | filtro, FX-SEND, master |
-| A | filtro al centro sotto i ritorni FX; master 108, 5-way 280 | 12U | 33 | nessuno |
-| B | master e filtro larghi 144 mm davanti: filtro sotto MIC/MONO, master sotto i ritorni FX; in fondo 5-way 388 + CUE | 12U | 31 | nessuno |
-| C | canali al centro; ritorni FX e filtro (144) a sinistra; MIC/MONO e master (144) a destra; in fondo 5-way 388 + CUE | 12U | 32 | nessuno |
+| Oggi | come il 21/10 | 13U | 38 (42 prima della dec. 159) | filtro (di poco), FX-SEND, master |
+| A | filtro al centro sotto i ritorni FX; master 108, 5-way 280 | 12U | 31 (era 33) | nessuno |
+| B | master e filtro larghi 144 mm davanti: filtro sotto MIC/MONO, master sotto i ritorni FX; in fondo 5-way 388 + CUE | 12U | 30 (era 31) | nessuno |
+| C | canali al centro; ritorni FX e filtro (144) a sinistra; MIC/MONO e master (144) a destra; in fondo 5-way 388 + CUE | 12U | 30 (era 32); filtro 3 schede al 57 % | nessuno |
 
 Spostare il filtro dalla colonna dei canali libera 75 mm: il pannello scende da 13U a 12U.
 
@@ -74,5 +75,5 @@ Spostare il filtro dalla colonna dei canali libera 75 mm: il pannello scende da 
 
 ## Da verificare con i conteggi veri
 
-Canale (84 %) e FX-RET (79 %) sono le stime più vicine al tetto: il primo `conta.py` vero va su
+Canale (87 %) e FX-RET (79 %) sono le stime più vicine al tetto: il primo `conta.py` vero va su
 di loro, prima di disegnarle.

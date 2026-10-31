@@ -81,6 +81,7 @@ MODULI = [
         p("rk14d", 4, "EQ, residuo <= 20 ohm (dec. 127)"),
         p("lev2", 1, "LINE/PHONO"),
         p("lev3", 1, "filtro HPF/OFF/LPF"),
+        p("adg", 1, "instradamento post-fader DJ / HPF / LPF (dec. 159)"),
         p("bott", 5, "CUE + assign FX 1-4"),
         p("fader", 1),
     ]),
@@ -112,15 +113,15 @@ MODULI = [
         p("fader", 1),
         p("rk09s", 4, "reroute verso gli altri bus e SELF, RK09K113004U"),
     ]),
-    ("Filtro, core OTA (a')", 1, 1, "filter-module §7, §5ter, §5quater", [
-        p("ota", 24, "8 core a 4 poli + RES"),
-        p("opa1654", 20),
-        p("vca", 8, "overdrive (una cella per lato)"),
-        p("trim", 54, "VCA 24 + frequenza, shaper, RES 30"),
-        a_corpo("diodi del limitatore e dello shaper", 3, 6),
-        p("cap2", 32, "integratori"),
+    ("Filtro, core OTA (a')", 1, 1, "filter-module §7, §5ter, §5quater; dec. 159 (4 core sui bus HPF e LPF)", [
+        p("ota", 12, "4 core a 4 poli + RES"),
+        p("opa1654", 12, "10 dei core + ricevitori dei bus"),
+        p("vca", 4, "overdrive (una cella per lato e sezione)"),
+        p("trim", 27, "VCA 12 + frequenza, shaper, RES 15"),
+        a_corpo("diodi del limitatore e dello shaper", 2, 4),
+        p("cap2", 16, "integratori"),
         p("bjt2", 2, "converter"),
-        p("adg", 2, "mux del CV"),
+        p("adg", 1, "muto della sezione senza canali (dec. 159)"),
         p("lt", 2),
         p("lm317", 2),
         a_corpo("passivi", 25, 45),
@@ -327,7 +328,7 @@ def main():
     w("")
     w("Cosa è: il costo dei materiali per costruire **un** esemplare, modulo per")
     w("modulo, con una forchetta minimo – massimo. Le quantità vengono dai design")
-    w("doc alla data (~78 VCA, 115 manopole, 4 canali). Gli acquisti restano")
+    w("doc alla data (~74 VCA, 115 manopole, 4 canali). Gli acquisti restano")
     w("sospesi fino al prototipo in Live (voce 37, A12): questo documento non")
     w("ordina niente.")
     w("")
@@ -400,14 +401,14 @@ def main():
     w("")
     w("Tre fatti che pesano:")
     w("")
-    w("1. **I VCA e i loro trimmer.** ~78 chip a 2,80-5 € fanno 220-390 €; ogni")
-    w("   chip vuole 3 trimmer di taratura (`sistema-vca-trim.md`), cioè ~230")
+    w("1. **I VCA e i loro trimmer.** ~74 chip a 2,80-5 € fanno 210-370 €; ogni")
+    w("   chip vuole 3 trimmer di taratura (`sistema-vca-trim.md`), cioè ~220")
     w("   trimmer. I 4 FX-RET ne portano 12 ciascuno, 48 in tutto.")
     w("2. **I prezzi del VCA clone sono deboli.** Non ho trovato oggi un listino")
     w("   europeo aggiornato del V2181L: il prezzo viene dai documenti di settembre")
     w("   e da un annuncio eBay (~4,30 € a pezzo). Lo stock è a lotti (voce 37).")
     w("3. **Il core del filtro (B1) sposta il conto.** Col core PULITO (c-B) il")
-    w("   filtro sale (§3.1): +32 VCA e +96 trimmer.")
+    w("   filtro sale (§3.1): +16 VCA e +48 trimmer.")
     w("")
 
     w("## 3. Moduli, riga per riga")
@@ -420,15 +421,15 @@ def main():
         w(tab)
         w("")
         if nome.startswith("Filtro"):
-            var = [p("vca", 32, "2 per sezione, 4 per core"), p("trim", 96),
-                   p("opa1654", 8, "integratori"),
-                   ("LM13700 in meno (resta solo la RES)", -16, 0.6, 2.0, "L", "", True)]
+            var = [p("vca", 16, "2 per sezione, 4 per core"), p("trim", 48),
+                   p("opa1654", 4, "integratori"),
+                   ("LM13700 in meno (resta solo la RES)", -8, 0.6, 2.0, "L", "", True)]
             vt, vlo, vhi = tabella(var)
             w("#### 3.1 Variante: core PULITO (c-B) a 4 poli")
             w("")
             w("Differenza rispetto al core (a′), se B1 sceglie il PULITO")
-            w("(`sim/filtro/RISULTATI-cb-4p.md`). I VCA del mixer salgono da ~78 a")
-            w("~110: da riverificare anche W1 dell'alimentatore.")
+            w("(`sim/filtro/RISULTATI-cb-4p.md`). I VCA del mixer salgono da ~74 a")
+            w("~90: da riverificare anche W1 dell'alimentatore.")
             w("")
             w(vt)
             w("")

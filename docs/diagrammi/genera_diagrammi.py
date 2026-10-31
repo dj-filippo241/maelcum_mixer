@@ -188,14 +188,12 @@ def canale():
     E = d.box(985, 196, 220, 86, "[E] SEND TAP (dec. 91a)",
               ["buffer ≤ 50 Ω → backplane slot 3", "!EQ2 + level + assign: non più qui",
                "vivono nel micro-modulo FX-SEND"])
-    F = d.box(985, 302, 220, 66, "[F] FILTER I/F", ["send/return al modulo filtro", "switch 3 vie (HPF / OFF / LPF)"])
+    F = d.box(985, 302, 220, 66, "[F] FILTRO (dec. 159)", ["!non più qui: il filtro sta", "dopo il fader, vedi [I]"], "note")
     d.arrow([(nx, 206), (nx, D.cy), (D.x - 2, D.cy)])
     d.arrow([(nx, 206), (nx, E.cy), (E.x - 2, E.cy)])
-    d.arrow([(nx, 206), (nx, F.cy), (F.x - 2, F.cy)])
     d.dot(nx, 206)
     d.text(1220, D.cy + 4, "→ modulo CUE (slot 2)", 10.5, "#777")
     d.text(1220, E.cy + 4, "→ FX-SEND del canale", 10.5, "#777")
-    d.text(1220, F.cy - 6, "send 0 dBu pre-fader", 10.5, "#777")
     BT = d.box(985, 420, 220, 70, "BOTTONI ASSIGN S1-S4",
                ["restano sul pannello del canale", "linee logiche +5 V → FX-SEND"], "ctrl", tsize=12)
     d.arrow([BT.r, (1295, BT.cy)], "cv")
@@ -203,10 +201,10 @@ def canale():
     # colonna uscita
     G = d.box(1330, 440, 190, 66, "[G] METER DJ", ["LM3915 10 seg × 3 dB [PROVV]", "release ~0,3 s (dec. 81) + latch"])
     H = d.box(1330, 536, 190, 66, "[H] FADER → VCA", ["fader mono 100 mm (dec. 126)", "2 VCA trimmati ≤ 0,5 dB + I/V"])
-    I = d.box(1330, 632, 190, 60, "[I] OUT DRIVER", ["Z ≤ 50 Ω → DJ BUS (slot 1)"])
+    I = d.box(1330, 632, 190, 60, "[I] OUT + LEVETTA FILTRO", ["HPF/OFF/LPF dopo il fader (159)", "→ DJ bus / bus HPF / bus LPF"])
     d.text(1425, 708, "0 dBu nom / +16 worst", 10, AUDIO, "middle")
-    d.arrow([(1150, F.y + F.h), (1150, 394), (G.cx, 394), (G.cx, G.y - 2)])
-    d.text(1260, 388, "ritorno filtro", 10.5, "#777")
+    d.arrow([(nx, 206), (nx, 394), (G.cx, 394), (G.cx, G.y - 2)])
+    d.text(1260, 388, "pre-fader, senza filtro (159e)", 10.5, "#777")
     chain_v(d, [G, H, I])
     fc = d.box(1330, 100, 190, 32, "", ["slider doppio nel segnale"], "ctrl", lsize=11)
     d.arrow([fc.r, (1542, fc.cy), (1542, H.cy), (H.x + H.w + 2, H.cy)], "cv")
@@ -476,20 +474,20 @@ def five_way():
 # ---------------------------------------------------------------- FILTRO
 def filtro():
     d = Diagram("filtro", 1560, 920, "MODULO FILTRO GLOBALE",
-                "maelcum mixer — design v0.2 + D5 (dec. 109-110) · stile Sherman: HPF 20 Hz–35 kHz, LPF 10 Hz–35 kHz (dec. 137), 8 core mono, un percorso per canale (dec. 101)",
+                "maelcum mixer — design v0.2 + D5 (dec. 109-110) · HPF 20 Hz–35 kHz, LPF 10 Hz–35 kHz (dec. 137) · dopo il fader, sulla somma: 4 core mono (dec. 159)",
                 "B1: (a′) OTA o (c-B) pulito — ascolto")
     y = 120
-    IN = d.box(40, y, 200, 86, "DAL BACKPLANE", ["4 × send stereo (pre-fader,", "post-EQ canale) + bit di modo",
-                                              "0 dBu / +16 worst"], "dark")
-    BI = d.box(290, y, 140, 86, "BUFFER IN", ["× 4 sezioni stereo", "(CH1…CH4 L/R)"])
-    CO = d.box(480, y - 20, 330, 126, "CORE SVF 4 POLI × 8 (mono)",
+    IN = d.box(40, y, 200, 86, "DAL BACKPLANE", ["bus HPF e bus LPF (net)", "= somma dei canali assegnati,",
+                                              "dopo il fader (dec. 159)"], "dark")
+    BI = d.box(290, y, 140, 86, "RICEVITORI", ["2 bus stereo", "virtual-earth Rf 10k"])
+    CO = d.box(480, y - 20, 330, 126, "CORE SVF 4 POLI × 4 (mono)",
                ["2 sezioni 2 poli in cascata (allineamento = q. 64)", "!(a′) OTA LM13700 + partitore 1/30 (dec. 109)",
                 "C integratori 1,1 nF · tetto di stato 1,56 V", "(c-B) op-amp + VCA: alternativa pulita (B1, rumore −92 dBu A)"], lsize=10)
-    MX = d.box(860, y, 180, 86, "MUX MODO", ["HPF / OFF (bypass) / LPF", "un percorso per canale", "BBM + ramp 1 ms (dec. 80)"])
+    MX = d.box(860, y, 180, 86, "SEZIONI", ["core HPF L/R · core LPF L/R", "muta se nessun canale", "(bit FILT_MODE, dec. 159)"])
     DV = d.box(1090, y - 20, 260, 126, "OVERDRIVE v0.2 (§5ter)",
                ["tosatore in parallelo al pulito (dec. 99)", "1 VCA 218x per cella sulla differenza",
                 "law θ^2,5: morde nell'ultimo quarto", "tetto +5,5 dBu · servo DC"], "green", lsize=10)
-    RE = d.box(1400, y, 120, 86, "USCITA", ["R serie 33 Ω", "→ return canale"])
+    RE = d.box(1400, y, 120, 86, "USCITA", ["2 uscite", "→ DJ bus (R 10k)"])
     chain_h(d, [IN, BI, CO, MX, DV, RE])
     d.text(1460, y + 104, "0 dBu nom · max +5,5 dBu", 10.5, AUDIO, "middle")
     RS = d.box(560, 262, 390, 138, "RISONANZA + LIMITATORE (dec. 109-110)",
@@ -513,12 +511,12 @@ def filtro():
                                               "HPF da 20 Hz (dec. 137), LPF 10 Hz"], tsize=12, lsize=10)
     b2 = d.box(331, cy, 235, 90, "CONVERTER EXPO", ["coppia BJT matched, ΔVbe PTAT:", "Iabc 114 nA…397 µA = 10,6 Hz…37 kHz",
                                                  "deriva ≤ 2,4 % (0-50 °C)"], tsize=12, lsize=10)
-    b3 = d.box(616, cy, 235, 90, "DISTRIBUZIONE", ["mirror bufferizzati × 8 + trim/core", "tracking ≤ 1,6 % PASS",
+    b3 = d.box(616, cy, 235, 90, "DISTRIBUZIONE", ["mirror bufferizzati × 4 + trim/core", "tracking ≤ 1,6 % PASS",
                                                 "(mappa invariata col partitore)"], tsize=12, lsize=10)
-    b4 = d.box(901, cy, 260, 90, "RAMP BBM (VALIDATA)", ["commutazione modo al picco +18 dBu:", "τ 1 ms = click −8,4 dB",
+    b4 = d.box(901, cy, 260, 90, "RAMP BBM (VALIDATA)", ["ora sul canale (levetta, dec. 159):", "τ 1 ms = click −8,4 dB",
                                                      "famiglia unica 1 ms (dec. 80)"], tsize=12, lsize=10)
-    b5 = d.box(1211, cy, 283, 90, "RES + DRIVE CV", ["RES: law Xone, oscillazione sul 90-100 %", "DRIVE: SPDT per canale sceglie la sezione",
-                                                   "attiva (dec. 101) · smoothing 1 ms"], tsize=12, lsize=10)
+    b5 = d.box(1211, cy, 283, 90, "RES + DRIVE CV", ["RES: law Xone, oscillazione sul 90-100 %", "DRIVE: uno per sezione, sulla somma",
+                                                   "(dec. 159) · smoothing 1 ms"], tsize=12, lsize=10)
     chain_h(d, [b1, b2, b3, b4, b5], "cv")
     d.arrow([(b3.cx, cy), (b3.cx, 392), (520, 392), (520, CO.y + CO.h + 2)], "cv")
     d.text(510, 300, "Iabc →", 10, CV, "end")
@@ -526,20 +524,20 @@ def filtro():
     d.box(66, 576, 1428, 112, "VERIFICATO COL MODELLO REALE DELL'LM13700 (fix 2026-10-14: mirror d'uscita completo)",
           ["Core (a) nudo SCARTATO: picco di risonanza sotto −12 dBu, programma 0 dBu −23 dB sul taglio, oscillazione 3,5 ottave sotto FREQ.",
            "Core (a′) 1/30: piccolo segnale esatto (2 poli Q 0,707) · risonanza piena a −30 dBu, +8,5 dB a −10 dBu, ~+1 dB a 0 dBu · THD core 1,5-2 % a 0 dBu.",
-           "Rumore core −87,4 dBu A-wtd a fc max · sistema con 4 filtri inseriti e overdrive chiuso −79,0 (target −78: PASS 1,0, docs/06 §11).",
+           "Rumore core −87,4 dBu A-wtd a fc max · sistema con 4 filtri inseriti −79,0 (docs/06 §11); con la dec. 159 al massimo 2 core: da ricalcolare.",
            "Offset in continua ×30 sugli stati: 3,9 mV tipico, ~40 mV col Vos massimo, dentro la corsa del servo (83 mV)."],
           "green", align="start", lsize=10.5, tsize=12)
     d.box(40, 732, 900, 66, "",
           ["RAIL: tutti gli OTA su ±15,0 V ultra-low-noise dal raw ±22 V (pre-reg ±16,5 → LT3045/94, dec. 93) — LM13700 assoluto ±18",
-           "BOM v0.1: 20 LM13700 (filter-module §7) + partitori 2,9k/100 Ω + C 1,1 nF C0G/PP matched · overdrive: 8 VCA 218x"],
+           "BOM dec. 159: 12 LM13700 + partitori 2,9k/100 Ω + C 1,1 nF C0G/PP matched · overdrive: 4 VCA 218x (era 24 e 8)"],
           "note", align="start", lsize=10.5)
     d.box(980, 732, 540, 66, "",
           ["PROTOTIPO MILLEFORI: 1 core + converter + RES + overdrive",
            "ascolto (a′) contro (c-B): chiude B1 e q. 64; rifinitura B6."],
           "amber", align="start", lsize=10.5)
-    d.legend(836, [("audio", "audio (send → return)"), ("cv", "controllo CV / Iabc"),
+    d.legend(836, [("audio", "audio (bus → DJ bus)"), ("cv", "controllo CV / Iabc"),
                    ("fb", "risonanza / nota evidenziata")])
-    d.footer("Fonte: docs/fase2/filter-module.md (§2-§5ter, §5quater) + sim/filtro/RISULTATI-D5.md + decisioni 80/89/93/99/101/102/109/110")
+    d.footer("Fonte: docs/fase2/filter-module.md (§2-§5ter, §5quater) + sim/filtro/RISULTATI-D5.md + decisioni 80/89/93/99/101/102/109/110/159")
     return d.save()
 
 
@@ -676,19 +674,19 @@ def schema_totale():
     sx, sy = 165, 610                       # nodo split post-EQ
     d.arrow([EQ.b, (sx, sy)], K, head=False)
     d.o.append(f'  <circle cx="{sx}" cy="{sy}" r="4.5" fill="#333"/>')
-    FS = bx(55, 650, 220, 56, "switch HPF / OFF / LPF")
-    d.arrow([(sx, sy), (sx, FS.y - 2)], K)
-    FI = bx(330, 630, 230, 96, "MODULO FILTRO", ["globale, 8 core OTA (a′)", "FREQ · RES · DRIVE × 2 sezioni",
-                                                  "overdrive v0.2"], ts=13)
-    d.arrow([(FS.x + FS.w, 668), (FI.x - 2, 668)], K)
-    d.arrow([(FI.x, 692), (FS.x + FS.w + 2, 692)], K)
-    d.text(302, 662, "send", 9.5, "#555", "middle")
-    d.text(302, 708, "return", 9.5, "#555", "middle")
-    ME = bx(55, 740, 220, 46, "meter DJ", [], p, 12)
-    FA = bx(55, 816, 220, 56, "FADER", ["−∞ … 0 dB"])
-    DO = bx(55, 902, 220, 46, "driver d'uscita", [], p, 12)
-    for a, b in zip([FS, ME, FA, DO], [ME, FA, DO]):
+    ME = bx(55, 650, 220, 46, "meter DJ", [], p, 12)
+    d.arrow([(sx, sy), (sx, ME.y - 2)], K)
+    FA = bx(55, 726, 220, 56, "FADER", ["−∞ … 0 dB"])
+    DO = bx(55, 812, 220, 46, "driver d'uscita", [], p, 12)
+    FS = bx(55, 888, 220, 56, "switch HPF / OFF / LPF", ["dopo il fader (dec. 159)"])
+    for a, b in zip([ME, FA, DO], [FA, DO, FS]):
         d.arrow([a.b, (b.cx, b.y - 2)], K)
+    FI = bx(330, 850, 230, 96, "MODULO FILTRO", ["4 core OTA (a′) sui bus HPF e LPF", "FREQ · RES · DRIVE × 2 sezioni",
+                                                  "overdrive v0.2"], ts=13)
+    d.arrow([(FS.x + FS.w, 905), (FI.x - 2, 905)], K)
+    d.text(302, 899, "bus", 9.5, "#555", "middle")
+    d.arrow([(FI.cx, FI.y + FI.h), (FI.cx, 996), (277, 996)], K)
+    d.text(FI.cx + 6, 975, "uscite HPF e LPF", 9.5, "#555")
     # cue e fx-send dal nodo split
     CU = bx(330, 470, 230, 56, "CUE (pulsante)", ["pre-fader, pre-filtro"])
     FX = bx(330, 548, 230, 66, "MICRO-MODULO FX-SEND", ["EQ2 · LEVEL · assign S1-S4"], ts=12)
@@ -696,7 +694,7 @@ def schema_totale():
     d.arrow([(300, sy), (300, FX.cy), (FX.x - 2, FX.cy)], K)
     # DJ bus
     DJ = bx(55, 990, 220, 56, "DJ BUS", ["somma dei 4 canali"], p)
-    d.arrow([DO.b, (DJ.cx, DJ.y - 2)], K)
+    d.arrow([FS.b, (DJ.cx, DJ.y - 2)], K)
     for i, yy in enumerate((1004, 1018, 1032)):
         d.arrow([(330, yy), (DJ.x + DJ.w + 2, yy)], K)
     d.text(338, 1022, "dai canali 2, 3, 4", 10, "#555")
@@ -884,7 +882,7 @@ def metering():
     # punti di presa
     d.text(40, 122, "PUNTI DI PRESA (SPECIFICA §11, bloccati)", 13, INK, weight=700)
     taps = [("MASTER L/R", ["post master level,", "pre stadio HV", "2 barre da 20 segm."]),
-            ("DJ × 4", ["post filtro/overdrive,", "pre-fader", "4 barre da 10 segm."]),
+            ("DJ × 4", ["post EQ, pre-fader,", "senza filtro (dec. 159e)", "4 barre da 10 segm."]),
             ("5-WAY", ["post drive, pre", "master sum (g × 2)", "1 barra da 10 segm."]),
             ("RITORNO FX", ["post gain/EQ2,", "pre-fader", "1 barra da 10 segm."]),
             ("MIC / MONO", ["dopo il preamp,", "prima dell'EQ2", "solo LED tricolore"])]

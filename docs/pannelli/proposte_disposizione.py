@@ -156,7 +156,7 @@ def tutte():
     out.append(proposta(
         "Oggi, con le schede", "disposizione del 21/10 · telaio inclinato (dec. 158) · tetto 70 % (dec. 156)",
         "proposta-0-oggi.svg", banda_alta(), [[mm], [ret], [can, snd, [fil]]], set(),
-        ["Il filtro ha schede basse (vicino a chi suona) e solo 75 mm di pannello: gli servono 10 schede, ne stanno 5.",
+        ["Il filtro ha schede basse (vicino a chi suona) e solo 75 mm di pannello: gli servono 6 schede, ne stanno 5 (4 core, dec. 159).",
          "Il FX-SEND supera il tetto. Il master chiede 4 schede in 96 mm."]))
     can, snd, ret, mm, fil = completo()
     out.append(proposta(

@@ -1,5 +1,14 @@
 # FASE 2 — Modulo FILTRO: design v0.2 + v0.3-WIP (2026-09-28)
 
+> **REV 2026-10-31, dec. 159 — filtro dopo il fader, 4 core (§2bis).** Il filtro
+> non ha più un core per canale: filtra la somma dei canali assegnati, dopo il
+> fader, come lo Xone:92. Due bus stereo (HPF e LPF) dai canali, un core stereo
+> per sezione: **4 core mono** invece di 8. Pannello e 6 knob invariati. Il core
+> (§3, §5quater), la law (§4) e l'overdrive (§5ter) valgono per core come prima;
+> cambiano i conteggi (×½), il mux del CV (sparisce), la commutazione (va sul
+> canale) e i livelli d'ingresso (somma di canali). Dove sotto si legge «8 core»,
+> «per canale» o «return CHn», vale §2bis.
+
 > **D5 (2026-10-14, dec. 109, `sim/filtro/RISULTATI-D5.md`) → §5quater**:
 > il core (a) nudo di §3 non funziona ai livelli di progetto col chip
 > reale (picco di risonanza sotto −12 dBu, oscillazione 3,5 ottave sotto
@@ -37,17 +46,17 @@
 
 | Requisito | Valore | Fonte |
 |---|---|---|
-| Architettura | B′: core dedicato per canale, 4 stereo = 8 mono, stesso PCB | dec. 67 |
+| Architettura | ~~B′: core dedicato per canale, 4 stereo = 8 mono~~ → **un core stereo per sezione sui bus HPF e LPF, dopo il fader: 4 mono** (§2bis) | dec. 67, **159** |
 | Sezioni | HPF e LPF indipendenti; LPF **10 Hz–35 kHz**, HPF **20 Hz–35 kHz** (dec. 137) | dec. 74/137 |
 | Pendenza | 24 dB/ott (4 poli = 2 sezioni 2-poli in cascata per core) | SPECIFICA §5 |
 | Pannello | 6 knob: FREQ/RES/DRIVE per sezione; per canale solo switch HPF/OFF/LPF | dec. 67 |
 | Legge knob | curva Xone:96 (20 Hz–20 kHz esponenziale) nel 90 % centrale; ultimi 5 % per lato fino a 10 Hz / 35 kHz; estremo di taglio = silenzio totale | dec. 70/74/102 |
 | Risonanza | 0-90 % curva Xone:96 (da sottile a un passo dall'oscillazione: Q = 0,707/(1 − θ/0,9) → picco per sezione ~0 / +4 / +10 / +16 / +22 dB a 25 / 50 / 70 / 80 / 85 %); 90-100 % auto-oscillazione che segue il cutoff, +6…+10 dBu con soft limiting | SPECIFICA §5, dec. 102 |
-| Overdrive | dopo filtro, prima del meter di canale; clean → hard dub overload; JFET prima / BJT asimmetrico poi; recovery low-Z 20-50 Ω, +23 dBu clean | SPECIFICA §5, sheet §2 |
+| Overdrive | dopo filtro, sulla somma della sezione (dec. 159; prima: prima del meter di canale); clean → hard dub overload; JFET prima / BJT asimmetrico poi; recovery low-Z 20-50 Ω, +23 dBu clean | SPECIFICA §5, sheet §2 |
 | Tracking | ≤2% in frequenza tra core a pari CV; trim per core; CV bufferizzate a stella | dec. 67, voce 51 |
 | Tolleranza freq | ±5-10% (più lasca di un VCO: un filtro non deve essere "intonato") | dec. 74 |
-| Commutazione | break-before-make + ramp 1-5 ms, nel modulo filtro | SPECIFICA §4 |
-| Livelli | send 0 dBu nom / +16 max; dominio ±18 V audio, ±15 V LN per CV | sheet §2 |
+| Commutazione | break-before-make + ramp 1-5 ms, **sul canale** (instradamento dopo il fader, dec. 159); nel modulo resta il muto della sezione senza canali | SPECIFICA §4, dec. 159 |
+| Livelli | bus di sezione = somma dei canali assegnati, nominale come il DJ bus [da ricalcolare col partitore 1/30, dec. 159]; prima: send 0 dBu nom / +16 max; dominio ±18 V audio, ±15 V LN per CV | sheet §2 |
 | Range gm | ~3500:1 (11,8 ottave) via converter esponenziale + tempco | dec. 74 |
 
 ## 2. Architettura del modulo
@@ -76,6 +85,36 @@
   "switch 3 posizioni sul canale" (dec. 67). [Interpretazione da confermare con Filippo:
   la alternativa è core doppio per canale (HPF e LPF sempre attivi in serie) = 16 core.]
 
+## 2bis. Architettura dopo il fader (REV 2026-10-31, dec. 159)
+
+```
+ CANALE n (×4)                                   MODULO FILTRO (4 core mono)
+ … EQ → METER → FADER (VCA) → [HPF/OFF/LPF] ─┬─ OFF → DJ bus (R 10k, net multidrop)
+                     soft switch + rampa     ├─ HPF → bus HPF ──► ricevitore ─► CORE HPF L/R ─► drive HPF ─► muto* ─┐
+                     (ADG, sul canale)       └─ LPF → bus LPF ──► ricevitore ─► CORE LPF L/R ─► drive LPF ─► muto* ─┤
+                                                                                                                  ▼
+  SEZIONE HPF: FREQ · RES · DRIVE ─► law shaper ─► converter expo ─► 2 core         uscite su DJ bus (R 10k)
+  SEZIONE LPF: FREQ · RES · DRIVE ─► law shaper ─► converter expo ─► 2 core
+  * muto: la sezione tace se nessun bit FILT_MODE la sceglie (niente fischio della RES a vuoto)
+```
+
+- **Equivalenza.** FREQ e RES erano già comuni a tutti i canali di una sezione:
+  filtrare ogni canale e poi sommare dà lo stesso suono che sommare e poi
+  filtrare, finché il circuito resta lineare. Cambiano solo il DRIVE (satura la
+  somma, non il singolo canale; segue il fader) e il fischio della RES (uno per
+  sezione invece di uno per canale, niente battimenti fra core).
+- **Cosa sparisce**: send/return per canale (8 slot stereo del backplane),
+  mux del CV di frequenza e di drive, 4 core mono, 4 celle di overdrive.
+- **Cosa si aggiunge**: 2 ricevitori di bus (virtual-earth, Rf 10k e Cf 10 pF
+  come gli altri net, sistema-backplane §4); 1 switch di muto per sezione dai bit
+  FILT_MODE; sul canale un ADG per l'instradamento a 3 vie con rampa.
+- **Tracking**: 2 core per frequenza invece di 4 (matching L/R dentro la
+  sezione); la distribuzione Iabc di §4 si riduce a 2 rami per sezione.
+- **Da rifare [APERTO]**: livello del bus col partitore 1/30 (più canali sommati
+  sul core), rumore a filtri inseriti (docs/06 §11), D5 con la somma.
+- Conteggio: 4 core = **8 LM13700 di core + 4 di RES = 12**, ~10 quad, 4 VCA
+  dell'overdrive, 16 C di film; ~450 componenti (stima, `pcb/tools/piano_schede.py`).
+
 ## 3. Core SVF — funzione di trasferimento e topologia
 
 Sezione 2-poli, stato HP/BP/LP (solo HP e LP usati; BP serve alla risonanza):
@@ -100,6 +139,7 @@ Sezione 2-poli, stato HP/BP/LP (solo HP e LP usati; BP serve alla risonanza):
 - Conteggio silicon per sezione 2-poli: 1 LM13700 (2 OTA) + 3 sezioni op-amp
   (summer + 2 buffer). Per core 4 poli: 2 LM13700 + 6 sezioni op-amp.
   Modulo: 8 core = **16 LM13700 + 48 sezioni op-amp** (~12 quad) + CV + drive.
+  [REV dec. 159: 4 core = 8 LM13700 + 24 sezioni op-amp, §2bis.]
   Conferma la "conseguenza elettrica accettata" della decisione 67.
 
 ## 4. Controllo di frequenza — converter esponenziale tempcompensato
