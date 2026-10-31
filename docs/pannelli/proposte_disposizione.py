@@ -45,14 +45,12 @@ def schede(n, y0, y1, larg):
     return k, kmax, n / (k * cap) * 70
 
 
-def proposta(titolo, sotto, file, w_master, blocchi, estendi, note):
+def proposta(titolo, sotto, file, alto, blocchi, estendi, note):
     """blocchi: tre liste di righe (sinistra, centro, destra); riga = moduli affiancati.
     estendi: classi di modulo le cui schede scendono sotto il pannello cieco che hanno sotto."""
     ox, oy = 14.0, 34.0
     x0 = ox + g.ORECCHIA
     corpo, rett = [], []
-    w_cue = 62.0
-    alto = [g.five(g.UTILE - w_master - w_cue), g.master(w_master), g.cue(w_cue)]
     h_alto = max(p.h for p in alto)
     x = x0
     for p in alto:
@@ -146,36 +144,46 @@ def completo():
     return can, snd, ret, mm, g.filtro(g.BLOCCO)
 
 
+def banda_alta(w_master=96.0, w_cue=62.0, con_master=True):
+    """5-WAY, (MASTER), CUE in fondo al pannello: il 5-WAY prende la larghezza che resta."""
+    w_five = g.UTILE - w_cue - (w_master if con_master else 0)
+    return [g.five(w_five)] + ([g.master(w_master)] if con_master else []) + [g.cue(w_cue)]
+
+
 def tutte():
     out = []
     can, snd, ret, mm, fil = completo()
     out.append(proposta(
         "Oggi, con le schede", "disposizione del 21/10 · telaio inclinato (dec. 158) · tetto 70 % (dec. 156)",
-        "proposta-0-oggi.svg", 96, [[mm], [ret], [can, snd, [fil]]], set(),
+        "proposta-0-oggi.svg", banda_alta(), [[mm], [ret], [can, snd, [fil]]], set(),
         ["Il filtro ha schede basse (vicino a chi suona) e solo 75 mm di pannello: gli servono 10 schede, ne stanno 5.",
          "Il FX-SEND supera il tetto. Il master chiede 4 schede in 96 mm."]))
     can, snd, ret, mm, fil = completo()
     out.append(proposta(
         "Proposta A: filtro al centro, sotto i ritorni FX", "canali a destra come oggi · master largo 108 mm, "
         "5-way 280 mm",
-        "proposta-A.svg", 108, [[mm], [ret, [fil]], [can, snd]], {"filtro", "send"},
+        "proposta-A.svg", banda_alta(108), [[mm], [ret, [fil]], [can, snd]], {"filtro", "send"},
         ["Il filtro scende sotto i ritorni FX: le sue schede usano il pannello cieco che ha sotto.",
          "Il FX-SEND finisce in basso nella colonna dei canali: la sua scheda scende fino al bordo.",
          "Il master guadagna 12 mm dal 5-way: 4 schede col passo di 25 mm. Il pannello scende a 12U."]))
     can, snd, ret, mm, fil = completo()
     out.append(proposta(
-        "Proposta B: filtro a sinistra, sotto MIC e MONO", "centro libero sotto i ritorni FX · master largo 108 mm",
-        "proposta-B.svg", 108, [[mm, [fil]], [ret], [can, snd]], {"filtro", "send"},
-        ["Il filtro scende sotto MIC e MONO, lontano dai canali (gesto a due mani).",
-         "Sotto i ritorni FX resta un pannello cieco libero: il posto per crossfader, EQ grafico, uscite per via.",
-         "FX-SEND e master come nella proposta A. Il pannello scende a 12U."]))
+        "Proposta B: master e filtro larghi, davanti", "in fondo solo 5-way (largo 388 mm) e CUE · "
+        "filtro sotto MIC e MONO · master sotto i ritorni FX",
+        "proposta-B.svg", banda_alta(con_master=False),
+        [[mm, [fil]], [ret, [g.master(g.BLOCCO)]], [can, snd]], {"filtro", "master", "send"},
+        ["Master e filtro diventano larghi 144 mm, come un blocco di quattro strisce: 5 schede affiancate ciascuno.",
+         "Il master sta al centro, davanti, sotto i ritorni FX: è il modulo più vicino a chi suona.",
+         "Il 5-way prende tutta la banda in fondo (388 mm): più aria fra le cinque vie. Il pannello resta 12U."]))
     can, snd, ret, mm, fil = completo()
     out.append(proposta(
-        "Proposta C: canali al centro", "ritorni FX e filtro a sinistra · MIC e MONO a destra · master largo 108 mm",
-        "proposta-C.svg", 108, [[ret, [fil]], [can, snd], [mm]], {"filtro", "send"},
-        ["I canali stanno al centro, come su molti mixer DJ: ritorni FX e MIC/MONO sono a una mano di distanza.",
-         "Filtro e ritorni FX a sinistra, accanto ai canali. MIC e MONO a destra, col cieco libero sotto.",
-         "Schede come nella proposta A. Il pannello scende a 12U."]))
+        "Proposta C: canali al centro, master a destra", "ritorni FX e filtro a sinistra · MIC, MONO e master "
+        "a destra, sotto il CUE · 5-way largo 388 mm",
+        "proposta-C.svg", banda_alta(con_master=False),
+        [[ret, [fil]], [can, snd], [mm, [g.master(g.BLOCCO)]]], {"filtro", "master", "send"},
+        ["I canali stanno al centro, come su molti mixer DJ. Master e CUE stanno sullo stesso lato, a destra.",
+         "Filtro largo 144 mm sotto i ritorni FX, master largo 144 mm sotto MIC e MONO: 5 schede possibili ciascuno.",
+         "Il 5-way prende tutta la banda in fondo (388 mm). Il pannello resta 12U."]))
     return out
 
 

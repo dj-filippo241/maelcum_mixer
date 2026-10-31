@@ -48,14 +48,15 @@ Le percentuali dicono quanta parte della capienza al 70 % è usata.
 ## Proposte di disposizione (31/10, Filippo: «puoi spostare la posizione di tutti i moduli»)
 
 Fogli in `docs/pannelli/pannelli.pdf` (pagine 4-7), da `docs/pannelli/proposte_disposizione.py`.
-Ogni modulo porta il numero di schede e quanto sono piene; i moduli restano com'erano.
+Ogni modulo porta il numero di schede e quanto sono piene. Filippo (31/10): anche la forma di filtro e
+master può cambiare; i comandi restano quelli.
 
 | Foglio | Disposizione | Pannello | Schede | Casi rossi |
 |---|---|---|---|---|
 | Oggi | come il 21/10 | 13U | 42 | filtro, FX-SEND, master |
 | A | filtro al centro sotto i ritorni FX; master 108, 5-way 280 | 12U | 33 | nessuno |
-| B | filtro a sinistra sotto MIC/MONO; centro cieco libero | 12U | 31 | nessuno |
-| C | canali al centro; ritorni FX e filtro a sinistra; MIC/MONO a destra | 12U | 33 | nessuno |
+| B | master e filtro larghi 144 mm davanti: filtro sotto MIC/MONO, master sotto i ritorni FX; in fondo 5-way 388 + CUE | 12U | 31 | nessuno |
+| C | canali al centro; ritorni FX e filtro (144) a sinistra; MIC/MONO e master (144) a destra; in fondo 5-way 388 + CUE | 12U | 32 | nessuno |
 
 Spostare il filtro dalla colonna dei canali libera 75 mm: il pannello scende da 13U a 12U.
 
