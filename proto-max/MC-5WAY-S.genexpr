@@ -297,7 +297,7 @@ aw = (tw <= 0.5) * 0.4 * tw + (tw > 0.5) * (0.2 + 1.6 * (tw - 0.5));
 ke5 = (0.1 + 0.9 * aw) / 0.3;
 mg = s_growl / 100;
 tn = s_nastro / 100;
-mt = 0.85 * ((tn <= 0.5) * 0.2 * tn / 0.5 + (tn > 0.5) * (0.2 + 0.8 * (tn - 0.5) / 0.5));
+mt = 0.85 * ((tn <= 0.5) * 0.5 * tn / 0.5 + (tn > 0.5) * (0.5 + 0.5 * (tn - 0.5) / 0.5));
 // NASTRO LIBERO: spinta 0 -> +12 dB con la manopola
 gnl = pow(10, 0.6 * tn);
 // GROWL LIBERO (spinta 0 -> +18 dB col pot)

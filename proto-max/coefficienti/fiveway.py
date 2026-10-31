@@ -241,7 +241,7 @@ NASTRO_MAX = 0.85               # 30 % poco, 70 % «un po piu aggressivo» (Fili
 # 2026-10-31 (Filippo, libretto 9.3: «nastro forse deve essere piu udibile
 # prima nella curva»): taper log 20 % (come WIDTH, dec. 129) al posto del
 # taper A 10 % [PROVVISORIO]. Il nome resta per i generatori.
-TAPER_A_MID = 0.2
+TAPER_A_MID = 0.5               # 2026-10-31 seconda prova: pot lineare (era 0,2, poi 0,1)
 
 
 def nastro_law(theta):
