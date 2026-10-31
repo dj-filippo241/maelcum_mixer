@@ -140,8 +140,8 @@ def main():
                  toll=0.05, amp=A0 * 10 ** (dbu / 20), durata=0.3, coda=0.1,
                  growl=growl, nastro=nastro, gv=1)
 
-    print("NASTRO VER: COMPLETO, EXCITER, CLASSE A (0 e +10 dBu)")
-    for nver, f in ((1, 1000), (1, 8000), (2, 5000), (3, 1000)):
+    print("NASTRO VER: COMPLETO, EXCITER, CLASSE A, COMPLETO MEDI (0 e +10 dBu)")
+    for nver, f in ((1, 1000), (1, 8000), (2, 5000), (3, 1000), (5, 80), (5, 1000), (5, 8000)):
         for dbu in (0, 10):
             caso(f"NASTRO VER {nver} NASTRO 100 {f} Hz {dbu:+d} dBu", f,
                  toll=0.05, amp=A0 * 10 ** (dbu / 20), durata=0.3, coda=0.1,

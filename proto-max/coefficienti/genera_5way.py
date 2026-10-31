@@ -39,7 +39,7 @@ WID = [(f"w_{i + 1}", f"EQ{i + 1} WIDTH") for i in range(5)]
 SAT = [("growl", "GROWL"), ("nastro", "NASTRO")]
 GV = ("gv", "GROWL VER", ["DEC.99", "LIBERO"])
 NV = ("nver", "NASTRO VER", ["OGGI", "COMPLETO", "EXCITER", "CLASSE A",
-                            "LIBERO"])
+                            "LIBERO", "COMPL. MEDI"])
 XO = ("xo", "CROSSOVER", list(fw.VARIANTI_XO))
 KILL_VOCI = ["ON", "KILL"]
 
@@ -47,7 +47,7 @@ KILL_VOCI = ["ON", "KILL"]
 # GROWL 1 = 28 SVF. Nel Data sa: HP del GROWL (1), HP-JFET non serve
 # (il condensatore e vc), JFET: vs2, idd, vc come scarti dal riposo.
 SVF_LATO = 30                   # + head bump del COMPLETO, passa-alto EXCITER
-SA_LATO = 18                    # + COMPLETO 5, EXCITER 1, CLASSE A 4, LIBERO 4
+SA_LATO = 23                    # + COMPLETO 5, EXCITER 1, CLASSE A 4, LIBERO 4, MEDI 5
 VS20, ID0, VD0 = fw.jfet_riposo()
 _CA = al.ClasseA(48000.0)
 VE20, VCAP0 = _CA.ve2, _CA.vcap
@@ -298,12 +298,15 @@ def genexpr():
     r(f"kcb = 1 / (sr4 * {fw.J_CB!r});")
     r(f"kc = 1 / (sr4 * {10e-6 * fw.J_RTS!r});")
     if not SEMPLICE:
-        r("// NASTRO VER: 0 OGGI, 1 COMPLETO, 2 EXCITER, 3 CLASSE A, 4 LIBERO"
+        r("// NASTRO VER: 0 OGGI, 1 COMPLETO, 2 EXCITER, 3 CLASSE A, 4 LIBERO,"
+          " 5 COMPLETO MEDI"
           " (20 ms)")
         for j in range(len(NV[2])):
             r(f"wn{j} = max(0, 1 - abs(s_nver - {j}));")
     r(f"gcp = tan(pi * {al.EN_FP!r} / sr4);")
     r(f"gcz = tan(pi * {al.EN_FZ!r} / sr4);")
+    r(f"gmp = tan(pi * {al.EM_FP!r} / sr4);")
+    r(f"gmz = tan(pi * {al.EM_FZ!r} / sr4);")
     r(f"ghb = tan(pi * {al.HB_F!r} / sr4);")
     r(f"gex = tan(pi * {al.EX_F!r} / sr4);")
     r(f"kce = 1 / (sr4 * {al.B_CE!r});")
@@ -443,7 +446,26 @@ def genexpr():
             r(f"poke(sa, lvc + kc * ltac - {VD0!r}, {sa0 + 16});")
             r(f"poke(sa, lig, {sa0 + 17});")
             r(f"dli = -{al.NL_K!r} * ltac - y1;")
-            r("dn = wn0 * dt + wn1 * dco + wn2 * dex + wn3 * dca + wn4 * dli;")
+            r("// COMPLETO MEDI: enfasi 300 Hz / 600 Hz, JFET, de-enfasi")
+            r(f"mpl = op1(sa, {sa0 + 18}, y1, gmp);")
+            r(f"men = mpl + {al.EM_FP / al.EM_FZ!r} * (y1 - mpl);")
+            r(f"mvs = {VS20!r} + peek(sa, {sa0 + 19});")
+            r(f"mid_ = {ID0!r} + peek(sa, {sa0 + 20});")
+            r(f"mvc = {VD0!r} + peek(sa, {sa0 + 21});")
+            for _ in range(fw.NEWTON):
+                r("mid_ = jstep(men, mvs, mvc, mid_);")
+            r(f"mvd = {fw.J_RP!r} * ({fw.J_VCC / fw.J_RD!r} + mvc / "
+              f"{fw.J_RTS!r} - mid_);")
+            r("mtac = mvd - mvc;")
+            r(f"poke(sa, mvs + kcb * (mid_ - mvs / {fw.J_RSB!r}) - {VS20!r},"
+              f" {sa0 + 19});")
+            r(f"poke(sa, mid_ - {ID0!r}, {sa0 + 20});")
+            r(f"poke(sa, mvc + kc * mtac - {VD0!r}, {sa0 + 21});")
+            r(f"mw = -{fw.KT!r} * mtac;")
+            r(f"mdl = op1(sa, {sa0 + 22}, mw, gmz);")
+            r(f"dme = mdl + {al.EM_FZ / al.EM_FP!r} * (mw - mdl) - y1;")
+            r("dn = wn0 * dt + wn1 * dco + wn2 * dex + wn3 * dca + wn4 * dli"
+              " + wn5 * dme;")
             r(f"{lato}_y{k} = (y1 + mt * dn) / {liv!r};")
             assert i == b0 + 2 * SVF_LATO
         g.giu(f"{lato}_v0", f"{lato}_y0", f"{lato}_y1", 2, (lato, "giu", 2))

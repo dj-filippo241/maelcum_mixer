@@ -345,12 +345,13 @@ class Saturatori:
     def passo(self, x, mg, mt, libero=0.0, nv=0.0, gn=1.0):
         """x in volt; restituisce (y2, dg, dt). libero 0 = GROWL dec. 99,
         1 = GROWL LIBERO (in mezzo: dissolvenza del selettore). nv = NASTRO
-        VER: 0 OGGI, 1 COMPLETO, 2 EXCITER, 3 CLASSE A, 4 LIBERO
+        VER: 0 OGGI, 1 COMPLETO, 2 EXCITER, 3 CLASSE A, 4 LIBERO, 5 COMPLETO MEDI
         (alternative.py); gn = spinta del NASTRO LIBERO (fattore)."""
         if not hasattr(self, "alt"):
             import alternative as al
             self.alt = [al.Completo(self.fs), al.Exciter(self.fs),
-                        al.ClasseA(self.fs), al.Libero(self.fs)]
+                        al.ClasseA(self.fs), al.Libero(self.fs),
+                        al.Completo(self.fs, al.EM_FZ, al.EM_FP, False)]
         self.alt[3].gn = gn
         low = self.lp.passo(x, self.g_lp, 1 / Q_BW)[0]
         gg = 1 + libero * (10 ** (LIB_GMAX_DB * mg / 20) - 1)
@@ -362,7 +363,7 @@ class Saturatori:
         self.vs2 += self.k_cb * (self.idd - self.vs2 / J_RSB)
         self.vc += self.k_c * vtac
         dt = -KT * vtac - y1
-        pesi = [max(0.0, 1 - abs(nv - j)) for j in range(5)]
+        pesi = [max(0.0, 1 - abs(nv - j)) for j in range(6)]
         da = [a.passo(y1) for a in self.alt]
         d = pesi[0] * dt + sum(p * v for p, v in zip(pesi[1:], da))
         return y1 + mt * d, dg, d

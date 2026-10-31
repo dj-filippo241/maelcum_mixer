@@ -19,17 +19,19 @@ QUI = os.path.dirname(os.path.abspath(__file__))
 SIM = os.path.join(QUI, "..", "..", "sim", "five-way")
 FS = 192000.0
 AMP = (0.173, 0.549, 1.096, 3.466)
-# miscele della manopola NASTRO: le stesse scritte nei B25-B99 di alt-*.cir
-MISCELE = tuple((f"{p} %", n, r, round(fw.nastro_law(p / 100), 6))
-                for p, n, r in ((25, "m25", "r25"), (50, "m50", "r50"),
-                                (75, "m75", "r75"), (100, "m99", "r99")))
-assert [m[3] for m in MISCELE] == [0.0425, 0.085, 0.4675, 0.85], \
-    "NASTRO_MAX cambiato: aggiornare le miscele B25-B99 in sim/five-way/alt-*.cir"
+# miscele scritte nei B25-B99 di alt-*.cir: punti di confronto fissi (la
+# taper A x 0,85 del 2026-10-15). Dal 2026-10-31 la manopola NASTRO e
+# lineare (fw.nastro_law): le miscele restano punti del ramo, non posizioni.
+MISCELE = tuple((f"m {m}", n, r, m)
+                for m, n, r in ((0.0425, "m25", "r25"), (0.085, "m50", "r50"),
+                                (0.4675, "m75", "r75"), (0.85, "m99", "r99")))
 CASI = (("COMPLETO 1 kHz", "alt-completo", al.Completo, 1000, 1.5),
         ("COMPLETO 8 kHz", "alt-completo-8000", al.Completo, 8000, 1.5),
         ("COMPLETO 80 Hz", "alt-completo-80", al.Completo, 80, 1.5),
         ("EXCITER 5 kHz", "alt-exciter", al.Exciter, 5000, 0.3),
-        ("CLASSE A 1 kHz", "alt-classe-a", al.ClasseA, 1000, 1.5))
+        ("CLASSE A 1 kHz", "alt-classe-a", al.ClasseA, 1000, 1.5),
+        ("COMPLETO MEDI 1 kHz", "alt-completo-medi", al.medi, 1000, 1.5),
+        ("COMPLETO MEDI 8 kHz", "alt-completo-medi-8000", al.medi, 8000, 1.5))
 
 
 def leggi_log(nome):
@@ -75,7 +77,8 @@ def libero():
     print("LIBERO 1 kHz: modello | LTspice (THD % . dB), colonne -16/-6/0/+10")
     p = [0.0, 0.0]
     for j, pos in enumerate((0.25, 0.5, 0.75, 1.0)):
-        mt = fw.nastro_law(pos)
+        # miscela scritta in nastro-libero.cir: taper A x 0,85 del 2026-10-15
+        mt = 0.85 * (0.1 * pos / 0.5 if pos <= 0.5 else 0.1 + 0.9 * (pos - 0.5) / 0.5)
         celle = []
         for k, amp in enumerate(AMP):
             s = al.Libero(FS)

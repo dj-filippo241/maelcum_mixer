@@ -202,7 +202,7 @@ Param w_5(50, min=0, max=100);
 Param growl(0, min=0, max=100);
 Param nastro(0, min=0, max=100);
 Data sv(120);
-Data sa(36);
+Data sa(46);
 Data hb(128);
 History s_g_1(50);
 History s_g_2(50);
@@ -309,6 +309,8 @@ kcb = 1 / (sr4 * 0.0022);
 kc = 1 / (sr4 * 0.48543689320388356);
 gcp = tan(pi * 5000.0 / sr4);
 gcz = tan(pi * 1500.0 / sr4);
+gmp = tan(pi * 600.0 / sr4);
+gmz = tan(pi * 300.0 / sr4);
 ghb = tan(pi * 80.0 / sr4);
 gex = tan(pi * 3000.0 / sr4);
 kce = 1 / (sr4 * 0.0022);
@@ -640,10 +642,10 @@ ya = ya + b5 * ke5 * svbp(sv, 112, ya, ge5, ke5);
 // GROWL (sotto 350 Hz) e NASTRO, volt del dominio interno
 xa = ya * 2.180432973121504;
 lw = svlp(sv, 114, xa, glp, 1.4142135623730951);
-dg = kk * hp1(sa, 18, clipg(gg * lw), ghg) - lw;
+dg = kk * hp1(sa, 23, clipg(gg * lw), ghg) - lw;
 y1 = xa + mg * dg;
 exh = svhp(sv, 118, y1, gex, 1.4142135623730951);
-dex = 0.30509 * hp1(sa, 27, clipe(exh), gex);
+dex = 0.30509 * hp1(sa, 32, clipe(exh), gex);
 R_y0 = (y1 + mt * dex) / 2.180432973121504;
 xa = R_u1;
 // banca: spina HP4 ai 4 crossover
@@ -689,10 +691,10 @@ ya = ya + b5 * ke5 * svbp(sv, 112, ya, ge5, ke5);
 // GROWL (sotto 350 Hz) e NASTRO, volt del dominio interno
 xa = ya * 2.180432973121504;
 lw = svlp(sv, 114, xa, glp, 1.4142135623730951);
-dg = kk * hp1(sa, 18, clipg(gg * lw), ghg) - lw;
+dg = kk * hp1(sa, 23, clipg(gg * lw), ghg) - lw;
 y1 = xa + mg * dg;
 exh = svhp(sv, 118, y1, gex, 1.4142135623730951);
-dex = 0.30509 * hp1(sa, 27, clipe(exh), gex);
+dex = 0.30509 * hp1(sa, 32, clipe(exh), gex);
 R_y1 = (y1 + mt * dex) / 2.180432973121504;
 xa = R_u2;
 // banca: spina HP4 ai 4 crossover
@@ -738,10 +740,10 @@ ya = ya + b5 * ke5 * svbp(sv, 112, ya, ge5, ke5);
 // GROWL (sotto 350 Hz) e NASTRO, volt del dominio interno
 xa = ya * 2.180432973121504;
 lw = svlp(sv, 114, xa, glp, 1.4142135623730951);
-dg = kk * hp1(sa, 18, clipg(gg * lw), ghg) - lw;
+dg = kk * hp1(sa, 23, clipg(gg * lw), ghg) - lw;
 y1 = xa + mg * dg;
 exh = svhp(sv, 118, y1, gex, 1.4142135623730951);
-dex = 0.30509 * hp1(sa, 27, clipe(exh), gex);
+dex = 0.30509 * hp1(sa, 32, clipe(exh), gex);
 R_y2 = (y1 + mt * dex) / 2.180432973121504;
 xa = R_u3;
 // banca: spina HP4 ai 4 crossover
@@ -787,10 +789,10 @@ ya = ya + b5 * ke5 * svbp(sv, 112, ya, ge5, ke5);
 // GROWL (sotto 350 Hz) e NASTRO, volt del dominio interno
 xa = ya * 2.180432973121504;
 lw = svlp(sv, 114, xa, glp, 1.4142135623730951);
-dg = kk * hp1(sa, 18, clipg(gg * lw), ghg) - lw;
+dg = kk * hp1(sa, 23, clipg(gg * lw), ghg) - lw;
 y1 = xa + mg * dg;
 exh = svhp(sv, 118, y1, gex, 1.4142135623730951);
-dex = 0.30509 * hp1(sa, 27, clipe(exh), gex);
+dex = 0.30509 * hp1(sa, 32, clipe(exh), gex);
 R_y3 = (y1 + mt * dex) / 2.180432973121504;
 d0 = R_y1;
 d1 = R_y0;

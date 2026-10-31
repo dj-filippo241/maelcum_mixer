@@ -47,13 +47,22 @@ EN_FP = 5000.0
 HB_F = 80.0
 HB_Q = 1.0
 HB_A = 10 ** (3 / 20) - 1
+# COMPLETO MEDI (Filippo 2026-10-31: «sporca un po piu i medi e un po meno
+# gli acuti», senza head bump): stessa enfasi del 1o ordine spostata in
+# basso e ridotta, zero 300 Hz / polo 600 Hz (+6 dB da ~1 kHz in su; il
+# COMPLETO fa +10,5 dB da ~5 kHz). Al nominale (-6 dBu, fine corsa): THD
+# 1 kHz 11,5 % (COMPLETO 4,4), 3 kHz 15,0 (10,4), 8 kHz 15,5 (22,2)
+# [PROVVISORIO]. Provati anche 500/1250 (8 kHz 21 %: acuti quasi uguali).
+EM_FZ = 300.0
+EM_FP = 600.0
 
 
 class Completo:
-    def __init__(self, fs):
+    def __init__(self, fs, fz=EN_FZ, fp=EN_FP, gobba=True):
         self.fs = fs
-        self.pre = Uno(EN_FP, fs)
-        self.de = Uno(EN_FZ, fs)
+        self.fz, self.fp, self.gobba = fz, fp, gobba
+        self.pre = Uno(fp, fs)
+        self.de = Uno(fz, fs)
         self.hb = fw.Svf()
         self.g_hb = fw.g_di(HB_F, fs)
         self.vs2, self.idd, vd = fw.jfet_riposo()
@@ -63,17 +72,25 @@ class Completo:
 
     def passo(self, y1):
         lp, hp = self.pre.passo(y1)
-        u = lp + EN_FP / EN_FZ * hp                     # enfasi
+        u = lp + self.fp / self.fz * hp                 # enfasi
         self.idd, vd = fw.jfet_passo(u, self.vs2, self.vc, self.idd)
         vtac = vd - self.vc
         self.vs2 += self.k_cb * (self.idd - self.vs2 / fw.J_RSB)
         self.vc += self.k_c * vtac
         w = -fw.KT * vtac
         lp, hp = self.de.passo(w)
-        w = lp + EN_FZ / EN_FP * hp                     # de-enfasi
+        w = lp + self.fz / self.fp * hp                 # de-enfasi
+        if not self.gobba:
+            return w - y1
         bp = self.hb.passo(w, self.g_hb, 1 / HB_Q)[1]
         w = w + HB_A * bp / HB_Q                        # head bump
         return w - y1
+
+
+
+def medi(fs):
+    """COMPLETO MEDI: enfasi 500 / 1250 Hz, senza head bump."""
+    return Completo(fs, EM_FZ, EM_FP, False)
 
 
 # ---- generico: corrente in un ramo diodi + R (Newton dall'alto) ----

@@ -404,3 +404,32 @@ manopole (prima 1 ms, era un selettore). MC-5WAY-S uguale.
 Prove: prova_5way (WIDTH 0 / 30 / 50 / 100 %, gen~ contro modello) e
 prova_semplice.
 
+
+## 11. COMPLETO MEDI e NASTRO lineare (2026-10-31)
+
+Libretto 9.3, Filippo: «nastro forse deve essere più udibile prima nella
+curva»; poi «non sono sicuro sia ancora abbastanza». La manopola NASTRO
+passa da taper A 10 % a log 20 % e poi a **lineare** (`fiveway.TAPER_A_MID`
+0,5; a metà corsa 0,425 del fondo corsa 0,85) [PROVVISORIO], per tutte le
+versioni di NASTRO VER.
+
+Sesta voce di NASTRO VER, **COMPL. MEDI** (Filippo: «un completo che
+sporca un po' più i medi e un po' meno gli acuti», «senza gobba»): il
+COMPLETO con l'enfasi spostata in basso e ridotta, zero 300 Hz / polo
+600 Hz (+6 dB da ~1 kHz in su; COMPLETO +10,5 dB da ~5 kHz), niente head
+bump. Hardware: non invertente Rf 10k / (Rg 10k + 26,53n), de-enfasi
+passiva 10k serie, 10k + 26,53n a massa. Modello `alternative.medi`.
+
+Al nominale (-6 dBu, miscela 0,85), THD:
+
+| | 300 Hz | 1 kHz | 3 kHz | 8 kHz |
+|---|---|---|---|---|
+| COMPLETO | 4,4 % | 4,4 % | 10,4 % | 22,2 % |
+| COMPL. MEDI | 5,1 % | 11,5 % | 15,0 % | 15,5 % |
+
+Scartata 500 / 1250 Hz (+8 dB): 8 kHz 21 %, acuti quasi come il COMPLETO.
+
+Modello contro LTspice (`sim/five-way/alt-completo-medi.cir`,
+`alt-completo-medi-8000.cir`, `confronto_alt.py`): 1 kHz scarto 0,05
+punti e 0,02 dB; 8 kHz 0,11 punti e 0,02 dB. `confronto_alt.py` usa ora
+miscele fisse (i B25-B99 dei netlist), non la law della manopola.
