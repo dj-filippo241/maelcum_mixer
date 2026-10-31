@@ -14,13 +14,14 @@ in Python e lo fa suonare (verifica nel tempo, non solo sulla carta).
 """
 
 import json
+import math
 import os
 import struct
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
 import canale  # noqa: E402
-import xone  # noqa: E402
+import djm  # noqa: E402
 
 QUI = os.path.dirname(os.path.abspath(__file__))
 USCITA = os.path.dirname(QUI)
@@ -41,8 +42,9 @@ SELETTORE = ("incroci", "INCROCI",
              ["A 150/500/2500", "C 150d/350/3150", "D 150d/700/3150"])
 CURVA = ("curva", "CURVA", ["LINEARE", "PIONEER"])
 # B5 (Filippo 2026-10-15): EQ in serie archiviato come opzione d'ascolto
-# 2026-10-31 (Filippo): SERIE ridisegnato sull'EQ del Xone:92 (xone.py)
-EQTIPO = ("eqtipo", "EQ TIPO", ["ISOLATOR", "XONE 250/350/2k/2.5k"])
+# 2026-10-31 (Filippo): SERIE ridisegnato sull'EQ del Xone:92 (xone.py),
+# poi XONE sostituito dai due modi DJM-900NXS (djm.py): fedele e spinto
+EQTIPO = ("eqtipo", "EQ TIPO", ["ISOLATOR", "DJM -26", "DJM SPINTO -40"])
 BANDE = ["low", "lowmid", "midhigh", "high"]
 # sotto questo peso un blocco non si calcola (-100 dB: inudibile)
 SOGLIA_ON = 1e-5
@@ -109,44 +111,47 @@ class Codice:
         self.r(f"{y} = 0.5 * (d0 + d1);")
 
 
-def emetti_xone(g):
-    """Coefficienti dell'EQ XONE (xone.py): LR2 a 250 Hz e 2,5 kHz, campane RBJ."""
+def emetti_djm(g):
+    """Coefficienti degli EQ DJM (djm.py): scaffali RBJ S = 1, campana a 1 kHz."""
     r = g.r
-    r("// EQ XONE (B5, 2026-10-31, xone.py): sul modello dell'EQ del Xone:92.")
-    r("// LO = g LP2 - HP2 a 250 Hz, HI = g HP2 - LP2 a 2,5 kHz (LR2, Q 0,5):")
-    r("// g = 1 allpass, g = 0 kill. Medi: campane RBJ 350 Hz e 2 kHz, +6..-30 dB,")
-    r(f"// Q {xone.Q_TAGLIO!r} in taglio e {xone.Q_BOOST!r} in boost [PROVVISORIO].")
-    for nome, f0 in (("xlo", xone.F_LO), ("xhi", xone.F_HI)):
-        r(f"{nome}_k = tan(pi * {f0!r} / sr4);")
-        r(f"{nome}_kk = {nome}_k * {nome}_k;")
-        r(f"{nome}_n = 1 / (1 + {nome}_k / {xone.Q_LR2!r} + {nome}_kk);")
-        r(f"{nome}_a1 = 2 * ({nome}_kk - 1) * {nome}_n;")
-        r(f"{nome}_a2 = (1 - {nome}_k / {xone.Q_LR2!r} + {nome}_kk) * {nome}_n;")
-        r(f"{nome}_lb = {nome}_kk * {nome}_n;")
-    for nome, f0, gv in (("xlm", xone.F_LM, "g_lowmid"), ("xmh", xone.F_MH, "g_midhigh")):
-        r(f"{nome}_db = 20 * log10(max({gv}, {xone.G_MIN_MEDI!r}));")
-        r(f"{nome}_q = {xone.Q_TAGLIO!r} + ({xone.Q_BOOST - xone.Q_TAGLIO!r}) * ({nome}_db > 0);")
-        r(f"{nome}_A = pow(10, {nome}_db / 40);")
-        r(f"{nome}_w = 2 * pi * {f0!r} / sr4;")
-        r(f"{nome}_al = sin({nome}_w) / (2 * {nome}_q);")
-        r(f"{nome}_ai = 1 / (1 + {nome}_al / {nome}_A);")
-        r(f"{nome}_b0 = (1 + {nome}_al * {nome}_A) * {nome}_ai;")
-        r(f"{nome}_a1 = -2 * cos({nome}_w) * {nome}_ai;")
-        r(f"{nome}_b2 = (1 - {nome}_al * {nome}_A) * {nome}_ai;")
-        r(f"{nome}_a2 = (1 - {nome}_al / {nome}_A) * {nome}_ai;")
+    r("// EQ DJM (B5, 2026-10-31, djm.py): sul modello del DJM-900NXS")
+    r("// (LOW 70 Hz, MID 1 kHz, HI 13 kHz; -26..+6 dB). LOW = scaffale basso,")
+    r("// LOW-MID = campana 1 kHz, HIGH = scaffale alto; MID-HIGH non agisce.")
+    r("// F = fondo -26 dB, uno scaffale per lato; P = fondo -40 dB, due in fila.")
+    for var, v in djm.VARIANTI.items():
+        fondo = 10 ** (v["fondo"] / 20)
+        n = v["stadi"]
+        for lato, f0, gv, s in (("l", v["f_lo"], "g_low", 1), ("h", v["f_hi"], "g_high", -1)):
+            c = f"j{var}{lato}"
+            r(f"{c}_A = pow(10, 20 * log10(max({gv}, {fondo!r})) / {n} / 40);")
+            r(f"{c}_c = cos(2 * pi * {f0!r} / sr4);")
+            r(f"{c}_ra = 2 * sqrt({c}_A) * sin(2 * pi * {f0!r} / sr4) * {math.sqrt(0.5)!r};")
+            r(f"{c}_ap = {c}_A + 1;")
+            r(f"{c}_am = ({s}) * ({c}_A - 1);")
+            r(f"{c}_ai = 1 / ({c}_ap + {c}_am * {c}_c + {c}_ra);")
+            r(f"{c}_b0 = {c}_A * ({c}_ap - {c}_am * {c}_c + {c}_ra) * {c}_ai;")
+            r(f"{c}_b1 = 2 * {c}_A * ({c}_am - {c}_ap * {c}_c) * {c}_ai;")
+            r(f"{c}_b2 = {c}_A * ({c}_ap - {c}_am * {c}_c - {c}_ra) * {c}_ai;")
+            r(f"{c}_a1 = -2 * ({c}_am + {c}_ap * {c}_c) * {c}_ai;")
+            r(f"{c}_a2 = ({c}_ap + {c}_am * {c}_c - {c}_ra) * {c}_ai;")
+        c = f"j{var}m"
+        r(f"{c}_A = pow(10, 20 * log10(max(g_lowmid, {fondo!r})) / 40);")
+        r(f"{c}_al = sin(2 * pi * {djm.F_MID!r} / sr4) / {2 * v['q_mid']!r};")
+        r(f"{c}_ai = 1 / (1 + {c}_al / {c}_A);")
+        r(f"{c}_b0 = (1 + {c}_al * {c}_A) * {c}_ai;")
+        r(f"{c}_a1 = -2 * cos(2 * pi * {djm.F_MID!r} / sr4) * {c}_ai;")
+        r(f"{c}_b2 = (1 - {c}_al * {c}_A) * {c}_ai;")
+        r(f"{c}_a2 = (1 - {c}_al / {c}_A) * {c}_ai;")
 
 
-def emetti_cella(g, cella, uscita, ingresso):
-    """Una cella dell'EQ XONE (2 stati in st)."""
+def emetti_cella(g, c, uscita, ingresso):
+    """Una cella dell'EQ DJM (2 stati in st); c = prefisso dei coefficienti."""
     i = g.n_st
     g.n_st += 2
-    args = {"xlo_lp": "xlo_lb, 2 * xlo_lb, xlo_lb, xlo_a1, xlo_a2",
-            "xlo_hp": "xlo_n, -2 * xlo_n, xlo_n, xlo_a1, xlo_a2",
-            "xhi_lp": "xhi_lb, 2 * xhi_lb, xhi_lb, xhi_a1, xhi_a2",
-            "xhi_hp": "xhi_n, -2 * xhi_n, xhi_n, xhi_a1, xhi_a2",
-            "xlm": "xlm_b0, xlm_a1, xlm_b2, xlm_a1, xlm_a2",
-            "xmh": "xmh_b0, xmh_a1, xmh_b2, xmh_a1, xmh_a2"}[cella]
-    g.r(f"{uscita} = bq(st, {i}, {ingresso}, {args});")
+    a1 = f"{c}_a1"
+    b1 = a1 if c.endswith("m") else f"{c}_b1"
+    g.r(f"{uscita} = bq(st, {i}, {ingresso}, {c}_b0, {b1}, {c}_b2, {a1}, {c}_a2);")
+
 
 def genexpr():
     g = Codice()
@@ -177,7 +182,7 @@ def genexpr():
     if not SEMPLICE:
         r(f"Param {SELETTORE[0]}(0, min=0, max={len(VARIANTI) - 1});")
         r(f"Param {CURVA[0]}(0, min=0, max=1);")
-        r(f"Param {EQTIPO[0]}(0, min=0, max=1);")
+        r(f"Param {EQTIPO[0]}(0, min=0, max={len(EQTIPO[2]) - 1});")
     pos_data = len(g.righe)
     r("@@DATA@@")
     for nome, _, ini in MANOPOLE + [FADER]:
@@ -233,17 +238,18 @@ def genexpr():
     r()
     if SEMPLICE:
         return genexpr_isolator(g, SCELTA_INCROCI)
-    emetti_xone(g)
+    emetti_djm(g)
     r()
     # pesi delle varianti e dell'EQ in serie. Una variante con peso nullo
     # non si calcola (CPU: la traccia gira su un solo core); i suoi stati
     # si azzerano, cosi riparte pulita alla dissolvenza successiva.
-    r("// pesi: dissolvenza fra varianti vicine (1 - |s_x - i|) e fra isolator e serie")
+    r("// pesi: dissolvenza fra varianti vicine (1 - |s_x - i|) e fra i tipi di EQ")
     for i, chiave in enumerate(VARIANTI):
-        r(f"w_{chiave} = max(0, 1 - abs(s_x - {i})) * (1 - s_t);")
+        r(f"w_{chiave} = max(0, 1 - abs(s_x - {i})) * max(0, 1 - s_t);")
         r(f"on_{chiave} = w_{chiave} > {SOGLIA_ON!r};")
-    r("w_S = s_t;")
-    r(f"on_S = w_S > {SOGLIA_ON!r};")
+    for i, var in enumerate(djm.VARIANTI, 1):
+        r(f"w_{var} = max(0, 1 - abs(s_t - {i}));")
+        r(f"on_{var} = w_{var} > {SOGLIA_ON!r};")
     r()
     for lato, ingresso, uscita in (("L", "in1", "out1"), ("R", "in2", "out2")):
         r(f"// ===== lato {lato} =====")
@@ -294,22 +300,21 @@ def genexpr():
                 g.r("}")
                 stati[chiave] = (inizio, g.n_st)
                 termini.append(f"w_{chiave} * {p}")
-            # EQ XONE (B5, 2026-10-31): LO -> LO-MID -> HI-MID -> HI
-            q = f"{lato}{k}s"
-            inizio = g.n_st
-            g.r(f"{q}4 = 0;")
-            g.r("if (on_S) {")
-            emetti_cella(g, "xlo_lp", f"{q}a", u)
-            emetti_cella(g, "xlo_hp", f"{q}b", u)
-            g.r(f"{q}1 = g_low * {q}a - {q}b;")
-            emetti_cella(g, "xlm", f"{q}2", f"{q}1")
-            emetti_cella(g, "xmh", f"{q}3", f"{q}2")
-            emetti_cella(g, "xhi_hp", f"{q}a", f"{q}3")
-            emetti_cella(g, "xhi_lp", f"{q}b", f"{q}3")
-            g.r(f"{q}4 = {q}b - g_high * {q}a;")
-            g.r("}")
-            stati["S"] = (inizio, g.n_st)
-            termini.append(f"w_S * {q}4")
+            # EQ DJM (B5, 2026-10-31): LOW -> MID -> HIGH, scaffali ripetuti
+            for var, v in djm.VARIANTI.items():
+                q = f"{lato}{k}j{var}"
+                inizio = g.n_st
+                g.r(f"{q} = 0;")
+                g.r(f"if (on_{var}) {{")
+                g.r(f"{q} = {u};")
+                for _ in range(v["stadi"]):
+                    emetti_cella(g, f"j{var}l", q, q)
+                emetti_cella(g, f"j{var}m", q, q)
+                for _ in range(v["stadi"]):
+                    emetti_cella(g, f"j{var}h", q, q)
+                g.r("}")
+                stati[var] = (inizio, g.n_st)
+                termini.append(f"w_{var} * {q}")
             g.r(f"{lato}_y{k} = " + " + ".join(termini) + ";")
         # stati dei blocchi spenti a zero: ripartono puliti
         for blocco, (da, a) in stati.items():
@@ -525,8 +530,8 @@ def patch(codice):
                      numoutlets=0, presentation=1,
                      presentation_rect=[8, 140, 250, 28],
                      patching_rect=[20, 440, 250, 36], linecount=2,
-                     text="50% = 0 dB. XONE: LO e HI kill, medi fino a -30 dB; "
-                          "INCROCI solo per ISOLATOR."))
+                     text="50% = 0 dB. DJM: LOW, LOW-MID = MID 1k, HIGH; "
+                          "MID-HIGH e INCROCI solo per ISOLATOR."))
     return finestra(boxes, lines, parametri)
 
 

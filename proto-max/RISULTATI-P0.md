@@ -254,3 +254,37 @@ pubblica]. Law delle manopole dell'isolator, CURVA compresa.
 Tutte al centro: piatto entro 1e-11 dB. Polo piu vicino al cerchio
 0,99949 (44,1-192 kHz a 4x). `prova_gen.py`: PASS (casi XONE gen~ contro
 `xone.xone_os`). `MC-CHANNEL-PROVA` tolto: serviva solo al guasto di SERIE.
+
+## DJM al posto di XONE (2026-10-31, B5)
+
+All'ascolto XONE taglia ancora troppo poco (Filippo). ISOLATOR va bene;
+Filippo vuole un'opzione che tagli tantissimo, sul modello del DJM-900NXS,
+in due versioni («dammi sia 1 che 2»): fedele al manuale e spinta. Il
+selettore EQ TIPO ora e ISOLATOR / DJM -26 / DJM SPINTO -40; `xone.py`
+resta come archivio, non e piu nel dispositivo.
+
+Dato del manuale DJM-900NXS: LOW 70 Hz, MID 1 kHz, HI 13 kHz, ognuna da
+-26 a +6 dB. Pioneer non pubblica dove partono gli scaffali ne la larghezza
+della campana: i numeri sotto sono scelte [PROVVISORIO]. Modello
+`coefficienti/djm.py`: celle RBJ (scaffali S = 1, campana), LOW = scaffale
+basso, LOW-MID = campana a 1 kHz, HIGH = scaffale alto, MID-HIGH non agisce.
+Law dell'isolator in dB, fermata al fondo; +6 dB a fine corsa.
+
+| variante | scaffale LOW | scaffale HIGH | stadi per lato | Q MID | fondo |
+|---|---|---|---|---|---|
+| DJM -26 | 300 Hz | 3,6 kHz | 1 | 0,7 | -26 dB |
+| DJM SPINTO -40 | 320 Hz | 3 kHz | 2 | 0,5 | -40 dB |
+
+Tagli a 0 % (le altre al centro, 48 kHz):
+
+| banda | DJM -26 | DJM SPINTO -40 |
+|---|---|---|
+| LOW a 70 / 150 / 250 / 500 Hz | -25,8 / -22,5 / -15,8 / -5,5 | -39,8 / -36,6 / -26,8 / -8,4 |
+| MID a 300 / 1000 / 4000 Hz | -7,3 / -26,0 / -5,9 | -16,5 / -40,0 / -14,7 |
+| HIGH a 2 / 3,5 / 5 / 13 kHz | -4,6 / -12,6 / -18,0 / -25,5 | -9,3 / -24,3 / -32,9 / -39,8 |
+
+Corsa uguale per tutte: 10 % circa -14 dB, 25 % -6 dB, 50 % 0, 100 % +6
+(CURVA LINEARE). Tutte al centro: piatto. `prova_gen.py`: PASS (casi DJM
+F e P gen~ contro `djm.djm_os`, cambi di selettore senza picchi);
+`prova_semplice.py` PASS; `regole_gen.py` nessuna collisione; rumore
+bianco con manopole a 0 e a 100 %: stabile. MC-CHANNEL-S invariato.
