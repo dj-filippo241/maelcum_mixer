@@ -37,7 +37,7 @@ Regole delle PCB (nate il 2026-10-27):
 - La forma del telaio non limita la funzione (dec. 144): se un circuito non sta, cambia la scheda o il telaio, non il circuito. Schede alte 220 mm, SMD sui due lati con `d.side = "B"`, più schede affiancate sotto un pannello (dec. 142). Una 100 × 220 porta ~160 impronte su un lato, ~280 coi due. Si stima dal conteggio vero (trimmer, 100n, regolatori, ponticelli), non dai circuiti del design doc.
 - Le reti che toccano pin TSSOP (passo 0,65) vogliono piste ≤ 0,3 mm: con 0,6 Freerouting non le collega.
 - Grappolo attorno all'op-amp: `d.cluster_gap` 0,5 mm. Con 0,2 mm Freerouting lascia reti aperte (FX-SEND: NON PASSA).
-- I datasheet di analog.com non si scaricano da qui (timeout, errore HTTP/2). Copia funzionante: la pagina radiolocman del pezzo → link «Download PDF» su rlocman.ru (così è arrivato l'ADG1434 Rev. E). Pinout sempre dal datasheet, mai a memoria.
+- I datasheet di analog.com non si scaricano da qui (timeout, errore HTTP/2). Copia funzionante: la pagina radiolocman del pezzo → link «Download PDF» su rlocman.ru (così è arrivato l'ADG1434 Rev. E; il PDF è l'URL dentro `rs.php?u=`, con curl `-L`). Alps (tech.alpsalpine.com) e il catalogo Alpha (taiwanalpha.com.tw/downloads) si scaricano. Pinout sempre dal datasheet, mai a memoria.
 
 Simulare un netlist (LTspice 26.0.2 in batch; avvio 30-60 s; il log esce accanto al netlist e viene stampato):
 
