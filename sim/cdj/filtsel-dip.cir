@@ -1,0 +1,73 @@
+* =====================================================================
+* A22bis (2026-11-02): levetta HPF/OFF/LPF del canale (dec. 159a).
+* La commutazione fra DJ bus e bus HPF/LPF si fa con un ADG (BBM): il
+* passaggio e' secco. Proposta: il VCA del fader (dec. 126) abbassa il
+* segnale prima del cambio e lo rialza dopo ("dip"), cosi' l'ADG commuta
+* nel silenzio e non serve una rampa propria.
+* Casi (param mode):
+*   0 = commutazione secca al PICCO (caso peggiore), VCA fermo a 0 dB
+*   1 = dip lineare in dB: 0 -> -100 dB in 1 ms, commuta, -100 -> 0 in 1 ms
+*       (stessa forma della ramp validata in five-way §8.5)
+*   2 = dip con rete RC semplice: CV verso 1,0 V con tau 1 ms, commuta
+*       1,5 ms dopo l inizio, scarica con tau 1 ms
+*   3 = come 2 con due celle RC da 0,5 ms (CV a S, partenza morbida)
+* Sonda click = HP 2 poli ~1,6 kHz (five-way §8.5, reroute-ramp.cir).
+* Segnale 1 kHz, ampiezza di picco vp (SINE vuole il picco):
+*   +10 dBu = 3,46 Vp (metodo §8.5), +18 dBu = 8,70 Vp.
+* Misure per bus: picco della sonda prima dell'evento (programma puro) e
+* intorno all'evento (click). Bus "vecchio" = DJ, "nuovo" = HPF.
+* =====================================================================
+.include ../lib/that2181.inc
+.param mode=0
+.param vp=3.46
+.param te=2.25m
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 in 0 SINE(0 {vp} 1k)
+*
+* --- CV del dip su EC- (positiva = taglio; 0,61 V = -100 dB) ---
+* mode 1: rampa lineare 1 ms prima del cambio, risalita 1 ms dopo
+Vlin dl 0 PWL(0 0 {te-1.05m} 0 {te-0.05m} 0.61 {te+0.05m} 0.61 {te+1.05m} 0)
+* mode 2: impulso 0/1 V filtrato RC tau 1 ms (inizio 1,5 ms prima, fine 0,1 ms dopo)
+Vstep ds 0 PWL(0 0 {te-1.5m} 0 {te-1.5m+1u} 1.0 {te+0.1m} 1.0 {te+0.1m+1u} 0)
+Rrc ds drc 10k
+Crc drc 0 100n
+* mode 3: stesso impulso, due celle RC 0,5 ms con buffer (partenza morbida, a S)
+Rq1 ds dq1 10k
+Cq1 dq1 0 50n
+Eq dq1b 0 dq1 0 1
+Rq2 dq1b dq2 10k
+Cq2 dq2 0 50n
+Ecv ecm 0 value={if(mode==1, V(dl), if(mode==2, V(drc), if(mode==3, V(dq2), 0)))}
+Xvca in vout 0 ecm vcc vee THAT2181
+*
+* --- ADG con BBM: il vecchio apre a te, il nuovo chiude a te + 1 us ---
+Vold cold 0 PWL(0 1 {te} 1 {te+10n} 0)
+Vnew cnew 0 PWL(0 0 {te+1u} 0 {te+1u+10n} 1)
+.model SWADG SW(Ron=5 Roff=1G Vt=0.5 Vh=0)
+Sold vout bdj cold 0 SWADG
+Snew vout bhp cnew 0 SWADG
+* uscita multidrop: 10k lato sorgente verso il nodo di somma (massa virtuale)
+Rdj bdj 0 10k
+Rhp bhp 0 10k
+*
+* --- sonde click HP 2 poli ~1,6 kHz ---
+C1a bdj h1a 10n
+R1a h1a 0 10k
+C2a h1a hdj 10n
+R2a hdj 0 10k
+C1b bhp h1b 10n
+R1b h1b 0 10k
+C2b h1b hhp 10n
+R2b hhp 0 10k
+*
+.step param mode list 0 1 2 3
+.step param vp list 3.46 8.70
+.tran 0 8m 0 1u
+.meas tran base_dj MAX ABS(V(hdj)) FROM 0.2m TO 0.7m
+.meas tran clk_dj MAX ABS(V(hdj)) FROM {te-1.6m} TO {te+1.5m}
+.meas tran clk_hp MAX ABS(V(hhp)) FROM {te-1.6m} TO {te+2.5m}
+.meas tran base_hp MAX ABS(V(hhp)) FROM 6m TO 8m
+.meas tran gmin MIN ABS(V(ecm)) FROM 0 TO 0.1m
+.meas tran cvmax MAX V(ecm) FROM 0 TO 8m
+.end
