@@ -91,6 +91,16 @@ BBM + mute breve) → ingresso di [B] GAIN (stesso nodo del buffer line [A]).
 MC esclusa da questa variante (dec. 62; q. 7 per il futuro).
 
 ### 3.2 [B] GAIN — raccomandazione: VCA stereo a singola CV
+
+> **[SUPERATO dalla dec. 162, 2026-11-02]** Il GAIN è un pot doppio lineare
+> selezionato nel percorso del segnale, niente VCA. Circuito T1
+> [PROVVISORIO]: buffer [A] → pot 10k lin (in → massa) con Rl 4,30k dal
+> cursore a massa → non invertente OPA1612 ×3,15 (2,15k/1k) → isolator [C].
+> Metà sinistra della manopola = trim (−2/−3 dB a ore 11, silenzio negli
+> ultimi 5-10 %); 0 dB al detent; +10 a fine corsa. Tracking ≤ 0,5 dB da
+> −10 dB in su con pot selezionati stretti. Rumore del canale −94,5 dBu A
+> (era −92,9). Numeri e netlist: `sim/gain-pot/RISULTATI-gain-pot.md`. Il
+> testo sotto (VCA, trim, shaper) resta come storia.
 Il tracking ≤0,5 dB esclude il pot doppio meccanico diretto (±1-2 dB tipici). Raccomandato
 [PROVVISORIO — corretto da datasheet 2026-09-27: 218x = SINGLE channel, "dual" sono i
 porti di controllo]: 2× THAT 2180/2181 (stessa famiglia del master level — un solo tipo di

@@ -282,3 +282,12 @@ A-wtd, PASS 3,9 dB** sul −78 (era −82,9). Con 4 filtri e overdrive aperto
 circa −75,3 (condizione accettata, dec. 100). Dettagli:
 `sim/cdj/RISULTATI-fader-vca.md`.
 
+
+## 14. Aggiornamento 2026-11-02 (dec. 162): GAIN a pot doppio
+
+Il GAIN di canali e ritorni passa dal VCA a un pot doppio nel percorso
+(niente VCA a 0 dB al detent). Canale −92,9 → **−94,5** dBu A-wtd, ritorno
+−93,9 → **−96,1** (stessa regola di integrazione del riferimento; il
+ritorno vale −94,1 nel §13 con la regola vecchia). Sistema a filtri OFF:
+**−82,9 dBu A-wtd, PASS 4,9 dB** sul −78 (era −81,9). Dettagli:
+`sim/gain-pot/RISULTATI-gain-pot.md`.

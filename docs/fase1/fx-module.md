@@ -207,6 +207,15 @@ REV dec. 130.
 
 ## 5. Canale di ritorno
 
+> **[REV 2026-11-02, dec. 162]** GAIN del ritorno = pot doppio lineare
+> selezionato nel percorso, niente VCA né I/V. Circuito T2 [PROVVISORIO]:
+> buffer gain 2 → Ra 1,24k → pot 10k lin in retroazione (cursore a massa
+> virtuale, OPA1612) → invertente ×0,625 (3,24k/2k) → EQ2. Servo DC: legge
+> l'uscita del primo invertente (polarità dell'anello invariata). Metà
+> sinistra = trim; tracking ≤ 0,5 dB da −10 a +16 dB, ~0,8 dB a +20.
+> Rumore del ritorno −96,1 dBu A (era −93,9). `sim/gain-pot/RISULTATI-gain-pot.md`.
+> Restano 32 VCA per ritorni (solo reroute) + 8 dei fader.
+
 Catena (SPEC §7): buffer hi-Z → GAIN VCA (THAT 2181, −∞..0..+20, CV dal
 pot con law dB lineare + shaper) → EQ2 (§6) → METER pickup (detector
 rapido + clip latch 300-500 ms — design condiviso col meter di canale,

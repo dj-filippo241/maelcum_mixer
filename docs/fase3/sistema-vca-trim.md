@@ -93,10 +93,10 @@ canale S) e MUTE del mic. Basta la simmetria.
 
 | Ruolo | Chip | Coppie stereo | Tracking richiesto |
 |---|---|---|---|
-| GAIN canale CDJ ×4 | 8 | 4 | ≤ 0,5 dB (cdj §3.2) |
+| ~~GAIN canale CDJ ×4~~ pot doppio dalla dec. 162 (erano 8 VCA) | 0 | — | — |
 | MASTER LEVEL | 2 | 1 | ≤ 0,25 dB (SPEC) |
 | BOOTH LEVEL | 2 | 1 | ≤ 0,25 dB [PROVVISORIO, come il master] |
-| GAIN ritorno FX ×4 | 8 | 4 | ≤ 0,5 dB [PROVVISORIO] |
+| ~~GAIN ritorno FX ×4~~ pot doppio dalla dec. 162 (erano 8 VCA) | 0 | — | — |
 | REROUTE FX (4 ritorni × 4 bus) | 32 | 16 | ≤ 0,5 dB [PROVVISORIO] |
 | Overdrive filtro (una cella per lato e sezione, dec. 159; erano 8) | 4 | 4 | ≤ 0,5 dB [PROVVISORIO] |
 | MONO master (canale S) | 1 | — | — |
@@ -108,6 +108,8 @@ Totale: **62 chip** nel mixer base con un mic (più 8 col crossfader).
 stereo): **~78 chip**, lotto ~95-105 pezzi (`sim/cdj/RISULTATI-fader-vca.md`).
 **[REV 2026-10-31, dec. 159 e 160]** Overdrive del filtro 8 → 4; crossfader tolto (dec. 161): **~74 chip**
 (prima ~78, ~86 col crossfader).
+**[REV 2026-11-02, dec. 162]** GAIN di canali e ritorni a pot doppio: −16 VCA,
+−16 trimmer di simmetria, −8 shaper di CV: **~58 chip**.
 Ogni coppia ha **una CV sola** (dec. 91: «stereo linked»).
 
 **FINDING — conteggio dei VCA del modulo FX.** `fx-module.md` §7 conta

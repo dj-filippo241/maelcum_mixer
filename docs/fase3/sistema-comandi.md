@@ -13,7 +13,7 @@
 
 | Modulo | Comando | Qtà | Tipo elettrico | Note |
 |---|---|---|---|---|
-| **Canale CDJ** (×4) | GAIN | 1 | singolo 10k lin → CV | detent a 0 dB |
+| **Canale CDJ** (×4) | GAIN | 1 | doppio 10k lin selezionato, nel percorso del segnale (dec. 162; era singolo → CV) | detent a 0 dB |
 | | EQ LOW / LOW-MID / MID-HIGH / HIGH | 4 | doppio 10k LINEARE, residuo ≤ 20 Ω, SENZA contatto di fondo corsa (dec. 127) [REV 2026-10-13, dec. 105: isolator, prima taper custom] | detent al centro; tracking ≤ 0,25 dB; eq-isolator §5 e §8 |
 | | LINE / PHONO | 1 | levetta piccola 2 posizioni (dec. 123) | |
 | | Filtro HPF / OFF / LPF | 1 | levetta 3 posizioni fisse ON-OFF-ON, logica (dec. 122) | su HPF, centro OFF, giù LPF |
@@ -23,7 +23,7 @@
 | | Meter | 1 | barra 10 LED | |
 | **FX-SEND** (×4) | EQ LOW / HIGH | 2 | doppio 10k, taper custom | |
 | | LEVEL | 1 | doppio 10k log | |
-| **FX-RET** (×4, un modulo per bus, dec. 130) | GAIN ritorno | 1 | singolo → CV | |
+| **FX-RET** (×4, un modulo per bus, dec. 130) | GAIN ritorno | 1 | doppio 10k lin selezionato, nel percorso del segnale (dec. 162; era singolo → CV) | |
 | | EQ LOW / HIGH ritorno | 2 | doppio 10k, taper custom | |
 | | Fader ritorno | 1 | slider MONO 100 mm → CV → VCA per lato (dec. 120, 126) | |
 | | Reroute e self-feedback | 4 | singolo lin → CV | cablati rovesci (shaper) |
@@ -127,7 +127,7 @@ Totale 115 manopole: 64 grandi, 10 medie, 41 piccole.
 
 | Famiglia | Pot | Pezzo |
 |---|---|---|
-| Lineare standard (B) | tutti i pot → CV (GAIN canale, filtro, reroute/SELF, GAIN ritorni, POSITION, MASTER, BOOTH), EQ canale (dec. 105), GROWL, BLEND (NASTRO: log A, riga sotto) | RK14K / RK09 lineari a catalogo; reroute: RK09K singolo con scatto al centro (es. RK09K113004U, verticale, 10k B) |
+| Lineare standard (B) | tutti i pot → CV (filtro, reroute/SELF, POSITION, MASTER, BOOTH), EQ canale (dec. 105), GAIN di canali e ritorni (doppi selezionati nel percorso, dec. 162; prima → CV), GROWL, BLEND (NASTRO: log A, riga sotto) | RK14K / RK09 lineari a catalogo; reroute: RK09K singolo con scatto al centro (es. RK09K113004U, verticale, 10k B) |
 | Logaritmica standard (A) | NASTRO (five-way §5bis), LEVEL di FX-SEND (fx-module: «curva A 10 % basta»), LEVEL cuffie, SEND 1-4 di MIC/MONO (B9), GAIN del MONO (todo 131, 2026-10-26: partitore passivo prima del make-up, la A dà dB regolari; mic-mono-moduli §4) |
 | Logaritmica inversa (C 20 %) | GAIN del MIC (dec. 129 E2: col lineare l'ultimo 10 % vale 8,4 dB, con la C i dB sono quasi uguali su tutta la corsa); GAIN del MONO: NON qui, vedi riga sopra (todo 131) | A a catalogo; la scelta A contro B per MIC/MONO resta all'ascolto (B9) |
 | Curva asimmetrica | EQ di FX-SEND, ritorni, MIC e MONO; GAIN delle 5 vie | vedi sotto |
