@@ -33,7 +33,7 @@ il CUE contro il master in cuffia.
 | Canale: ingresso, GAIN (pot T + non invertente), isolator, send tap, CUE out | +1 | cdj §3.2-3.3 (isolator «polarità diritta») |
 | Fader del canale e del ritorno: VCA + I/V | +1 | datasheet THAT 2181 p. 7; sostituisce un buffer non invertente |
 | Ricevitore DJ bus (massa virtuale, nel 5-way, non disegnato in five-way §2) | −1 | backplane §4, `sim/cdj/djbus-level.cir` |
-| 5-way da tensione d'ingresso a MSUM out (pad, banca, gate, celle, drive, make-up) | +1 | **misurato oggi**: `module-noise-v031.cir` in `.ac`, fase −22° a 10 Hz e −11° a 100 kHz (resto = allpass della banca) |
+| 5-way da tensione d'ingresso a MSUM out (pad, banca, gate, celle, drive, make-up) | +1 | **misurato oggi**: `pol-5way-ac.cir`, fase −22° a 10 Hz e −11° a 100 kHz (resto = allpass della banca) |
 | MASTER SUM [A2] + MONO [A3] | −1 | master-out §2, `master-segnale.py` |
 | [A] [B] [C] [N] buffer, MASTER LEVEL e BOOTH LEVEL (VCA + I/V), [F] [G] hot | +1 | master-out §2-3, datasheet p. 7 |
 | FX-SEND: buffer, EQ2, LEVEL, assign, iniezione | +1 | fx-send §2; EQ2 = due celle invertenti (`sim/fx/fx-eq2.cir`) |
