@@ -1,5 +1,7 @@
 # RISULTATI — rumore SEND CHAIN FX a canali vivi (coda 71A, S5-sessione 2026-10-02)
 
+> **SUPERATO 2026-11-03 (todo 184)**: cella LOW vecchia, switch prima della R, e il conto di sistema (−73 / −66,6) è sbagliato. Fa fede `RISULTATI-send-chain-v2.md`.
+
 Netlist: `send-chain-noise.cir`. Task: verificare/riffinare la stima
 «−95 dBu per canale» di `fx-send-module.md` §6 [PROVVISORIO]. Metodo
 casa: densità a 12 punti, integrale trapezoidale di en² in python,

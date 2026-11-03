@@ -152,6 +152,14 @@ separabilità, accettato da dec. 91.
 
 ## 6. Rumore (nota per il sistema)
 
+> **REV 2026-11-03 (todo 184).** Rifatto con la scheda v0.2:
+> `sim/fx/send-chain-noise-v2.cir`, `RISULTATI-send-chain-v2.md`. Un send
+> assegnato: −101,7 dBu A al bus a LEVEL max, −110,7 a −20 dB, floor
+> −111,2 (4 dB meglio della vecchia topologia: gli assign spenti escono dal
+> nodo del bus). Sistema con 4 send al massimo su ogni bus: −81,8 dBu A,
+> PASS. I −73 / −66,6 sotto sono un errore di conto: superati. Un buffer
+> d'iniezione per lato (8 → 2 sezioni) ha lo stesso rumore [PROVVISORIO].
+
 La sezione send NON tocca il percorso principale del canale (il budget
 canale −90,3 dBu A-wtd resta valido: il tap è un'uscita bufferizzata in
 parallelo). Il rumore del micro-modulo viaggia solo verso i bus FX:

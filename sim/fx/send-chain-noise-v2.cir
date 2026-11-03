@@ -1,0 +1,123 @@
+* ============================================================
+* Todo 184 (2026-11-03) — rumore della SEND CHAIN FX con la scheda v0.2
+* Rifà send-chain-noise.cir (2026-10-02), che descrive la cella LOW
+* vecchia (4 sezioni da 31k, R 1k, C 56n) e lo switch PRIMA della R di
+* iniezione. Qui:
+*  - cella LOW Baxandall, pot doppio 10k, R 324, C 180n C0G
+*    (fx-eq2-pot10k.cir, pcb/fx-send/fx-send.py), detent xl 0,5;
+*  - cella HIGH sottrattiva invariata (trio 49k9), detent thh 0,5;
+*  - LEVEL pot 10k log: lv 0 = massimo, lv 1 = -20 dB, lv 2 = tutto giù;
+*  - switch π SPDT DOPO la R 10k di iniezione, sul nodo a massa virtuale
+*    del bus (todo 185, RISULTATI-fx-send-assign.md §2): spento, la serie
+*    apre e il nodo del bus non vede la sorgente.
+* topo 0 = vecchio: Ron prima del buffer, R 10k sempre sul bus; gli altri
+*          3 assign del canale spenti = buffer vivo con ingresso a massa
+*          e R 10k sul bus (com'è davvero la scheda vecchia; il netlist
+*          del 2026-10-02 li lasciava flottanti).
+* topo 1 = nuovo, un buffer per linea (scheda attuale: 4 sezioni/lato).
+* topo 2 = nuovo, un buffer per lato che pilota le 4 R (8 -> 2 sezioni);
+*          le 3 R spente vanno a massa dallo shunt del loro π.
+* Un canale vivo sul bus, un assign ON; gli altri contributori del bus
+* (altri canali, mic, mono, matrice) non sono qui: sono nel budget docs/06.
+* Metodo §8.9: densità a 16 punti + noise_total.py, MAI .meas INTEG.
+* ============================================================
+.include ../lib/opamp-audio.inc
+.param topo=1
+.param lv=0
+.param t0={if(topo==0,1,0)}
+.param t2={if(topo==2,1,0)}
+* LEVEL: parte alta e parte bassa del pot 10k
+.param rtop={if(lv==0,1m, if(lv==1,9k, 10k))}
+.param rbot={if(lv==0,10k, if(lv==1,1k, 1m))}
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+
+* ---------- tap di canale: driver bufferizzato <=50 ohm ----------
+V1 vin 0 DC 0 AC 1
+Rsrc vin tap 47
+
+* ---------- buffer IN ----------
+Xib tap v_pre v_pre vcc vee OP1612
+
+* ---------- cella LOW Baxandall 120 Hz, pot 10k al detent ----------
+RinL v_pre naL 324
+RzaL naL nbL 5k
+CzaL naL nbL 180n
+XopL 0 nbL v_lo vcc vee OP1654
+RzbL nbL ncL 5k
+CzbL nbL ncL 180n
+RfL ncL v_lo 324
+
+* ---------- cella HIGH sottrattiva 4,5 kHz al detent ----------
+Ch1 v_lo nha 10n
+Ch2 nha nhb 10n
+Rh1 nha vhp 5.23k
+Rh2 nhb 0 2.5k
+X1h nhb vhp vhp vcc vee OP1654
+Rh3 vhp nvh 10k
+Rh4 nvh vhn 10k
+X2h 0 nvh vhn vcc vee OP1654
+Rp1h vhn wph 5k
+Rp2h vhp wph 5k
+Rah v_lo nsh 49.9k
+Rbh wph nsh 49.9k
+Rfh nsh v_hi 49.9k
+X3h 0 nsh v_hi vcc vee OP1654
+
+* ---------- LEVEL pot 10k log ----------
+Rlt v_hi w {rtop}
+Rlb w 0 {rbot}
+
+* ---------- topo 0: Ron prima del buffer (vecchio) ----------
+* topo 1/2: il cursore va diritto al buffer (Ron 1 mohm)
+Ron w sw {if(topo==0,4.7,1m)}
+
+* ---------- buffer di iniezione dell'assign vivo ----------
+Xinj sw inj inj vcc vee OP1654
+Rinj inj ninj 10k
+* nuovo: serie del π dopo la R (topo 0: corto)
+Rser ninj net1 {if(topo==0,1m,4.7)}
+
+* ---------- gli altri 3 assign dello stesso canale ----------
+* topo 0: buffer vivo con ingresso a massa (shunt) e R 10k sul bus
+* (sullo STESSO bus no: ogni assign va a un bus diverso. Qui conta solo
+*  il bus 1; gli altri 3 assign del canale non toccano net1.)
+* topo 2: il buffer comune vede 3 R 10k a massa (shunt dopo la R)
+Rl2 inj 0 {if(topo==2,10k/3,1G)}
+
+* ---------- gli altri 3 canali sullo stesso bus, assign OFF ----------
+* topo 0: shunt a massa all'ingresso del buffer, buffer vivo, R 10k sul
+*         nodo del bus (alzano il noise gain del summer e versano en)
+* topo 1/2: la serie del π è aperta, il bus non li vede
+Xo1 0 o1 o1 vcc vee OP1654
+Ro1 o1 net1 {if(topo==0,10k,1G)}
+Xo2 0 o2 o2 vcc vee OP1654
+Ro2 o2 net1 {if(topo==0,10k,1G)}
+Xo3 0 o3 o3 vcc vee OP1654
+Ro3 o3 net1 {if(topo==0,10k,1G)}
+
+* ---------- summing virtual-earth del modulo FX (Rf 10k) ----------
+Rf net1 vbus 10k
+Xsum 0 net1 vbus vcc vee OP1612
+
+.step param lv list 0 1 2
+.step param topo list 0 1 2
+.noise V(vbus) V1 dec 50 10 30k
+.meas noise on1 FIND V(onoise) AT 20
+.meas noise on2 FIND V(onoise) AT 31.5
+.meas noise on3 FIND V(onoise) AT 50
+.meas noise on4 FIND V(onoise) AT 80
+.meas noise on5 FIND V(onoise) AT 125
+.meas noise on6 FIND V(onoise) AT 200
+.meas noise on7 FIND V(onoise) AT 315
+.meas noise on8 FIND V(onoise) AT 500
+.meas noise on9 FIND V(onoise) AT 800
+.meas noise on10 FIND V(onoise) AT 1250
+.meas noise on11 FIND V(onoise) AT 2000
+.meas noise on12 FIND V(onoise) AT 3150
+.meas noise on13 FIND V(onoise) AT 5000
+.meas noise on14 FIND V(onoise) AT 8000
+.meas noise on15 FIND V(onoise) AT 12500
+.meas noise on16 FIND V(onoise) AT 20000
+.meas noise g1k FIND gain AT 1000
+.end

@@ -291,3 +291,16 @@ Il GAIN di canali e ritorni passa dal VCA a un pot doppio nel percorso
 ritorno vale −94,1 nel §13 con la regola vecchia). Sistema a filtri OFF:
 **−82,9 dBu A-wtd, PASS 4,9 dB** sul −78 (era −81,9). Dettagli:
 `sim/gain-pot/RISULTATI-gain-pot.md`.
+
+
+## 15. Aggiornamento 2026-11-03 (todo 184): send FX assegnati
+
+Send chain rifatta con la scheda v0.2 (cella LOW Baxandall, switch dopo la
+R di iniezione): `sim/fx/send-chain-noise-v2.cir`,
+`sim/fx/RISULTATI-send-chain-v2.md`. Un send assegnato vale −101,7 dBu A
+al bus a LEVEL al massimo, −110,7 a −20 dB. Con pedale a 0 dB e ritorno al
+detent il sistema a filtri OFF resta fra **−82,8 e −81,8 dBu A-wtd** (4 send
+al massimo su ogni bus), −80,4 coi reroute a peso 1: **PASS anche con gli
+FX in uso**. I −73 / −66,6 dell'addendum del §7 e della dec. 95 non seguono
+dai numeri del loro documento (servirebbero ~26 dB fra send e master):
+sono superati.
