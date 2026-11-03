@@ -149,3 +149,27 @@ Proposta se Filippo dice sì: T1 sul canale (un op-amp, migliore al
 detent), T2 sul ritorno (migliore verso +20, quasi indifferente alla
 tolleranza della pista). [PROVVISORIO: dipende dalla selezione misurata a
 banco.]
+
+## 5. Headroom del buffer d'ingresso del ritorno (todo 220, 2026-11-03)
+
+Problema (§4): buffer a guadagno 2, +18 dBu al jack = 8,70 Vp → 17,4 Vp
+su ±18 V. Tosa: l'uscita dell'op-amp non arriva a 17,4 V col carico di
+Ra 1,24k, e il rail LM317 ha la sua tolleranza.
+
+Rimedio [PROVVISORIO]: **buffer a guadagno 1** (Rg tolta: inseguitore;
+il servo entra ancora dal nodo FB con Rinj 1 MΩ, iniezione −Rf/Rinj
+invariata) e i 6 dB passano all'invertente finale di T2: ×1,24
+(Rk2f 4,02k / Rk2i 3,24k) al posto di ×0,625. Netlist
+`sim/gain-pot/ritorno-buffer-g1.cir` (copia di gain-pot-noise-ritorno.cir,
+T2, `.step gb 2 / 1`).
+
+| | Buffer ×2 (oggi) | Buffer ×1 |
+|---|---|---|
+| Picco al buffer a +18 dBu | 17,4 V (tosa) | 8,7 V (margine 7 V) |
+| Primo stadio di T2 al detent | 4 dB sopra l'uscita | 2 dB sotto l'uscita |
+| Guadagno al detent (1 kHz) | 0,989 (−0,09 dB) | 0,999 (−0,01 dB) |
+| Rumore del ritorno | −96,3 dBu A | −96,2 dBu A |
+
+Costo: zero componenti (una R in meno). Rumore: +0,1 dB, nel rumore
+del calcolo. Il fondo corsa +20 dB con ritorno a +18 dBu resta
+governato dalla regola K4 (fx-module §5), come prima.

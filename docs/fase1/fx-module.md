@@ -190,7 +190,11 @@ REV dec. 130.
   nulling offset ≥84 dB (3 mV → 191 nV), settling τ ≈ 3 s. Il cap film
   47 µF resta alternativa economica (angolo 3,4 Hz) ma il servo evita
   elettrolitici/film enormi nel percorso (coerente con dec. 65).
-- Tolleranza ritorno −20…+18 dBu: il buffer JFET + gain VCA a −∞..0
+- [REV 2026-11-03, todo 220: il conto sotto era sbagliato (+18 dBu = 8,70 Vp,
+  non 6,9; col guadagno 2 il buffer va a 17,4 Vp su ±18 V e tosa). Buffer a
+  guadagno 1 (inseguitore, servo invariato sul nodo FB) e i 6 dB all'invertente
+  finale del GAIN T2 (×1,24): picco 8,7 V, rumore −96,2 dBu A (+0,1 dB).
+  `sim/gain-pot/RISULTATI-gain-pot.md` §5.] [SUPERATO] Tolleranza ritorno −20…+18 dBu: il buffer JFET + gain VCA a −∞..0
   assorbe tutto il range; +18 dBu in ingresso = 6,9 Vp: headroom dominio
   ±18 ✓ (stesso worst del canale).
 - Protezione: R serie + TVS bidirezionali low-cap. **Verifica v0.2 (§8.4) —
@@ -210,7 +214,8 @@ REV dec. 130.
 > **[REV 2026-11-02, dec. 162]** GAIN del ritorno = pot doppio lineare
 > selezionato nel percorso, niente VCA né I/V. Circuito T2 [PROVVISORIO]:
 > buffer gain 2 → Ra 1,24k → pot 10k lin in retroazione (cursore a massa
-> virtuale, OPA1612) → invertente ×0,625 (3,24k/2k) → EQ2. Servo DC: legge
+> virtuale, OPA1612) → invertente ×0,625 (3,24k/2k) → EQ2. [REV 2026-11-03, todo 220:
+> buffer gain 1 e invertente ×1,24 (4,02k/3,24k), per l'headroom a +18 dBu.] Servo DC: legge
 > l'uscita del primo invertente (polarità dell'anello invariata). Metà
 > sinistra = trim; tracking ≤ 0,5 dB da −10 a +16 dB, ~0,8 dB a +20.
 > Rumore del ritorno −96,1 dBu A (era −93,9). `sim/gain-pot/RISULTATI-gain-pot.md`.
