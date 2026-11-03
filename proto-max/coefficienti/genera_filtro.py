@@ -1,9 +1,12 @@
 """Genera il dispositivo MC-FILTRO (prototipo Max P1, parte 1).
 
-Uso:  python3 proto-max/coefficienti/genera_filtro.py [--semplice]
+Uso:  python3 proto-max/coefficienti/genera_filtro.py [--semplice | --bus hpf|lpf]
 Scrive in proto-max/: MC-FILTRO.genexpr, .maxpat, .amxd
 Con --semplice scrive MC-FILTRO-S: le scelte d'ascolto di Filippo
-(2026-10-21) fissate, senza selettori: CORE PULITO (c-B), BUTTERWORTH.
+fissate, senza selettori: CORE OTA (a') dal 2026-10-31, BUTTERWORTH.
+Con --bus hpf (o lpf) scrive MC-FILTRO-HPF (o -LPF): la sezione del bus
+dopo il fader (dec. 159). Come il -S, ma una sezione sola, senza MODO e
+senza ramo OFF: va sulla traccia del bus, che riceve la somma dei canali.
 
 I numeri vengono da filtro.py; oversampling e contenitore .amxd da
 genera.py (P0). Come in P0, il codice gen~ usa solo assegnazioni,
@@ -52,6 +55,16 @@ SOGLIA_OD = 1e-9
 SEMPLICE = False
 SCELTA_CORE = "a"               # "a" = OTA (a'), "c" = PULITO (c-B); OTA dal 2026-10-31 (libretto 8.1)
 SCELTA_PEND = 0                 # indice in filtro.ALLINEAMENTI: Butterworth
+# sezione del bus (dec. 159): None, "hp" o "lp"; implica SEMPLICE
+BUS = None
+
+
+def sezioni():
+    return (BUS,) if BUS else ("hp", "lp")
+
+
+def manopole():
+    return [m for m in MANOPOLE if not BUS or m[0].endswith("_" + BUS)]
 
 
 def con_limitatore():
@@ -162,10 +175,14 @@ def genexpr():
     r("// SVF 4 poli (Q 0,541 fissa + Q 1,307 con RES), core OTA (a') col")
     r("// tetto di 1,55 V o pulito (c-B), limitatore a diodi. Banca a 4x.")
     r()
+    if BUS:
+        r(f"// Sezione {BUS.upper()} sul bus dopo il fader (dec. 159): riceve la")
+        r("// somma dei canali assegnati, guadagno 1 per canale.")
     funzioni(r)
-    for nome, _, ini in MANOPOLE:
+    for nome, _, ini in manopole():
         r(f"Param {nome}({ini}, min=0, max=100);")
-    r(f"Param {MODO[0]}({MODO[3]}, min=0, max=2);")
+    if not BUS:
+        r(f"Param {MODO[0]}({MODO[3]}, min=0, max=2);")
     if con_limitatore():
         r(f"Param {LIMIT[0]}({LIMIT[3]}, min=0, max={len(LIMIT[2]) - 1});")
     if not SEMPLICE:
@@ -173,9 +190,10 @@ def genexpr():
         r(f"Param {PENDENZA[0]}({PENDENZA[3]}, min=0, max=2);")
     pos_data = len(g.righe)
     r("@@DATA@@")
-    for nome, _, ini in MANOPOLE:
+    for nome, _, ini in manopole():
         r(f"History s_{nome}({ini});")
-    r(f"History s_{MODO[0]}({MODO[3]});")
+    if not BUS:
+        r(f"History s_{MODO[0]}({MODO[3]});")
     if con_limitatore():
         r(f"History s_{LIMIT[0]}({LIMIT[3]});")
     if not SEMPLICE:
@@ -187,9 +205,10 @@ def genexpr():
     r("t1 = exp(-1 / (0.001 * samplerate));")
     r("t10 = exp(-1 / (0.010 * samplerate));")
     r("t20 = exp(-1 / (0.020 * samplerate));")
-    for nome, _, _ in MANOPOLE:
+    for nome, _, _ in manopole():
         r(f"s_{nome} = {nome} + t10 * (s_{nome} - {nome});")
-    r("s_modo = modo + t1 * (s_modo - modo);")
+    if not BUS:
+        r("s_modo = modo + t1 * (s_modo - modo);")
     if con_limitatore():
         r("s_lim = lim + t20 * (s_lim - lim);")
         a2, a3 = filtro.LIM_PULITO["2+2"], filtro.LIM_PULITO["3+3"]
@@ -203,9 +222,10 @@ def genexpr():
     if not SEMPLICE:
         r("s_core = core + t20 * (s_core - core);")
         r("s_pend = pend + t20 * (s_pend - pend);")
-    r("w_hp = max(0, 1 - abs(s_modo));")
-    r("w_off = max(0, 1 - abs(s_modo - 1));")
-    r("w_lp = max(0, 1 - abs(s_modo - 2));")
+    if not BUS:
+        r("w_hp = max(0, 1 - abs(s_modo));")
+        r("w_off = max(0, 1 - abs(s_modo - 1));")
+        r("w_lp = max(0, 1 - abs(s_modo - 2));")
     al = list(filtro.ALLINEAMENTI.values())
     if SEMPLICE:
         r()
@@ -232,7 +252,7 @@ def genexpr():
                 for j, a in enumerate(al))
             r(f"{nome} = {termini};")
     r("dq1 = q1i;")
-    for sez in ("hp", "lp"):
+    for sez in sezioni():
         r(f"// sezione {sez.upper()}: FREQ dec. 102 (a), RES dec. 102 (b)")
         r(f"th = s_freq_{sez} / 100;")
         if sez == "hp":  # dec. 137: HPF da 20 Hz
@@ -269,7 +289,7 @@ def genexpr():
             i = base
             out = {}
             if SEMPLICE:
-                for sez in ("hp", "lp"):
+                for sez in sezioni():
                     p = f"{SCELTA_CORE}{sez}"
                     o = f"{p}h" if sez == "hp" else f"{p}l"
                     r(f"{o} = sez_{SCELTA_CORE}0_{sez}(st, {i}, xin,"
@@ -283,8 +303,11 @@ def genexpr():
                     r(f"o{sez} = o{sez} + od_{sez} * ({filtro.OD_K!r}"
                       f" * clipd(2 * o{sez}) - o{sez});")
                     r("}")
-                r(f"{lato}_y{k} = (w_off * xin + w_hp * ohp + w_lp * olp)"
-                  f" / {filtro.LIV!r};")
+                if BUS:
+                    r(f"{lato}_y{k} = o{BUS} / {filtro.LIV!r};")
+                else:
+                    r(f"{lato}_y{k} = (w_off * xin + w_hp * ohp + w_lp * olp)"
+                      f" / {filtro.LIV!r};")
                 continue
             for nome_c in ("a", "c"):
                 r(f"{nome_c}hph = 0;")
@@ -311,7 +334,7 @@ def genexpr():
             r(f"{lato}_y{k} = (w_off * xin + w_hp * ohp + w_lp * olp)"
               f" / {filtro.LIV!r};")
         if SEMPLICE:
-            n_st = base + 16
+            n_st = base + 8 * len(sezioni())
         else:
             # core spento: stati a zero, riparte pulito alla dissolvenza
             for nome_c, da in (("a", base), ("c", base + 16)):
@@ -374,12 +397,13 @@ def patch(codice):
         lines.append(linea(pid, 0, "obj-gen", 0))
         parametri[id_] = [nome_live, nome_live, 0]
 
-    for i, (ng, nl, ini) in enumerate(MANOPOLE):
+    for i, (ng, nl, ini) in enumerate(manopole()):
         comando(i, f"obj-d{i}", ng, nl, "live.dial",
                 [8 + 56 * i, 8, 50, 48],
                 {"parameter_type": 0, "parameter_mmax": 100.0,
                  "parameter_initial": [ini], "parameter_unitstyle": 5})
     for j, (ng, nl, voci, ini) in enumerate(
+            () if BUS else
             ((MODO, LIMIT) if con_limitatore() else (MODO,)) if SEMPLICE
             else (MODO, CORE, PENDENZA, LIMIT)):
         comando(6 + j, f"obj-t{j}", ng, nl, "live.tab",
@@ -391,11 +415,15 @@ def patch(codice):
                      numoutlets=0, presentation=1,
                      presentation_rect=[8, 144, 330, 24],
                      patching_rect=[20, 440, 330, 30], linecount=2,
-                     text="FREQ HPF 20 Hz-35 kHz, LPF 10 Hz-35 kHz. RES oltre "
-                          "90 % = fischio. 0 dBu = -12 dBFS."
+                     text=(f"Bus {BUS.upper()} dopo il fader (dec. 159): "
+                           "somma dei canali. RES oltre 90 % = fischio. "
+                           "0 dBu = -12 dBFS. Fader della traccia a 0 dB."
+                           if BUS else
+                           "FREQ HPF 20 Hz-35 kHz, LPF 10 Hz-35 kHz. RES oltre "
+                           "90 % = fischio. 0 dBu = -12 dBFS."
                           + (f" Semplice: {CORE[2][SCELTA_CORE == 'c']}, "
                              f"{list(filtro.ALLINEAMENTI)[SCELTA_PEND]}."
-                             if SEMPLICE else " LIMITATORE solo per PULITO.")))
+                             if SEMPLICE else " LIMITATORE solo per PULITO."))))
     p = {"patcher": {
         "fileversion": 1,
         "appversion": {"major": 9, "minor": 0, "revision": 0,
@@ -426,9 +454,14 @@ def patch(codice):
 
 
 def main():
-    global SEMPLICE, NOME
-    if "--semplice" in sys.argv[1:]:
+    global SEMPLICE, NOME, BUS
+    arg = sys.argv[1:]
+    if "--semplice" in arg:
         SEMPLICE, NOME = True, NOME + "-S"
+    elif "--bus" in arg:
+        BUS = arg[arg.index("--bus") + 1].lower()[:2]
+        assert BUS in ("hp", "lp"), "--bus hpf oppure --bus lpf"
+        SEMPLICE, NOME = True, NOME + "-" + BUS.upper() + "F"
     codice = genexpr()
     with open(os.path.join(USCITA, f"{NOME}.genexpr"), "w") as f:
         f.write(codice)

@@ -118,6 +118,27 @@ def main():
     for nome, nuovo, manopole, selettori in DISPOSITIVI:
         print(f"{nome}-S contro {nome} con {selettori}")
         errori += confronta(nome, nuovo, manopole, selettori, rnd) > TOLL
+    # bus dopo il fader (dec. 159): MC-FILTRO-HPF/-LPF contro -S con MODO
+    for sez, modo in (("HPF", 0), ("LPF", 2)):
+        semp, bus = leggi("MC-FILTRO-S"), leggi(f"MC-FILTRO-{sez}")
+        peggiore = 0.0
+        for caso in range(6):
+            p = manopole_filtro(rnd)
+            p[gf.MODO[0]] = modo
+            liv = 1.0954 * 10 ** (rnd.uniform(-20, 12) / 20) / filtro.LIV
+            gs, gb = pf.nuovo(semp), pf.nuovo(bus)
+            gs.imposta(**p)
+            gb.imposta(**{k: v for k, v in p.items()
+                          if k.endswith("_" + sez[:2].lower())})
+            dmax = 0.0
+            for i in range(2400):
+                l, r = ingresso(i, liv)
+                a, b = gs.campione(l, r), gb.campione(l, r)
+                dmax = max(dmax, abs(a[0] - b[0]), abs(a[1] - b[1]))
+            peggiore = max(peggiore, dmax)
+            print(f"  {'ok  ' if dmax <= TOLL else 'FUORI'} MC-FILTRO-{sez}"
+                  f" caso {caso + 1}: scarto massimo {dmax:.1e}")
+        errori += peggiore > TOLL
     print("PASS" if errori == 0 else f"FAIL: {errori} dispositivi fuori")
     return 0 if errori == 0 else 1
 
