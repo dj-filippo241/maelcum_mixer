@@ -159,11 +159,14 @@ for s in ("L", "R"):
 
 d.side = "B"
 d.block = "MONO [A3] (matrice M/S + VCA su S, mono-ms.cir; resistenze NOTA)"
-# M = -(L+R)/2 ; S = (L-R)/2 ; Sv = -S dal VCA + I/V ; L' = -(M + Sv) = L ; R' = Sv - M = R
-# (somma invertente di prima: la catena [A2]+[A3] resta invertente, come [A2] da solo)
+# M = -(L+R)/2 ; S = (L-R)/2 ; Sv = +S dal VCA + I/V (datasheet THAT 2181 Rev 03 p. 7: «the signal
+# path through the VCA and the output opamp is non-inverting») ; -(M + Sv) = R ; Sv - M = L.
+# Prima le due uscite erano scambiate (L e R invertiti a tasto spento): sim/master-out/
+# RISULTATI-mono-ms-comp.md. La catena [A2]+[A3] resta invertente, come [A2] da solo.
 d.R("SUM_L", "NM", "20k 0.1%")
 d.R("SUM_R", "NM", "20k 0.1%")
 d.R("NM", "MID", "10k 0.1%")
+d.C("NM", "MID", "47p C0G", note="stesso polo dell'I/V del VCA (20k // 22p): separazione piatta fino a 20 kHz")
 d.R("SUM_L", "SDP", "20k 0.1%")
 d.R("SDP", "AGND", "10k 0.1%")
 d.R("SUM_R", "SDN", "20k 0.1%")
@@ -174,19 +177,19 @@ d.R("NSV", "SV", "20k 0.1%")
 d.C("NSV", "SV", "22p C0G")
 d.R("MID", "NLO", "20k 0.1%")
 d.R("SV", "NLO", "20k 0.1%")
-d.R("NLO", "LO_L", "20k 0.1%")
+d.R("NLO", "LO_R", "20k 0.1%")
 d.R("SV", "RDP", "20k 0.1%")
 d.R("RDP", "AGND", "20k 0.1%")
 d.R("MID", "RDN", "20k 0.1%")
-d.R("RDN", "LO_R", "20k 0.1%")
-opa("U3", ("AGND", "NSV", "SV"), ("AGND", "NLO", "LO_L"), note="I/V del VCA di S e uscita L'")
+d.R("RDN", "LO_L", "20k 0.1%")
+opa("U3", ("AGND", "NSV", "SV"), ("AGND", "NLO", "LO_R"), note="I/V del VCA di S e uscita R'")
 # tasto MONO: chiuso = +5 V -> RC 1 ms -> follower -> 0,61 V su EC- = -100 dB (mono-ms.cir)
 d.R("MONO_SW", "AGND", "10k", note="NOTA: tasto a ritenuta verso +5 REF; aperto = stereo")
 d.R("MONO_SW", "MRC", "10k")
 d.C("MRC", "AGND", "100n C0G", note="rampa 1 ms (dec. 80, senza BBM)")
 d.R("MBUF", "ECM_MONO", "7k15 0.1%")
 d.R("ECM_MONO", "AGND", "1k 0.1%", note="5 V x 1/8,15 = 0,613 V = -100 dB")
-opa("U4", ("RDP", "RDN", "LO_R"), ("MRC", "MBUF", "MBUF"), note="uscita R' e follower della rampa MONO")
+opa("U4", ("RDP", "RDN", "LO_L"), ("MRC", "MBUF", "MBUF"), note="uscita L' e follower della rampa MONO")
 
 # ------------------------------------------------------------ insert del grafico (dec. 111 b)
 d.side = "F"

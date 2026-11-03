@@ -1,0 +1,89 @@
+* ============================================================
+* Todo 200 (2026-11-03) — matrice MONO del master coi componenti
+* Circuito: pcb/master/master-segnale.py, blocco "MONO [A3]" (NOTE.md p. 4).
+* Ingressi = uscite del MASTER SUMMING [A2] (SUM_L, SUM_R: già invertite,
+* qui chiamate a e b). M = -(a+b)/2 ; S = (a-b)/2 ; Sv = -w*S (VCA + I/V);
+* L' = -(M + Sv) = a ; R' = Sv - M = b (con w = 1).
+* Resistenze 0,1 % in Monte Carlo (mc, distribuzione uniforme), op-amp
+* OPA1612 (opamp-audio.inc). VCA: corrente d'ingresso da 20k su massa
+* virtuale (pin IN), uscita in corrente verso l'I/V 20k // 22p; modello
+* lineare: sensore di corrente + F, guadagno {gv} con errore {ge} in dB.
+* POLARITA' (datasheet THAT 2181 Rev 03 p. 7): «The signal path through the
+* VCA and the output opamp is non-inverting»: con l'I/V 20k, Sv = +S, non -S
+* come presume il commento del generatore. F1 qui segue il datasheet.
+* Datasheet p. 4: «Gain at 0 V Control Voltage» +-0,1 / 0,15 / 0,2 dB (A/B/C).
+* RUMORE (mono-ms-comp-noise.cir): valori nominali, VCA col floor del datasheet
+* (-98 dBV 20-20k con I/V 20k, p. 8: 88,9 nV/rtHz) iniettato con G lineare.
+* sel 0 = uscita del differenziale (U4A), sel 1 = uscita del sommatore (U3B).
+* cm = condensatore in parallelo al 10k del sommatore M (0 = scheda di oggi).
+* ============================================================
+.include ../lib/opamp-audio.inc
+.param tol=0
+.param sel=0
+.param ge=0
+.param gv={10**(ge/20)}
+.param run=1
+Vcc vp 0 DC 15
+Vee vm 0 DC -15
+VA a 0 DC 0 AC 1
+VB b 0 DC 0
+
+* ---- M = -(a+b)/2 ----
+R1 a nm {mc(20k,tol)}
+R2 b nm {mc(20k,tol)}
+R3 nm mid {mc(10k,tol)}
+Cm nm mid {cm+1f}
+XU2A 0 nm mid vp vm OP1612
+* ---- S = (a-b)/2 ----
+R4 a sdp {mc(20k,tol)}
+R5 sdp 0 {mc(10k,tol)}
+R6 b sdn {mc(20k,tol)}
+R7 sdn side {mc(10k,tol)}
+XU2B sdp sdn side vp vm OP1612
+* ---- VCA: 20k nel pin IN (massa virtuale), corrente in uscita ----
+R8 side vin {mc(20k,tol)}
+Vsen vin 0 0
+F1 nsv 0 Vsen {gv}
+Cvca nsv 0 10p
+* floor del VCA: rumore termico di 476k (88,9 nV) -> corrente /20k nel nodo I/V
+Rvn nvn 0 476k
+Gvn 0 nsv nvn 0 {1/20k}
+R9 nsv sv {mc(20k,tol)}
+C9 nsv sv 22p
+XU3A 0 nsv sv vp vm OP1612
+* ---- L' = -(M + Sv) ----
+R10 mid nlo {mc(20k,tol)}
+R11 sv nlo {mc(20k,tol)}
+R12 nlo lo_l {mc(20k,tol)}
+XU3B 0 nlo lo_l vp vm OP1612
+* ---- R' = Sv - M ----
+R13 sv rdp {mc(20k,tol)}
+R14 rdp 0 {mc(20k,tol)}
+R15 mid rdn {mc(20k,tol)}
+R16 rdn lo_r {mc(20k,tol)}
+XU4A rdp rdn lo_r vp vm OP1612
+
+* uscita scelta con E lineari (le E comportamentali non portano il rumore)
+Es1 xo 0 lo_r 0 {1-sel}
+Es2 osel xo lo_l 0 {sel}
+.param cm=44p
+.step param sel list 0 1
+.noise V(osel) VA dec 50 20 20k
+.meas noise on1 FIND V(onoise) AT 20
+.meas noise on2 FIND V(onoise) AT 31.5
+.meas noise on3 FIND V(onoise) AT 50
+.meas noise on4 FIND V(onoise) AT 80
+.meas noise on5 FIND V(onoise) AT 125
+.meas noise on6 FIND V(onoise) AT 200
+.meas noise on7 FIND V(onoise) AT 315
+.meas noise on8 FIND V(onoise) AT 500
+.meas noise on9 FIND V(onoise) AT 800
+.meas noise on10 FIND V(onoise) AT 1250
+.meas noise on11 FIND V(onoise) AT 2000
+.meas noise on12 FIND V(onoise) AT 3150
+.meas noise on13 FIND V(onoise) AT 5000
+.meas noise on14 FIND V(onoise) AT 8000
+.meas noise on15 FIND V(onoise) AT 12500
+.meas noise on16 FIND V(onoise) AT 20000
+.meas noise g1k FIND gain AT 1000
+.end

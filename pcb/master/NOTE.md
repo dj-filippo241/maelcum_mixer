@@ -57,7 +57,11 @@ Strade scritte il 2026-10-28 (la 1 è diventata la dec. 143):
    (shaper negativo = taglio, EC− positivo = taglio).
 4. **Matrice MONO**: M = −(L+R)/2 (20k, 20k, 10k), S = (L−R)/2 (differenziale 20k/10k),
    VCA su S con I/V 20k, L' = −(M+Sv), R' = Sv − M (differenziale 20k). `mono-ms.cir`
-   ha solo blocchi ideali: **da simulare coi componenti** (separazione, rumore, polarità).
+   ha solo blocchi ideali. **Simulata coi componenti il 2026-11-03** (todo 200,
+   `sim/master-out/RISULTATI-mono-ms-comp.md`): il VCA + I/V NON inverte (datasheet THAT
+   2181 Rev 03 p. 7), quindi Sv = +S e le uscite erano scambiate: ora U3B esce su LO_R e
+   U4A su LO_L. Aggiunto 47p C0G sul 10k di M (separazione piatta fino a 20 kHz).
+   Separazione −38 dB nel caso peggiore (errore di guadagno del VCA), rumore −96,4 dBu A.
 5. **Tasto MONO**: a ritenuta verso +5 REF, aperto = stereo; RC 10k/100n (1 ms in salita,
    2 ms in discesa), partitore 7,15k/1k = 0,613 V su EC− = −100 dB.
 6. **Riferimenti ±5 V**: LM4040-5,0 da +15 LN (1k5) + follower; −5 V = invertente 10k/10k.

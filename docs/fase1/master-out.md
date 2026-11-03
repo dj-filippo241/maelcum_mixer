@@ -424,8 +424,13 @@ della review (`docs/08`).
   click **+0,55 dB** sopra il programma con 1 ms (secco: +8,9 dB).
 - Livelli in MONO: sorgente tutta su un lato −6 dB su entrambe le uscite;
   sorgente al centro invariata; due lati scorrelati −3 dB.
-- Separazione a tasto spento: limitata dall'appaiamento della matrice,
-  ~60 dB con R 0,1 %.
+- Separazione a tasto spento: ~~limitata dall'appaiamento della matrice,
+  ~60 dB con R 0,1 %~~ [REV 2026-11-03, todo 200, `sim/master-out/
+  RISULTATI-mono-ms-comp.md`]: la limita l'errore di guadagno del VCA a
+  EC 0 V (datasheet ±0,1…±0,2 dB): −38 dB nel caso peggiore, piatta fino
+  a 20 kHz con 47 pF sul 10k del sommatore M. Rumore della matrice
+  −96,4 dBu A (+0,2 dB sul sistema). La scheda aveva L e R scambiati
+  (il VCA + I/V NON inverte, datasheet p. 7): corretto nel generatore.
 - Costo: 1 VCA + 4 op-amp. Il VCA resta sempre nel percorso a 0 dB:
   ~+0,2 dB sul rumore di sistema [STIMA da datasheet].
 - Il tasto e il suo LED (se previsto) sono comandi di pannello di Filippo

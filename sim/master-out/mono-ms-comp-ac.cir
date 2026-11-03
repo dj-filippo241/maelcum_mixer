@@ -1,0 +1,73 @@
+* ============================================================
+* Todo 200 (2026-11-03) — matrice MONO del master coi componenti
+* Circuito: pcb/master/master-segnale.py, blocco "MONO [A3]" (NOTE.md p. 4).
+* Ingressi = uscite del MASTER SUMMING [A2] (SUM_L, SUM_R: già invertite,
+* qui chiamate a e b). M = -(a+b)/2 ; S = (a-b)/2 ; Sv = -w*S (VCA + I/V);
+* L' = -(M + Sv) = a ; R' = Sv - M = b (con w = 1).
+* Resistenze 0,1 % in Monte Carlo (mc, distribuzione uniforme), op-amp
+* OPA1612 (opamp-audio.inc). VCA: corrente d'ingresso da 20k su massa
+* virtuale (pin IN), uscita in corrente verso l'I/V 20k // 22p; modello
+* lineare: sensore di corrente + F, guadagno {gv} con errore {ge} in dB.
+* POLARITA' (datasheet THAT 2181 Rev 03 p. 7): «The signal path through the
+* VCA and the output opamp is non-inverting»: con l'I/V 20k, Sv = +S, non -S
+* come presume il commento del generatore. F1 qui segue il datasheet.
+* Datasheet p. 4: «Gain at 0 V Control Voltage» +-0,1 / 0,15 / 0,2 dB (A/B/C).
+* Misure: separazione (a -> R'), guadagno (a -> L'), a 1k, 10k, 20k.
+* cm = condensatore in parallelo al 10k del sommatore M (0 = scheda di oggi).
+* ============================================================
+.include ../lib/opamp-audio.inc
+.param tol=0.001
+.param ge=0
+.param gv={10**(ge/20)}
+.param cm=0
+.param run=1
+Vcc vp 0 DC 15
+Vee vm 0 DC -15
+VA a 0 DC 0 AC 1
+VB b 0 DC 0
+
+* ---- M = -(a+b)/2 ----
+R1 a nm {mc(20k,tol)}
+R2 b nm {mc(20k,tol)}
+R3 nm mid {mc(10k,tol)}
+Cm nm mid {cm+1f}
+XU2A 0 nm mid vp vm OP1612
+* ---- S = (a-b)/2 ----
+R4 a sdp {mc(20k,tol)}
+R5 sdp 0 {mc(10k,tol)}
+R6 b sdn {mc(20k,tol)}
+R7 sdn side {mc(10k,tol)}
+XU2B sdp sdn side vp vm OP1612
+* ---- VCA: 20k nel pin IN (massa virtuale), corrente in uscita ----
+R8 side vin {mc(20k,tol)}
+Vsen vin 0 0
+F1 nsv 0 Vsen {gv}
+Cvca nsv 0 10p
+R9 nsv sv {mc(20k,tol)}
+C9 nsv sv 22p
+XU3A 0 nsv sv vp vm OP1612
+* ---- L' = -(M + Sv) ----
+R10 mid nlo {mc(20k,tol)}
+R11 sv nlo {mc(20k,tol)}
+R12 nlo lo_l {mc(20k,tol)}
+XU3B 0 nlo lo_l vp vm OP1612
+* ---- R' = Sv - M ----
+R13 sv rdp {mc(20k,tol)}
+R14 rdp 0 {mc(20k,tol)}
+R15 mid rdn {mc(20k,tol)}
+R16 rdn lo_r {mc(20k,tol)}
+XU4A rdp rdn lo_r vp vm OP1612
+
+.step param run 1 20 1
+.step param ge list 0 0.1 -0.2
+* NB: LTspice esegue la lista in ordine crescente (-0,2 / 0 / 0,1), run piu' interno
+.step param cm list 0 44p
+.ac dec 50 20 20k
+* a entra su SUM_L: l1k = a -> LO_L, r1k = a -> LO_R
+.meas ac l1k FIND mag(V(lo_l)) AT 1k
+.meas ac r1k FIND mag(V(lo_r)) AT 1k
+.meas ac l10k FIND mag(V(lo_l)) AT 10k
+.meas ac r10k FIND mag(V(lo_r)) AT 10k
+.meas ac l20k FIND mag(V(lo_l)) AT 20k
+.meas ac r20k FIND mag(V(lo_r)) AT 20k
+.end
