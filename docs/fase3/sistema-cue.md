@@ -188,6 +188,14 @@ SOMMARE le due componenti al centro del blend quando lo stesso programma
 è presente su entrambi i lati (0 dB, nessuna cancellazione); un anello
 invertito per errore cancellerebbe a −104 dB.
 
+> **REV 2026-11-03 (todo 227, `sistema-polarita.md` F4) — conto sbagliato.**
+> Il Test 3 supponeva che a [A2] arrivasse il canale diritto. Il canale
+> passa prima dal ricevitore del DJ bus (massa virtuale, −1): a [A2] arriva
+> rovesciato e MON esce +S. Con cue summer −1 il centro del blend
+> CANCELLA. Rimedio [PROVVISORIO]: buffer MON del modulo CUE invertente
+> (20k/20k 0,1 %, carico per il driver [N] ≤ 50 Ω): MON torna −S dopo il
+> buffer e la riga «design» del Test 3 torna valida.
+
 Fase: l'idea allpass phase-matching (handoff 02/10, identità A2 di
 five-way §8.2) è valutata e CHIUSA NEGATIVA: il percorso master
 attraversa la banca 5-way (prodotto di 4 allpass A2: ritardi di gruppo

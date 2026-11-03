@@ -102,6 +102,10 @@ REV dec. 130.
    e arriva al summing del modulo j. Esce come tutte le altre sorgenti
    dei net (FX-SEND, MIC, MONO): uscita del VCA → I/V con op-amp →
    driver ≤ 50 Ω → R 10k lato sorgente sul net Sj (slot 2-5). Niente
+   [REV 2026-11-03, todo 227, `sistema-polarita.md` F3: il driver
+   d'iniezione è INVERTENTE unity (20k/20k 0,1 %). Contato coi segni veri
+   (VCA + I/V non invertente, ricevitore del bus −1) l'anello era
+   invertente; i modelli di §8 lo vogliono non invertente.]
    corrente del VCA mandata nuda sul backplane: un nodo a massa virtuale
    lungo 70 cm raccoglie disturbi. Costo: 8 sezioni op-amp per modulo
    (2 quad), ~16 mA per ramo [STIMA].

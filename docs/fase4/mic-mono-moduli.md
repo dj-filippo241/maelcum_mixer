@@ -227,6 +227,12 @@ Nodo POST → due buffer unity separati (OPA1612 dual) → L e R. Due
 driver indipendenti = mono centrato «distribuito propriamente», mai
 hard-short [BLOCCATO]. Livello 0 dBu nominale (dec. 94a).
 
+**REV 2026-11-03 (todo 227, `docs/fase3/sistema-polarita.md` F2).** Il dry
+entra su [A2] (un ricevitore a massa virtuale), la mandata FX ne passa due
+(bus S e [A2]): voce e ritorno del pedale escono con segni opposti. I due
+driver verso MSUM diventano invertenti unity (20k/20k 0,1 %); le mandate
+restano non invertenti. Da riportare nello schema (todo 30).
+
 Con fino a 4 moduli, MASTER SUM resta a 7 contributori (dec. 94a): i
 moduli MIC si sommano sul net MSUM6 e i moduli MONO sul net MSUM7, in
 multidrop come il DJ bus. Ogni modulo porta la propria resistenza di

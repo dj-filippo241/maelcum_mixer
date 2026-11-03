@@ -110,6 +110,11 @@
   FILT_MODE; sul canale un ADG per l'instradamento a 3 vie con rampa.
 - **Tracking**: 2 core per frequenza invece di 4 (matching L/R dentro la
   sezione); la distribuzione Iabc di §4 si riduce a 2 rami per sezione.
+- **Polarità [REV 2026-11-03, todo 227, `sistema-polarita.md` F1]**: il ricevitore
+  del bus inverte; il send/return per canale no. Senza correzione il canale
+  filtrato esce rovesciato rispetto agli altri e al suo ritorno FX. Rimedio
+  [PROVVISORIO]: driver d'uscita della sezione verso il DJ bus invertente unity.
+  Da verificare dal net al net col riallineamento (todo 212).
 - **Da rifare [APERTO]**: livello del bus col partitore 1/30 (più canali sommati
   sul core), rumore a filtri inseriti (docs/06 §11), D5 con la somma.
 - Conteggio: 4 core = **8 LM13700 di core + 4 di RES = 12**, ~10 quad, 4 VCA

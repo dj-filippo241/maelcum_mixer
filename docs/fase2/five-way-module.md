@@ -117,6 +117,13 @@ DJ BUS L/R (0 dBu nom, +16 worst)
   ▼ MAKE-UP +6 dB + trim → MASTER SUM (backplane)
 ```
 
+> **REV 2026-11-03 (todo 227, `docs/fase3/sistema-polarita.md`).** Lo schema
+> parte da una tensione. Il DJ bus è un net multidrop (backplane §4): in testa
+> al modulo c'è il ricevitore a massa virtuale, che inverte. Dalla tensione
+> d'ingresso a MSUM il modulo è non invertente (misurato: `module-noise-v031.cir`
+> in `.ac`, fase −22° a 10 Hz, −11° a 100 kHz); dal net DJ bus a MSUM è −1,
+> e [A2] lo raddrizza.
+
 Ordine bloccato: kill bank → EQ creativo → drive → meter ("killed material
 cannot be restored" — corpus §16; "boost non ripristina materiale killato"
 — SPECIFICA §6).
