@@ -407,6 +407,20 @@ x = uscita core (0 dBu nom, picco di risonanza +8…+10 dBu)
 Schema a blocchi equivalente: y = x + m·(k·CLIP(2x) − x). Polarità
 VERIFICATA diritta (`od2-pol-b.cir`: fase 0° a 1 kHz per ogni m).
 
+> **REV 2026-11-03 (todo 227) — segno del VCA sbagliato nel modello.** I netlist
+> dell'overdrive (`od2-*.cir`, `cb-4p-*.cir`) modellano il VCA con `Fv 0 sn Vs {m}`:
+> la corrente ENTRA nel nodo dell'I/V, quindi VCA + I/V invertente. Il datasheet
+> THAT 2181 Rev 03 p. 7 dice il contrario: «the signal path through the VCA and the
+> output opamp is non-inverting». Con il chip vero questo schema dà
+> y = x − m·d = (1+m)·x − m·k·CLIP(2x): a manopola aperta il segnale piccolo esce
+> invertito e attenuato, quello grande cresce senza tetto. Il carattere e la
+> protezione dell'impianto descritti qui valgono solo col segno corretto. Rimedio
+> da progettare con il riallineamento del filtro (todo 212): con i segnali di oggi
+> (x, −2x, −CLIP) il ramo giusto vuole un invertitore in più per cella, oppure
+> uscita invertita compensata a valle. Anche le celle a VCA del core PULITO (c-B,
+> `cb-4p-*.cir`, da `five-way/cell-vca-ac.cir`) usano VCA a tensione + R: il segno
+> degli integratori nel circuito vero va ricontrollato prima di usarle.
+
 - **Diverso dal 5-way**: tosatore simmetrico e duro = armoniche dispari
   (terza dominante, seconda assente): il «raschio». NASTRO e GROWL del
   5-way sono asimmetrici e morbidi (seconda armonica).

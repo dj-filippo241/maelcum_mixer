@@ -414,6 +414,10 @@ MUTE_CV ─Rb─┼── pin 3 EC−      Rc da pin 3 a massa
   partitore dal +5 V → RC 1 ms (rampa della dec. 111).
 - **Polarità**: l'I/V del VCA inverte. Si compensa scambiando gli ingressi del
   differenziale dopo l'INA (§3.1): costo zero, il modulo resta non invertente.
+  [REV 2026-11-03, todo 227: SBAGLIATO. Datasheet THAT 2181 Rev 03 p. 7: «the
+  signal path through the VCA and the output opamp is non-inverting». Lo
+  scambio degli ingressi del differenziale va tolto: con lo scambio il MIC
+  esce invertito. Da riallineare con lo schema (todo 30).]
 - **Silicio in più sul MIC**: V2181 ×1 (c'era già per il MUTE), 6 sezioni OPA1654
   (I/V, raddrizzatore ×2, superdiodo, sottrattore, mezza onda) = 2 quad, 3 diodi
   1N4148W più 1 nel superdiodo, trimmer di simmetria. La §8 va letta con questa riga.
