@@ -5,7 +5,7 @@ quantità si correggono lì, poi si rilancia lo script. Non a mano qui.
 
 Cosa è: il costo dei materiali per costruire **un** esemplare, modulo per
 modulo, con una forchetta minimo – massimo. Le quantità vengono dai design
-doc alla data (~58 VCA, 115 manopole, 4 canali). Gli acquisti restano
+doc alla data (~54 VCA, 115 manopole, 4 canali). Gli acquisti restano
 sospesi fino al prototipo in Live (voce 37, A12): questo documento non
 ordina niente.
 
@@ -20,7 +20,7 @@ fonte è S il prezzo è una stima, senza preventivo.
 | Canale CDJ/line con phono | 191 € – 348 € | 4 | 763 € – 1.392 € | 2 | 382 € – 696 € |
 | FX-SEND | 40 € – 72 € | 4 | 160 € – 288 € | 2 | 80 € – 144 € |
 | FX-RET (un bus, dec. 130) | 112 € – 221 € | 4 | 448 € – 884 € | 4 | 448 € – 884 € |
-| Filtro, core OTA (a') | 126 € – 265 € | 1 | 126 € – 265 € | 1 | 126 € – 265 € |
+| Filtro, core OTA (a') | 109 € – 227 € | 1 | 109 € – 227 € | 1 | 109 € – 227 € |
 | 5-way | 366 € – 666 € | 1 | 366 € – 666 € | 1 | 366 € – 666 € |
 | Master out (con booth e MONO) | 133 € – 244 € | 1 | 133 € – 244 € | 1 | 133 € – 244 € |
 | CUE e cuffie | 66 € – 116 € | 1 | 66 € – 116 € | 1 | 66 € – 116 € |
@@ -30,13 +30,13 @@ fonte è S il prezzo è una stima, senza preventivo.
 | Backplane | 20 € – 42 € | 1 | 20 € – 42 € | 1 | 20 € – 42 € |
 | PSU-IN e ventole (nel mixer) | 56 € – 108 € | 1 | 56 € – 108 € | 1 | 56 € – 108 € |
 | Alimentatore esterno (box) | 480 € – 914 € | 1 | 480 € – 914 € | 1 | 480 € – 914 € |
-| **Elettronica dei moduli** | | | **2.860 € – 5.404 €** | | **2.322 € – 4.423 €** |
+| **Elettronica dei moduli** | | | **2.843 € – 5.366 €** | | **2.304 € – 4.386 €** |
 | Circuiti stampati, un giro (§4) | | | 485 € – 1.065 € | | 485 € – 1.065 € |
 | Cablaggio, minuteria, cappucci, scorte (§5) | | | 300 € – 590 € | | 300 € – 590 € |
 | Telaio, pannelli, flight case (§6) | | | 1.250 € – 2.550 € | | 1.250 € – 2.550 € |
 | Prototipo: millefori e secondo giro di PCB (§7) | | | 411 € – 889 € | | 411 € – 889 € |
-| **Totale IVA esclusa** | | | **5.306 € – 10.498 €** | | **4.768 € – 9.517 €** |
-| **Totale IVA inclusa (22 %)** | | | **6.473 € – 12.807 €** | | **5.817 € – 11.611 €** |
+| **Totale IVA esclusa** | | | **5.289 € – 10.460 €** | | **4.750 € – 9.480 €** |
+| **Totale IVA inclusa (22 %)** | | | **6.452 € – 12.761 €** | | **5.796 € – 11.565 €** |
 
 Setup completo: 4 canali con 4 FX-SEND, 1 MIC, 3 MONO. Setup ridotto: 2
 canali con 2 FX-SEND, 1 MIC, 1 MONO (come i disegni in `docs/pannelli/`).
@@ -58,8 +58,8 @@ ordini (~15-30 € per ordine sotto la soglia di spedizione gratuita).
 
 Tre fatti che pesano:
 
-1. **I VCA e i loro trimmer.** ~58 chip a 2,80-5 € fanno 162-290 €; ogni
-   chip vuole 3 trimmer di taratura (`sistema-vca-trim.md`): ~265 trimmer
+1. **I VCA e i loro trimmer.** ~54 chip a 2,80-5 € fanno 151-270 €; ogni
+   chip vuole 3 trimmer di taratura (`sistema-vca-trim.md`): ~253 trimmer
    in tutto il mixer. I 4 FX-RET portano 10 VCA ciascuno, 40 in tutto.
 2. **I prezzi del VCA clone sono deboli.** Non ho trovato oggi un listino
    europeo aggiornato del V2181L: il prezzo viene dai documenti di settembre
@@ -145,9 +145,8 @@ Fonte delle quantità: filter-module §7, §5ter, §5quater; dec. 159 (4 core su
 | Voce | Qtà | € al pezzo | Totale | Fonte | Note |
 |---|---|---|---|---|---|
 | LM13700 dual OTA | 12 | 0,60 – 2,00 | 7 € – 24 € | L | 4 core a 4 poli + RES |
-| OPA1654 quad op-amp | 12 | 1,60 – 2,80 | 19 € – 34 € | M | 10 dei core + ricevitori dei bus |
-| VCA CoolAudio V2181L | 4 | 2,80 – 5,00 | 11 € – 20 € | D | overdrive (una cella per lato e sezione) |
-| trimmer multigiro | 27 | 0,80 – 2,00 | 22 € – 54 € | S | VCA 12 + frequenza, shaper, RES 15 |
+| OPA1654 quad op-amp | 14 | 1,60 – 2,80 | 22 € – 39 € | M | 10 dei core + ricevitori dei bus; +2 DRIVE a pot e raddrizzatore della RES (todo 212) |
+| trimmer multigiro | 15 | 0,80 – 2,00 | 12 € – 30 € | S | frequenza, shaper, RES (DRIVE senza VCA, todo 212) |
 | diodi del limitatore e dello shaper | 1 | a corpo | 2 € – 4 € | S |  |
 | condensatore di film 2 % abbinato | 16 | 0,60 – 1,50 | 10 € – 24 € | S | integratori |
 | coppia BJT abbinata | 2 | 3,00 – 8,00 | 6 € – 16 € | S | converter |
@@ -156,14 +155,15 @@ Fonte delle quantità: filter-module §7, §5ter, §5quater; dec. 159 (4 core su
 | LM317/337 o 78L15/79L15 | 2 | 0,50 – 1,00 | 1 € – 2 € | D |  |
 | passivi | 1 | a corpo | 25 € – 45 € | S |  |
 | DIN 41612 C96, coppia | 1 | 4,00 – 8,00 | 4 € – 8 € | D |  |
-| pot 14 mm singolo (Alps RK14K) | 6 | 0,90 – 2,00 | 5 € – 12 € | S | FREQ, RES, DRIVE x 2 |
-| **Totale** | | | **126 € – 265 €** | | |
+| pot 14 mm singolo (Alps RK14K) | 4 | 0,90 – 2,00 | 4 € – 8 € | S | FREQ, RES x 2 |
+| pot 14 mm doppio (Alps RK14K) | 2 | 1,10 – 2,50 | 2 € – 5 € | M | DRIVE, pot doppio lineare sul segnale (todo 212) |
+| **Totale** | | | **109 € – 227 €** | | |
 
 #### 3.1 Variante: core PULITO (c-B) a 4 poli
 
 Differenza rispetto al core (a′), se B1 sceglie il PULITO
-(`sim/filtro/RISULTATI-cb-4p.md`). I VCA del mixer salgono da ~58 a
-~74: da riverificare anche W1 dell'alimentatore.
+(`sim/filtro/RISULTATI-cb-4p.md`). I VCA del mixer salgono da ~54 a
+~70: da riverificare anche W1 dell'alimentatore.
 
 | Voce | Qtà | € al pezzo | Totale | Fonte | Note |
 |---|---|---|---|---|---|
@@ -173,7 +173,7 @@ Differenza rispetto al core (a′), se B1 sceglie il PULITO
 | LM13700 in meno (resta solo la RES) | -8 | 0,60 – 2,00 | -16 € – -5 € | L |  |
 | **Totale** | | | **74 € – 182 €** | | |
 
-Filtro col core PULITO: 200 € – 447 €.
+Filtro col core PULITO: 183 € – 410 €.
 
 ### 5-way
 
@@ -428,7 +428,7 @@ REW bastano per le misure audio (voce 30).
   saldatura ma costa a parte, da preventivare.
 - **Pot doppio da 1k del WIDTH**: se non esiste a 14 mm, il circuito passa
   a 10k (todo aperto in five-way §4.3), costo quasi uguale.
-- **Taratura**: nessun costo di materiale, ma ~265 trimmer da regolare a
+- **Taratura**: nessun costo di materiale, ma ~253 trimmer da regolare a
   banco sono giorni di lavoro.
 
 ## Fonti

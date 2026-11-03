@@ -1,5 +1,14 @@
 # FASE 2 — Modulo FILTRO: design v0.2 + v0.3-WIP (2026-09-28)
 
+> **REV 2026-11-03, todo 212 — RES della dec. 153 e DRIVE a pot doppio
+> (§5 «RES dec. 153», §5ter «DRIVE a pot doppio»).** La RES ha la law del
+> prototipo in hardware: shaper a diodi con manopola rovescia per l'OTA che
+> smorza, raddrizzatore di precisione per l'OTA che innesca; fischio da
+> 93,4 % a +0,2…+0,5 dBu, −2,3 semitoni col chip vero. Il DRIVE non usa
+> più VCA: dopo la dec. 159 una manopola comanda una sola coppia di celle,
+> e un pot doppio lineare sul segnale dà m = θ (dec. 155a) esatto. Stesso
+> suono, 3-6 dB meno rumore, −4 VCA (mixer ~58 → ~54).
+
 > **REV 2026-10-31, dec. 159 — filtro dopo il fader, 4 core (§2bis).** Il filtro
 > non ha più un core per canale: filtra la somma dei canali assegnati, dopo il
 > fader, come lo Xone:92. Due bus stereo (HPF e LPF) dai canali, un core stereo
@@ -119,6 +128,9 @@
   sul core), rumore a filtri inseriti (docs/06 §11), D5 con la somma.
 - Conteggio: 4 core = **8 LM13700 di core + 4 di RES = 12**, ~10 quad, 4 VCA
   dell'overdrive, 16 C di film; ~450 componenti (stima, `pcb/tools/piano_schede.py`).
+  **[REV 2026-11-03, todo 212]** DRIVE a pot doppio (§5ter): 0 VCA, 2 pot
+  doppi lineari al posto di 2 singoli, +8 sezioni op-amp (somma e buffer del
+  cursore) −2 (shaper del DRIVE), +2 (raddrizzatore della RES): ~12 quad.
 
 ## 3. Core SVF — funzione di trasferimento e topologia
 
@@ -265,6 +277,57 @@ le 11,8 ottave derivano del ~70% su 0-50 °C (misurato, §6).
   invece di smorzare → **auto-oscillazione** che segue il cutoff (proprietà naturale
   dell'SVF). Il gm differenziale dell'OTA accetta lo steering oltre il balance:
   nessun trucco di polarità nel circuito.
+  [SUPERATA dalla dec. 153 la law; il segno di gres lo danno due OTA, sotto.]
+- **RES dec. 153 — CIRCUITO DELLA LAW (REV 2026-11-03, todo 212) [SIMULATO,
+  valori PROVVISORI].** Law del prototipo (`proto-max/RISULTATI-P1.md` §RES
+  nuova): gres = 8^(−θ/0,9) fino al 90 % (Q da 1× a 8× la base, in modo
+  uniforme), poi lineare fino a −0,25 a fine corsa; fischio da ~93 %.
+  Due OTA per core, le due metà dello stesso LM13700 (come in `d5a-*.cir`):
+  **gres = gpos − gneg**. Uno smorza, l'altro innesca.
+
+  ```
+  pot RES lineare, cablato ROVESCIO: Vx = 5 V·(1−θ) (dal +5 V di riferimento)
+    ├─► shaper a diodi (sistema-shaper §2): Rm 34,0k · ramo 24,3k/113k · ramo 10,0k/18,2k
+    │     · Rref 102k + trimmer dal +5 V · Rf 10k ─► −5 V·gpos ─► 2 sorgenti ─► OTA P (L, R)
+    │     gpos = 8^(−θ/0,9) su TUTTA la corsa (0,099 a fine corsa)
+    └─► raddrizzatore di precisione a mezza onda: Rin 10k, soglia −5 V via 100k,
+          Rf 34,8k ─► +3,49·max(0, 0,5 V − Vx) = 5 V·gneg ─► 2 sorgenti ─► OTA N (L, R)
+          gneg = 0,349·(θ − 0,9)/0,1 sopra il 90 %, zero sotto
+  sorgente: op-amp + transistor, 22,6k: 5 V = 221 µA = gres 1 con k 1/30 (§5quater)
+  ```
+
+  - **Manopola rovescia**: vicino al fischio (θ > 0,8) i diodi dello shaper
+    sono spenti e la curva dipende solo da resistenze (regola di
+    sistema-shaper §2). Anche la soglia del raddrizzatore è un rapporto di
+    resistenze sullo stesso riferimento della manopola: il punto dove parte
+    il fischio non deriva.
+  - **Misure** (`sim/shaper/shaper-res.cir`, valori E96, 1N4148, 20/35/50 °C;
+    fit `sim/shaper/shaper_res_fit.py`):
+
+    | RES | 0 | 20 | 40 | 60 | 80 | 90 | 92 | 94 | 96 | 100 % |
+    |---|---|---|---|---|---|---|---|---|---|---|
+    | gres prototipo | 1,000 | 0,630 | 0,397 | 0,250 | 0,157 | 0,125 | 0,050 | −0,025 | −0,100 | −0,250 |
+    | gres circuito, 35 °C | 0,969 | 0,644 | 0,390 | 0,254 | 0,157 | 0,127 | 0,052 | −0,024 | −0,099 | −0,250 |
+
+    Errore entro ±3 % (meno di 0,3 dB sul picco di risonanza); da 20 a 50 °C
+    la curva si muove al massimo dell'1,6 %, e dall'80 % in su per niente.
+    Il fischio parte al **93,4 %** a ogni temperatura (prototipo 93,3 %).
+  - **Fischio col chip vero** (`sim/filtro/d5a-res153-osc.cir`, core (a′)
+    k 1/30, limitatore 4,7k, senza ingresso): a fine corsa **+0,2 / +0,4 /
+    +0,5 dBu** e **−2,1 / −2,3 / −2,4 semitoni** con taglio a 101 Hz / 1 kHz /
+    10 kHz. Stessi numeri del prototipo (+0,5…0,0 dBu, −2,4…−1,9 st). Lo
+    stesso netlist a gres −0,75 rifà la riga di D5 (+4,7…+4,9 dBu, −5,5…−5,7 st).
+  - **Temperatura dell'OTA**: a Iabc fissa la gm dell'LM13700 scende
+    dell'11,8 % da 25 a 65 °C (§4). Gli OTA della RES non hanno la Iref
+    PTAT dei core: il Q sale di ~±6 % attorno ai 45 °C, poco meno di 0,5 dB
+    sul picco. Il punto del fischio NON si sposta: gpos e gneg scalano
+    insieme. Per questo la RES resta senza PTAT.
+  - Taratura a banco: un trimmer su Rref per sezione, «il fischio parte al
+    93 %». Le due sorgenti di un lato (P, N) e i due lati (L, R) usano
+    resistenze allo 0,1 %.
+  - Costo per sezione: 2 sezioni op-amp (shaper, raddrizzatore) + 4 sorgenti
+    (op-amp + transistor) per i 4 OTA, 1 trimmer. Lo shaper della RES c'era
+    già nel conto (law v0.2 a due tratti); il raddrizzatore è nuovo.
 - **Soft limiting**: sul nodo BP, Rlim 1 kΩ + due stringhe antiparallele 3×1N4148
   (soglie ~1,7 V, conduzione graduale — niente clamp crudi, SPECIFICA §5).
   L'ampiezza di oscillazione è l'equilibrio tra margine d'anello e assorbimento
@@ -477,8 +540,59 @@ VERIFICATA diritta (`od2-pol-b.cir`: fase 0° a 1 kHz per ogni m).
   Il VCA lavora solo in taglio (0…−30 dB): CV sempre positiva, lo
   shaper non ha bisogno del tratto negativo. 8 trimmer di simmetria; trim
   di law a piazzole sulle 4 coppie.
+- [SUPERATI dal DRIVE a pot doppio, sotto: VCA per cella, mux e smoothing
+  del CV, shaper del DRIVE, trimmer di simmetria e di law.]
+
+### DRIVE a pot doppio (REV 2026-11-03, todo 212) [SIMULATO, PROVVISORIO]
+
+Il VCA serviva perché una manopola comandava le celle di 4 canali (CV e
+mux). Dopo la dec. 159 la manopola DRIVE di una sezione comanda una sola
+coppia di celle (L e R): basta un pot doppio sul segnale. La law della
+dec. 155a, m = θ, è quella di un pot lineare usato come partitore: esatta,
+senza shaper.
+
+```
+x ─► ×2 invertente ─► tosatore 2,2k + 2+2 diodi ─► buffer: wb = −CLIP(2x)   (invariati)
+x via 10k + wb via 10k/k ─► sommatore Rf 10k ─► d = k·CLIP(2x) − x       (prende il posto del VCA)
+d ─► 22 µF bipolare ─► POT 10k lineare (una sezione del doppio) ─► cursore = m·d
+cursore ─► buffer ─► 10k ─┐
+x ─────────────── 10k ────┴─► I/V Rf 10k: y = −(x + m·d)
+```
+
+- **Stesso suono**: `sim/filtro/od2-pot-tran.cir` (1 kHz a +6 dBu) dà
+  fondamentale 2,190 / 1,953 / 1,717 V e THD 0 / 12,46 / 28,36 % a m 0 /
+  0,5 / 1, uguali al VCA (`od2-pol-c.cir`). Stessa fase invertita del
+  rimedio di §5ter (sistema-polarita F1): il driver d'uscita resta diritto.
+- **Meno rumore** (`od2-pot-noise.cir`, blocco da solo, A-wtd):
+  −108,3 / −107,3 / −105,4 / −103,5 / −101,8 dBu a m 0 / 0,25 / 0,5 / 0,75 / 1,
+  contro −102,6 / −102,1 / −99,0 del VCA a m 0 / 0,5 / 1. Il conto del
+  VCA era prudente (rumore del chip anche a VCA chiuso); il pot da 10k
+  aggiunge al massimo 2,5k di sorgente sul cursore.
+- **Niente continua sul pot**: il condensatore da 22 µF toglie l'offset del
+  core (fino a ~54 mV su d a m = 1) dal cursore, così girare la manopola
+  non fruscia. Taglio a 0,7 Hz. La continua del ramo pulito la toglie il
+  servo di Xs, invariato.
+- **L/R**: a segnale piccolo il guadagno è 1 + 1,34·m. Un pot doppio con le
+  due piste diverse del 10 % a metà corsa dà 0,34 dB fra L e R, solo sul
+  passaggio piano e sullo sporco: inudibile come spostamento dell'immagine.
+  Agli estremi della corsa le piste coincidono.
+- **Il segnale va al pannello**: d e il cursore viaggiano sul cavo della
+  scheda comandi, come i pot doppi del FX-SEND (todo 171: ronzio e
+  stabilità del cavo piatto da provare a banco). d esce da un op-amp,
+  il cursore ha al massimo 2,5k.
+- **Conto**: −4 VCA, −4 trimmer di simmetria, −2 trim di law, −2 shaper del
+  DRIVE, niente CV del DRIVE nel modulo; +8 sezioni op-amp (sommatore e
+  buffer del cursore, una coppia per cella), +4 condensatori bipolari,
+  2 pot doppi lineari al posto di 2 singoli. VCA del mixer ~58 → **~54**.
+- Il pot doppio da usare segue la scelta del pot del pannello (todo 217 e
+  218): stessa famiglia del GAIN dei canali (dec. 162), lineare.
 
 ### Law della manopola (accelera a fine corsa)
+
+[SUPERATA dalla dec. 149/155a: m = θ, pot lineare. La griglia sotto è
+indicizzata con la law vecchia: le sue righe valgono per m = 0,03 / 0,18 /
+0,34 / 0,57 / 0,77 / 1, cioè con m = θ a 3 / 18 / 34 / 57 / 77 / 100 % di
+corsa.]
 
 m = θ^2,5 → θ 25 / 50 / 65 / 80 / 90 / 100 % = m 0,03 / 0,18 / 0,34 /
 0,57 / 0,77 / 1 (VCA −30 / −15 / −9,4 / −4,8 / −2,3 / 0 dB). Metà corsa
@@ -616,6 +730,8 @@ bp_b ─► 4,7k ─► 2+2 1N4148 antiparallele ─► summer   (limitatore)
 - **RES**: OTA nel summer come in §5, ingresso dallo stesso partitore,
   Iabc ×30 (221 uA per gres = 1). Due OTA a polarità opposta in
   simulazione per il segno di gres; nel circuito vale la soluzione di §5.
+  [REV 2026-11-03, todo 212: anche nel circuito due OTA, le due metà del
+  chip; law e sorgenti in §5 «RES dec. 153».]
 - **Limitatore**: perdita non lineare dal buffer BP (bassa impedenza) al
   summer. Il soft limiter sul nodo BP di §5 prendeva corrente dall'OTA, e
   l'ampiezza cambiava col taglio (+3,5 dB per decade): SUPERATO.

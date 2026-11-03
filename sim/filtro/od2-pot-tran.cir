@@ -1,0 +1,48 @@
+* ============================================================
+* Overdrive del filtro v0.2 col POT DOPPIO sul segnale al posto del VCA
+* (todo 212, 2026-11-03). Dopo la dec. 159 una manopola DRIVE comanda una
+* sola coppia di celle (L/R della sua sezione): niente mux del CV, il VCA
+* non serve piu'. La law della dec. 155a (m = theta) e' quella di un pot
+* lineare usato come partitore.
+*   X1 a = -2x ; tosatore 2,2k + 2+2 diodi ; buffer wb = -CLIP(2x)   (invariati)
+*   Xd sommatore invertente: x via 10k, wb via 10k/k, Rf 10k -> vd = d = k*CLIP(2x) - x
+*   Cc 22 uF (bipolare): niente continua sul pot (niente fruscio di cursore)
+*   POT 10k lineare (una sezione del pot doppio): partitore -> wiper = m*d
+*   Xw buffer del cursore -> 10k nel nodo dell'I/V
+*   I/V: x via 10k, Rf 10k -> y = -(x + m*d)   (stesso segno del rimedio od2-pol-c)
+* Confronto atteso con od2-pol-c.cir v=1: fondamentale 2,190 / 1,953 / 1,717 V,
+* THD 0 / 12,46 / 28,36 %, fase 180 gradi. Tono 1 kHz a +6 dBu (2,19 Vp).
+* ============================================================
+.include ../lib/opamp-audio.inc
+.model D4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+.param m=0
+.param k=1.171
+.param Rp=10k
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 x 0 SINE(0 2.19 1k)
+Ri x gn 10k
+Rf gn a 20k
+X1 0 gn a vcc vee OP1654
+R1 a w 2.2k
+D1 w p1 D4148
+D2 p1 0 D4148
+D3 0 q1 D4148
+D4 q1 w D4148
+Xb w wb wb vcc vee OP1654
+Rdx x dn 10k
+Rdw wb dn {10k/k}
+Rdf dn vd 10k
+Xd 0 dn vd vcc vee OP1654
+Cc vd pt 22u
+Rtop pt wp {max(Rp*(1-m),1m)}
+Rbot wp 0 {max(Rp*m,1m)}
+Xw wp wo wo vcc vee OP1654
+Rsw wo sn 10k
+Rsx x sn 10k
+Rsf sn y 10k
+Xs 0 sn y vcc vee OP1654
+.step param m list 0 0.5 1
+.tran 0 1.2 1.15 1u
+.four 1k 5 V(y)
+.end

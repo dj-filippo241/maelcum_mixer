@@ -98,7 +98,7 @@ canale S) e MUTE del mic. Basta la simmetria.
 | BOOTH LEVEL | 2 | 1 | ≤ 0,25 dB [PROVVISORIO, come il master] |
 | ~~GAIN ritorno FX ×4~~ pot doppio dalla dec. 162 (erano 8 VCA) | 0 | — | — |
 | REROUTE FX (4 ritorni × 4 bus) | 32 | 16 | ≤ 0,5 dB [PROVVISORIO] |
-| Overdrive filtro (una cella per lato e sezione, dec. 159; erano 8) | 4 | 4 | ≤ 0,5 dB [PROVVISORIO] |
+| ~~Overdrive filtro~~ pot doppio sul segnale dal 2026-11-03 (todo 212, filter-module §5ter; erano 4) | 0 | — | — |
 | MONO master (canale S) | 1 | — | — |
 | MUTE mic | 1 per modulo mic | — | — |
 | ~~Crossfader (modulo opzionale)~~ tolto dalla dec. 161 (erano 8 VCA) | 0 | — | — |
@@ -110,6 +110,8 @@ stereo): **~78 chip**, lotto ~95-105 pezzi (`sim/cdj/RISULTATI-fader-vca.md`).
 (prima ~78, ~86 col crossfader).
 **[REV 2026-11-02, dec. 162]** GAIN di canali e ritorni a pot doppio: −16 VCA,
 −16 trimmer di simmetria, −8 shaper di CV: **~58 chip**.
+**[REV 2026-11-03, todo 212]** DRIVE del filtro a pot doppio: −4 VCA,
+−4 trimmer di simmetria, −2 shaper di CV: **~54 chip**.
 Ogni coppia ha **una CV sola** (dec. 91: «stereo linked»).
 
 **FINDING — conteggio dei VCA del modulo FX.** `fx-module.md` §7 conta

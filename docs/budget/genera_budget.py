@@ -119,9 +119,8 @@ MODULI = [
     ]),
     ("Filtro, core OTA (a')", 1, 1, "filter-module §7, §5ter, §5quater; dec. 159 (4 core sui bus HPF e LPF)", [
         p("ota", 12, "4 core a 4 poli + RES"),
-        p("opa1654", 12, "10 dei core + ricevitori dei bus"),
-        p("vca", 4, "overdrive (una cella per lato e sezione)"),
-        p("trim", 27, "VCA 12 + frequenza, shaper, RES 15"),
+        p("opa1654", 14, "10 dei core + ricevitori dei bus; +2 DRIVE a pot e raddrizzatore della RES (todo 212)"),
+        p("trim", 15, "frequenza, shaper, RES (DRIVE senza VCA, todo 212)"),
         a_corpo("diodi del limitatore e dello shaper", 2, 4),
         p("cap2", 16, "integratori"),
         p("bjt2", 2, "converter"),
@@ -130,7 +129,8 @@ MODULI = [
         p("lm317", 2),
         a_corpo("passivi", 25, 45),
         p("c96", 1),
-        p("rk14s", 6, "FREQ, RES, DRIVE x 2"),
+        p("rk14s", 4, "FREQ, RES x 2"),
+        p("rk14d", 2, "DRIVE, pot doppio lineare sul segnale (todo 212)"),
     ]),
     ("5-way", 1, 1, "five-way §7, §4.3, §5bis", [
         p("opa1654", 36, "banca, celle, gate"),

@@ -1,0 +1,64 @@
+* ============================================================
+* RUMORE — Overdrive del filtro v0.2 col POT DOPPIO sul segnale al posto del VCA
+* (todo 212, 2026-11-03). Dopo la dec. 159 una manopola DRIVE comanda una
+* sola coppia di celle (L/R della sua sezione): niente mux del CV, il VCA
+* non serve piu'. La law della dec. 155a (m = theta) e' quella di un pot
+* lineare usato come partitore.
+*   X1 a = -2x ; tosatore 2,2k + 2+2 diodi ; buffer wb = -CLIP(2x)   (invariati)
+*   Xd sommatore invertente: x via 10k, wb via 10k/k, Rf 10k -> vd = d = k*CLIP(2x) - x
+*   Cc 22 uF (bipolare): niente continua sul pot (niente fruscio di cursore)
+*   POT 10k lineare (una sezione del pot doppio): partitore -> wiper = m*d
+*   Xw buffer del cursore -> 10k nel nodo dell'I/V
+*   I/V: x via 10k, Rf 10k -> y = -(x + m*d)   (stesso segno del rimedio od2-pol-c)
+* Rumore a 16 punti (integrare con sim/mic/noise_total.py); confronto con od2-noise-b.cir (VCA): -102,6 / -102,1 / -99,0 dBu A-wtd a m 0 / 0,5 / 1.
+* Il pot e il cavo verso il pannello sono resistenze: il loro rumore termico entra qui.
+* ============================================================
+.include ../lib/opamp-audio.inc
+.model D4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+.param m=0
+.param k=1.171
+.param Rp=10k
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 x 0 DC 0 AC 1
+Ri x gn 10k
+Rf gn a 20k
+X1 0 gn a vcc vee OP1654
+R1 a w 2.2k
+D1 w p1 D4148
+D2 p1 0 D4148
+D3 0 q1 D4148
+D4 q1 w D4148
+Xb w wb wb vcc vee OP1654
+Rdx x dn 10k
+Rdw wb dn {10k/k}
+Rdf dn vd 10k
+Xd 0 dn vd vcc vee OP1654
+Cc vd pt 22u
+Rtop pt wp {max(Rp*(1-m),1m)}
+Rbot wp 0 {max(Rp*m,1m)}
+Xw wp wo wo vcc vee OP1654
+Rsw wo sn 10k
+Rsx x sn 10k
+Rsf sn y 10k
+Xs 0 sn y vcc vee OP1654
+.step param m list 0 0.25 0.5 0.75 1
+.noise V(y) V1 dec 20 10 100k
+.meas noise on1 FIND V(onoise) AT 20
+.meas noise on2 FIND V(onoise) AT 31.5
+.meas noise on3 FIND V(onoise) AT 50
+.meas noise on4 FIND V(onoise) AT 80
+.meas noise on5 FIND V(onoise) AT 125
+.meas noise on6 FIND V(onoise) AT 200
+.meas noise on7 FIND V(onoise) AT 315
+.meas noise on8 FIND V(onoise) AT 500
+.meas noise on9 FIND V(onoise) AT 800
+.meas noise on10 FIND V(onoise) AT 1250
+.meas noise on11 FIND V(onoise) AT 2000
+.meas noise on12 FIND V(onoise) AT 3150
+.meas noise on13 FIND V(onoise) AT 5000
+.meas noise on14 FIND V(onoise) AT 8000
+.meas noise on15 FIND V(onoise) AT 12500
+.meas noise on16 FIND V(onoise) AT 20000
+.meas noise g1k FIND gain AT 1000
+.end

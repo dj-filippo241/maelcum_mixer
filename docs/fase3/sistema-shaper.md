@@ -20,7 +20,8 @@ Dove sta nel mixer:
 |---|---|---|
 | Reroute e self-feedback FX | 16 | 0 → −100 dB, finissima negli ultimi dB (SPEC §7) |
 | Drive 5-way | 1 | 0 / +7 / +9,5 / +12 / +14 / +16 dB (dec. 82/87) |
-| Drive filtro (HPF, LPF) | 2 | come il drive 5-way (filter-module §5bis) |
+| ~~Drive filtro (HPF, LPF)~~ | 0 | tolto il 2026-11-03 (todo 212): pot doppio lineare sul segnale, m = θ (filter-module §5ter) |
+| RES filtro (HPF, LPF) | 2 | Q che cresce in modo uniforme fino a 8× al 90 %, poi fischio (dec. 153); manopola rovescia, 2 rami + raddrizzatore di precisione (filter-module §5, `shaper-res.cir`) |
 | Position 5-way | 5 | frequenza esponenziale su 2,6 ottave |
 | MASTER e BOOTH | 2 | MASTER: silenzio → 0 dB allo scatto al centro → +6 dB (dec. 139); BOOTH: curva del fader |
 | Frequenza filtro (HPF, LPF) | 2 | LPF: curva Xone:96 nel 90 % centrale, più ripida negli ultimi 5 % (dec. 70/102); HPF: 20 Hz a 0 %, senza ramo basso (dec. 137) |
@@ -74,6 +75,12 @@ a qualche dB: lì il ritorno è quasi chiuso e non si sente.
 
 **Drive** (`shaper-drive.cir`, 2 rami): errore entro **±0,2 dB** su tutta
 la corsa e a tutte le temperature.
+
+**RES filtro** (`shaper-res.cir`, 2 rami, manopola rovescia, più un
+raddrizzatore di precisione per il tratto del fischio; fit
+`shaper_res_fit.py`, 2026-11-03): gres entro ±3 % della law della dec.
+153; da 20 a 50 °C si muove al massimo dell'1,6 %, dall'80 % di corsa in
+su per niente. Il fischio parte al 93,4 % a ogni temperatura.
 
 **Position 5-way** (`shaper-position.cir`, 3 rami): frequenza entro ±1 %
 col fit ideale; con valori E96 fino a +2,2 % a 35 °C e +3,6 % a 50 °C

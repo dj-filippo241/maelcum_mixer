@@ -1,0 +1,61 @@
+* ============================================================
+* SHAPER RES FILTRO — law DECISIONE 153 (todo 212)
+* gres = 8^(-theta/0,9) fino al 90 %, poi lineare fino a -0,25; fischio da ~93 %
+* Hardware: gres = gpos - gneg (due OTA, filter-module par. 5)
+*  gpos: shaper della famiglia unica, manopola ROVESCIA (Vx = 5*(1-theta)),
+*        2 rami diretti, uscita vpn = -5 V * gpos (fit: shaper_res_fit.py, E96)
+*        Rref da +5 V porta gpos(theta 1) = 0,099 (trimmer a banco)
+*  gneg: raddrizzatore di precisione sulla stessa Vx:
+*        vng = +3,49 * max(0, 0,5 V - Vx) = 5 V * gneg (soglia da -5 V di riferimento)
+* Conversione in corrente (sorgente op-amp + transistor, qui ideale):
+*  Iabc_P = -vpn / 22,6k, Iabc_N = vng / 22,6k  (221 uA = gres 1 con k 1/30)
+* .step temp 20/35/50 = escursione interna del telaio fanless.
+* ============================================================
+.include ../lib/opamp-audio.inc
+.model D1N4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p Tt=4n)
+Vcc vcc 0 15
+Vee vee 0 -15
+Vref nref 0 -5
+Vrp pref 0 5
+Vx x 0 0
+* --- gpos ---
+Rm x sj 34.0k
+Ra1 x n1 24.3k
+Rb1 n1 nref 113k
+D1 n1 sj D1N4148
+Ra2 x n2 10.0k
+Rb2 n2 nref 18.2k
+D2 n2 sj D1N4148
+Rref pref sj {rref}
+.param rref=102k
+Rf sj vpn 10k
+Xs 0 sj vpn vcc vee OP1654
+* --- gneg: raddrizzatore di precisione a mezza onda, invertente ---
+Rin x sr 10k
+Rth nref sr 100k
+Xr 0 sr ar vcc vee OP1654
+Da sr ar D1N4148
+Db ar vng D1N4148
+Rfr vng sr 34.8k
+Rload vng 0 100k
+* --- gres ---
+Bg gres 0 V=(-V(vpn)-V(vng))/5
+.dc Vx 0 5 0.005
+.step temp list 20 35 50
+.meas dc g000 FIND V(gres) AT 5.0
+.meas dc g010 FIND V(gres) AT 4.5
+.meas dc g020 FIND V(gres) AT 4.0
+.meas dc g030 FIND V(gres) AT 3.5
+.meas dc g040 FIND V(gres) AT 3.0
+.meas dc g050 FIND V(gres) AT 2.5
+.meas dc g060 FIND V(gres) AT 2.0
+.meas dc g070 FIND V(gres) AT 1.5
+.meas dc g080 FIND V(gres) AT 1.0
+.meas dc g085 FIND V(gres) AT 0.75
+.meas dc g090 FIND V(gres) AT 0.5
+.meas dc g092 FIND V(gres) AT 0.4
+.meas dc g094 FIND V(gres) AT 0.3
+.meas dc g096 FIND V(gres) AT 0.2
+.meas dc g100 FIND V(gres) AT 0.0
+.meas dc xzero FIND V(x) WHEN V(gres)=0
+.end
