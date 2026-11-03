@@ -45,7 +45,7 @@ sugli statici [M].
 ### Modulo filtro (B′, decisione 67)
 | Nodo | Nominale | Max | Dominio | Note |
 |---|---|---|---|---|
-| Core SVF in/out | 0 dBu | +16 dBu | ±18 V | 8 core mono (4 stereo) |
+| Core SVF in/out | 0 dBu | +16 dBu | ±18 V | ~~8 core mono (4 stereo)~~ **REV 2026-11-03 (dec. 159, todo 215)**: 4 core mono sui bus HPF e LPF; ingresso = somma dei canali assegnati, guadagno 1 per canale (0 / +6 / +12 dBu con 1 / 2 / 4 canali correlati); in banda passa senza perdite fino a +12 dBu; sul taglio tetto del core fra −1 e +1,2 dBu (filter-module §2bis) |
 | Picco di risonanza | — | +10 dBu sopra il livello (oscillazione +6…+10 dBu, locked) | ±18 V | soft limiting |
 | Overdrive (per sezione HPF/LPF) | 0 dBu in | uscita fino a saturazione VOLUTA | ±18 V | colore intenzionale; **REV 2026-10-13**: tosatore in parallelo con tetto ~+5,5 dBu (filter-module §5ter) |
 | Recovery post-drive | 0 dBu | **+23 dBu clean** (non +24: il dominio ±18 qui basta; il +24 vero vive solo al master) | ±18 V | raffinamento [P] del target documenti "≥+24 where practical" — qui NOT practical, e va bene così |

@@ -380,3 +380,109 @@ entrambi i core.
 - Programma vero (più toni, transitori): solo toni a 1 kHz.
 - Core (c-B) a 4 poli: rumore non misurato. Serve per confrontare B1 alla
   pari.
+
+## 7. Somma dei canali sui bus HPF e LPF (2026-11-03, todo 215, dec. 159)
+
+Dalla dec. 159 il core non riceve più un canale: riceve il bus della
+sezione, cioè la somma dei canali assegnati dopo il fader. Il ricevitore
+del bus ha guadagno 1 per canale (Rf 10k, R 10k lato sorgente). Un canale a
+0 dBu dà 0 dBu al core, come prima; due canali correlati +6 dBu; quattro
+canali correlati +12 dBu (il caso del DJ bus nel gain-staging sheet). Due
+dischi diversi a 0 dBu sommano a ~+3 dBu efficaci, con picchi a +6 dove i
+kick coincidono.
+
+| netlist | cosa misura |
+|---|---|
+| `d5c-sum-chain.cir` | tono a 1 kHz sul taglio (fc ~1 kHz), uscita LP, ingresso 0 / +6 / +12 dBu |
+| `d5c-sum-pass.cir` | tono a 200 Hz in banda passante, LPF a fc ~1 kHz |
+| `d5c-sum-pass-hp.cir` | tono a 5 kHz in banda passante, HPF a fc ~1 kHz |
+| `bus-rx-noise.cir` | rumore del ricevitore del bus con 1 / 2 / 4 / 7 sorgenti |
+
+Core (a′) k 1/30 a 4 poli e overdrive come §6.1 (DRIVE a pot doppio:
+stessa funzione di trasferimento, filter-module §5ter). Le righe a 0 dBu
+rifanno quelle del §6.1 (−0,4 dBu 1,6 %, −3,7 dBu 0,5 %): netlist coerenti.
+
+### 7.1 Sul taglio (D5 con la somma)
+
+Uscita dBu rms · THD %, DRIVE 0 %:
+
+| ingresso | RES 0 % | RES 50 % | RES 85 % |
+|---|---|---|---|
+| 0 dBu (1 canale) | −3,7 · 0,5 | −1,4 · 1,3 | −0,4 · 1,6 |
+| +6 dBu (2 correlati) | −0,7 · 1,4 | +0,3 · 1,7 | +0,8 · 1,8 |
+| +12 dBu (4 correlati) | 0,0 · 1,6 | +0,8 · 1,7 | +1,2 · 1,7 |
+
+Guadagno sul taglio, contro l'ideale −3,0 / +4,0 / +22,1 dB:
+
+| ingresso | RES 0 % | RES 50 % | RES 85 % |
+|---|---|---|---|
+| 0 dBu | −3,7 | −1,4 | −0,4 |
+| +6 dBu | −6,7 | −5,7 | −5,2 |
+| +12 dBu | −12,0 | −11,2 | −10,9 |
+
+- Sul taglio il core ha un tetto: l'uscita resta fra −1 e +1 dBu
+  (fino a +1,2) qualunque sia la somma. La sezione 2 tocca il tetto di
+  stato (bp_b 2,3-3,1 V picco-picco a +6/+12 dBu).
+- Con un canale nulla cambia (dec. 110). Con due canali correlati la
+  risonanza sul programma sparisce del tutto, e a RES 0 la zona del taglio
+  scende di 3,7 dB in più dell'ideale. Con quattro, di 9 dB.
+- THD sul taglio 1,4-1,8 %, quasi tutta terza armonica, come con un canale.
+
+DRIVE aperto, sul taglio: con la somma (+6/+12 dBu) uscita +2,6…+3,1 dBu
+e THD 17-21 %; con un canale +1,7…+2,7 dBu e 11-18 %. Tetto
+dell'overdrive (+5,5 dBu) rispettato.
+
+### 7.2 In banda passante
+
+Uscita dBu rms · THD %, RES 0 % (RES 85 %: livello entro 0,2 dB, THD fra parentesi):
+
+| ingresso | LPF, 200 Hz, DRIVE 0 | LPF, DRIVE 50 | LPF, DRIVE 100 | HPF, 5 kHz, DRIVE 0 | HPF, DRIVE 100 |
+|---|---|---|---|---|---|
+| 0 dBu | −0,1 · 0,04 (0,05) | +0,5 · 4,5 | +2,8 · 19 | +0,1 · 0,5 (0,4) | +2,8 · 20 |
+| +6 dBu | +5,9 · 0,18 (0,30) | +5,6 · 4,3 | +3,9 · 29 | +6,1 · 1,2 (0,9) | +3,9 · 29 |
+| +12 dBu | +11,9 · 2,2 (3,7) | +11,0 · 2,5 | +4,6 · 34 | +12,1 · 1,6 (1,1) | +4,6 · 34 |
+
+- In banda il filtro passa la somma senza perdite: il livello resta
+  quello d'ingresso fino a +12 dBu.
+- LPF: pulito fino a due canali correlati (≤ 0,3 %); con quattro
+  correlati 2-4 %, terza armonica.
+- HPF: la sezione 1 (da hp1) sporca già a 0 dBu (0,4-0,5 %, come prima);
+  1-1,6 % con la somma.
+- DRIVE: il tosatore ha soglie fisse, quindi la somma satura di più. A
+  fondo corsa l'uscita sale da +2,8 a +4,6 dBu e la THD da 19 a 34 %:
+  i dischi si sporcano a vicenda, come accettato dalla dec. 159(d).
+- Dopo la sezione il DJ bus riceve al massimo +12 dBu (DRIVE chiuso,
+  quattro canali correlati): lo stesso massimo del DJ bus a filtri OFF.
+
+### 7.3 Rumore del ricevitore e di sistema
+
+Ricevitore del bus (`bus-rx-noise.cir`, OPA1612, Rf 10k), uscita dBu
+A-wtd: 1 sorgente −111,5, 2 −109,7, 4 −107,4, 7 −105,3. Sta 25 dB sotto il
+core: trascurabile. Anche le 2 uscite del filtro sul DJ bus (7 sorgenti
+invece di 5) non cambiano il sistema.
+
+Sistema = −82,9 (filtri OFF, docs/06 §14) ⊕ core attivi ⊕ ricevitori.
+Una sezione senza canali è muta (dec. 159c): il suo core non conta. Core
+dal §6.3 e §6.5 (uscita dopo l'overdrive v0.2b; il DRIVE a pot fa
+−108…−102 dBu, il core domina).
+
+| condizione | prima (4 core, §6.3/§6.5) | ora (dec. 159) |
+|---|---|---|
+| solo LPF in uso, DRIVE chiuso | −77,0 | **−80,6** (PASS 2,6) |
+| solo HPF in uso (fc 1 kHz, caso peggiore), DRIVE chiuso | −74,8 | **−79,2** (PASS 1,2) |
+| HPF e LPF in uso, DRIVE chiuso | — | **−78,0** (PASS 0,0) |
+| HPF e LPF, DRIVE a metà | −75,6 | −76,8 (HPF a metà stimato −79,8: core + 1,8 dB) |
+| HPF e LPF, DRIVE a fondo, in silenzio | −70,6 | −72,0 |
+
+- Il FAIL del §6.3 (A18) sparisce: a DRIVE chiuso il sistema resta entro
+  il −78 della dec. 89 in ogni caso, al limite con le due sezioni in uso e
+  l'HPF a 1 kHz.
+- Le righe col DRIVE aperto restano nella condizione d'uso della dec. 100.
+- Il numero di canali assegnati non cambia il rumore: il core è uno per
+  sezione.
+
+### 7.4 Non fatto
+
+- Programma vero (due dischi, kick sovrapposti): solo toni.
+- Il prototipo MC-FILTRO filtra ancora per canale (todo 216): il tetto sul
+  taglio con la somma va sentito lì.

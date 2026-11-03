@@ -307,3 +307,26 @@ al massimo su ogni bus), −80,4 coi reroute a peso 1: **PASS anche con gli
 FX in uso**. I −73 / −66,6 dell'addendum del §7 e della dec. 95 non seguono
 dai numeri del loro documento (servirebbero ~26 dB fra send e master):
 sono superati.
+
+
+## 16. Aggiornamento 2026-11-03 (todo 215, dec. 159): filtro sui bus
+
+Col filtro dopo il fader i core nel segnale sono al massimo due per lato
+(uno per sezione), qualunque sia il numero di canali assegnati; una
+sezione senza canali è muta. Il ricevitore del bus vale −107,4 dBu A con 4
+canali (`sim/filtro/bus-rx-noise.cir`): trascurabile. Core dai §12
+(RISULTATI-D5 §6.3, §6.5). Dettagli: `sim/filtro/RISULTATI-D5.md` §7.3.
+
+| Condizione | §12 (4 core) | Ora |
+|---|---|---|
+| Filtri OFF | −82,9 (§14) | −82,9 |
+| Solo LPF in uso, overdrive chiuso | −77,0 | **−80,6** (PASS 2,6) |
+| Solo HPF in uso (fc 1 kHz), overdrive chiuso | −74,8 | **−79,2** (PASS 1,2) |
+| HPF e LPF in uso, overdrive chiuso | — | **−78,0** (PASS 0,0) |
+| HPF e LPF, overdrive a metà | −75,6 | −76,8 |
+| HPF e LPF, overdrive tutto aperto, in silenzio | −70,6 | −72,0 |
+
+A overdrive chiuso il sistema resta entro il target della dec. 89 in ogni
+caso: il FAIL di A18 non esiste più. Il caso al limite vuole le due
+sezioni in uso e l'HPF col taglio a ~1 kHz. Le righe con l'overdrive
+aperto restano nella condizione d'uso della dec. 100.

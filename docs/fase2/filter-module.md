@@ -1,5 +1,15 @@
 # FASE 2 — Modulo FILTRO: design v0.2 + v0.3-WIP (2026-09-28)
 
+> **REV 2026-11-03, todo 215 — livelli, rumore e D5 con la somma dei canali
+> (§2bis «Somma dei canali», `sim/filtro/RISULTATI-D5.md` §7).** Il ricevitore
+> del bus ha guadagno 1 per canale: un canale arriva al core come prima.
+> In banda la somma passa senza perdite fino a +12 dBu (LPF ≤ 0,3 % fino a
+> due canali correlati). Sul taglio il core ha un tetto fra −1 e +1,2 dBu:
+> con due canali correlati la risonanza sul programma sparisce e a RES 0 la
+> zona del taglio cala di 3,7 dB in più (docs/02 A23). Rumore: a DRIVE
+> chiuso il sistema resta entro il −78 (−78,0 con HPF e LPF in uso, −79,2
+> e −80,6 con una sezione): il FAIL di A18 sparisce.
+
 > **REV 2026-11-03, todo 212 — RES della dec. 153 e DRIVE a pot doppio
 > (§5 «RES dec. 153», §5ter «DRIVE a pot doppio»).** La RES ha la law del
 > prototipo in hardware: shaper a diodi con manopola rovescia per l'OTA che
@@ -65,7 +75,7 @@
 | Tracking | ≤2% in frequenza tra core a pari CV; trim per core; CV bufferizzate a stella | dec. 67, voce 51 |
 | Tolleranza freq | ±5-10% (più lasca di un VCO: un filtro non deve essere "intonato") | dec. 74 |
 | Commutazione | break-before-make + ramp 1-5 ms, **sul canale** (instradamento dopo il fader, dec. 159); nel modulo resta il muto della sezione senza canali | SPECIFICA §4, dec. 159 |
-| Livelli | bus di sezione = somma dei canali assegnati, nominale come il DJ bus [da ricalcolare col partitore 1/30, dec. 159]; prima: send 0 dBu nom / +16 max; dominio ±18 V audio, ±15 V LN per CV | sheet §2 |
+| Livelli | bus di sezione = somma dei canali assegnati, ricevitore a guadagno 1 per canale: 0 dBu nom (un canale), +6 dBu due correlati, +12 dBu quattro correlati, come il DJ bus [SIMULATO 2026-11-03, §2bis]; dominio ±18 V audio, ±15 V LN per CV | sheet §2 |
 | Range gm | ~3500:1 (11,8 ottave) via converter esponenziale + tempco | dec. 74 |
 
 ## 2. Architettura del modulo
@@ -124,8 +134,22 @@
   filtrato esce rovesciato rispetto agli altri e al suo ritorno FX. Rimedio
   [SIMULATO 2026-11-03]: la cella di overdrive esce invertita (§5ter, rimedio
   del segno del VCA, `od2-pol-c.cir`); il driver d'uscita resta non invertente.
-- **Da rifare [APERTO]**: livello del bus col partitore 1/30 (più canali sommati
-  sul core), rumore a filtri inseriti (docs/06 §11), D5 con la somma.
+- **Somma dei canali [SIMULATO 2026-11-03, todo 215, `sim/filtro/RISULTATI-D5.md`
+  §7]**. Ricevitore a guadagno 1 per canale: un canale a 0 dBu arriva al core
+  a 0 dBu, due correlati a +6, quattro correlati a +12 (come il DJ bus).
+  - *In banda*: la somma passa senza perdite fino a +12 dBu. LPF 0,04 / 0,2-0,3
+    / 2-4 % a 0 / +6 / +12 dBu; HPF 0,4-0,5 / 0,9-1,2 / 1,1-1,6 %.
+  - *Sul taglio*: tetto del core. L'uscita resta fra −1 e +1,2 dBu: con un
+    canale nulla cambia (dec. 110); con due correlati la risonanza sul
+    programma sparisce e a RES 0 il taglio cala 6,7 dB invece di 3,0; con
+    quattro 12 dB. THD 1,4-1,8 %. Da sentire (docs/02 A23, todo 216).
+  - *DRIVE*: soglie fisse, la somma satura di più. A fondo corsa in banda
+    +2,8 / +3,9 / +4,6 dBu e 19 / 29 / 34 % a 0 / +6 / +12 dBu (dec. 159d).
+  - *Rumore*: ricevitore −107,4 dBu A con 4 canali, trascurabile. Sistema a
+    DRIVE chiuso −80,6 (solo LPF), −79,2 (solo HPF a fc 1 kHz), **−78,0 (HPF e
+    LPF)**: entro il −78 (dec. 89); il FAIL di A18 (4 core in serie) sparisce.
+    DRIVE aperto: −72,0 con le due sezioni, nella condizione della dec. 100.
+    docs/06 §16.
 - Conteggio: 4 core = **8 LM13700 di core + 4 di RES = 12**, ~10 quad, 4 VCA
   dell'overdrive, 16 C di film; ~450 componenti (stima, `pcb/tools/piano_schede.py`).
   **[REV 2026-11-03, todo 212]** DRIVE a pot doppio (§5ter): 0 VCA, 2 pot

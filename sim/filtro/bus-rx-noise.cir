@@ -1,0 +1,40 @@
+* =====================================================================
+* FILTRO — RUMORE del ricevitore del bus HPF/LPF (todo 215, dec. 159, 2026-11-03)
+* Virtual-earth del modulo filtro: Rf 10k, Cf 10 pF, OPA1612 (sistema-backplane
+* §4). N canali assegnati iniettano con R 10k lato sorgente da driver a bassa Z:
+* N resistenze da 10k in parallelo = una da 10k/N (stesso rumore termico).
+* N = 1, 2, 4: bus HPF o LPF. N = 7: DJ bus nel caso peggiore (4 canali +
+* 2 uscite del filtro + 1 riserva), per vedere quanto pesano le 2 R in piu'.
+* Il segnale entra da V1 su uno dei rami: gain = 1 (un canale).
+* =====================================================================
+.include ../lib/opamp-audio.inc
+.param N=1
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 vin 0 DC 0 AC 1
+Rin1 vin ns 10k
+Rrest 0 ns {10k/max(N-1,1e-6)}
+Rf ns out 10k
+Cf ns out 10p
+X1 0 ns out vcc vee OP1612
+.step param N list 1 2 4 7
+.noise V(out) V1 dec 20 20 20k
+.meas noise on1 FIND V(onoise) AT 20
+.meas noise on2 FIND V(onoise) AT 31.5
+.meas noise on3 FIND V(onoise) AT 50
+.meas noise on4 FIND V(onoise) AT 80
+.meas noise on5 FIND V(onoise) AT 125
+.meas noise on6 FIND V(onoise) AT 200
+.meas noise on7 FIND V(onoise) AT 315
+.meas noise on8 FIND V(onoise) AT 500
+.meas noise on9 FIND V(onoise) AT 800
+.meas noise on10 FIND V(onoise) AT 1250
+.meas noise on11 FIND V(onoise) AT 2000
+.meas noise on12 FIND V(onoise) AT 3150
+.meas noise on13 FIND V(onoise) AT 5000
+.meas noise on14 FIND V(onoise) AT 8000
+.meas noise on15 FIND V(onoise) AT 12500
+.meas noise on16 FIND V(onoise) AT 20000
+.meas noise g1k FIND gain AT 1000
+.meas noise g100 FIND gain AT 100
+.end

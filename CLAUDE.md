@@ -100,7 +100,7 @@ Review contro il benchmark (dec. 111): ibrido DJ / sound system / live, nessun f
 
 Documenti trasversali: `docs/fase1/gain-staging-sheet.md` (livelli e domini, referenza unica), `docs/06-ritaratura-rumore-71A.md` (budget di rumore e target ratificati), `docs/proto-max/piano.md` (prototipo Max).
 
-Numeri di sistema: rumore −82,9 dBu A-wtd a filtri OFF col fader a VCA e il GAIN a pot doppio (docs/06 §14, dec. 162: canale −94,5, ritorno −96,1, 5-way −85,9; prima −81,9 col GAIN a VCA) (target ≤ −78, dec. 89; condizioni d'uso accettate con overdrive aperti, dec. 100; con FX in uso il sistema resta a −81,8, la deroga della dec. 95 non serve più, todo 184); master +25,4…+25,6 dBu (requisito ≥ +24). VCA: THAT 218x fuori produzione, rotta clone CoolAudio V2181L, ~54 chip (reroute FX 32 + 16 dei fader, dec. 126; crossfader tolto, dec. 161; GAIN di canali e ritorni a pot doppio, dec. 162; DRIVE del filtro a pot doppio, todo 212), trim in `docs/fase3/sistema-vca-trim.md`.
+Numeri di sistema: rumore −82,9 dBu A-wtd a filtri OFF col fader a VCA e il GAIN a pot doppio (docs/06 §14, dec. 162: canale −94,5, ritorno −96,1, 5-way −85,9; prima −81,9 col GAIN a VCA) (target ≤ −78, dec. 89; condizioni d'uso accettate con overdrive aperti, dec. 100; con FX in uso il sistema resta a −81,8, la deroga della dec. 95 non serve più, todo 184; filtri sui bus a overdrive chiuso −78,0 con HPF e LPF in uso, docs/06 §16, todo 215); master +25,4…+25,6 dBu (requisito ≥ +24). VCA: THAT 218x fuori produzione, rotta clone CoolAudio V2181L, ~54 chip (reroute FX 32 + 16 dei fader, dec. 126; crossfader tolto, dec. 161; GAIN di canali e ritorni a pot doppio, dec. 162; DRIVE del filtro a pot doppio, todo 212), trim in `docs/fase3/sistema-vca-trim.md`.
 
 Trappole di lettura:
 
