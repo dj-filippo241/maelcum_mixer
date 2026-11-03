@@ -53,7 +53,7 @@ Tutto [PROVVISORIO].
 ## Incongruenze trovate disegnando (da chiudere)
 
 1. **[CHIUSA 2026-10-27] Pot LOW a 4 sezioni.** Risolta riordinando la cella (Baxandall): un pot doppio 10k, `sim/fx/RISULTATI-fx-eq2-pot10k.md`. Testo originale: La cella shelf ha due reostati complementari per lato (Rza, Rzb): in stereo servono 4 sezioni. Il documento dice «pot doppi». Il valore simulato è 31k, che non esiste a catalogo (25k o 50k → ricalcolo).
-2. **OPA1654: 4 chip, non 3** (resta da correggere nella BOM del design doc §5). 18 sezioni = 1 OPA1612 (buffer in) + 4 OPA1654 (2 EQ + 2 iniezione). La BOM del §5 ne conta 3.
+2. **OPA1654: 4 chip, non 3** (BOM del design doc §5 corretta il 2026-11-03, todo 169). 18 sezioni = 1 OPA1612 (buffer in) + 4 OPA1654 (2 EQ + 2 iniezione). La BOM del §5 ne conta 3.
 3. **[CHIUSA 2026-10-27] Pinout ADG1434.** Verificato sul datasheet Rev. E (tabella 8): i pin 6-20 della bozza erano sbagliati (canale 2 a sinistra, VDD sul 16, NIC sul 15). Simbolo corretto in `fx-send.py`; tabella di verità confermata (IN alto = SxA chiuso). Dettagli: `docs/fase1/adg1434-datasheet-verify.md` §6.
 4. **[SUPERATA dalla dec. 133: pot saldati sulla scheda, bozza da rifare]** Pot fuori scheda via harness (come dice il §4): i nodi NB_L/NB_R della cella LOW sono masse virtuali e viaggiano sul cavo fino al pannello. Rischio di ronzio e di instabilità. In alternativa i pot si montano sulla scheda, se la meccanica lo permette.
 5. **GLOBAL_MUTE (c9): polarità confermata il 2026-10-28** (`sim/master-out/RISULTATI-mute-ctrl.md`, todo 182): basso = suona, alto = muto. Il master tira giù la linea con un NMOS open drain; qui la pull-up a +5 V tiene il send muto senza master. Il mute apre i 4 assign (rete corretta il 2026-10-28, punto 12).
@@ -95,7 +95,10 @@ Tutto [PROVVISORIO].
     schema = netlist nei due sensi, DRC 0 errori, 0 collegamenti mancanti; avvisi: 51 attesi
     (pin liberi del C96), 2 via sospese di Freerouting. Controllo audio A1-A5: 10/29/23/4/3.
 15. Diodi di protezione D2/D4 col simbolo `Device:D` (era 1N4148W con valore S1G).
-16. Discordanze trovate dall'analisi, ancora aperte: `sim/fx/send-chain-noise.cir` descrive
+16. [2026-11-03: rumore rifatto (todo 184, `RISULTATI-send-chain-v2.md`); design doc §4-§5
+    allineati (todo 169, 186); 1,72k e GLOBAL_MUTE si correggono alla rigenerazione (todo 205);
+    il diametro del LEVEL in `coordinate.json` aspetta il todo 218.] Discordanze trovate
+    dall'analisi: `sim/fx/send-chain-noise.cir` descrive
     la cella LOW vecchia (1k/15,5k/56n), quindi il rumore −98,5 dBu del design doc §6 non vale
     per questa scheda; 1,72k non esiste all'1 % (E96: 1,74k = 19,4 V); `coordinate.json` dice
     ancora pot da 14 mm per il LEVEL; il design doc §5 dà al LEVEL un pot «custom taper», la

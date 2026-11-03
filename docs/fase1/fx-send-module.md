@@ -128,21 +128,29 @@ coerente con master-out §3.7; [DECISO 2026-10-01 → dec. 94(b): il send
 MUTA col mute globale — catena FX silenziosa nelle transizioni power,
 nessun fischio self-FB al rilascio]).
 
-Front connector (harness pannello): 3 pot doppi (LOW, HIGH, LEVEL =
-9 pin + schermi) + 4 linee bottoni + CTRL_GND. Layout pannello = voce 40.
+~~Front connector (harness pannello): 3 pot doppi (LOW, HIGH, LEVEL =
+9 pin + schermi) + 4 linee bottoni + CTRL_GND. Layout pannello = voce 40.~~
+
+[REV 2026-11-03, todo 186 — dec. 133-136] Niente front connector. I 3 pot
+doppi stanno su una **scheda comandi** parallela al pannello, nelle
+posizioni di `docs/pannelli/coordinate.json` (dec. 135); un cavo piatto
+corto 2×12 (J2) la collega alla scheda principale. Le 4 linee dei bottoni
+assign arrivano dal pannello del canale su cavo (logica +5 V, nessun
+audio). Scheda: `pcb/fx-send/` v0.2, `pcb/fx-send/NOTE.md`.
 
 ## 5. BOM per modulo [PROVVISORIO — regola 3]
 
 | Voce | Qtà | Note |
 |---|---|---|
-| OPA1654 quad | 3 | EQ2 HIGH + iniezione (audio low-noise) |
+| OPA1654 quad | 4 | 2 EQ2 (LOW + HIGH, 4 sezioni per lato) + 2 iniezione (4 sezioni per lato). [REV 2026-11-03, todo 169: erano 3; con un buffer d'iniezione per lato scenderebbero a 2 + 1, `RISULTATI-send-chain-v2.md` §2, PROVVISORIO] |
+| LM339 + 74HC74 ×4 | 1 + 4 | taglio allo zero degli assign (todo 224) |
 | OPA1612 dual | 1 | buffer in |
 | ADG1434 quad SPDT (TSSOP-20 YRUZ, senza EN) | 2 | assign π (famiglia kill/dec. 90c); datasheet Rev. E VERIFICATO 2026-10-01 → `docs/fase1/adg1434-datasheet-verify.md` |
 | LDO ±15 V switch (78L15/79L15 o LDO low-noise) | 2 | da raw ±22 V LN locale (dec. 93) |
 | LM317/LM337 + passivi cap-moltiplicatore | 2 | ±18 V audio |
-| Pot doppi 10k custom taper (LOW/HIGH/LEVEL) | 3 | voce 40/85 |
-| Reti RC celle (0,1% shelf, C0G/PP), R iniezione 10k, RC soft-switch | — | |
-| Connettore C96 + front connector | 2 | backplane §7 |
+| Pot doppi 10k su scheda comandi (dec. 136) | 3 | LOW e HIGH: modello aperto (todo 217); LEVEL: curva A logaritmica, −20 dB a metà corsa, 0 dB a fine corsa (dec. 108, §2); diametro 9 o 14 mm secondo il todo 218 [REV 2026-11-03, todo 169/186: prima «custom taper»] |
+| Reti RC celle (0,1% shelf, C0G/PP), R iniezione 10k | — | (l'RC soft-switch sul pin IN è superato, todo 224) |
+| Connettore C96 + cavo piatto 2×12 verso la scheda comandi | 2 | backplane §7; dec. 136 |
 
 Costo stimato: ~25-35 €/modulo, ~100-140 € per i 4 [PROVVISORIO].
 Delta vs v0.4 canale: il canale perde ~9 sezioni op-amp + 8 switch +
