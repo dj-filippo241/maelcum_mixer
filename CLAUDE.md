@@ -75,6 +75,7 @@ Regole di simulazione (ognuna nasce da un errore già pagato; il contesto sta ne
 - SVF con OTA della RES a Iabc quasi zero: il `.op` non converge (9 minuti a vuoto). Usare `.tran ... uic` e misurare il segnale con `PP`, non `RMS`: col partitore l'offset dell'OTA sale di 1/k.
 - Regolatori in anello (LDO del box, `sim/system/psu-box-*`): mai `uic`; accensione da zero, così il `.op` è banale. Con `uic`, con `limit()` brusco o con diodi a N 0,05, LTspice non termina.
 - `perl -e 'alarm ...'` ferma lo script ma non `LTspice.exe` dentro wine: il processo resta al 300 % di CPU. Controllare con `ps aux | grep -i LTspice.exe` e chiuderlo per PID.
+- `.step param x list ...`: LTspice esegue i valori in ordine crescente, non in quello scritto. Leggere le misure con quell'ordine (MONO del master, todo 200).
 - Un `.param` scritto due volte in un netlist con `.step`: `.four` non stampa niente e il log non dà errore.
 - Non fermare LTspice con `pkill -f <nome netlist>`: uccide anche lo script. `drive2-chain` a 150 Hz non termina (causa ignota): usare 50 Hz o 1 kHz.
 
