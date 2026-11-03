@@ -42,7 +42,8 @@ il CUE contro il master in cuffia.
 | Ritorno: buffer, GAIN T2 (due invertenti), EQ2, fader VCA, out | +1 | fx-module §5 REV dec. 162 / todo 220 |
 | Reroute: VCA + I/V, driver d'iniezione | +1 | fx-module §2bis.1, datasheet p. 7 |
 | Ricevitore bus HPF / LPF del filtro | −1 | filter §2bis |
-| Core filtro (2 sezioni SVF, HP e LP = −Vin ciascuna) e overdrive | +1 | filter §3, §5ter (overdrive col segno corretto, todo 212) |
+| Core filtro (2 sezioni SVF, HP e LP = −Vin ciascuna) | +1 | filter §3 |
+| Overdrive col VCA vero e il ramo pulito da x (rimedio F1) | −1 | filter §5ter, `od2-pol-c.cir` |
 | MIC e MONO, ingresso → POST, driver MSUM, buffer d'iniezione | +1 | mic-mono §2, §3.1 (scambio dell'INA da togliere, todo 30) |
 | CUE summer | −1 | sistema-cue §7 |
 | Buffer MON nel modulo CUE | +1 | sistema-cue §7 |
@@ -69,8 +70,10 @@ non invertente a invertente (due resistenze uguali 0,1 %).
 - **F1 — filtro sui bus (dec. 159).** Il ricevitore del bus HPF/LPF
   aggiunge un'inversione che il send/return per canale non aveva. Un
   canale con la levetta su HPF o LPF esce rovesciato rispetto agli altri e
-  al suo ritorno FX (il send è pre-filtro). Rimedio: driver d'uscita della
-  sezione verso il DJ bus invertente. Dentro il todo 212.
+  al suo ritorno FX (il send è pre-filtro). Rimedio [SIMULATO]: la cella di
+  overdrive corretta per il segno del VCA esce già invertita,
+  y = −(x + m·d) (filter §5ter, `sim/filtro/od2-pol-c.cir`); il driver
+  d'uscita resta diritto.
 - **F2 — MIC e MONO.** Il dry va dritto su [A2] (un ricevitore), la
   mandata FX ne passa due: con un pedale che lascia passare il diretto
   (delay con mix, riverbero) voce e ritorno si sottraggono. Rimedio:

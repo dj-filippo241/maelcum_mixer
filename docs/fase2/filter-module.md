@@ -113,8 +113,8 @@
 - **Polarità [REV 2026-11-03, todo 227, `sistema-polarita.md` F1]**: il ricevitore
   del bus inverte; il send/return per canale no. Senza correzione il canale
   filtrato esce rovesciato rispetto agli altri e al suo ritorno FX. Rimedio
-  [PROVVISORIO]: driver d'uscita della sezione verso il DJ bus invertente unity.
-  Da verificare dal net al net col riallineamento (todo 212).
+  [SIMULATO 2026-11-03]: la cella di overdrive esce invertita (§5ter, rimedio
+  del segno del VCA, `od2-pol-c.cir`); il driver d'uscita resta non invertente.
 - **Da rifare [APERTO]**: livello del bus col partitore 1/30 (più canali sommati
   sul core), rumore a filtri inseriti (docs/06 §11), D5 con la somma.
 - Conteggio: 4 core = **8 LM13700 di core + 4 di RES = 12**, ~10 quad, 4 VCA
@@ -425,6 +425,24 @@ VERIFICATA diritta (`od2-pol-b.cir`: fase 0° a 1 kHz per ogni m).
 > uscita invertita compensata a valle. Anche le celle a VCA del core PULITO (c-B,
 > `cb-4p-*.cir`, da `five-way/cell-vca-ac.cir`) usano VCA a tensione + R: il segno
 > degli integratori nel circuito vero va ricontrollato prima di usarle.
+>
+> **RIMEDIO 2026-11-03 (todo 212) [SIMULATO, PROVVISORIO].** Il ramo pulito
+> entra nell'I/V da x via 10k (non più da a = −2x via 20k). Col chip vero
+> l'I/V dà −x − m·d: **y = −(x + m·d)**, stessa forma del progetto,
+> rovesciata. Costo zero: stessi 3 op-amp, una resistenza cambia valore e
+> nodo. Il servo DC non cambia (anello locale su Xs). L'inversione è quella
+> che chiede il filtro sui bus (`docs/fase3/sistema-polarita.md` F1): il
+> driver d'uscita verso il DJ bus resta non invertente. `sim/filtro/od2-pol-c.cir`,
+> 1 kHz a +6 dBu, modello vecchio contro circuito corretto:
+>
+> | m | Fondamentale | THD Partial | Fase |
+> |---|---|---|---|
+> | 0 | 2,190 / 2,190 V | 0 / 0 % | 0° / 180° |
+> | 0,5 | 1,953 / 1,953 V | 12,46 / 12,46 % | 0° / 180° |
+> | 1 | 1,717 / 1,717 V | 28,36 / 28,36 % | 0° / 180° |
+>
+> La griglia e il rumore di §5ter restano validi: i netlist vecchi
+> calcolavano già y = x + m·d, a meno del segno.
 
 - **Diverso dal 5-way**: tosatore simmetrico e duro = armoniche dispari
   (terza dominante, seconda assente): il «raschio». NASTRO e GROWL del

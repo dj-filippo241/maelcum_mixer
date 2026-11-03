@@ -1,0 +1,44 @@
+* ============================================================
+* Overdrive del filtro v0.2 (§5ter) — segno del VCA vero (todo 227, 212)
+* 2026-11-03. Confronto fra:
+*   v=0  modello vecchio (od2-pol-b): ramo pulito a = -2x via 20k nell'I/V,
+*        VCA che SPINGE corrente nel nodo dell'I/V (Fv 0 sn) = VCA + I/V
+*        invertente. Dà y = x + m*d. Col chip vero darebbe y = x - m*d.
+*   v=1  circuito corretto: ramo pulito x via 10k nell'I/V, VCA vero che
+*        TIRA corrente dal nodo (Fv sn 0) = VCA + I/V non invertente
+*        (datasheet THAT 2181 Rev 03 p. 7). Atteso: y = -(x + m*d),
+*        stesso modulo e stessa THD di v=0, fase 180 gradi.
+* L'inversione della cella è quella che serve al filtro sui bus
+* (docs/fase3/sistema-polarita.md F1): il driver d'uscita resta diritto.
+* Tono 1 kHz a +6 dBu (2,19 Vp): il tosatore lavora.
+* ============================================================
+.include ../lib/opamp-audio.inc
+.model D4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+.param m=0
+.param v=0
+.param k=1.171
+Vcc vcc 0 DC 18
+Vee vee 0 DC -18
+V1 x 0 SINE(0 2.19 1k)
+Ri x gn 10k
+Rf gn a 20k
+X1 0 gn a vcc vee OP1654
+R1 a w 2.2k
+D1 w p1 D4148
+D2 p1 0 D4148
+D3 0 q1 D4148
+D4 q1 w D4148
+Xb w wb wb vcc vee OP1654
+Rvx x vin 10k
+Rvw wb vin {10k/k}
+Vs vin 0 DC 0
+Fv 0 sn Vs {m*if(v==0,1,-1)}
+Rsa a sn {if(v==0,20k,1e12)}
+Rsx x sn {if(v==1,10k,1e12)}
+Rsf sn y 10k
+Xs 0 sn y vcc vee OP1654
+.step param v list 0 1
+.step param m list 0 0.5 1
+.tran 0 6m 1m 1u
+.four 1k 5 V(y)
+.end
