@@ -1,0 +1,92 @@
+* ============================================================
+* ASSIGN FX-SEND COL TAGLIO SULLO ZERO (todo 224, 2026-11-03)
+* Copia di sim/five-way/kill-zc.cir con programma a banda piena
+* (60 Hz 1,1 Vp + 1 kHz 0,8 Vp + 8 kHz 0,4 Vp: picco ~2,2 V come +6 dBu)
+* Il gradino non dipende da dove sta lo switch (prima o dopo la R di
+* iniezione): qui resta prima della R, come in kill-zc.cir.
+* Richiesta di Filippo: «secco va bene ma non deve sentirsi scoppi
+* nelle casse». Oggi (dec. 88, gate-sw-click.cir) il pi-SPDT taglia
+* quando la levetta cambia: gradino = segnale istantaneo (2,18 V al
+* summer al picco, ~4,4 V in uscita dopo il make-up).
+* Variante: un comparatore guarda la via; la levetta (richiesta r)
+* passa all'interruttore (stato q) solo al primo passaggio per lo zero
+* della via (flip-flop clockato dal fronte del comparatore). Opzione:
+* tempo massimo tmax, dopo il quale l'interruttore scatta comunque.
+* Ritardo della catena comparatore + 74HC + ADG modellato: ~0,4 us
+* (fronte RC 200 ns + tTRANS ADG1434 140-200 ns).
+* Gesto: kill a Tk (al PICCO, caso peggiore del secco), riapertura a
+* Tr (al picco). Via = seno a +6 dBu (2,19 Vp, max sheet 5-way IN).
+* mode = 0: secco (oggi) · mode = 1: taglio sullo zero.
+* Sonda del click: HP 2 poli ~1,6 kHz (come gate-ramp.cir, five-way
+* §8.5, filtsel-dip.cir).
+* ============================================================
+.param mode=1 tmax=1
+.param Tk=0.03013
+.param Tr=0.08007
+V1 s1 0 SINE(0 1.1 60)
+V2 s2 s1 SINE(0 0.8 1000)
+V3 src s2 SINE(0 0.4 8000)
+Rsrc src src_o 10
+* richiesta della levetta: 1 = via aperta, 0 = kill
+Vr r 0 PWL(0 5 {Tk} 5 {Tk+10n} 0 {Tr} 0 {Tr+10n} 5)
+* comparatore sulla via (soglia 0, uscita logica 0/5 V) e fronte ritardato
+Bc c 0 V={V(src_o)>0 ? 5 : 0}
+Rcd c cd 2k
+Ccd cd 0 1n
+* impulso a ogni passaggio per lo zero (XOR comparatore / ritardato)
+Bpz pz 0 V={abs(V(c)-V(cd))>2.5 ? 5 : 0}
+* tempo trascorso da quando r e q non coincidono (si azzera quando coincidono)
+Bmis mis 0 V={abs(V(r)-V(qm))>2.5 ? 1 : 0}
+Btm 0 tm I={V(mis)>0.5 ? 1 : -1e4*V(tm)}
+Ctm tm 0 1
+Rtm tm 0 1G
+* clock del flip-flop: secco = sempre trasparente; zero = impulso o tempo scaduto
+Bck ck 0 V={mode<0.5 ? 5 : ((V(pz)>2.5 | V(tm)>tmax) ? 5 : 0)}
+* flip-flop come sample-and-hold (q copia r quando ck è alto)
+Bq q 0 V={V(ck)>2.5 ? V(r) : V(qm)}
+Rq q qm 1
+Cq qm 0 1n
+* ritardo ADG (tTRANS) sul comando dell'interruttore e BBM serie/shunt
+Rg qm g 2k
+Cg g 0 100p
+Bgs gs 0 V={V(g)>3 ? 5 : 0}
+Bgh gh 0 V={V(g)<2 ? 5 : 0}
+.model SWKILL SW(Ron=4.7 Roff=1G Vt=2.5)
+S1 src_o n gs 0 SWKILL
+Coff1 src_o n 30p
+S2 n 0 gh 0 SWKILL
+Coff2 n 0 30p
+.subckt OPAMP inp inn out vp vm
+E1 xx 0 value={1000*(V(inp)-V(inn))}
+R1 xx p1 1k
+C1 p1 0 159p
+E2 out 0 value={limit(V(p1),V(vm)+1.5,V(vp)-1.5)}
+.ends OPAMP
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+Rs n ns 10k
+Rf ns vo 10k
+Xop 0 ns vo vcc vee OPAMP
+* sonda click HP 2 poli
+Ch1 vo h1 10n
+Rh1 h1 0 10k
+Ch2 h1 h2 10n
+Rh2 h2 0 10k
+.param f=60
+.step param mode LIST 0 1
+.ic V(qm)=5 V(g)=5
+.tran 0 0.115 0 1u
+* programma alla sonda prima del kill
+.meas tran hpprog MAX ABS(V(h2)) FROM {Tk-2/f} TO {Tk-0.1/f}
+* click alla sonda: dopo il kill (via muta: la sonda vede solo il click)
+.meas tran hpkill MAX ABS(V(h2)) FROM {Tk} TO {Tr-0.002}
+* gradino all'istante del taglio: segnale della via quando l'interruttore apre
+.meas tran tcut WHEN V(gs)=2.5 FALL=1
+.meas tran vcut FIND V(src_o) WHEN V(gs)=2.5 FALL=1
+.meas tran dkill PARAM tcut-Tk
+* riapertura
+.meas tran topen WHEN V(gs)=2.5 RISE=1
+.meas tran vopen FIND V(src_o) WHEN V(gs)=2.5 RISE=1
+.meas tran dopen PARAM topen-Tr
+.meas tran hpopen MAX ABS(V(h2)) FROM {Tr} TO {Tr+0.3/f+0.0005}
+.end

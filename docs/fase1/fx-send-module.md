@@ -66,6 +66,15 @@ IN L/R (send tap dal canale CDJ, post-EQ/pre-filter/pre-fader,
   │  famiglia del kill 5-way, five-way §8.10): 8 switch stereo =
   │  2× quad SPDT per modulo. Multipli e simultanei [BLOCCATO]:
   │  ogni destinazione è indipendente, nessuna esclusività.
+  │  [REV 2026-11-03, todo 224 e 185, `sim/fx/RISULTATI-fx-send-assign.md`:
+  │  (1) la ramp sul pin IN NON esiste: IN è un ingresso logico (VIH 2,0 /
+  │  VIL 0,8 V, tTRANS 140 ns, datasheet Rev. E): l'interruttore scatta
+  │  secco. Rimedio: taglio al passaggio per lo zero come il kill (dec.
+  │  164): 1 comparatore per lato + 74HC74 per assign; gradino −51/−54 dB,
+  │  nessun click sopra il programma, ritardo 20-80 µs. (2) A ±15 V lo
+  │  switch tosa sopra +22,4…+22,7 dBu (requisito +24): il π SPDT si
+  │  sposta DOPO la R 10k di iniezione, sul nodo a massa virtuale del bus
+  │  (lo switch vede ~8 mV). Il testo SOFT-SWITCH sotto è SUPERATO.]
   │  SOFT-SWITCH: la ramp 1 ms [BLOCCATO dec. 80] si ottiene rallentando
   │  il fronte sul pin IN (R 10k serie + C 100 nF + pull-down 10k =
   │  τ ≈ 0,5-1 ms): durante la transizione il Ron attraversa la regione
@@ -90,7 +99,9 @@ l'audio, OPA1612 per i buffer in [PROVVISORIO]) + 2 quad SPDT.
   fornisce il micro-modulo dalla riga a del backplane). Non passa dal
   modulo canale né dal backplane: la riga c ha mappa IDENTICA per tutte
   le classi (backplane §5) e non si aggiungono pin logici per classe.
-- Cella per bottone: +5 V ctrl → bottone → R 10k → pin IN (con
+- [SUPERATO 2026-11-03, RISULTATI-fx-send-assign §1: il bottone va al D
+  di un 74HC74 clockato dal comparatore dello zero; il pin IN riceve un
+  fronte netto] Cella per bottone: +5 V ctrl → bottone → R 10k → pin IN (con
   C 100 nF e pull-down 10k lato modulo) = ramp ~0,5-1 ms in chiusura;
   apertura scarica via pull-down (τ ≈ 1 ms simmetrico).
 - Logica: IN alto = serie chiuso/shunt aperto = send attivo. Bottoni
@@ -156,6 +167,9 @@ cella = decisione di Filippo registrata in RISULTATI-send-chain-71A.
 
 ## 7. Simulazioni
 
+- [REV 2026-11-03] Assign: taglio allo zero e switch dopo la R di
+  iniezione (`fx-send-assign-zc.cir`, `RISULTATI-fx-send-assign.md`).
+  La riga sotto è SUPERATA (la ramp sul pin IN non esiste).
 - Soft-switch assign: click = famiglia ramp 1 ms (§8.5 five-way:
   −8,4…−9,6 dB vs brusco); la cella RC sul pin IN sposta la commutazione
   nella regione resistiva del Ron → verifica a banco (charge injection
