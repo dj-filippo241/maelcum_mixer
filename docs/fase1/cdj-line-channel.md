@@ -218,7 +218,14 @@ micro-modulo senza modifiche elettriche di comportamento.]
 **[REV 2026-10-31, dec. 159]** Dopo il fader il canale ha tre uscite su tre net
 multidrop: DJ bus, bus HPF, bus LPF (R 10k lato sorgente ciascuna). L'interruttore
 HPF/OFF/LPF pilota un ADG (PROVVISORIO, tipo ADG1434) con break-before-make e rampa
-1-5 ms: la commutazione morbida passa dal modulo filtro al canale. I 2 bit di modo
+1-5 ms: la commutazione morbida passa dal modulo filtro al canale.
+**[DEC. 163, 2026-11-03]** La rampa non è propria: la fa il VCA del fader (§3.8) con un
+«dip». Una logica autotemporizzata (74HC86 + 74HC14 + 74HC74) vede la levetta cambiare,
+abbassa il VCA con due celle RC 10k/50n bufferizzate (mezzo OPA1654) sommate sul nodo EC−
+(giù a −100 dB in ~1 ms), commuta l'ADG a ~1,6 ms e rilascia (su in ~3 ms). Click sul bus
+che riceve: sotto la musica (secco: +14 dB). All'orecchio un respiro di 3-4 ms; CUE, FX
+SEND e meter non lo vedono. [PROVVISORIO fino al banco: feedthrough della CV, rimbalzo
+della levetta.] `sim/cdj/RISULTATI-filtsel-dip.md`. I 2 bit di modo
 restano sulla riga c: al modulo filtro servono per zittire la sezione senza canali.
 Backplane: lo slot 4 (FILT_SEND) diventa BUS_HPF out, lo slot 5 (FILT_RET) BUS_LPF
 out. **Fase 1**: senza modulo filtro l'interruttore resta su OFF; nessun ponticello.
