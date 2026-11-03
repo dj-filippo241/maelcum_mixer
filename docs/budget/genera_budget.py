@@ -22,6 +22,7 @@ PREZZI = {
     "adg":      ("ADG1434 quad switch", 6.0, 10.0, "M"),
     "lm3915":   ("LM3915 driver di barra", 2.0, 4.5, "M"),
     "lm339":    ("LM339 comparatore quad", 0.3, 0.6, "S"),
+    "hc":       ("logica 74HC (74/86/14)", 0.2, 0.6, "S"),
     "lt":       ("LT3045 / LT3094 regolatore low-noise", 4.0, 6.0, "D"),
     "lm317":    ("LM317/337 o 78L15/79L15", 0.5, 1.0, "D"),
     "jfet2":    ("JFET dual abbinato (classe LSK489)", 4.0, 8.0, "S"),
@@ -69,15 +70,16 @@ MODULI = [
         p("opa1654", 12, "isolator, 24 sezioni per lato"),
         p("opa1612", 7, "somme EQ, buffer, fader, out; phono 2+1"),
         p("dual", 1, "servo"),
-        p("vca", 4, "GAIN 2 + fader 2 (dec. 126)"),
-        p("trim", 21, "trim dei VCA 12, incroci 6, shaper del fader 3"),
+        p("vca", 2, "fader 2 (dec. 126); GAIN a pot doppio (dec. 162)"),
+        p("trim", 15, "trim dei VCA 6, incroci 6, shaper del fader 3"),
+        p("hc", 3, "levetta HPF/OFF/LPF col dip del fader (dec. 163)"),
         p("adg", 1, "LINE/PHONO"),
         p("lm317", 2, "regolatori locali"),
         a_corpo("passivi: banca R 0,1 %, ~60 C di precisione, RIAA", 45, 80),
         p("rca", 6, "line 4 + phono 2"),
         a_corpo("morsetto di massa phono", 1, 3),
         p("c96", 1),
-        p("rk14s", 1, "GAIN"),
+        p("rk14d", 1, "GAIN, pot doppio selezionato (dec. 162)"),
         p("rk14d", 4, "EQ, residuo <= 20 ohm (dec. 127)"),
         p("lev2", 1, "LINE/PHONO"),
         p("lev3", 1, "filtro HPF/OFF/LPF"),
@@ -88,7 +90,9 @@ MODULI = [
     ("FX-SEND", 4, 2, "fx-send-module §5", [
         p("opa1654", 3),
         p("opa1612", 1),
-        p("adg", 2, "assign"),
+        p("adg", 2, "assign, dopo la R di iniezione (todo 185)"),
+        p("lm339", 1, "taglio allo zero degli assign (todo 224)"),
+        p("hc", 4, "74HC74, un flip-flop per assign e lato"),
         p("lm317", 4),
         a_corpo("passivi", 8, 15),
         p("c96", 1),
@@ -96,19 +100,19 @@ MODULI = [
         p("rk14d", 1, "LEVEL"),
     ]),
     ("FX-RET (un bus, dec. 130)", 4, 4, "fx-module §2bis, §9, sistema-vca-trim §4", [
-        p("vca", 12, "reroute 8 (4 bus x L/R) + GAIN 2 + fader 2"),
-        p("trim", 41, "3 per VCA + shaper"),
+        p("vca", 10, "reroute 8 (4 bus x L/R) + fader 2; GAIN a pot doppio (dec. 162)"),
+        p("trim", 35, "3 per VCA + shaper"),
         p("opa1654", 5, "3 + 2 per l'iniezione dei reroute sui net"),
         p("opa1612", 1),
         a_corpo("JFET dei buffer di ritorno (2)", 1, 3),
-        a_corpo("shaper delle 5 CV: diodi e resistenze", 4, 8),
+        a_corpo("shaper delle 4 CV: diodi e resistenze", 3, 6),
         p("lm317", 2),
         a_corpo("passivi", 10, 18),
         p("jack", 4, "mandata e ritorno del pedale, L/R"),
         p("dip", 2, "pad"),
         a_corpo("TVS low-cap", 1, 2),
         p("c96", 1),
-        p("rk14s", 1, "GAIN"),
+        p("rk14d", 1, "GAIN, pot doppio selezionato (dec. 162)"),
         p("rk09d", 2, "EQ"),
         p("fader", 1),
         p("rk09s", 4, "reroute verso gli altri bus e SELF, RK09K113004U"),
@@ -134,6 +138,8 @@ MODULI = [
         p("dual", 2, "servo"),
         p("jfet2", 20, "celle parametriche"),
         p("adg", 3, "kill"),
+        p("lm339", 3, "kill al passaggio per lo zero (dec. 164)"),
+        p("hc", 5, "74HC74 doppio, uno per via"),
         a_corpo("GROWL e NASTRO: diodi, R, op-amp", 10, 20),
         p("lt", 2),
         p("lm317", 2),
@@ -239,6 +245,12 @@ MODULI = [
     ]),
 ]
 
+def conta(chiave):
+    return sum(q * n for (_, n, _, _, righe) in MODULI for (d, q, *_r) in righe if d == PREZZI[chiave][0])
+
+
+N_VCA, N_TRIM = conta("vca"), conta("trim")
+
 # Circuiti stampati: un giro di prototipo = 5 copie per disegno + spedizione.
 PCB = [
     ("canale CDJ", 35, 70), ("FX-SEND", 20, 45), ("ritorno FX (un disegno, 4 copie)", 35, 80),
@@ -324,7 +336,7 @@ def main():
     w("")
     w("Cosa è: il costo dei materiali per costruire **un** esemplare, modulo per")
     w("modulo, con una forchetta minimo – massimo. Le quantità vengono dai design")
-    w("doc alla data (~74 VCA, 115 manopole, 4 canali). Gli acquisti restano")
+    w(f"doc alla data (~{N_VCA} VCA, 115 manopole, 4 canali). Gli acquisti restano")
     w("sospesi fino al prototipo in Live (voce 37, A12): questo documento non")
     w("ordina niente.")
     w("")
@@ -397,9 +409,9 @@ def main():
     w("")
     w("Tre fatti che pesano:")
     w("")
-    w("1. **I VCA e i loro trimmer.** ~74 chip a 2,80-5 € fanno 210-370 €; ogni")
-    w("   chip vuole 3 trimmer di taratura (`sistema-vca-trim.md`), cioè ~220")
-    w("   trimmer. I 4 FX-RET ne portano 12 ciascuno, 48 in tutto.")
+    w(f"1. **I VCA e i loro trimmer.** ~{N_VCA} chip a 2,80-5 € fanno {N_VCA*2.8:.0f}-{N_VCA*5:.0f} €; ogni")
+    w(f"   chip vuole 3 trimmer di taratura (`sistema-vca-trim.md`): ~{N_TRIM} trimmer")
+    w("   in tutto il mixer. I 4 FX-RET portano 10 VCA ciascuno, 40 in tutto.")
     w("2. **I prezzi del VCA clone sono deboli.** Non ho trovato oggi un listino")
     w("   europeo aggiornato del V2181L: il prezzo viene dai documenti di settembre")
     w("   e da un annuncio eBay (~4,30 € a pezzo). Lo stock è a lotti (voce 37).")
@@ -424,8 +436,8 @@ def main():
             w("#### 3.1 Variante: core PULITO (c-B) a 4 poli")
             w("")
             w("Differenza rispetto al core (a′), se B1 sceglie il PULITO")
-            w("(`sim/filtro/RISULTATI-cb-4p.md`). I VCA del mixer salgono da ~74 a")
-            w("~90: da riverificare anche W1 dell'alimentatore.")
+            w(f"(`sim/filtro/RISULTATI-cb-4p.md`). I VCA del mixer salgono da ~{N_VCA} a")
+            w(f"~{N_VCA+16}: da riverificare anche W1 dell'alimentatore.")
             w("")
             w(vt)
             w("")
@@ -506,7 +518,7 @@ def main():
     w("  saldatura ma costa a parte, da preventivare.")
     w("- **Pot doppio da 1k del WIDTH**: se non esiste a 14 mm, il circuito passa")
     w("  a 10k (todo aperto in five-way §4.3), costo quasi uguale.")
-    w("- **Taratura**: nessun costo di materiale, ma ~230 trimmer da regolare a")
+    w(f"- **Taratura**: nessun costo di materiale, ma ~{N_TRIM} trimmer da regolare a")
     w("  banco sono giorni di lavoro.")
     w("")
 

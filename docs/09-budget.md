@@ -5,7 +5,7 @@ quantità si correggono lì, poi si rilancia lo script. Non a mano qui.
 
 Cosa è: il costo dei materiali per costruire **un** esemplare, modulo per
 modulo, con una forchetta minimo – massimo. Le quantità vengono dai design
-doc alla data (~74 VCA, 115 manopole, 4 canali). Gli acquisti restano
+doc alla data (~58 VCA, 115 manopole, 4 canali). Gli acquisti restano
 sospesi fino al prototipo in Live (voce 37, A12): questo documento non
 ordina niente.
 
@@ -17,11 +17,11 @@ fonte è S il prezzo è una stima, senza preventivo.
 
 | Modulo | € per modulo | Copie (completo) | Completo | Copie (ridotto) | Ridotto |
 |---|---|---|---|---|---|
-| Canale CDJ/line con phono | 200 € – 368 € | 4 | 802 € – 1.470 € | 2 | 401 € – 735 € |
-| FX-SEND | 39 € – 69 € | 4 | 156 € – 276 € | 2 | 78 € – 138 € |
-| FX-RET (un bus, dec. 130) | 123 € – 244 € | 4 | 493 € – 978 € | 4 | 493 € – 978 € |
+| Canale CDJ/line con phono | 191 € – 348 € | 4 | 763 € – 1.392 € | 2 | 382 € – 696 € |
+| FX-SEND | 40 € – 72 € | 4 | 160 € – 288 € | 2 | 80 € – 144 € |
+| FX-RET (un bus, dec. 130) | 112 € – 221 € | 4 | 448 € – 884 € | 4 | 448 € – 884 € |
 | Filtro, core OTA (a') | 126 € – 265 € | 1 | 126 € – 265 € | 1 | 126 € – 265 € |
-| 5-way | 364 € – 661 € | 1 | 364 € – 661 € | 1 | 364 € – 661 € |
+| 5-way | 366 € – 666 € | 1 | 366 € – 666 € | 1 | 366 € – 666 € |
 | Master out (con booth e MONO) | 133 € – 244 € | 1 | 133 € – 244 € | 1 | 133 € – 244 € |
 | CUE e cuffie | 66 € – 116 € | 1 | 66 € – 116 € | 1 | 66 € – 116 € |
 | Metering (tutte le barre) | 58 € – 151 € | 1 | 58 € – 151 € | 1 | 58 € – 151 € |
@@ -30,13 +30,13 @@ fonte è S il prezzo è una stima, senza preventivo.
 | Backplane | 20 € – 42 € | 1 | 20 € – 42 € | 1 | 20 € – 42 € |
 | PSU-IN e ventole (nel mixer) | 56 € – 108 € | 1 | 56 € – 108 € | 1 | 56 € – 108 € |
 | Alimentatore esterno (box) | 480 € – 914 € | 1 | 480 € – 914 € | 1 | 480 € – 914 € |
-| **Elettronica dei moduli** | | | **2.937 € – 5.560 €** | | **2.382 € – 4.546 €** |
+| **Elettronica dei moduli** | | | **2.860 € – 5.404 €** | | **2.322 € – 4.423 €** |
 | Circuiti stampati, un giro (§4) | | | 485 € – 1.065 € | | 485 € – 1.065 € |
 | Cablaggio, minuteria, cappucci, scorte (§5) | | | 300 € – 590 € | | 300 € – 590 € |
 | Telaio, pannelli, flight case (§6) | | | 1.250 € – 2.550 € | | 1.250 € – 2.550 € |
 | Prototipo: millefori e secondo giro di PCB (§7) | | | 411 € – 889 € | | 411 € – 889 € |
-| **Totale IVA esclusa** | | | **5.383 € – 10.654 €** | | **4.828 € – 9.640 €** |
-| **Totale IVA inclusa (22 %)** | | | **6.567 € – 12.997 €** | | **5.890 € – 11.760 €** |
+| **Totale IVA esclusa** | | | **5.306 € – 10.498 €** | | **4.768 € – 9.517 €** |
+| **Totale IVA inclusa (22 %)** | | | **6.473 € – 12.807 €** | | **5.817 € – 11.611 €** |
 
 Setup completo: 4 canali con 4 FX-SEND, 1 MIC, 3 MONO. Setup ridotto: 2
 canali con 2 FX-SEND, 1 MIC, 1 MONO (come i disegni in `docs/pannelli/`).
@@ -48,19 +48,19 @@ ordini (~15-30 € per ordine sotto la soglia di spedizione gratuita).
 
 ## 2. Dove vanno i soldi
 
-- **Canale CDJ/line con phono**: ~1.136 € al centro della forchetta, 14 % del totale IVA esclusa.
-- **FX-RET (un bus, dec. 130)**: ~735 € al centro della forchetta, 9 % del totale IVA esclusa.
+- **Canale CDJ/line con phono**: ~1.077 € al centro della forchetta, 14 % del totale IVA esclusa.
 - **Alimentatore esterno (box)**: ~697 € al centro della forchetta, 9 % del totale IVA esclusa.
-- **5-way**: ~513 € al centro della forchetta, 6 % del totale IVA esclusa.
-- **FX-SEND**: ~216 € al centro della forchetta, 3 % del totale IVA esclusa.
+- **FX-RET (un bus, dec. 130)**: ~666 € al centro della forchetta, 8 % del totale IVA esclusa.
+- **5-way**: ~516 € al centro della forchetta, 7 % del totale IVA esclusa.
+- **FX-SEND**: ~224 € al centro della forchetta, 3 % del totale IVA esclusa.
 - **Telaio e pannelli**: ~1.900 €, 24 %. Sono la voce singola più grande:
   i pannelli incisi a misura costano più di tutto il silicio di un modulo.
 
 Tre fatti che pesano:
 
-1. **I VCA e i loro trimmer.** ~74 chip a 2,80-5 € fanno 210-370 €; ogni
-   chip vuole 3 trimmer di taratura (`sistema-vca-trim.md`), cioè ~220
-   trimmer. I 4 FX-RET ne portano 12 ciascuno, 48 in tutto.
+1. **I VCA e i loro trimmer.** ~58 chip a 2,80-5 € fanno 162-290 €; ogni
+   chip vuole 3 trimmer di taratura (`sistema-vca-trim.md`): ~265 trimmer
+   in tutto il mixer. I 4 FX-RET portano 10 VCA ciascuno, 40 in tutto.
 2. **I prezzi del VCA clone sono deboli.** Non ho trovato oggi un listino
    europeo aggiornato del V2181L: il prezzo viene dai documenti di settembre
    e da un annuncio eBay (~4,30 € a pezzo). Lo stock è a lotti (voce 37).
@@ -78,22 +78,23 @@ Fonte delle quantità: cdj-line-channel §6, eq-isolator §5, phono §4. Copie: 
 | OPA1654 quad op-amp | 12 | 1,60 – 2,80 | 19 € – 34 € | M | isolator, 24 sezioni per lato |
 | OPA1612 dual op-amp | 7 | 5,50 – 7,50 | 38 € – 52 € | M | somme EQ, buffer, fader, out; phono 2+1 |
 | op-amp dual generico (servo, detector) | 1 | 0,60 – 3,00 | 1 € – 3 € | S | servo |
-| VCA CoolAudio V2181L | 4 | 2,80 – 5,00 | 11 € – 20 € | D | GAIN 2 + fader 2 (dec. 126) |
-| trimmer multigiro | 21 | 0,80 – 2,00 | 17 € – 42 € | S | trim dei VCA 12, incroci 6, shaper del fader 3 |
+| VCA CoolAudio V2181L | 2 | 2,80 – 5,00 | 6 € – 10 € | D | fader 2 (dec. 126); GAIN a pot doppio (dec. 162) |
+| trimmer multigiro | 15 | 0,80 – 2,00 | 12 € – 30 € | S | trim dei VCA 6, incroci 6, shaper del fader 3 |
+| logica 74HC (74/86/14) | 3 | 0,20 – 0,60 | 1 € – 2 € | S | levetta HPF/OFF/LPF col dip del fader (dec. 163) |
 | ADG1434 quad switch | 1 | 6,00 – 10,00 | 6 € – 10 € | M | LINE/PHONO |
 | LM317/337 o 78L15/79L15 | 2 | 0,50 – 1,00 | 1 € – 2 € | D | regolatori locali |
 | passivi: banca R 0,1 %, ~60 C di precisione, RIAA | 1 | a corpo | 45 € – 80 € | S |  |
 | RCA dorato isolato | 6 | 1,50 – 3,00 | 9 € – 18 € | S | line 4 + phono 2 |
 | morsetto di massa phono | 1 | a corpo | 1 € – 3 € | S |  |
 | DIN 41612 C96, coppia | 1 | 4,00 – 8,00 | 4 € – 8 € | D |  |
-| pot 14 mm singolo (Alps RK14K) | 1 | 0,90 – 2,00 | 1 € – 2 € | S | GAIN |
+| pot 14 mm doppio (Alps RK14K) | 1 | 1,10 – 2,50 | 1 € – 2 € | M | GAIN, pot doppio selezionato (dec. 162) |
 | pot 14 mm doppio (Alps RK14K) | 4 | 1,10 – 2,50 | 4 € – 10 € | M | EQ, residuo <= 20 ohm (dec. 127) |
 | levetta piccola 2 posizioni | 1 | 3,00 – 6,00 | 3 € – 6 € | S | LINE/PHONO |
 | levetta sigillata 3 posizioni fisse | 1 | 5,00 – 10,00 | 5 € – 10 € | S | filtro HPF/OFF/LPF |
 | ADG1434 quad switch | 1 | 6,00 – 10,00 | 6 € – 10 € | M | instradamento post-fader DJ / HPF / LPF (dec. 159) |
 | bottone con luce a ritenuta | 5 | 4,00 – 9,00 | 20 € – 45 € | S | CUE + assign FX 1-4 |
 | fader 100 mm mono (Alps RS60N) | 1 | 8,80 – 12,50 | 9 € – 12 € | R |  |
-| **Totale** | | | **200 € – 368 €** | | |
+| **Totale** | | | **191 € – 348 €** | | |
 
 ### FX-SEND
 
@@ -103,13 +104,15 @@ Fonte delle quantità: fx-send-module §5. Copie: 4 nel completo, 2 nel ridotto.
 |---|---|---|---|---|---|
 | OPA1654 quad op-amp | 3 | 1,60 – 2,80 | 5 € – 8 € | M |  |
 | OPA1612 dual op-amp | 1 | 5,50 – 7,50 | 6 € – 8 € | M |  |
-| ADG1434 quad switch | 2 | 6,00 – 10,00 | 12 € – 20 € | M | assign |
+| ADG1434 quad switch | 2 | 6,00 – 10,00 | 12 € – 20 € | M | assign, dopo la R di iniezione (todo 185) |
+| LM339 comparatore quad | 1 | 0,30 – 0,60 | 0 € – 1 € | S | taglio allo zero degli assign (todo 224) |
+| logica 74HC (74/86/14) | 4 | 0,20 – 0,60 | 1 € – 2 € | S | 74HC74, un flip-flop per assign e lato |
 | LM317/337 o 78L15/79L15 | 4 | 0,50 – 1,00 | 2 € – 4 € | D |  |
 | passivi | 1 | a corpo | 8 € – 15 € | S |  |
 | DIN 41612 C96, coppia | 1 | 4,00 – 8,00 | 4 € – 8 € | D |  |
 | pot 9 mm doppio (Alps RK09) | 2 | 0,80 – 1,80 | 2 € – 4 € | S | EQ LOW/HIGH |
 | pot 14 mm doppio (Alps RK14K) | 1 | 1,10 – 2,50 | 1 € – 2 € | M | LEVEL |
-| **Totale** | | | **39 € – 69 €** | | |
+| **Totale** | | | **40 € – 72 €** | | |
 
 ### FX-RET (un bus, dec. 130)
 
@@ -117,23 +120,23 @@ Fonte delle quantità: fx-module §2bis, §9, sistema-vca-trim §4. Copie: 4 nel
 
 | Voce | Qtà | € al pezzo | Totale | Fonte | Note |
 |---|---|---|---|---|---|
-| VCA CoolAudio V2181L | 12 | 2,80 – 5,00 | 34 € – 60 € | D | reroute 8 (4 bus x L/R) + GAIN 2 + fader 2 |
-| trimmer multigiro | 41 | 0,80 – 2,00 | 33 € – 82 € | S | 3 per VCA + shaper |
+| VCA CoolAudio V2181L | 10 | 2,80 – 5,00 | 28 € – 50 € | D | reroute 8 (4 bus x L/R) + fader 2; GAIN a pot doppio (dec. 162) |
+| trimmer multigiro | 35 | 0,80 – 2,00 | 28 € – 70 € | S | 3 per VCA + shaper |
 | OPA1654 quad op-amp | 5 | 1,60 – 2,80 | 8 € – 14 € | M | 3 + 2 per l'iniezione dei reroute sui net |
 | OPA1612 dual op-amp | 1 | 5,50 – 7,50 | 6 € – 8 € | M |  |
 | JFET dei buffer di ritorno (2) | 1 | a corpo | 1 € – 3 € | S |  |
-| shaper delle 5 CV: diodi e resistenze | 1 | a corpo | 4 € – 8 € | S |  |
+| shaper delle 4 CV: diodi e resistenze | 1 | a corpo | 3 € – 6 € | S |  |
 | LM317/337 o 78L15/79L15 | 2 | 0,50 – 1,00 | 1 € – 2 € | D |  |
 | passivi | 1 | a corpo | 10 € – 18 € | S |  |
 | jack 6,3 mm Neutrik | 4 | 2,00 – 4,00 | 8 € – 16 € | S | mandata e ritorno del pedale, L/R |
 | DIP switch del pad | 2 | 0,80 – 1,50 | 2 € – 3 € | S | pad |
 | TVS low-cap | 1 | a corpo | 1 € – 2 € | S |  |
 | DIN 41612 C96, coppia | 1 | 4,00 – 8,00 | 4 € – 8 € | D |  |
-| pot 14 mm singolo (Alps RK14K) | 1 | 0,90 – 2,00 | 1 € – 2 € | S | GAIN |
+| pot 14 mm doppio (Alps RK14K) | 1 | 1,10 – 2,50 | 1 € – 2 € | M | GAIN, pot doppio selezionato (dec. 162) |
 | pot 9 mm doppio (Alps RK09) | 2 | 0,80 – 1,80 | 2 € – 4 € | S | EQ |
 | fader 100 mm mono (Alps RS60N) | 1 | 8,80 – 12,50 | 9 € – 12 € | R |  |
 | pot 9 mm singolo (Alps RK09K) | 4 | 0,35 – 0,70 | 1 € – 3 € | L | reroute verso gli altri bus e SELF, RK09K113004U |
-| **Totale** | | | **123 € – 244 €** | | |
+| **Totale** | | | **112 € – 221 €** | | |
 
 ### Filtro, core OTA (a')
 
@@ -159,8 +162,8 @@ Fonte delle quantità: filter-module §7, §5ter, §5quater; dec. 159 (4 core su
 #### 3.1 Variante: core PULITO (c-B) a 4 poli
 
 Differenza rispetto al core (a′), se B1 sceglie il PULITO
-(`sim/filtro/RISULTATI-cb-4p.md`). I VCA del mixer salgono da ~74 a
-~90: da riverificare anche W1 dell'alimentatore.
+(`sim/filtro/RISULTATI-cb-4p.md`). I VCA del mixer salgono da ~58 a
+~74: da riverificare anche W1 dell'alimentatore.
 
 | Voce | Qtà | € al pezzo | Totale | Fonte | Note |
 |---|---|---|---|---|---|
@@ -183,6 +186,8 @@ Fonte delle quantità: five-way §7, §4.3, §5bis. Copie: 1 nel completo, 1 nel
 | op-amp dual generico (servo, detector) | 2 | 0,60 – 3,00 | 1 € – 6 € | S | servo |
 | JFET dual abbinato (classe LSK489) | 20 | 4,00 – 8,00 | 80 € – 160 € | S | celle parametriche |
 | ADG1434 quad switch | 3 | 6,00 – 10,00 | 18 € – 30 € | M | kill |
+| LM339 comparatore quad | 3 | 0,30 – 0,60 | 1 € – 2 € | S | kill al passaggio per lo zero (dec. 164) |
+| logica 74HC (74/86/14) | 5 | 0,20 – 0,60 | 1 € – 3 € | S | 74HC74 doppio, uno per via |
 | GROWL e NASTRO: diodi, R, op-amp | 1 | a corpo | 10 € – 20 € | S |  |
 | LT3045 / LT3094 regolatore low-noise | 2 | 4,00 – 6,00 | 8 € – 12 € | D |  |
 | LM317/337 o 78L15/79L15 | 2 | 0,50 – 1,00 | 1 € – 2 € | D |  |
@@ -192,7 +197,7 @@ Fonte delle quantità: five-way §7, §4.3, §5bis. Copie: 1 nel completo, 1 nel
 | pot 14 mm doppio (Alps RK14K) | 12 | 1,10 – 2,50 | 13 € – 30 € | M | GAIN 5 + WIDTH 5 + GROWL/NASTRO 2 |
 | pot 14 mm singolo (Alps RK14K) | 5 | 0,90 – 2,00 | 4 € – 10 € | S | POSITION |
 | levetta sigillata ON-OFF-(ON) | 5 | 6,00 – 12,00 | 30 € – 60 € | S | KILL |
-| **Totale** | | | **364 € – 661 €** | | |
+| **Totale** | | | **366 € – 666 €** | | |
 
 ### Master out (con booth e MONO)
 
@@ -423,7 +428,7 @@ REW bastano per le misure audio (voce 30).
   saldatura ma costa a parte, da preventivare.
 - **Pot doppio da 1k del WIDTH**: se non esiste a 14 mm, il circuito passa
   a 10k (todo aperto in five-way §4.3), costo quasi uguale.
-- **Taratura**: nessun costo di materiale, ma ~230 trimmer da regolare a
+- **Taratura**: nessun costo di materiale, ma ~265 trimmer da regolare a
   banco sono giorni di lavoro.
 
 ## Fonti
