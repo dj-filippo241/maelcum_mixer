@@ -101,7 +101,7 @@ MODULI = [
     ]),
     ("FX-RET (un bus, dec. 130)", 4, 4, "fx-module §2bis, §9, sistema-vca-trim §4", [
         p("vca", 10, "reroute 8 (4 bus x L/R) + fader 2; GAIN a pot doppio (dec. 162)"),
-        p("trim", 35, "3 per VCA + shaper"),
+        p("trim", 35, "3 per VCA (30) + 1 per shaper: 4 reroute e il fader (5)"),
         p("opa1654", 5, "3 + 2 per l'iniezione dei reroute sui net"),
         p("opa1612", 1),
         a_corpo("JFET dei buffer di ritorno (2)", 1, 3),
@@ -250,6 +250,18 @@ def conta(chiave):
 
 
 N_VCA, N_TRIM = conta("vca"), conta("trim")
+
+
+def conta_modulo(prefisso, chiave):
+    """Pezzi per copia e copie (completo) di un modulo: niente numeri scritti a mano nel testo."""
+    for (nome, n, _r, _d, righe) in MODULI:
+        if nome.startswith(prefisso):
+            return sum(q for (d, q, *_x) in righe if d == PREZZI[chiave][0]), n
+    raise KeyError(prefisso)
+
+
+# Variante core PULITO (c-B) del filtro: stessi numeri nella tabella §3.1 e nel testo §2.
+CB_VCA, CB_TRIM = 16, 48
 
 # Circuiti stampati: un giro di prototipo = 5 copie per disegno + spedizione.
 PCB = [
@@ -411,12 +423,13 @@ def main():
     w("")
     w(f"1. **I VCA e i loro trimmer.** ~{N_VCA} chip a 2,80-5 € fanno {N_VCA*2.8:.0f}-{N_VCA*5:.0f} €; ogni")
     w(f"   chip vuole 3 trimmer di taratura (`sistema-vca-trim.md`): ~{N_TRIM} trimmer")
-    w("   in tutto il mixer. I 4 FX-RET portano 10 VCA ciascuno, 40 in tutto.")
+    ret_vca, ret_n = conta_modulo("FX-RET", "vca")
+    w(f"   in tutto il mixer. I {ret_n} FX-RET portano {ret_vca} VCA ciascuno, {ret_n * ret_vca} in tutto.")
     w("2. **I prezzi del VCA clone sono deboli.** Non ho trovato oggi un listino")
     w("   europeo aggiornato del V2181L: il prezzo viene dai documenti di settembre")
     w("   e da un annuncio eBay (~4,30 € a pezzo). Lo stock è a lotti (voce 37).")
     w("3. **Il core del filtro (B1) sposta il conto.** Col core PULITO (c-B) il")
-    w("   filtro sale (§3.1): +16 VCA e +48 trimmer.")
+    w(f"   filtro sale (§3.1): +{CB_VCA} VCA e +{CB_TRIM} trimmer.")
     w("")
 
     w("## 3. Moduli, riga per riga")
@@ -429,7 +442,7 @@ def main():
         w(tab)
         w("")
         if nome.startswith("Filtro"):
-            var = [p("vca", 16, "2 per sezione, 4 per core"), p("trim", 48),
+            var = [p("vca", CB_VCA, "2 per sezione, 4 per core"), p("trim", CB_TRIM),
                    p("opa1654", 4, "integratori"),
                    ("LM13700 in meno (resta solo la RES)", -8, 0.6, 2.0, "L", "", True)]
             vt, vlo, vhi = tabella(var)
@@ -437,7 +450,7 @@ def main():
             w("")
             w("Differenza rispetto al core (a′), se B1 sceglie il PULITO")
             w(f"(`sim/filtro/RISULTATI-cb-4p.md`). I VCA del mixer salgono da ~{N_VCA} a")
-            w(f"~{N_VCA+16}: da riverificare anche W1 dell'alimentatore.")
+            w(f"~{N_VCA+CB_VCA}: da riverificare anche W1 dell'alimentatore.")
             w("")
             w(vt)
             w("")

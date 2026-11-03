@@ -121,7 +121,7 @@ Fonte delle quantità: fx-module §2bis, §9, sistema-vca-trim §4. Copie: 4 nel
 | Voce | Qtà | € al pezzo | Totale | Fonte | Note |
 |---|---|---|---|---|---|
 | VCA CoolAudio V2181L | 10 | 2,80 – 5,00 | 28 € – 50 € | D | reroute 8 (4 bus x L/R) + fader 2; GAIN a pot doppio (dec. 162) |
-| trimmer multigiro | 35 | 0,80 – 2,00 | 28 € – 70 € | S | 3 per VCA + shaper |
+| trimmer multigiro | 35 | 0,80 – 2,00 | 28 € – 70 € | S | 3 per VCA (30) + 1 per shaper: 4 reroute e il fader (5) |
 | OPA1654 quad op-amp | 5 | 1,60 – 2,80 | 8 € – 14 € | M | 3 + 2 per l'iniezione dei reroute sui net |
 | OPA1612 dual op-amp | 1 | 5,50 – 7,50 | 6 € – 8 € | M |  |
 | JFET dei buffer di ritorno (2) | 1 | a corpo | 1 € – 3 € | S |  |

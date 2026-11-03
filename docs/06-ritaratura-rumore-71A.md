@@ -112,6 +112,9 @@ assegnati (−66,6 con 4 send a level 0 dB) contro target −78: FINDING
 CHIUSO da DECISIONE 95 (2026-10-02): DEROGA D'USO ratificata da Filippo
 (target −78 vale a send non assegnati; con FX in uso floor −73…−66,6
 accettato come carattere del caso d'uso, disciplina level send K4).
+[SUPERATO 2026-11-03, todo 184: i −73 / −66,6 erano un errore di conto. Con
+la scheda FX-SEND v0.2 il sistema con FX in uso sta a −81,8 dBu A-wtd (PASS):
+§15. La deroga della dec. 95 resta scritta finché Filippo non la revoca.]
 
 ## 8. RICALCOLO 2026-10-13 — quirk 3 (en degli op-amp assente dal `.noise`) → voce 73 CHIUSA
 
