@@ -215,7 +215,8 @@ Residuo off-state MISURATO (§8.10): **π SPDT −95 dB @20 kHz** (Coff 30p;
 −89 anche con 60p) = meglio del VCA (−90…−100 dopo trim) e sotto il floor
 del modulo (−83,2 dBu): la stima −60…−70 del mattino era ottimista per la
 sola serie (SPST serie semplice BOCCIATO: −22…−52 dB @20 kHz). Hard-cut:
-il click è accettato (dec. 88; §8.10: passo = segnale istantaneo, 2,18 V
+[REV 2026-11-03, dec. 164: niente scoppi; il kill taglia al passaggio per lo
+zero della via (comparatore + 74HC74 sul pin IN), §8.11] il click è accettato (dec. 88; §8.10: passo = segnale istantaneo, 2,18 V
 al summer / ~4,4 V out post-makeup al picco — stesso meccanismo del VCA
 hard §8.5; taglio allo zero-crossing ±0,35 mV; standard di scena:
 Jah Tubbys/JB cut-out, Mostec relè — docs/05). **Polarità**: lo switch in
@@ -1187,6 +1188,30 @@ rerun `module-noise-v031.cir` con invertitori + switch π + Rvn 133k =
 invertitori +0,02 dB, switch π +0,01 (la stima +0,3 era cautelativa);
 totale −82,3/−83,9 A-wtd θ0, margine 3,9 dB su −80 —
 `RISULTATI-module-noise-v031.md`].
+
+### 8.11 Kill col taglio sullo zero (`kill-zc.cir`, `RISULTATI-kill-zc.md`, 2026-11-03, dec. 164)
+
+Requisito di Filippo: kill secco, ma senza scoppi nelle casse. Il π SPDT
+resta; cambia il comando. Per via e per lato un comparatore con isteresi
+di pochi mV guarda la via, e un flip-flop 74HC74 copia la levetta sul
+pin IN dell'ADG1434 al primo passaggio per lo zero. Un tempo massimo di
+~20 ms fa scattare comunque l'interruttore a via muta. L e R tagliano
+ciascuno al proprio zero.
+
+- Gradino rispetto al secco (2,19 V): SUB 40 Hz −92 dB, KICK 120 Hz −83,
+  MID 500 Hz −70, HIGH 2 kHz −58, SUPER 10 kHz −44 (riapertura ~6 dB
+  peggio). Col ritardo reale della catena (~0,4 µs): −80 / −70 / −58 /
+  −46 / −32 dB.
+- Sonda del click (HP 2 poli 1,6 kHz): SUB nessun click (0 dB sul
+  programma, secco +43); KICK +11 dB sul programma (secco +45): resta lo
+  spigolo dell'onda che si ferma allo zero, 34 dB sotto lo scoppio.
+- Ritardo del gesto: al massimo mezzo periodo della frequenza più bassa
+  della via (incroci E): SUB 13,5 ms, KICK 6,3, MID 2,9, HIGH 0,4,
+  SUPER 0,08 ms.
+- Costo per modulo [PROVVISORIO]: 3 comparatori quad (classe
+  LM339/TLV3404), 5 doppi 74HC74, ~40 passivi. Nessun VCA.
+- Non fatto: programma musicale vero (prototipo MC-5WAY), charge
+  injection reale (banco).
 
 ## 9. Questioni toccate
 
