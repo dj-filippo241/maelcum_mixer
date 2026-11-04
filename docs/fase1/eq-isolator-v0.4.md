@@ -381,7 +381,7 @@ ripida (ricerca su 160 000 reti, `legge_pot_ricerca.py`; conferma docs/09
 4. VCA per banda con CV sagomata: segue PIONEER, 32 VCA sul mixer, rumore
    da simulare; la dec. 107 li aveva scartati.
 
-Fino alla scelta, i netlist usano il pot lineare (`law=0`).
+**[2026-11-04, DECISIONE 168: Filippo sceglie la strada 1, pot lineare B. I netlist con `law=0` sono la versione di progetto.]**
 
 ### 10.4 Silicio
 
