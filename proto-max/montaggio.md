@@ -197,7 +197,7 @@ I pedali sono effetti veri di Live. Ogni bus FX ha una traccia sua.
 4. LED: grigio = niente, verde = segnale ok, giallo = vicino al clip,
    rosso = clip (resta acceso mezzo secondo). Guarda il segnale prima
    dell'EQ e prima del MUTE.
-5. MUTE spegne il mic verso il Master e verso i bus FX insieme.
+5. MUTE spegne il mic verso il Master e verso i bus FX insieme. Il limiter fisso (dec. 145) ferma gli urli a circa +13 dBu, senza comandi: prova un urlo vicino al mic.
 6. Il fader della traccia non fa parte del modulo (il modulo vero non ha
    fader): lascialo a 0 dB.
 7. **Cuffie, non casse**: con un mic aperto vicino alle casse parte il

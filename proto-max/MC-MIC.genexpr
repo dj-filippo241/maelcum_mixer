@@ -2,7 +2,8 @@
 // GENERATO da proto-max/coefficienti/genera_mic.py: non modificare.
 // in1 = microfono (scheda audio col preamp al minimo); in2 ignorato.
 // INA +30 dB (rail) -> passa-alto 60 Hz -> GAIN 0...+30 dB (rail) ->
-// PRE (LED) -> EQ2 (rail) -> MUTE (1 ms) -> out1 = out2 (mono
+// PRE (LED) -> EQ2 (rail) -> MUTE (1 ms) + limiter fisso (dec. 145)
+// -> out1 = out2 (mono
 // centrato); out3..out10 = SEND ai bus 1-4 (L, R); out11 = LED
 // (0 spento, 1 verde, 2 giallo, 3 rosso).
 
@@ -46,6 +47,8 @@ Param mute(0, min=0, max=1);
 History mrm(0);
 History lenv(0);
 History llat(0);
+History lpk(0);
+History lsm(0);
 Data sv(4);
 Data sa(2);
 Data hb(64);
@@ -200,7 +203,14 @@ d1 = ap(hb, 54, d1, 0.6688095014357188);
 d1 = ap(hb, 58, d1, 0.8282265929955738);
 d1 = ap(hb, 62, d1, 0.9656701590349398);
 M_w = 0.5 * (d0 + d1);
-mo = gmu * M_w;
+// limiter fisso (dec. 145, variante 2): il rilevatore legge l'uscita
+// del VCA del MUTE; soglia +12 dBu, attacco 1 ms, rilascio 1 s
+lec = 0.25 * max(lsm - 2.18, 0);
+mo = gmu * pow(10, -lec / 0.12200000000000001) * M_w;
+lre = 0.5 * abs(mo) * 4.360865946243008;
+lpk = (lre > lpk) * (lre + (lpk - lre) * exp(-1 / (0.002 * samplerate))) + (lre <= lpk) * lpk;
+lpk = lpk * exp(-1 / (2.0 * samplerate));
+lsm = lpk + (lsm - lpk) * exp(-1 / (0.0001 * samplerate));
 // LED al nodo PRE: picco dei 4 campioni, rilascio 0,3 s,
 // rosso con latch 0,5 s (mic.Led)
 lcr = exp(-1 / (0.3 * samplerate));

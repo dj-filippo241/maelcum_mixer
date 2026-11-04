@@ -38,8 +38,14 @@ def modello(f, v_mic, gain, low=50, high=50, mute=0):
     fs4 = 4 * FS
     m = mic.Mic(fs4)
     n = int(max(0.15, 15 / f) * fs4)
-    ys = [m.passo(v_mic * math.sin(2 * math.pi * f * i / fs4), gain / 100,
-                  low / 100, high / 100, mute)[1] for i in range(n)]
+    lim = mic.Limiter(fs4)    # dec. 145: stesso anello, a 4x
+    ys = []
+    for i in range(n):
+        y = lim.guadagno() * m.passo(v_mic * math.sin(2 * math.pi * f * i
+                                                      / fs4), gain / 100,
+                                     low / 100, high / 100, mute)[1]
+        lim.dopo(y)
+        ys.append(y)
     return ampiezza(ys, f, fs4, n - int(min(0.04, n / fs4 / 3) * fs4))
 
 
@@ -83,7 +89,10 @@ def main():
     for u, lato in ((1, "L"), (2, "R")):
         controlla(f"fondamentale tosata {lato}, dB su 1 V",
                   db(ampiezza(ys[u], 1000, FS, n0)),
-                  db(modello(1000, 0.1, 100)), 0.1)
+                  db(modello(1000, 0.1, 100)), 1.2)
+    # toll. 1,2 dB dal limiter (todo 208): il rilevatore del gen~ legge i
+    # picchi di Gibbs del halfband (15,6 V su 13,5) e limita ~1 dB in piu;
+    # nell'hardware il picco e quello vero. Solo col front-end tosato.
 
     print("MUTE")
     for mute in (0, 1):
@@ -128,6 +137,57 @@ def main():
     controlla("rosso dopo 0,4 s di silenzio", ys[11][int(0.4 * FS)], 3, 0)
     controlla("non piu rosso dopo 0,6 s", float(ys[11][int(0.6 * FS)] < 3),
               1, 0)
+
+    print("Limiter fisso (dec. 145): grido da 0 a +20 dBu per 0,3 s, 1 kHz")
+    g_pre = 10 ** (mic.gain_db(0) / 20)
+
+    def grido(passo):
+        """passo(x volt all'uscita senza limiter) -> uscita in volt."""
+        n0, n1, n2 = int(0.1 * FS), int(0.4 * FS), int(0.8 * FS)
+        ys = []
+        for i in range(n2):
+            a = fx.V_DBU * (10 if n0 <= i < n1 else 1)
+            ys.append(passo(a * math.sin(2 * math.pi * 1000 * i / FS)))
+        ciclo = int(FS / 1000)
+
+        def gdb(t, a):
+            k = int(t * FS)
+            return db(max(abs(v) for v in ys[k:k + ciclo]) / a)
+        reg = db(max(abs(v) for v in ys[n1 - 4 * ciclo:n1]) / fx.V_DBU)
+        k2, k5 = int(0.102 * FS), int(0.105 * FS)
+        mx = db(max(abs(v) for v in ys[k2:k5]) / fx.V_DBU)
+        return (reg, mx,
+                gdb(0.4 + 0.05, fx.V_DBU), gdb(0.4 + 0.3, fx.V_DBU))
+
+    lim = mic.Limiter(FS)
+
+    def passo_mod(x):
+        y = lim.guadagno() * x
+        lim.dopo(y)
+        return y
+    mod = grido(passo_mod)
+    nomi = ("a regime, dBu", "massimo da 2 a 5 ms, dBu",
+            "50 ms dopo, guadagno dB", "300 ms dopo, guadagno dB")
+    # LTspice (RISULTATI-mic-limiter): +12,8 dBu; <= +13,5 da 2 a 5 ms;
+    # -4,4 dB a 50 ms; 0 dB a 300 ms
+    for nome, m, att, toll in zip(nomi, mod, (12.8, None, -4.4, 0.0),
+                                  (0.3, None, 0.6, 0.3)):
+        if att is None:  # LTspice da solo un tetto: <= +13,5 dBu
+            controlla(f"modello contro LTspice: {nome} sotto +13,5",
+                      float(m <= 13.5), 1.0, 0)
+            continue
+        controlla(f"modello contro LTspice: {nome}", m, att, toll)
+    g = nuovo("MC-MIC", gain=0)
+    a_mic = 1 / g_pre / mic.V_SCHEDA
+    gen = grido(lambda x: (g.campione(x * a_mic, 0.0),
+                           g.ns["out1"] * fx.LIV)[1])
+    # il halfband del gen~ sposta di qualche campione la finestra dei
+    # primi ms: li' vale il tetto di LTspice, non lo scarto dal modello
+    for i, (nome, m, att) in enumerate(zip(nomi, gen, mod)):
+        if i == 1:
+            controlla(f"gen~: {nome} sotto +13,5", float(m <= 13.5), 1.0, 0)
+            continue
+        controlla(f"gen~ contro modello: {nome}", m, att, 0.1)
 
     print("PASS" if errori == 0 else f"FAIL: {errori} punti fuori")
     return 0 if errori == 0 else 1

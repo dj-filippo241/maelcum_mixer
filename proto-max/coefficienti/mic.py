@@ -140,6 +140,40 @@ class Mic:
         return pre, y * gm
 
 
+# Limiter fisso (dec. 145, variante 2): sim/mic/RISULTATI-mic-limiter.md.
+# Il rilevatore legge l'uscita del VCA del MUTE (anello in retroazione).
+LIM_VTH = 2.18          # V dopo il raddrizzatore x0,5: +12 dBu sinusoidale
+LIM_K = 0.25            # V al pin EC- per V di eccesso
+LIM_T_ATT = 2e-3        # Ratt 1k * (Ch + Cs): Cs carica Ch attraverso Rs
+LIM_T_REL = 2.0         # Rrel 1M * (Ch + Cs)
+LIM_T_SM = 1e-4         # Rs 100 * Cs 1 uF
+VCA_V_DB = 0.0061       # legge del V2181: 6,1 mV/dB
+
+
+class Limiter:
+    """Un campione alla frequenza di Live: prende l'uscita prima del
+    limiter (volt) e restituisce il guadagno lineare da applicare. Lo stato
+    si aggiorna con l'uscita vera (dopo(y))."""
+
+    def __init__(self, fs):
+        self.ca = math.exp(-1 / (LIM_T_ATT * fs))
+        self.cr = math.exp(-1 / (LIM_T_REL * fs))
+        self.cs = math.exp(-1 / (LIM_T_SM * fs))
+        self.pk = 0.0
+        self.sm = 0.0
+
+    def guadagno(self):
+        ec = LIM_K * max(self.sm - LIM_VTH, 0.0)
+        return 10 ** (-ec / (20 * VCA_V_DB))
+
+    def dopo(self, y):
+        r = 0.5 * abs(y)
+        if r > self.pk:
+            self.pk = r + (self.pk - r) * self.ca
+        self.pk *= self.cr
+        self.sm = self.pk + (self.sm - self.pk) * self.cs
+
+
 def send_lin(t):
     return fx.level_send(t)
 

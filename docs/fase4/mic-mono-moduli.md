@@ -431,4 +431,4 @@ MUTE_CV ─Rb─┼── pin 3 EC−      Rc da pin 3 a massa
   lo chiede (con 25 dB di tetto i numeri erano identici).
 - **Non simulati**: raddrizzatore e picco con op-amp veri, offset del rilevatore
   (1 mV al pin = 0,16 dB), soglia contro le tolleranze. Banco.
-- **Prototipo**: MC-MIC non ha ancora il limiter; va aggiunto per sentirlo.
+- **Prototipo**: MC-MIC ha il limiter dal 2026-11-04 (todo 208, `proto-max/RISULTATI-P4.md`): da sentire.

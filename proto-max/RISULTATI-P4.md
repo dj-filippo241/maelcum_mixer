@@ -91,3 +91,17 @@ Nomi gen~: nessuna collisione (`nomi_in_comune`).
    (voce 40)?
 4. MUTE: il tasto suona pulito, senza click?
 5. Le mandate FX1-FX4: la voce nell'eco del dub con la law curva A.
+
+## Limiter fisso (2026-11-04, todo 208, dec. 145)
+
+MC-MIC ha il limiter della variante 2, senza comandi: rilevatore sull'uscita
+dopo il VCA del MUTE, soglia +12 dBu, K 0,25, attacco Ratt*(Ch+Cs) 2 ms,
+rilascio Rrel*(Ch+Cs) 2 s, lisciatura 0,1 ms (`mic.Limiter`). Cs carica Ch
+attraverso Rs: con Ch sola (1 ms / 1 s) il modello dava -2,5 dB a 50 ms
+invece di -4,4. Modello contro LTspice (`sim/mic/RISULTATI-mic-limiter.md`):
+grido +20 dBu a regime +12,79 dBu (LTspice +12,8); da 2 a 5 ms sotto +13,5;
+50 ms dopo -4,8 dB (-4,4); 300 ms dopo 0 dB. gen~ contro modello entro
+0,01 dB. `prova_mic.py` PASS. Il rail tosato del front-end ha tolleranza
+1,2 dB: il rilevatore del gen~ legge i picchi di Gibbs del halfband e limita
+~1 dB in piu, solo col mic in saturazione. `verifica_mic.py` non gira: vuole
+i log di LTspice, fuori da git.
