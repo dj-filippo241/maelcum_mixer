@@ -807,3 +807,26 @@ non termina. Prove `t9a-d.cir` (dur 0,05 s): con la spinta a op-amp (`OPAMP0` co
 (t9d) né il differenziale (t9c). Prossimo passo: spinta come `B` (o macro lineare con
 secondo polo) in tutte le `nastro-b9-*.cir`, poi `confronto_b9.py`, rumore
 (`module-noise-b9.cir`), ascolto di Filippo. Verificato in: Python sì / LTspice no / Live no.
+
+LTspice della B9 (2026-11-04 notte). Spinta come sorgente `B` con clip ai rail (come B8):
+lo stadio a op-amp senza polo faceva collassare il passo (t9a-d, ora tolte). Macro
+`OPAMP0` delle netlist B9: A0 1e5, polo a 100 Hz (GBW 10 MHz), clip anche sul nodo
+interno. Attenzione: con il condensatore della macro sbagliato di 1000 volte (GBW 10 kHz)
+le celle di enfasi perdevano 1,2 dB a 3 kHz e la THD a 3 kHz scendeva da 32 a 7 % (falso).
+
+| Mix, manopola | modello THD · dB | LTspice Partial · dB |
+|---|---|---|
+| 50 Hz 0 dBu 100 % | 0,81 % · +3,14 | 0,81 % · +3,14 |
+| 120 Hz 0 dBu 100 % | 11,52 % · +4,45 | 11,53 % · +4,45 |
+| 500 Hz 0 dBu 50 % | 30,18 % · +0,97 | 30,20 % · +0,97 |
+| 500 Hz 0 dBu 100 % | 43,95 % · +2,04 | 43,97 % · +2,04 |
+| 500 Hz +10 dBu 100 % | 41,78 % · −5,69 | 41,77 % · −5,69 |
+
+Scarto massimo a 50, 120 e 500 Hz: 0,05 punti, 0,00 dB (`confronto_b9.py`, durata 1,5 s).
+A 3 e 12 kHz LTspice non termina (oltre 40 min per passo, anche con GBW 1 MHz e 0,1 s):
+causa aperta, non è lo stadio di spinta.
+
+Rumore (`module-noise-b9.cir`, `noise_total.py`): NASTRO B9 a fine corsa −79,8 dBu A
+(B8: −79,1; target −80), a metà manopola −83,3, tutto chiuso −85,9.
+
+Verificato in: Python sì / LTspice sì sotto 1 kHz, no a 3 e 12 kHz / Live no (da sentire).

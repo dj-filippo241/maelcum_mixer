@@ -27,7 +27,11 @@
 * ============================================================
 .model NJ310 NJF(Beta=5m Vto=-3 Lambda=6m Cgs=25p Cgd=4p Is=10f)
 .subckt OPAMP0 inp inn out
-E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
+* A0 1e5 con polo a 100 Hz (GBW 10 MHz) e clip ai rail anche sul nodo interno (niente windup): senza polo il passo collassa a 3 kHz (todo 245)
+G1 0 n1 value={1e-5*(V(inp)-V(inn))-1e-3*(V(n1)-limit(V(n1),-16,16))}
+R1 n1 0 1e10
+C1 n1 0 0.1592p
+E1 out 0 value={limit(V(n1),-16,16)}
 .ends OPAMP0
 .param amp=1.096
 .param th=1
@@ -87,10 +91,8 @@ Xe4 e4 u4 u4 OPAMP0
 Re5 u4 u {ret}
 Re5g u e5c 10k
 Ce5 e5c 0 {1/(6.2832*fm*rt*10k)}
-* --- spinta non invertente (Rg 1k, Rf = 1k (gn-1)) + JFET (NASTRO LIBERO) ---
-Rsg spn 0 1k
-Rsf pre spn {1k*(gn-1)+1m}
-Xsp u spn pre OPAMP0
+* --- spinta ideale con clip ai rail (come B8, nastro-bande.cir): l op-amp con limit() collassa il passo (t9a) ---
+Bsp pre 0 V=limit({gn}*V(u),-16,16)
 Rtg pre gate 10k
 J1 drain gate s1 NJ310
 Rd vcc drain 1.5k
