@@ -30,7 +30,7 @@ il CUE contro il master in cuffia.
 
 | Blocco | Segno | Fonte |
 |---|---|---|
-| Canale: ingresso, GAIN (pot T + non invertente), isolator, send tap, CUE out | +1 | cdj §3.2-3.3 (isolator «polarità diritta») |
+| Canale: ingresso, GAIN (pot T + non invertente), isolator, send tap, CUE out | +1 | cdj §3.2-3.3 (isolator «polarità diritta»; REV 2026-11-04, incroci C: +1 a DC, poi la fase gira verso −180° sopra 150 Hz, allpass del 1o ordine come nel prototipo; tutte le prese stanno dopo l'EQ, eq-isolator §10.2) |
 | Fader del canale e del ritorno: VCA + I/V | +1 | datasheet THAT 2181 p. 7; sostituisce un buffer non invertente |
 | Ricevitore DJ bus (massa virtuale, nel 5-way, non disegnato in five-way §2) | −1 | backplane §4, `sim/cdj/djbus-level.cir` |
 | 5-way da tensione d'ingresso a MSUM out (pad, banca, gate, celle, drive, make-up) | +1 | **misurato oggi**: `pol-5way-ac.cir`, fase −22° a 10 Hz e −11° a 100 kHz (resto = allpass della banca) |

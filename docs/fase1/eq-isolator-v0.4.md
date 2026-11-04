@@ -1,5 +1,7 @@
 # EQ DI CANALE v0.4 — isolator a 4 bande (2026-10-13)
 
+> **[REV 2026-11-04, todo 211 → §10]** Banca riallineata agli incroci C (dec. 152: 150 Hz LR2 / 350 / 3150 Hz): v0.5. La curva PIONEER (dec. 146) NON si fa con il pot lineare a catalogo: scarto fino a 4 dB a ore 9 (§10.3, decisione di Filippo). I §3-§9 restano come storia della v0.4 a incroci A.
+>
 > **Stato: v0.4-beta2, SIMULATO e INTEGRATO NEL CANALE (alpha + completamento §8 + integrazione §9, 2026-10-13).** Decisione 105 [F]: «rifai il 4 band EQ
 > in modo che sia un isolator». Sostituisce l'EQ in serie v0.3 beta-3
 > (`eq-serie-v0.3.md`), che resta ARCHIVIATO come alternativa. Topologia
@@ -302,3 +304,93 @@ Valori [PROVVISORI — regola 3]. Polarità assoluta dello stadio VCA di
 gain (a monte dell'EQ, comune a tutte le prese): la macro è ideale e
 diritta; il segno reale del 218x col suo stadio d'uscita si verifica su
 datasheet e a banco. Non può creare cancellazioni dentro il canale.
+
+## 10. REV 2026-11-04 — v0.5: incroci C e curva PIONEER (todo 211, dec. 146 e 152)
+
+Numeri completi: `sim/eq-iso/RISULTATI-incroci-C.md`. Netlist:
+`iso-incc-banca.inc` (circuito), `iso-incc-ac.cir`, `iso-incc-noise.cir`,
+`iso-incc-dc.cir`; confronto col prototipo: `confronto_incc.py`. Valori
+[PROVVISORI — regola 3].
+
+### 10.1 Topologia
+
+Stessa struttura del prototipo (`proto-max/coefficienti/canale.py`, `bande()`):
+
+```
+ingresso ─┬─ LP2(150, Q 0,5) ─ AP2(350) ─ AP2(3150) ─────────── pot LOW ──┐
+          └─ HP2(150, Q 0,5) ─┬─ LP4(350) ─ AP2(3150) ────────── pot LM ───┤
+                              └─ HP4(350) ─┬─ LP4(3150) MFB+SK ─ pot MH ───┼─ somma ×2 (§9) ─ uscita
+                                           └─ HP4(3150) MFB+SK ─ pot HIGH ─┘
+```
+
+- Il primo incrocio è LR2 (12 dB/ottava): un Sallen-Key LP e un Sallen-Key
+  HP con Q 0,5 (R uguali, C uguali). LP2 − HP2 è un allpass del 1o ordine:
+  i tre rami alti vogliono il segno meno, e la somma resta piatta.
+- Il segno meno arriva senza invertitori: a 3150 Hz una delle due sezioni
+  di ogni LR4 è un MFB (guadagno −1). L'invertitore del LOW-MID della v0.4
+  sparisce (l'allpass AP2 inverte già).
+- Somma non invertente, servo DC e buffer dei pot invariati (§9).
+- C più grandi della v0.4 (220 n a 150 Hz, 100 n a 350 Hz, 10 n a 3150 Hz):
+  impedenze più basse, rumore uguale alla v0.4. Tabella dei valori nel
+  RISULTATI §1.
+
+### 10.2 Misure contro il prototipo
+
+- Centro piatto: +0,001…+0,004 dB da 20 Hz a 35 kHz.
+- **Banca = prototipo entro 0,05 dB** dove il prototipo sta sopra −10 dB
+  (centro, bande al massimo, incroci, punti della curva); fase entro 0,5°.
+- Bande chiuse da sole: LOW −19,7 dB a 50 Hz; LOW-MID −7,7 dB a 229 Hz
+  (incrocio dolce, come nel prototipo); MID-HIGH −26,5 dB a 1050 Hz; HIGH
+  −31,2 dB a 8 kHz. Tutte a zero: −48 dB piatto.
+- Gli scarti dal prototipo stanno solo nel fondo dei tagli (prototipo fino a
+  −64 dB, hardware fermo a −48): è il residuo del pot.
+- **FINDING**: con residuo 20 Ω (il massimo garantito, dec. 127) una banda
+  chiusa sta a −48 dB, non −54. Il −54 della dec. 127 e del §5 era calcolato
+  con 10 Ω.
+- Rumore: −97,4 dBu A-wtd al centro, −92,4 tutto al massimo, −104,8 tutto
+  chiuso. Uguale alla v0.4 (−97,3): canale (−94,6) e sistema (−82,9, docs/06)
+  invariati.
+- Ritardo di gruppo: 3,5 ms a 30 Hz, 2,7 a 150, 0,4 a 1 kHz (v0.4: 4,2 a 30
+  Hz, picco 4,7 a 100 Hz).
+- Polarità: diritta a DC, fase vicina a −180° sopra qualche centinaio di Hz
+  (allpass del 1o ordine a 150 Hz). Identica al prototipo; nessuna
+  cancellazione dentro il canale (RISULTATI §6, `docs/fase3/sistema-polarita.md`).
+
+### 10.3 Curva PIONEER: cosa si realizza
+
+A 1 kHz, tutte le manopole alla stessa posizione:
+
+| θ | 0,05 | 0,1 | 0,2 (ore 9) | 0,25 | 0,3 | 0,4 | 0,5 | 0,75 | 1 |
+|---|---|---|---|---|---|---|---|---|---|
+| PIONEER (prototipo) | −30,0 | −21,0 | −11,9 | −9,0 | −6,7 | −2,9 | 0 | +3,5 | +6,0 |
+| pot lineare B a catalogo | −19,7 | −13,8 | −7,9 | −6,0 | −4,4 | −1,9 | 0 | +3,5 | +6,0 |
+| scarto | +10,3 | +7,1 | +4,0 | +3,1 | +2,2 | +1,0 | 0 | 0 | 0 |
+
+Sopra il centro il pot lineare è già PIONEER. Sotto il centro taglia meno:
+all'orecchio, girando verso sinistra la banda resta presente più a lungo e
+sparisce tutta nell'ultimo tratto, invece di calare presto come nel
+prototipo. Con un pot doppio lineare non si fa meglio: ogni rete di
+resistenze attorno al pot e al suo buffer rende la curva più dolce, mai più
+ripida (ricerca su 160 000 reti, `legge_pot_ricerca.py`; conferma docs/09
+§7). Strade possibili, **da scegliere da Filippo** (RISULTATI §3):
+
+1. pot lineare B: la curva LINEARE del selettore del prototipo;
+2. pot a 4 sezioni, due piste per lato: scarto massimo 4,7 dB [pezzo DA
+   VERIFICARE a catalogo con scatto al centro];
+3. taper su misura: segue PIONEER, escluso dalle dec. 114(c) e 146;
+4. VCA per banda con CV sagomata: segue PIONEER, 32 VCA sul mixer, rumore
+   da simulare; la dec. 107 li aveva scartati.
+
+Fino alla scelta, i netlist usano il pot lineare (`law=0`).
+
+### 10.4 Silicio
+
+20 sezioni OPA1654 per lato invece di 23: **10 quad per canale stereo**
+(erano 12), 40 sul mixer (erano 48). OPA1612 e servo invariati. C di
+precisione: 27 per lato.
+
+### 10.5 Non fatto [PROVVISORIO, banco]
+
+Monte Carlo con la topologia nuova; THD e clip reali; stabilità delle celle
+MFB con l'OPA1654 vero; C in E6 e coppie in parallelo; la strada per la curva
+PIONEER.

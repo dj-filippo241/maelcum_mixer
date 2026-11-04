@@ -1,0 +1,38 @@
+* ============================================================
+* EQ DI CANALE v0.5 — ISOLATOR, INCROCI C 150 LR2 / 350 / 3150 Hz (dec. 152)
+* e manopole lineari (law=0) o PIONEER ideale (law=1, dec. 146). todo 211, 2026-11-04.
+* Circuito in iso-incc-banca.inc. Casi (kcase): 0 centro | 1-4 una banda a zero
+* (LOW, LOW-MID, MID-HIGH, HIGH) | 5 tutte a zero | 6-9 una al massimo | 10 tutte al
+* massimo | 20-26 tutte a 0,05/0,1/0,2/0,25/0,3/0,4/0,75 | 30 LOW+LM a zero | 31 MH+HIGH a zero.
+* Generato da uno script di sessione (valori in tabella): rigenerare a mano con cura.
+* RUMORE: densita' a 16 punti (integrare con sim/mic/noise_total.py). Casi 0 / 5 / 10.
+.include ../lib/opamp-audio.inc
+.param f1=150 f2=350 f3=3150
+.param vosv=0
+V1 vin 0 DC 0 AC 1
+.include iso-incc-banca.inc
+.param t1={table(kcase,0,0.5,1,0,2,0.5,3,0.5,4,0.5,5,0,6,1,7,0.5,8,0.5,9,0.5,10,1,20,0.05,21,0.1,22,0.2,23,0.25,24,0.3,25,0.4,26,0.75,30,0,31,0.5)}
+.param t2={table(kcase,0,0.5,1,0.5,2,0,3,0.5,4,0.5,5,0,6,0.5,7,1,8,0.5,9,0.5,10,1,20,0.05,21,0.1,22,0.2,23,0.25,24,0.3,25,0.4,26,0.75,30,0,31,0.5)}
+.param t3={table(kcase,0,0.5,1,0.5,2,0.5,3,0,4,0.5,5,0,6,0.5,7,0.5,8,1,9,0.5,10,1,20,0.05,21,0.1,22,0.2,23,0.25,24,0.3,25,0.4,26,0.75,30,0.5,31,0)}
+.param t4={table(kcase,0,0.5,1,0.5,2,0.5,3,0.5,4,0,5,0,6,0.5,7,0.5,8,0.5,9,1,10,1,20,0.05,21,0.1,22,0.2,23,0.25,24,0.3,25,0.4,26,0.75,30,0.5,31,0)}
+.step param law list 0 1
+.step param kcase list 0 5 10
+.noise V(out) V1 dec 20 10 100k
+.meas noise on1 FIND V(onoise) AT 20
+.meas noise on2 FIND V(onoise) AT 31.5
+.meas noise on3 FIND V(onoise) AT 50
+.meas noise on4 FIND V(onoise) AT 80
+.meas noise on5 FIND V(onoise) AT 125
+.meas noise on6 FIND V(onoise) AT 200
+.meas noise on7 FIND V(onoise) AT 315
+.meas noise on8 FIND V(onoise) AT 500
+.meas noise on9 FIND V(onoise) AT 800
+.meas noise on10 FIND V(onoise) AT 1250
+.meas noise on11 FIND V(onoise) AT 2000
+.meas noise on12 FIND V(onoise) AT 3150
+.meas noise on13 FIND V(onoise) AT 5000
+.meas noise on14 FIND V(onoise) AT 8000
+.meas noise on15 FIND V(onoise) AT 12500
+.meas noise on16 FIND V(onoise) AT 20000
+.meas noise g1k FIND gain AT 1000
+.end
