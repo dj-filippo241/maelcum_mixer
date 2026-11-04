@@ -69,7 +69,7 @@ d.CP("+5VF", "CTRL_GND", "47u 10V", "Capacitor_THT:CP_Radial_D5.0mm_P2.00mm")
 d.part("U", "Regulator_Linear:LM317_TO-220", "LM317", "Package_TO_SOT_THT:TO-220-3_Vertical",
        {"VI": "V27F+", "VO": "VREG+", "ADJ": "ADJ+"}, ref="U10")
 d.R("VREG+", "ADJ+", "120 1%")
-d.R("ADJ+", "AGND", "1k72 1%", note="1,72k: 19,2 V; E96 1,74k = 19,4 V")
+d.R("ADJ+", "AGND", "1k74 1%", note="E96 1,74k = 19,4 V (1,72k = 19,2 V non esiste all'1 %)")
 d.CP("ADJ+", "AGND", "10u 35V", "Capacitor_THT:CP_Radial_D5.0mm_P2.00mm")
 d.CP("VREG+", "AGND", "47u 35V", "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm")
 d.part("D", "Diode:1N4148W", "1N4148W", "Diode_SMD:D_SOD-123", {"K": "VREG+", "A": "ADJ+"}, note="scarica Cadj")
@@ -83,7 +83,7 @@ d.CP("+18V", "AGND", "100u 25V", "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm")
 d.part("U", "Regulator_Linear:LM337_TO220", "LM337", "Package_TO_SOT_THT:TO-220-3_Vertical",
        {"VI": "V27F-", "VO": "VREG-", "ADJ": "ADJ-"}, ref="U11")
 d.R("VREG-", "ADJ-", "120 1%")
-d.R("ADJ-", "AGND", "1k72 1%")
+d.R("ADJ-", "AGND", "1k74 1%")
 d.CP("AGND", "ADJ-", "10u 35V", "Capacitor_THT:CP_Radial_D5.0mm_P2.00mm")
 d.CP("AGND", "VREG-", "47u 35V", "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm")
 d.part("D", "Diode:1N4148W", "1N4148W", "Diode_SMD:D_SOD-123", {"A": "VREG-", "K": "ADJ-"})
@@ -180,7 +180,7 @@ for k in range(1, 5):
     d.part("Q", "Transistor_FET:2N7002", "2N7002", "Package_TO_SOT_SMD:SOT-23",
            {"D": "MD%d" % k, "S": "CTRL_GND", "G": "MUTE_G"})
 d.R("GLOBAL_MUTE", "MUTE_G", "1k")
-d.R("MUTE_G", "+5VF", "100k", note="NOTA: polarità c9 provvisoria, alto = muto (fail-safe)")
+d.R("MUTE_G", "+5VF", "100k", note="c9 alto = muto (fail-safe), RISULTATI-mute-ctrl")
 
 # ------------------------------------------------------------ cavi
 d.block = "CAVO SCHEDA COMANDI (J2) e BOTTONI ASSIGN (J3)"
