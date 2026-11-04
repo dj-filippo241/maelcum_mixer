@@ -531,3 +531,188 @@ Prova `prova_5way.py`: il codice gen~ tradotto in Python contro il modello
 e 1000 Hz, NASTRO BANDE a 50, 500, 3000 e 12 000 Hz, insieme a 50, 120 e
 500 Hz, a 0 e +10 dBu, sui due canali: tutti entro 0,05 dB. PASS sull'intera
 prova. Le tabelle di §12 restano quelle da riconoscere all'ascolto (todo 235).
+
+## 14. GROWL e NASTRO a bande in LTspice (todo 234)
+
+Domanda di Filippo: «ho paura che la versione analogica distorcerà molto
+di più di quella digitale». Risposta: **no**. Lo stesso circuito, scritto
+con componenti (diodi 1N4148, JFET NJ310, op-amp), distorce come il
+modello che suona in MC-5WAY: scarto massimo 0,03 punti di THD sul GROWL
+e 0,9 punti sul NASTRO, livello entro 0,03 dB.
+
+Netlist (2026-11-04, tutti i valori in `.param`: spinte, Rf, R serie,
+frequenze; se Filippo cambia le bande, si cambiano lì). Valori verificati:
+quelli del 2026-11-04 mattina, GROWL `D` e NASTRO `B8`. Il ritocco chiesto
+da Filippo lo stesso giorno (GROWL più sporco su KICK e MID; NASTRO a fine
+corsa SUB 0 %, KICK 11 %, MID 45 %, HIGH 34 %, SUPER 22 %) non è in questi
+numeri: coi valori nuovi si riscrivono i `.param` e si rilancia lo script.
+
+- `sim/five-way/growl-bande.cir` (dec. 165, variante D): LP4 a 250 Hz
+  (due Sallen-Key a guadagno 1, Q 0,707 ciascuna, come le due SVF del
+  modello), rest = x − low con un differenziale a 4 R, medi = RC a
+  2,5 kHz + buffer, clipper del basso invertente (Rin = 10k/g, Rf 47k,
+  1/3 diodi con 470 Ω), clipper dei medi invertente (Rf 10k, 3+3 diodi
+  con 4,7k), condensatori d'accoppiamento a 1 Hz davanti a un sommatore
+  invertente: d = 0,9·clip_basso − low + 0,50·clip_medi − mid. Polarità
+  controllata: i clipper invertono, il sommatore inverte di nuovo, quindi
+  d ha il segno del modello (1 diodo sulla semionda positiva d'ingresso).
+- `sim/five-way/nastro-bande.cir` (dec. 166, variante B8): enfasi con
+  celle passive + buffer (bassi: 40k ∥ 49,7 nF in serie, 10k a massa;
+  super: 10k in serie, 10k + 1,59 nF a massa), spinta + JFET del NASTRO
+  LIBERO, de-enfasi dei super passiva (1,19k in serie, 10k + 3,18 nF a
+  massa), de-enfasi dei bassi non invertente (Rg 10k, Rf 15,1k ∥ 66 nF).
+- Copie per frequenza `growl-bande-<f>.cir` e `nastro-bande-<f>.cir`
+  (cambia solo `.param f`); varianti con op-amp di libreria
+  `*-bande-op-<f>.cir`.
+- Confronto: `proto-max/coefficienti/confronto_bande.py` (legge i log,
+  fa girare il modello alle stesse condizioni: partenza dal punto di
+  lavoro, stessa durata, stessa finestra, 8 armoniche, THD Partial).
+  Durate: GROWL 3 s sotto 200 Hz e 0,5 s sopra; NASTRO 1,5 s sotto 1 kHz
+  e 0,5 s sopra (le tabelle di §12 per il NASTRO usano 6 s: il
+  condensatore di source del JFET, 2200 µF, assesta ancora qualche
+  decimo; qui le due parti usano la stessa durata).
+
+### 14.1 Modello contro LTspice (op-amp ideale, rail 16 V)
+
+THD % e livello dB, manopola 50 e 100 %, ingresso −6 / 0 / +10 dBu interni.
+
+GROWL A BANDE (modello | LTspice):
+
+| Via | Manopola | −6 dBu | 0 dBu | +10 dBu |
+|---|---|---|---|---|
+| SUB 50 Hz | 50 % | 22,5 % +3,7 \| 22,5 % +3,7 | 17,7 % +0,7 \| 17,7 % +0,7 | 10,1 % −2,4 \| 10,1 % −2,4 |
+| SUB 50 Hz | 100 % | 31,3 % +8,6 \| 31,3 % +8,6 | 28,4 % +4,2 \| 28,4 % +4,2 | 21,6 % −1,7 \| 21,6 % −1,7 |
+| KICK 120 Hz | 50 % | 28,7 % +1,7 \| 28,7 % +1,7 | 23,9 % −0,8 \| 23,9 % −0,8 | 12,8 % −3,2 \| 12,8 % −3,2 |
+| KICK 120 Hz | 100 % | 40,1 % +7,0 \| 40,1 % +7,0 | 42,1 % +2,4 \| 42,1 % +2,4 | 32,6 % −4,0 \| 32,6 % −4,0 |
+| MID 500 Hz | 50 % | 3,9 % −0,5 \| 3,9 % −0,5 | 7,1 % −0,9 \| 7,1 % −0,9 | 7,0 % −2,5 \| 7,0 % −2,5 |
+| MID 500 Hz | 100 % | 20,4 % +4,9 \| 20,4 % +4,9 | 23,2 % +2,0 \| 23,2 % +2,0 | 20,0 % −3,0 \| 20,0 % −3,0 |
+| 1 kHz | 100 % | 0,8 % +0,9 \| 0,8 % +0,9 | 6,0 % −0,1 \| 6,0 % −0,1 | 7,2 % −2,7 \| 7,2 % −2,7 |
+| HIGH 3 kHz | 100 % | 0,1 % 0,0 \| 0,1 % 0,0 | 2,3 % −0,2 \| 2,3 % −0,2 | 5,4 % −1,3 \| 5,4 % −1,3 |
+| SUPER 12 kHz | 100 % | 0 % \| 0 % | 0 % \| 0 % | 0,7 % \| 0,7 % |
+
+Scarto massimo: **0,03 punti di THD, 0,00 dB** (a 12 kHz, +10 dBu).
+
+NASTRO A BANDE (modello | LTspice):
+
+| Via | Manopola | −6 dBu | 0 dBu | +10 dBu |
+|---|---|---|---|---|
+| SUB 50 Hz | 100 % | 0,8 % +1,4 \| 0,8 % +1,4 | 1,6 % +1,4 \| 1,6 % +1,4 | 6,2 % +1,0 \| 6,2 % +1,0 |
+| KICK 120 Hz | 100 % | 1,3 % +5,2 \| 1,3 % +5,2 | 2,8 % +5,1 \| 2,8 % +5,1 | 17,2 % +2,5 \| 17,2 % +2,5 |
+| MID 500 Hz | 50 % | 3,1 % +2,3 \| 3,1 % +2,3 | 9,9 % +1,3 \| 9,9 % +1,3 | 9,9 % −1,3 \| 9,9 % −1,3 |
+| MID 500 Hz | 100 % | 18,4 % +8,0 \| 18,4 % +8,0 | 28,0 % +5,4 \| 28,0 % +5,4 | 23,3 % −2,4 \| 23,3 % −2,4 |
+| HIGH 3 kHz | 100 % | 25,8 % +6,6 \| 25,9 % +6,6 | 29,2 % +4,5 \| 29,2 % +4,5 | 26,9 % −2,9 \| 26,9 % −2,9 |
+| SUPER 12 kHz | 50 % | 1,1 % −2,2 \| 1,1 % −2,2 | 2,6 % −2,3 \| 2,6 % −2,3 | 7,4 % −3,0 \| 7,3 % −3,0 |
+| SUPER 12 kHz | 100 % | 7,7 % +0,4 \| 7,8 % +0,4 | 23,2 % −0,6 \| 23,4 % −0,6 | 26,0 % −4,3 \| 26,9 % −4,3 |
+
+Scarto massimo: **0,88 punti di THD** (SUPER 12 kHz, 100 %, +10 dBu:
+26,0 % contro 26,9 %), **0,03 dB**. Sotto i 3 kHz lo scarto resta entro
+0,08 punti. A 12 kHz il JFET vero ha le capacità Cgs e Cgd, che il
+modello non ha, e il modello a 192 kHz vede 16 campioni per periodo:
+lo scarto è piccolo e va nei due versi.
+
+Tutte le righe a 50 % sono nella stampa dello script; i valori di fine
+corsa a 0 dBu coincidono con §12 (GROWL SUB 28 %, KICK 42 %, 1 kHz 6 %;
+NASTRO SUB 1,6 %, KICK 2,8 %).
+
+NASTRO con la durata di §12 (6 s, `nastro-bande-500-6s.cir` e
+`nastro-bande-3000-6s.cir`, modo `6s` dello script): a fine corsa e
+0 dBu MID 30,0 % e HIGH 35,9 % nel modello, 30,0 % e 35,9 % in LTspice
+(le tabelle di §12: 30 % e 36 %). Scarto massimo 0,02 punti. Con 0,5-1,5 s
+i valori sono più bassi (28 %, 29 %) nelle due parti allo stesso modo:
+il condensatore di source del JFET si assesta in qualche secondo.
+
+### 14.2 Op-amp reale (OP1654 di libreria) al posto dell'ideale
+
+`growl-bande-op-120.cir`, `-op-1000.cir`, `-op-12000.cir` (A0 120 dB,
+GBW 20 MHz, rail ±16,5 V con alimentazione ±18 V): scarto massimo
+0,01 punti di THD e 0,00 dB contro l'op-amp ideale. Il guadagno d'anello
+non conta: la distorsione la fanno i diodi, non gli op-amp.
+Il NASTRO con OP1654 non termina in LTspice (passo che collassa a
+2e-10 s dopo un punto di lavoro trovato con Gmin stepping, a 120, 3000 e
+12 000 Hz; fermato a mano): non verificato. I netlist sono in sospeso,
+non nel repository. Nel NASTRO gli op-amp lavorano lineari (buffer,
+celle RC, sommatore): ci si aspetta lo stesso esito del GROWL, ma è una
+deduzione, non una misura.
+
+### 14.3 Rumore del modulo coi rami a bande
+
+`sim/five-way/module-noise-bande.cir`: `module-noise-p2.cir` (banca,
+celle, make-up, op-amp con rumore) col drive a bande al posto dei drive
+del prototipo: GROWL A BANDE e NASTRO A BANDE come i due netlist sopra,
+op-amp OP1654, pot come resistenze, d = w − y1 del NASTRO con un
+differenziale a 4 R. Metodo a 16 punti, `sim/mic/noise_total.py`. Uscita
+del modulo; target −80 dBu A-wtd (dec. 89):
+
+| Caso | dBu flat | dBu A-wtd | guadagno a 50 Hz / 1 kHz / 8 kHz (silenzio) |
+|---|---|---|---|
+| Manopole chiuse | −84,4 | **−85,9** | 0 / 0 / 0 dB |
+| GROWL BANDE 100 % | −70,3 | **−78,2** | **+32,4** / +1,0 / 0 |
+| GROWL BANDE 50 % | −82,4 | −85,5 | +16,9 / −1,0 / −0,1 |
+| NASTRO BANDE 100 % | −78,9 | **−79,1** | +1,4 / **+10,2** / +2,8 |
+| NASTRO BANDE 50 % | −84,8 | −85,6 | −1,8 / +2,6 / −1,6 |
+| GROWL + NASTRO BANDE 100 % | −64,8 | **−71,1** | +33,8 / +11,2 / +2,8 |
+
+Lettura (stesso meccanismo di §11: guadagno a segnale minimo, non rumore
+proprio dei rami):
+- **GROWL BANDE a fine corsa**: nel silenzio il ramo del basso guadagna
+  0,9 × 47k/1k − 1 ≈ 42 volte, +32 dB a 50 Hz (il GROWL LIBERO faceva
+  +27). Il rombo basso fra un pezzo e l'altro sale di 5 dB rispetto al
+  LIBERO; A-wtd −78,2 contro −79,6, 1,8 dB sopra il target del modulo.
+  Il ramo dei medi è a pari livello: a 1 kHz +1 dB.
+- **NASTRO BANDE a fine corsa**: +10 dB sui medi come il LIBERO, ma i
+  tagli dell'enfasi lo tolgono dai bassi e dai super: −79,1 A-wtd contro
+  −75,3 del LIBERO, 0,9 dB sopra il target.
+- A metà corsa tutti e due restano entro 0,4 dB dal modulo chiuso.
+- Insieme a fine corsa: −71,1 A-wtd (le due LIBERO facevano −69,0).
+Per il sistema (target −78, dec. 89; overdrive aperti già accettati come
+condizione d'uso, dec. 100) il GROWL BANDE da solo sta al limite. Leva,
+se serve: meno spinta massima del basso (+20 dB → +16 dB toglie 4 dB di
+rombo) o Rf più bassa, a prezzo di carattere. Decisione di Filippo.
+
+### 14.4 Conto dei pezzi (per lato; il modulo è stereo: ×2)
+
+GROWL A BANDE (sostituisce il GROWL LIBERO: SK, clipper, sommatore):
+
+| Voce | Pezzi |
+|---|---|
+| Op-amp (sezioni) | 7: 2 Sallen-Key, 1 differenziale, 1 buffer dei medi, 2 clipper, 1 sommatore (+2 già esistenti: buffer del cursore e sommatore di miscela) |
+| Diodi 1N4148 | 10 (basso 1 + 3, medi 3 + 3) |
+| Resistenze | 22 (SK 4, differenziale 4, RC 1, clipper 4 + 4, sommatore 5) |
+| Condensatori | 7: SK 90 n, 45 n, 90 n, 45 n; 6,37 n; accoppiamento 14,3 µF e 8 µF (bipolari o film) |
+| Pot | la manopola GROWL comanda 3 tratti per lato: miscela, Rin del basso (10k → 1k, legge esponenziale: +20 dB lineari in dB), Rin dei medi (10k → 5k, +6 dB). Un pot doppio non basta: serve un pot a 3 tratti per lato (6 sul pannello stereo), oppure una legge comune ai due Rin. Da decidere in fase di pannello |
+
+Rispetto al GROWL LIBERO: +4 sezioni di op-amp, +6 diodi, +13 R, +4 C,
++1 tratto di pot per lato.
+
+NASTRO A BANDE (contiene il NASTRO LIBERO):
+
+| Voce | Pezzi |
+|---|---|
+| Op-amp (sezioni) | 11: 4 buffer dell'enfasi, 2 buffer della de-enfasi alta, 2 non invertenti della de-enfasi bassa, spinta, sommatore del JFET, differenziale d = w − y1 (+2 già esistenti) |
+| JFET | 1 (classe NJ310, come il NASTRO LIBERO) |
+| Resistenze | 28 (enfasi 8, de-enfasi 8, spinta 2, JFET 4, sommatore 2, differenziale 4) |
+| Condensatori | 10: enfasi 49,7 n ×2 e 1,59 n ×2, de-enfasi 3,18 n ×2 e 66 n ×2, 2200 µF di source, 10 µF di drain |
+| Pot | come il LIBERO: pot doppio per lato (miscela + spinta) |
+
+Rispetto al NASTRO LIBERO: +9 sezioni di op-amp, +19 R, +8 C. I buffer
+dell'enfasi si possono ridurre (celle attive a due a due) se lo spazio
+lo chiede: non cambia il suono.
+
+Totale dei due rami: 18 sezioni di op-amp per lato (5 quad), 10 diodi,
+1 JFET, 50 R, 17 C; 36 sezioni, 20 diodi, 2 JFET sul modulo stereo.
+
+### 14.5 Da sapere
+
+- **Super del NASTRO BANDE: −14 dB, non −7.** In `Bande.__init__` la
+  riduzione dei bassi (12 dB) si divide fra le due celle, quella dei
+  super (7 dB) no: ogni cella alta toglie 7 dB. Risposta netta del ramo
+  saturato a piccolo segnale: −11,6 dB a 20 Hz, −0,5 dB a 1 kHz,
+  −10,6 dB a 12 kHz, −12,5 dB a 20 kHz, −14 dB in fondo. MC-5WAY suona
+  questa versione e i netlist la copiano; il testo della dec. 166 dice
+  «7 dB in meno sui super». Da chiarire con Filippo quale delle due
+  intende (non cambia il confronto).
+- Il confronto prova che il netlist è il modello. Le differenze vere fra
+  analogico e digitale stanno altrove: dispersione del JFET (Idss, Vto:
+  trim o selezione a banco, §5bis.6) e dei diodi, temperatura. Il
+  modello usa gli stessi parametri del datasheet: un pezzo diverso
+  sposta tutte e due le cose insieme, e si misura sul prototipo.

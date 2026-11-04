@@ -1,0 +1,120 @@
+* ============================================================
+* growl-bande-op-12000.cir: copia di growl-bande-12000.cir con op-amp OP1654 (todo 234)
+* 5-WAY GROWL A BANDE (dec. 165, PROVVISORIA; todo 234, 2026-11-04)
+* Modello: proto-max/coefficienti/growl_bande.py, VAR["D"], classe Growl3.
+*   low  = LP4 a fl (due Sallen-Key a guadagno 1, Q 0,707 ciascuna:
+*          come il modello, due SVF uguali in cascata)
+*   rest = x - low (amplificatore differenziale, 4 R)
+*   mid  = LP1 a fm di rest (RC + buffer)
+*   d    = kL*HP1(clipL(gL*low)) - low + kM*HP1(clipM(gM*mid)) - mid
+*          (sommatore invertente: i clipper sono invertenti, quindi
+*          -clip entra con 10k/k, low e mid entrano con 10k)
+*   y    = x + th*d   (miscela con sorgente B: pot ideale)
+* Spinta = R d'ingresso del clipper (Rin = 10k/g, tratto del pot doppio
+* come reostato): g = 10^(G th/20), G = gLmax / gMmax.
+* Clipper del basso: Rf rfl, 1 diodo (semionda positiva d'ingresso) e
+* 3 diodi (negativa) con R serie rsl. Medi: Rf rfm, 3+3 diodi con rsm.
+* Il numero di diodi e fisso nella topologia; il resto sta in .param.
+* kM = None nel modello = pari livello a piccolo segnale con la spinta
+* massima: kM = 1/(rfm/10k * 10^(gMmax/20)).
+* HP1 1 Hz = condensatore di accoppiamento davanti al sommatore.
+* Condizioni del confronto (confronto_bande.py): partenza dal punto di
+* lavoro, durata 3 s sotto 200 Hz e 0,5 s sopra, finestra max(10/f,
+* 20 ms), 8 armoniche, THD Partial. SINE = PICCO. Op-amp ideale con rail
+* a 16 V come drive2-libero.cir. Copie per frequenza: growl-bande-<f>.cir
+* (cambia solo .param f).
+* ============================================================
+.model D4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+* VARIANTE con op-amp di libreria (OP1654: A0 120 dB, GBW 20 MHz, rail
+* +-16,5 V a +-18 V) al posto dell'op-amp ideale: stesso circuito.
+.include ../lib/opamp-audio.inc
+.subckt OPAMP0 inp inn out
+* lint-ok: W1 anelli semplici (buffer, invertenti), punto di lavoro a zero
+X1 inp inn out vp vm OP1654
+Vp vp 0 18
+Vm vm 0 -18
+.ends OPAMP0
+.param amp=0.549
+.param th=1
+.param f=12000
+.param fl=250
+.param fm=2500
+.param gLmax=20
+.param rfl=47k
+.param rsl=470
+.param kL=0.9
+.param gMmax=6
+.param rfm=10k
+.param rsm=4.7k
+.param kM={1/(rfm/10k*pow(10,gMmax/20))}
+.param gL={pow(10,gLmax*th/20)}
+.param gM={pow(10,gMmax*th/20)}
+.param tstop={if(f<200,3,0.5)}
+.param ts={if(f<200,1/(f*2000),if(f>5000,1/(f*200),1/(f*400)))}
+.param t0={tstop-max(10/f,0.02)}
+V1 x 0 SINE(0 {amp} {f})
+
+* --- LP4: due Sallen-Key a fl ---
+Ra1 x a1 10k
+Ra2 a1 a2 10k
+Ca1 a1 lp1 {1.4142/(6.2832*fl*10k)}
+Ca2 a2 0 {0.7071/(6.2832*fl*10k)}
+Xa a2 lp1 lp1 OPAMP0
+Rb1 lp1 b1 10k
+Rb2 b1 b2 10k
+Cb1 b1 low {1.4142/(6.2832*fl*10k)}
+Cb2 b2 0 {0.7071/(6.2832*fl*10k)}
+Xb b2 low low OPAMP0
+* --- rest = x - low ---
+Rr1 x rp 10k
+Rr2 rp 0 10k
+Rr3 low rn 10k
+Rr4 rn rest 10k
+Xr rp rn rest OPAMP0
+* --- mid = LP1 a fm ---
+Rm1 rest mc 10k
+Cm1 mc 0 {1/(6.2832*fm*10k)}
+Xm mc mid mid OPAMP0
+* --- clipper del basso (invertente) ---
+Rli low lgn {10k/gL}
+Rlf lgn lout {rfl}
+Dla lgn la1 D4148
+Rla la1 lout {rsl}
+Dlb1 lout lb1 D4148
+Dlb2 lb1 lb2 D4148
+Dlb3 lb2 lb3 D4148
+Rlb lb3 lgn {rsl}
+Xl 0 lgn lout OPAMP0
+* --- clipper dei medi (invertente, 3+3) ---
+Rmi mid mgn {10k/gM}
+Rmf mgn mout {rfm}
+Dma1 mgn ma1 D4148
+Dma2 ma1 ma2 D4148
+Dma3 ma2 ma3 D4148
+Rma ma3 mout {rsm}
+Dmb1 mout mb1 D4148
+Dmb2 mb1 mb2 D4148
+Dmb3 mb2 mb3 D4148
+Rmb mb3 mgn {rsm}
+Xmc 0 mgn mout OPAMP0
+* --- d = kL*HP(clipL) - low + kM*HP(clipM) - mid ---
+Clc lout lac {kL/(6.2832*10k)}
+Rls lac dn {10k/kL}
+Cmc mout mac {kM/(6.2832*10k)}
+Rms mac dn {10k/kM}
+Rll low dn 10k
+Rmm mid dn 10k
+Rdo dn dg 10k
+Xd 0 dn dg OPAMP0
+By y 0 V=V(x)+{th}*V(dg)
+
+.options noopiter
+.tran 0 {tstop} {t0} {ts}
+.step param amp LIST 0.549 1.096 3.466
+.step param th LIST 0.5 1
+.meas tran xr RMS V(x)
+.meas tran yr RMS V(y)
+.meas tran lmax MAX V(lout)
+.meas tran lmin MIN V(lout)
+.four {f} 8 V(y)
+.end

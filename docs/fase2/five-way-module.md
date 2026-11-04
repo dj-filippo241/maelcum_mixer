@@ -806,6 +806,15 @@ Unica salita: il GROWL su un basso molto piano, +2 dB a fine corsa.
 > Da fare: rumore dei rami nuovi (il ramo del basso guadagna +20 dB a segnale
 > minimo, il NASTRO a bande sui medi come il LIBERO), netlist LTspice, conto
 > dei pezzi.
+> **[2026-11-04, todo 234] LTspice FATTO** (`sim/five-way/growl-bande.cir`,
+> `nastro-bande.cir`, `module-noise-bande.cir`; `proto-max/RISULTATI-P2.md`
+> §14): il circuito distorce come il modello di MC-5WAY (scarto massimo
+> 0,03 punti di THD sul GROWL, 0,9 sul NASTRO a 12 kHz, livello 0,03 dB).
+> Rumore del modulo a fine corsa: GROWL BANDE −78,2 dBu A-wtd (+32 dB a
+> 50 Hz nel silenzio), NASTRO BANDE −79,1, insieme −71,1; a metà corsa
+> −85,5/−85,6. Pezzi per lato: GROWL 7 sezioni di op-amp, 10 diodi, pot a
+> 3 tratti (miscela + due spinte); NASTRO 11 sezioni, 1 JFET. Nel modello i
+> super del NASTRO perdono 14 dB (7 per cella), non 7: da chiarire.
 
 ### 5bis.5 Rumore MISURATO e conteggi (`sim/five-way/drive2-noise.cir`, 2026-10-13)
 

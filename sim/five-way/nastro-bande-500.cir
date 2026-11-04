@@ -1,0 +1,111 @@
+* ============================================================
+* 5-WAY NASTRO A BANDE (dec. 166, PROVVISORIA; todo 234, 2026-11-04)
+* Modello: proto-max/coefficienti/nastro_bande.py, VAR["B8"], classe
+* Bande (dentro: alternative.py, classe Libero = nastro-libero.cir).
+*   u = enfasi(y1): 2 x taglio dei bassi (zero fz / polo fp, DC fz/fp)
+*                   2 x taglio dei super (polo fa / zero fb, HF fa/fb)
+*       celle passive (R serie, R o R+C a massa) + buffer
+*   wn = -kl*vtac: spinta gn = 10^(gnmax th/20) + JFET del NASTRO LIBERO
+*   w  = de-enfasi(wn): 2 x super (polo fa*gh / zero fa, HF gh) passive,
+*        2 x bassi (non invertente, Rf||C, DC gl, polo fp/gl, zero fp)
+*        gl = (fp/fz)*10^(-rl/nl/20), gh = (fb/fa)*10^(-rh/20)
+*        (come Bande.__init__: rl e diviso per le 2 celle basse, rh no:
+*        ogni cella alta toglie rh, le due insieme 2*rh)
+*   m  = y1 + mt*(w - y1), mt = 0,85*th (fw.nastro_law, pot lineare)
+* Limite della topologia: la cella passiva della de-enfasi alta vuole
+* gh < 1, cioe rh > 20 log10(fb/fa) = 6,0 dB con fb/fa = 2.
+* Condizioni del confronto (confronto_bande.py): partenza dal punto di
+* lavoro, durata 1,5 s sotto 1 kHz e 0,5 s sopra (il modello di
+* nastro_bande.py usa 6 s: qui le due parti usano la stessa durata),
+* finestra max(10/f, 20 ms), 8 armoniche, THD Partial. SINE = PICCO.
+* Copie per frequenza: nastro-bande-<f>.cir (cambia solo .param f).
+* ============================================================
+.model NJ310 NJF(Beta=5m Vto=-3 Lambda=6m Cgs=25p Cgd=4p Is=10f)
+.subckt OPAMP0 inp inn out
+E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
+.ends OPAMP0
+.param amp=0.549
+.param th=1
+.param f=500
+.param kt=0.206
+.param kl=0.1977
+.param gnmax=12
+.param fz=80
+.param fp=400
+.param fa=5000
+.param fb=10000
+.param rl=12
+.param rh=7
+.param gl={(fp/fz)*pow(10,-rl/2/20)}
+.param gh={(fb/fa)*pow(10,-rh/20)}
+.param rel={10k*(fp/fz-1)}
+.param reh={10k*(fb/fa-1)}
+.param rdh={10k*(1/gh-1)}
+.param rdl={10k*(gl-1)}
+.param gn={pow(10,gnmax*th/20)}
+.param mt={0.85*th}
+.param tstop={if(f<1000,1.5,0.5)}
+.param ts={if(f>5000,1/(f*200),1/(f*400))}
+.param t0={tstop-max(10/f,0.02)}
+Vcc vcc 0 DC 18
+V1 y1 0 SINE(0 {amp} {f})
+* --- enfasi: taglio dei bassi, 2 celle ---
+Re1 y1 e1 {rel}
+Ce1 y1 e1 {1/(6.2832*fz*rel)}
+Re1g e1 0 10k
+Xe1 e1 u1 u1 OPAMP0
+Re2 u1 e2 {rel}
+Ce2 u1 e2 {1/(6.2832*fz*rel)}
+Re2g e2 0 10k
+Xe2 e2 u2 u2 OPAMP0
+* --- enfasi: taglio dei super, 2 celle ---
+Re3 u2 e3 {reh}
+Re3g e3 e3c 10k
+Ce3 e3c 0 {1/(6.2832*fb*10k)}
+Xe3 e3 u3 u3 OPAMP0
+Re4 u3 e4 {reh}
+Re4g e4 e4c 10k
+Ce4 e4c 0 {1/(6.2832*fb*10k)}
+Xe4 e4 u u OPAMP0
+* --- spinta + JFET (NASTRO LIBERO) ---
+Bsp pre 0 V=limit({gn}*V(u),-16,16)
+Rtg pre gate 10k
+J1 drain gate s1 NJ310
+Rd vcc drain 1.5k
+Rsu s1 s2 150
+Rsb s2 0 900
+Cb s2 0 2200u
+Cta drain tac 10u
+Rts tac tn {10k/kt}
+Rtf tn wn {10k*kl/kt}
+Xtn 0 tn wn OPAMP0
+* --- de-enfasi dei super, 2 celle ---
+Rd1 wn d1 {rdh}
+Rd1g d1 d1c 10k
+Cd1 d1c 0 {1/(6.2832*fa*10k)}
+Xd1 d1 w1 w1 OPAMP0
+Rd2 w1 d2 {rdh}
+Rd2g d2 d2c 10k
+Cd2 d2c 0 {1/(6.2832*fa*10k)}
+Xd2 d2 w2 w2 OPAMP0
+* --- de-enfasi dei bassi, 2 celle (non invertenti) ---
+Rd3g d3n 0 10k
+Rd3f w3 d3n {rdl}
+Cd3f w3 d3n {gl/(6.2832*fp*rdl)}
+Xd3 w2 d3n w3 OPAMP0
+Rd4g d4n 0 10k
+Rd4f w d4n {rdl}
+Cd4f w d4n {gl/(6.2832*fp*rdl)}
+Xd4 w3 d4n w OPAMP0
+* --- miscela ---
+Bm m 0 V=V(y1)+{mt}*(V(w)-V(y1))
+.options noopiter
+.tran 0 {tstop} {t0} {ts}
+.step param amp LIST 0.549 1.096 3.466
+.step param th LIST 0.5 1
+.meas tran xr RMS V(y1)
+.meas tran rm RMS V(m)
+.meas tran gmax MAX V(gate)
+.meas tran pmax MAX V(pre)
+.four {f} 8 V(m)
+.end
