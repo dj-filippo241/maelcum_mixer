@@ -1,0 +1,68 @@
+{
+    "$schema": "https://schemas.kicad.org/erc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-11-04T12:24:05",
+    "ignored_checks": [
+        {
+            "description": "Global label only appears once in the schematic",
+            "key": "single_global_label"
+        },
+        {
+            "description": "Four connection points are joined together",
+            "key": "four_way_junction"
+        },
+        {
+            "description": "SPICE model issue",
+            "key": "simulation_model_issue"
+        },
+        {
+            "description": "Assigned footprint doesn't match footprint filters",
+            "key": "footprint_filter"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning",
+        "exclusion"
+    ],
+    "kicad_version": "10.0.7",
+    "sheets": [
+        {
+            "path": "/",
+            "uuid_path": "/97a32388-03c1-585f-9105-f8e3463bb154",
+            "violations": [
+                {
+                    "description": "Pin VSS not connected to ground net",
+                    "items": [
+                        {
+                            "description": "Symbol U26 Pin 5 [VSS, Power input, Line]",
+                            "pos": {
+                                "x": 66.04,
+                                "y": 584.2
+                            },
+                            "uuid": "3c32eb06-c0ff-5eea-9d13-aa31602d4828"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "ground_pin_not_ground"
+                },
+                {
+                    "description": "Pin VSS not connected to ground net",
+                    "items": [
+                        {
+                            "description": "Symbol U27 Pin 5 [VSS, Power input, Line]",
+                            "pos": {
+                                "x": 266.7,
+                                "y": 584.2
+                            },
+                            "uuid": "706c06e9-565d-5876-9f71-bb29727497ac"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "ground_pin_not_ground"
+                }
+            ]
+        }
+    ],
+    "source": "canale.kicad_sch"
+}
