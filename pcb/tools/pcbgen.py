@@ -697,6 +697,19 @@ class Design:
             c = fps[p.ref].GetPosition()
             for r in [p.ref] + [c2 for c2, _ in groups.get(p.ref, [])]:
                 fps[r].Flip(c, pcbnew.FLIP_DIRECTION_LEFT_RIGHT)
+        # blocchi vicino al loro connettore (todo 196); se uno non trova posto, colonne
+        # nell'ordine del file come prima (d.place_mode = "colonne" le forza)
+        placed = False
+        if getattr(self, "place_mode", "connettori") == "connettori":
+            placed = self._place_near(fps, free, groups, fixed_boxes, X0, Y0, W, H, mm, gap)
+        if not placed:
+            self._place_columns(fps, free, groups, fixed_boxes, X0, Y0, W, H, mm, gap)
+        if back:
+            self._place_back(fps, back, groups, X0, Y0, W, H, mm, gap)
+
+    def _place_columns(self, fps, free, groups, fixed_boxes, X0, Y0, W, H, mm, gap):
+        """Blocchi in colonne da sinistra, nell'ordine del file (piazzamento fino al 2026-11-03)."""
+        import pcbnew
         top, bot = Y0 + 2, Y0 + H - 2
         for (x1, y1, x2, y2) in fixed_boxes:
             if (y1 + y2) / 2 < Y0 + H / 2:
@@ -710,23 +723,10 @@ class Design:
         cols, col, colh = [], [], 0
         for blk in blocks:
             items = [p for p in free if p.block == blk]
-            sizes = []
-            for p in items:
-                x1, y1, x2, y2 = self._gbox(fps, p.ref, groups)
-                sizes.append((x2 - x1 + gap, y2 - y1 + gap))
+            sizes = self._sizes(fps, items, groups, gap)
             area = sum(w * h for w, h in sizes)
             bw = max(max(w for w, _ in sizes), math.sqrt(area * 1.2))
-            rx, ry, rh, used = 0, 0, 0, 0
-            pos = []
-            for (w, h), p in zip(sizes, items):
-                if rx + w > bw and rx > 0:
-                    ry += rh
-                    rx, rh = 0, 0
-                pos.append((p, rx, ry))
-                rx += w
-                rh = max(rh, h)
-                used = max(used, rx)
-            bh = ry + rh
+            pos, used, bh = self._rows(sizes, items, bw)
             if col and colh + bh > bot - top:
                 cols.append(col)
                 col, colh = [], 0
@@ -755,8 +755,140 @@ class Design:
                         q = fp.GetPosition()
                         fp.SetPosition(pcbnew.VECTOR2I(int(q.x + mm(dx)), int(q.y + mm(dy))))
             bx += cw + sep
-        if back:
-            self._place_back(fps, back, groups, X0, Y0, W, H, mm, gap)
+
+    def _sizes(self, fps, items, groups, gap):
+        out = []
+        for p in items:
+            x1, y1, x2, y2 = self._gbox(fps, p.ref, groups)
+            out.append((x2 - x1 + gap, y2 - y1 + gap))
+        return out
+
+    @staticmethod
+    def _rows(sizes, items, bw):
+        """Pezzi di un blocco in file larghe bw: [(pezzo, x, y)], larghezza usata, altezza."""
+        rx, ry, rh, used = 0, 0, 0, 0
+        pos = []
+        for (w, h), p in zip(sizes, items):
+            if rx + w > bw and rx > 0:
+                ry += rh
+                rx, rh = 0, 0
+            pos.append((p, rx, ry))
+            rx += w
+            rh = max(rh, h)
+            used = max(used, rx)
+        return pos, used, ry + rh
+
+    def _place_near(self, fps, free, groups, fixed_boxes, X0, Y0, W, H, mm, gap):
+        """Ogni blocco nel posto libero più vicino ai pin dei connettori fissi con cui ha una
+        rete in comune (C96, cavo dei pot, bottoni); un blocco senza connettori va vicino ai
+        blocchi già messi con cui parla. Prima i blocchi più legati ai connettori; il blocco
+        dei regolatori per ultimo, lontano dal cavo (d.power_from_cable mm, 60 di default).
+        Ritorna False, senza toccare niente, se un blocco non trova posto."""
+        import pcbnew
+        quiet = self.masse
+        rules = getattr(self, "audio_rules", None) or {}
+        regs = set(rules.get("regolatori", [])) or {p.ref for p in self.parts
+                                                     if p.sym.lib_id.startswith("Regulator_")}
+        cavo = re.compile(rules["cavo"]) if rules.get("cavo") else None
+        nets = {p.ref: p.nets for p in self.parts}
+        fixpads = []
+        for p in self.parts:
+            if p.place:
+                for pd in fps[p.ref].Pads():
+                    n = p.nets.get(pd.GetNumber())
+                    if n and n not in quiet:
+                        q = pd.GetPosition()
+                        fixpads.append((n, q.x / 1e6, q.y / 1e6))
+        cable = [(x, y) for n, x, y in fixpads if cavo and cavo.match(n)]
+        blocks = []
+        for p in free:
+            if p.block not in blocks:
+                blocks.append(p.block)
+        members = {b: [r for p in free if p.block == b for r in [p.ref] + [c for c, _ in groups.get(p.ref, [])]]
+                   for b in blocks}
+        # reti dei pezzi del blocco: un passivo legato al chip di un altro blocco non sposta il suo
+        bnets = {b: {n for p in self.parts if p.block == b for n in p.nets.values() if n and n not in quiet}
+                 for b in blocks}
+        links = {b: [(x, y) for n, x, y in fixpads if n in bnets[b]] for b in blocks}
+        power = [b for b in blocks if any(r in regs for r in members[b])]
+        order = sorted([b for b in blocks if b not in power], key=lambda b: -len(links[b]))
+        # d.power_first: i regolatori scelgono per primi (vicino ai pin RAW); di default per ultimi
+        order = power + order if getattr(self, "power_first", False) else order + power
+        saved = {r: fps[r].GetPosition() for b in blocks for r in members[b]}
+        obst = [(x1 - 1, y1 - 1, x2 + 1, y2 + 1) for x1, y1, x2, y2 in fixed_boxes]
+        placedpads = []
+        lim = getattr(self, "power_from_cable", 60.0)
+        m, step = getattr(self, "block_margin", 3.0), 1.5     # corridoio per le piste fra due blocchi
+
+        def near(px, py, x1, y1, x2, y2):
+            dx = max(x1 - px, 0, px - x2)
+            dy = max(y1 - py, 0, py - y2)
+            return math.hypot(dx, dy)
+
+        for b in order:
+            items = [p for p in free if p.block == b]
+            # pin dei connettori peso 3, pin dei blocchi già messi peso 1
+            pts = [(x, y, 3.0) for x, y in links[b]] + [(x, y, 1.0) for n, x, y in placedpads
+                                                         if n in bnets[b] and n not in self.power]
+            if not pts:
+                pts = [(X0 + W / 2, Y0 + H / 2, 1.0)]
+            wsum = sum(k for _, _, k in pts)
+            sizes = self._sizes(fps, items, groups, gap)
+            base = math.sqrt(sum(w * h for w, h in sizes) * 1.2)
+            minw = max(w for w, _ in sizes)
+            best, shapes = None, {}
+            for f in (0.5, 0.75, 1.0, 1.5, 2.2, 3.2):
+                bw = min(max(minw, base * f), max(minw, W - 4))
+                pos, used, bh = self._rows(sizes, items, bw)
+                shapes[(round(used, 1), round(bh, 1))] = (pos, used + m, bh + m)
+            # un blocco grande stretto e lungo fa da muro alle piste: lati al più 1:3, le forme
+            # più lunghe solo se nessun'altra trova posto (FX-SEND, alimentazione 24 x 120: -18V aperta)
+            asp = getattr(self, "block_aspect", 3.0)
+            good = [s for s in shapes.values() if max(s[1], s[2]) <= 40 or max(s[1] / s[2], s[2] / s[1]) <= asp]
+            bad = [s for s in shapes.values() if s not in good]
+            for tier in (good, bad):
+                if best is not None:
+                    break
+                for pos, w, h in tier:
+                    x = X0 + 1
+                    while x + w <= X0 + W - 1 + 1e-6:
+                        y = Y0 + 1
+                        while y + h <= Y0 + H - 1 + 1e-6:
+                            hit = [o for o in obst if x < o[2] and o[0] < x + w and y < o[3] and o[1] < y + h]
+                            if hit:
+                                y = max(y + step, min(o[3] for o in hit))
+                                continue
+                            cost = sum(k * near(px, py, x, y, x + w, y + h) for px, py, k in pts) / wsum
+                            if b in power and cable:
+                                dc = min(near(px, py, x, y, x + w, y + h) for px, py in cable)
+                                cost += 2 * max(0.0, lim - dc)
+                            if best is None or cost < best[0] - 1e-9:
+                                best = (cost, x, y, w, h, pos)
+                            y += step
+                        x += step
+            if best is None:
+                for r, q in saved.items():
+                    fps[r].SetPosition(q)
+                self.notes.append("piazzamento vicino ai connettori: nessun posto per «%s», colonne" % b)
+                return False
+            cost, bx, by, w, h, pos = best
+            for p, rx, ry in pos:
+                x1, y1, x2, y2 = self._gbox(fps, p.ref, groups)
+                dx = bx + m / 2 + rx + gap / 2 - x1
+                dy = by + m / 2 + ry + gap / 2 - y1
+                for r in [p.ref] + [c for c, _ in groups.get(p.ref, [])]:
+                    q = fps[r].GetPosition()
+                    fps[r].SetPosition(pcbnew.VECTOR2I(int(q.x + mm(dx)), int(q.y + mm(dy))))
+            obst.append((bx, by, bx + w, by + h))
+            for r in members[b]:
+                for pd in fps[r].Pads():
+                    n = nets[r].get(pd.GetNumber())
+                    if n and n not in quiet:
+                        q = pd.GetPosition()
+                        placedpads.append((n, q.x / 1e6, q.y / 1e6))
+            self.notes.append("blocco «%s»: x %.0f-%.0f, y %.0f-%.0f, %d pin di connettore"
+                              % (b[:40], bx - X0, bx + w - X0, by - Y0, by + h - Y0, len(links[b])))
+        return True
 
     def _place_back(self, fps, back, groups, X0, Y0, W, H, mm, gap):
         """Retro: ogni gruppo nel primo posto libero, colonna per colonna da sinistra, nell'ordine

@@ -101,12 +101,50 @@ componenti. Regole del generatore:
   colonna da sinistra. Ostacoli: i pin dei pezzi a foro passante (+1 mm) e i gruppi già messi.
 - I ponticelli a stagno non entrano nella distinta (sono rame), come i fori.
 
+## Blocchi vicino al loro connettore (2026-11-04, todo 196)
+
+Prima i blocchi andavano in colonne nell'ordine del file: sul FX-SEND l'alimentazione finiva
+in alto accanto al cavo dei pot (J2) e il buffer d'ingresso a metà scheda, lontano dal C96.
+Adesso (`_place_near`, il vecchio modo resta come `_place_columns`):
+
+- Ogni blocco cerca il posto libero (passo 1,5 mm) più vicino ai pin dei connettori fissi
+  (pezzi con `place`) con cui ha una rete in comune; peso 3 per un pin di connettore, 1 per un
+  pin di un blocco già messo. Contano solo le reti dei pezzi del blocco: un passivo legato al
+  chip di un altro blocco (grappolo) non sposta il suo blocco.
+- Ordine: prima i blocchi con più pin di connettore; il blocco dei regolatori per ultimo, con
+  una penalità se sta a meno di `d.power_from_cable` (60 mm) dai pin del cavo (`audio_rules["cavo"]`).
+  `d.power_first = True` lo fa scegliere per primo.
+- Ogni blocco prova 6 forme; un blocco oltre 40 mm con lati più lunghi di 1:3 (`d.block_aspect`)
+  solo se nessun'altra forma entra: un'alimentazione di 24 × 120 mm faceva da muro e -18V
+  restava aperta. Fra due blocchi un corridoio di 3 mm (`d.block_margin`): con 1,5 mm restava
+  aperto un tratto di RAW+27.
+- Se un blocco non trova posto si torna alle colonne (nota nel riepilogo); `d.place_mode =
+  "colonne"` le forza. Il retro non cambia.
+
+FX-SEND, controllo audio:
+
+| Regola | colonne (todo 205) | vicino ai connettori |
+|---|---|---|
+| A1 | 10 | 9 |
+| A2 | 24 | 14 |
+| A3 | 12 | 12 |
+| A4 | 5 | 2 |
+| A5 | 6 | 0 |
+| esito | PASSA | PASSA |
+
+Varianti provate, tutte NON PASSA: alimentazione per ultima a forma libera (-18V aperta, 6),
+alimentazione per prima (-18V aperta, 7), corridoio 1,5 mm (RAW+27 aperta, 1). Freerouting non
+dà lo stesso risultato a ogni giro: un PASSA singolo con una rete al limite non è una prova.
+
+## Regole delle classi (2026-11-04)
+
+Le vie piccole delle reti sottili (29/10) stavano nella scheda (0,2 mm) ma non nel
+`.kicad_pro` (0,25 mm): Freerouting tracciava a 0,2 e il DRC contava errori di distanza
+(FX-SEND 36; probabile causa dei 3 del master, giro 5). Ora una fonte sola, `Design._classrules`.
+
 ## Cosa resta (in ordine)
 
-1. **Blocchi vicino al loro connettore.** Oggi i blocchi vanno in colonne nell'ordine
-   del file. Le celle che parlano col C96 (iniezione, buffer d'ingresso) vanno sul bordo
-   del C96; le celle del cavo sotto J2; l'alimentazione in una fascia lontana dal cavo.
-   È la causa di A2, A4 e A5.
+1. **Retro vicino ai connettori.** Il retro si piazza ancora nel primo posto libero.
 2. **Blocchi con riferimenti fissi** (R1xx lato L, R2xx lato R): oggi una resistenza aggiunta
    rinumera tutte quelle dopo.
 3. **Fonte dichiarata per ogni valore** (`fonte="sim/fx/x.cir:Rf"`) e uno script che la

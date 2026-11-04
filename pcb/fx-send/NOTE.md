@@ -125,3 +125,7 @@ Tutto [PROVVISORIO].
     lo schema nuovo degli assign (switch dopo la R d'iniezione, IN da un 74HC74 col comparatore
     dello zero, `RISULTATI-fx-send-assign`) e il buffer d'iniezione comune per lato
     (`RISULTATI-send-chain-v2` §2). La scheda resta la v0.2 degli assign.
+20. **Piazzamento vicino ai connettori (todo 196, `pcb/NOTE-generatore.md`).** EQ sotto J2,
+    assign sotto J3, iniezione e buffer sul bordo del C96, alimentazione al centro (x 30-67,
+    y 102-186), lontana dal cavo. PASSA: DRC 0 errori, 0 collegamenti mancanti. Controllo audio
+    A1-A5: 9/14/12/2/0 (prima 10/24/12/5/6).
