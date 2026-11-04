@@ -94,6 +94,36 @@ consegnare: `verifica.py` (modello contro LTspice) e `prova_gen.py`
    si schiaccia di più.
 
 
+## MC-FILTRO-HPF e MC-FILTRO-LPF: il filtro sui bus (dec. 159, todo 216)
+
+Nel mixer vero il filtro sta dopo il fader, sulla somma dei canali
+assegnati (come lo Xone:92). In Live i bus si fanno con l'instradamento
+delle tracce, non con `send~`/`receive~` (fra dispositivi M4L sono muti).
+
+1. Raggruppa le tracce dei canali (Cmd+G): il gruppo è il DJ BUS, col
+   5-way sopra.
+2. Dentro il gruppo crea due tracce audio: **BUS HPF** e **BUS LPF**.
+   Su ciascuna: ingresso **No Input**, Monitor su **In**, fader a **0 dB**
+   (nel mixer vero dopo il filtro non c'è fader).
+3. Trascina `MC-FILTRO-HPF.amxd` su BUS HPF e `MC-FILTRO-LPF.amxd` su
+   BUS LPF. Ognuno ha FREQ, RES e DRIVE della sua sezione.
+4. Sui canali: niente MC-FILTRO. La levetta HPF / OFF / LPF è il menu
+   **Audio To** della traccia del canale: il gruppo (= OFF), BUS HPF o
+   BUS LPF.
+5. Cosa ascoltare (A23): due dischi a tempo sullo stesso bus, taglio
+   vicino al kick. Sul taglio il filtro ha un tetto: con due canali la
+   risonanza sul programma sparisce e il kick si schiaccia. Il DRIVE
+   sporca i dischi insieme e segue i fader dei canali.
+
+Differenze dal mixer vero, solo nel prototipo:
+- cambiare il menu Audio To dà un click: nel mixer vero il VCA del fader
+  fa un respiro di 3-4 ms (dec. 163);
+- un bus senza canali non si spegne: con RES oltre il 90 % fischia anche
+  da solo (nel mixer vero la sezione senza canali è muta, dec. 159 c).
+  Abbassa la RES o il fader di quella traccia;
+- l'instradamento fra tracce viene dai forum di Ableton, non dal
+  manuale: se Live non lo accetta, dimmelo.
+
 ## MC-5WAY (P2)
 
 1. Il 5-way sta sul DJ BUS, dopo la somma dei canali. In Live: seleziona
