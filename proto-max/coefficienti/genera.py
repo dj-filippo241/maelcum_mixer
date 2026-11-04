@@ -6,7 +6,8 @@ Scrive in proto-max/:
   MC-CHANNEL.maxpat   patch Max (riserva: si apre e si copia in un dispositivo)
   MC-CHANNEL.amxd     dispositivo Max for Live pronto (doppio clic o trascina in Live)
 Con --semplice scrive MC-CHANNEL-S: le scelte d'ascolto di Filippo
-(2026-10-21) fissate, senza selettori: INCROCI C (dec. 152, era A), CURVA PIONEER, ISOLATOR.
+(2026-10-21) fissate, senza selettori: INCROCI C (dec. 152, era A), CURVA
+LINEARE (dec. 168, era PIONEER: il pot lineare B dell'hardware), ISOLATOR.
 
 I numeri vengono da canale.py. Il codice gen~ usa solo assegnazioni,
 peek/poke e due funzioni senza stato proprio: cosi prova_gen.py lo traduce
@@ -210,8 +211,8 @@ def genexpr():
     for b in BANDE:
         r(f"x_{b} = 2 * s_{b} / 100;")
         if SEMPLICE:
-            r(f"g_{b} = (pow(min(x_{b}, 1), {canale.ESP_PIONEER!r})"
-              f" + max(x_{b} - 1, 0)) * max({b} > 0, s_{b} > 0.001);")
+            # dec. 168: pot lineare B come l'hardware (= voce LINEARE)
+            r(f"g_{b} = x_{b} * max({b} > 0, s_{b} > 0.001);")
             continue
         r(f"g_{b} = ((1 - s_c) * x_{b} + s_c * (pow(min(x_{b}, 1), "
           f"{canale.ESP_PIONEER!r}) + max(x_{b} - 1, 0)))"
@@ -509,7 +510,7 @@ def patch(codice):
                          presentation_rect=[8, 62, 250, 40],
                          patching_rect=[20, 440, 250, 36], linecount=3,
                          text="50% = 0 dB. Versione semplice: ISOLATOR, "
-                              "INCROCI C 150d/350/3150, CURVA PIONEER."))
+                              "INCROCI C 150d/350/3150, CURVA LINEARE."))
         return finestra(boxes, lines, parametri)
     ng, nl, voci = SELETTORE
     comando(6, "obj-sel", ng, nl, "live.tab", [8, 62, 240, 30],

@@ -33,8 +33,9 @@ Se Live segnala un errore, o il suono non passa, vai al §3.
   350 / 3150 Hz, D = 150 dolce / 700 / 3150 Hz (B scartata con A, dec.
   114). Il cambio passa con una dissolvenza di 20 ms, senza click.
   Serve per la voce B7: confrontali a orecchio.
-- **CURVA**: LINEARE (pot di serie) o PIONEER (curva ideale dei DJM,
-  solo per sentire se la differenza conta).
+- **CURVA**: LINEARE (pot lineare B di serie: è la curva dell'hardware,
+  dec. 168) o PIONEER (curva ideale dei DJM, non realizzabile con pot a
+  catalogo: resta per il confronto).
 - **EQ TIPO** (B5): ISOLATOR = l'EQ di progetto (dec. 105). DJM -26 e
   DJM SPINTO -40 (2026-10-31, al posto di XONE e del vecchio SERIE) = EQ
   sul modello del DJM-900NXS: LOW = scaffale basso, LOW-MID = campana a
@@ -212,7 +213,7 @@ selettori non ci sono più; i comandi del pannello vero restano.
 
 | Dispositivo | Scelte fissate | Comandi |
 |---|---|---|
-| `MC-CHANNEL-S` | ISOLATOR, INCROCI C 150d/350/3150 (dec. 152), CURVA PIONEER | GAIN, 4 bande, FADER |
+| `MC-CHANNEL-S` | ISOLATOR, INCROCI C 150d/350/3150 (dec. 152), CURVA LINEARE (dec. 168, come l'hardware) | GAIN, 4 bande, FADER |
 | `MC-FILTRO-S` | CORE PULITO (c-B), PENDENZA BUTTERWORTH | FREQ, RES, DRIVE ×2, MODO, LIMITATORE (2+2 / 3+3 / OTA, da ascoltare) |
 | `MC-5WAY-S` | CROSSOVER E 80/170/1,2k/6k, GROWL LIBERO, NASTRO EXCITER | KILL, GAIN, POS, WIDTH ×5, GROWL, NASTRO |
 

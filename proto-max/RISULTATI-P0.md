@@ -299,3 +299,28 @@ MC-CHANNEL, tutte LR4 come A: A 400 = 150 / 400 / 2500 Hz, A 450 = 150 /
 
 Esito: Filippo sceglie **C** (dec. 152). MC-CHANNEL-S passa da A a C;
 A 400 e A 450 restano nel selettore della versione completa.
+
+## MC-CHANNEL-S sulla curva LINEARE (2026-11-04, todo 240, dec. 168)
+
+L'hardware usa un pot lineare B a catalogo: la curva PIONEER non si fa
+(dec. 168, `sim/eq-iso/RISULTATI-incroci-C.md` §3). MC-CHANNEL-S passa da
+PIONEER a LINEARE, come il mixer vero. Sopra il centro non cambia niente;
+sotto il centro il taglio è più dolce: a ore 9 la banda sta a −8 dB invece
+di −12, a 10 % a −14 invece di −21.
+
+Il selettore CURVA di MC-CHANNEL ha già la voce LINEARE (pot lineare ×2):
+nessuna voce nuova. Confronto con la simulazione dell'hardware (stesso
+§3, tutte le manopole alla stessa posizione, 1 kHz):
+
+| θ | 0,05 | 0,1 | 0,2 | 0,25 | 0,3 | 0,4 | 0,5 | 0,75 | 1 |
+|---|---|---|---|---|---|---|---|---|---|
+| prototipo LINEARE, dB | −20,0 | −14,0 | −8,0 | −6,0 | −4,4 | −1,9 | 0 | +3,5 | +6,0 |
+| HW pot lineare B, dB | −19,7 | −13,8 | −7,9 | −6,0 | −4,4 | −1,9 | 0 | +3,5 | +6,0 |
+
+Scarto massimo 0,3 dB, a θ 0,05. Unica differenza vera: a fondo corsa il
+prototipo tace, l'hardware resta a −48 dB (residuo di 20 Ω del pot, niente
+contatto di fondo corsa, dec. 127). Il prototipo non la imita.
+
+MC-CHANNEL invariato (rigenerato identico). `prova_semplice.py` confronta
+ora il -S con MC-CHANNEL su INCROCI C 350 e CURVA LINEARE: PASS, scarto 0
+su 6 casi. `prova_gen.py` PASS; `regole_gen.py` nessuna collisione.

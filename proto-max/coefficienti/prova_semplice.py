@@ -66,7 +66,7 @@ def manopole_5way(rnd):
 DISPOSITIVI = [
     ("MC-CHANNEL", canale_nuovo, manopole_canale,
      {"incroci": genera.VARIANTI.index(genera.SCELTA_INCROCI),
-      "curva": genera.CURVA[2].index("PIONEER"), "eqtipo": 0}),
+      "curva": genera.CURVA[2].index("LINEARE"), "eqtipo": 0}),
     ("MC-FILTRO", pf.nuovo, manopole_filtro,
      {"core": int(gf.SCELTA_CORE == "c"), "pend": gf.SCELTA_PEND}),
     ("MC-5WAY", pf.nuovo, manopole_5way,

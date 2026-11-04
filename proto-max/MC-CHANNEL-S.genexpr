@@ -50,13 +50,13 @@ g_gain = pow(10, min(200 * tg - 100, 20 * tg - 10) / 20) * (tg > 0);
 // bande: pot lineare x2, oppure curva Pioneer ideale (docs/09 §7):
 // taglio (2 theta)^1,5, boost uguale; a fondo corsa il contatto da silenzio
 x_low = 2 * s_low / 100;
-g_low = (pow(min(x_low, 1), 1.5) + max(x_low - 1, 0)) * max(low > 0, s_low > 0.001);
+g_low = x_low * max(low > 0, s_low > 0.001);
 x_lowmid = 2 * s_lowmid / 100;
-g_lowmid = (pow(min(x_lowmid, 1), 1.5) + max(x_lowmid - 1, 0)) * max(lowmid > 0, s_lowmid > 0.001);
+g_lowmid = x_lowmid * max(lowmid > 0, s_lowmid > 0.001);
 x_midhigh = 2 * s_midhigh / 100;
-g_midhigh = (pow(min(x_midhigh, 1), 1.5) + max(x_midhigh - 1, 0)) * max(midhigh > 0, s_midhigh > 0.001);
+g_midhigh = x_midhigh * max(midhigh > 0, s_midhigh > 0.001);
 x_high = 2 * s_high / 100;
-g_high = (pow(min(x_high, 1), 1.5) + max(x_high - 1, 0)) * max(high > 0, s_high > 0.001);
+g_high = x_high * max(high > 0, s_high > 0.001);
 // fader [PROVVISORIO]: curva quadratica, -12 dB a meta corsa
 tf = s_fader / 100;
 g_fader = tf * tf;
