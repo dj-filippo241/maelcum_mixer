@@ -139,11 +139,13 @@ Differenze dal mixer vero, solo nel prototipo:
      (tutta a destra), Q1 a metà corsa (dec. 117, 129);
    - a destra: GROWL, NASTRO e il selettore CROSSOVER;
    - GROWL VER (solo prototipo): DEC.99 = il GROWL del design, LIBERO =
-     spinta e miscela insieme, il basso cresce;
+     spinta e miscela insieme, il basso cresce; BANDE = sub e kick
+     sporchi anche sui colpi forti, medi poco, alti puliti (dec. 165);
    - NASTRO VER (solo prototipo): OGGI / COMPLETO / EXCITER / CLASSE A /
-     LIBERO, tutte comandate dalla manopola NASTRO. LIBERO = il NASTRO di
-     oggi con la spinta che sale con la manopola: piu sporco, e il
-     programma piano cresce.
+     LIBERO / COMPL. MEDI / BANDE, tutte comandate dalla manopola NASTRO.
+     LIBERO = il NASTRO di oggi con la spinta che sale con la manopola:
+     piu sporco, e il programma piano cresce. BANDE = il LIBERO che
+     lascia quasi puliti sub e kick e scalda medi e alti (dec. 166).
 3. CROSSOVER esiste solo nel prototipo (B3): A = design attuale
    90/350/1,2k/3,5k; B = Jah Tubbys Devastator 80/200/1,2k/6k; C = JB
    Audio 75/190/2,2k/8k; D = Speakerplans 80/220/1,5k/7k; E = gli

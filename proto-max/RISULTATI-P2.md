@@ -14,8 +14,9 @@ contro LTspice), `prova_5way.py` (codice gen~ contro modello).
   esponenziale; WIDTH Q3 / Q1 / Q0,5.
 - **GROWL** (sotto 350 Hz) e **NASTRO** in parallelo al pulito (§5bis,
   dec. 99). Stato dopo gli ascolti (§6-9): GROWL lineare, Rf 47k; NASTRO
-  taper A × 0,85; selettori GROWL VER (DEC.99 / LIBERO) e NASTRO VER
-  (OGGI / COMPLETO / EXCITER / CLASSE A / LIBERO).
+  taper A × 0,85; selettori GROWL VER (DEC.99 / LIBERO / BANDE) e NASTRO
+  VER (OGGI / COMPLETO / EXCITER / CLASSE A / LIBERO / COMPL. MEDI /
+  BANDE; §11-13).
 - **CROSSOVER** A-E, solo prototipo, per B3 (§1; E aggiunta in §6).
 - Riferimento interno −6 dB (dec. 73): conta solo per i saturatori.
 - Livelli: 0 dBu = −12 dBFS di picco [PROVVISORIO, come P1]. Tutto a 4×.
@@ -503,5 +504,30 @@ Sui picchi +10, tutte e due 100 %: SUB 34 %, KICK 48 %. Le armoniche del
 GROWL (100-500 Hz) cadono dove il NASTRO sporca: a fine corsa il basso
 diventa un ringhio fitto. Filippo: va bene, è il gesto estremo (dec. 166 e).
 
-Da fare: GROWL D e NASTRO B8 in MC-5WAY (GROWL VER e NASTRO VER) per
-l'ascolto; netlist LTspice dei due circuiti; rumore dei rami nuovi.
+Da fare: netlist LTspice dei due circuiti; rumore dei rami nuovi (todo 234).
+
+## 13. GROWL e NASTRO a bande in MC-5WAY (2026-11-04, todo 233)
+
+Voce **BANDE** in GROWL VER (terza) e in NASTRO VER (settima), stessa
+manopola GROWL o NASTRO. Generatore `coefficienti/genera_5way.py`, numeri
+da `growl_bande.py` (variante D, `SCELTA`) e `nastro_bande.py` (B8).
+
+- GROWL BANDE: LP4 a 250 Hz (due SVF Butterworth) verso il clipper del
+  basso (Rf 47k, 1/3 diodi con 470 ohm, spinta 0 → +20 dB, K 0,9); il
+  resto passa da un polo a 2,5 kHz verso il clipper dei medi (Rf 10k,
+  3+3 diodi con 4,7k, spinta 0 → +6 dB); un passa-alto a 1 Hz per banda.
+  Il selettore dissolve dal LIBERO alle BANDE in 20 ms.
+- NASTRO BANDE: 2 poli di enfasi sui bassi (400 Hz, piano 0,2) e 2 sui
+  super (5 kHz, 0,5), il NASTRO LIBERO, poi la de-enfasi inversa con
+  12 dB in meno sui bassi e 7 sui super.
+- I due blocchi si calcolano solo quando il selettore li pesa; spenti,
+  i loro stati tornano a zero. Con le altre voci il carico di CPU resta
+  quello di prima.
+- MC-5WAY-S non cambia (GROWL LIBERO e NASTRO EXCITER fissi): il file
+  rigenerato è identico al precedente.
+
+Prova `prova_5way.py`: il codice gen~ tradotto in Python contro il modello
+(`fiveway.Saturatori`, che ora ha le due voci): GROWL BANDE a 50, 120, 500
+e 1000 Hz, NASTRO BANDE a 50, 500, 3000 e 12 000 Hz, insieme a 50, 120 e
+500 Hz, a 0 e +10 dBu, sui due canali: tutti entro 0,05 dB. PASS sull'intera
+prova. Le tabelle di §12 restano quelle da riconoscere all'ascolto (todo 235).

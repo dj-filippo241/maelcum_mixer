@@ -343,27 +343,40 @@ class Saturatori:
         self.k_c = 1 / (fs * 10e-6 * J_RTS)
 
     def passo(self, x, mg, mt, libero=0.0, nv=0.0, gn=1.0):
-        """x in volt; restituisce (y2, dg, dt). libero 0 = GROWL dec. 99,
-        1 = GROWL LIBERO (in mezzo: dissolvenza del selettore). nv = NASTRO
-        VER: 0 OGGI, 1 COMPLETO, 2 EXCITER, 3 CLASSE A, 4 LIBERO, 5 COMPLETO MEDI
-        (alternative.py); gn = spinta del NASTRO LIBERO (fattore)."""
+        """x in volt; restituisce (y2, dg, dt). libero = GROWL VER: 0 dec. 99,
+        1 LIBERO, 2 A BANDE (dec. 165; in mezzo: dissolvenza del selettore).
+        nv = NASTRO VER: 0 OGGI, 1 COMPLETO, 2 EXCITER, 3 CLASSE A, 4 LIBERO,
+        5 COMPLETO MEDI, 6 A BANDE (dec. 166) (alternative.py,
+        nastro_bande.py); gn = spinta del NASTRO LIBERO (fattore)."""
         if not hasattr(self, "alt"):
             import alternative as al
+            import growl_bande
+            import nastro_bande
             self.alt = [al.Completo(self.fs), al.Exciter(self.fs),
                         al.ClasseA(self.fs), al.Libero(self.fs),
-                        al.Completo(self.fs, al.EM_FZ, al.EM_FP, False)]
+                        al.Completo(self.fs, al.EM_FZ, al.EM_FP, False),
+                        nastro_bande.Bande(self.fs, nastro_bande.VAR[
+                            nastro_bande.SCELTA])]
+            self.gb = growl_bande.Growl3(growl_bande.VAR[growl_bande.SCELTA],
+                                         0.0, self.fs)
         self.alt[3].gn = gn
+        self.alt[5].inner.gn = gn
+        lib = min(libero, 1.0)
+        wb = max(libero - 1.0, 0.0)
         low = self.lp.passo(x, self.g_lp, 1 / Q_BW)[0]
-        gg = 1 + libero * (10 ** (LIB_GMAX_DB * mg / 20) - 1)
-        kk = KG + libero * (LIB_K - KG)
+        gg = 1 + lib * (10 ** (LIB_GMAX_DB * mg / 20) - 1)
+        kk = KG + lib * (LIB_K - KG)
         dg = kk * self.hp_g.passo(clipper_growl(gg * low)) - low
+        if mg != self.gb.m:
+            self.gb.imposta(mg)
+        dg = (1 - wb) * dg + wb * self.gb.delta(x)
         y1 = x + mg * dg
         self.idd, vd = jfet_passo(y1, self.vs2, self.vc, self.idd)
         vtac = vd - self.vc
         self.vs2 += self.k_cb * (self.idd - self.vs2 / J_RSB)
         self.vc += self.k_c * vtac
         dt = -KT * vtac - y1
-        pesi = [max(0.0, 1 - abs(nv - j)) for j in range(6)]
+        pesi = [max(0.0, 1 - abs(nv - j)) for j in range(7)]
         da = [a.passo(y1) for a in self.alt]
         d = pesi[0] * dt + sum(p * v for p, v in zip(pesi[1:], da))
         return y1 + mt * d, dg, d

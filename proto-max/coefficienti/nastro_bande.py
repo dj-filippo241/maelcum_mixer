@@ -28,6 +28,7 @@ VIE = (("SUB", 50), ("KICK", 120), ("MID", 500), ("HIGH", 3000),
 POS = (0.25, 0.50, 0.75, 1.00)
 AMP = (0.549, 1.096, 3.466)          # -6 / 0 / +10 dBu di picco
 
+SCELTA = "B8"                    # dec. 166
 VAR = {
     "LIBERO": None,
     # (FZ, FP, FA, FB)

@@ -156,6 +156,29 @@ def main():
                  amp=A0 * 10 ** (dbu / 20), durata=0.3, coda=0.1,
                  nastro=nastro, nver=4, growl=growl, gv=gv)
 
+    print("GROWL A BANDE (dec. 165): 50, 120, 500, 1000 Hz; 100 e 50 %")
+    for growl, f in ((100, 50), (100, 120), (100, 500), (100, 1000),
+                     (50, 120)):
+        for dbu in (0, 10):
+            caso(f"GROWL BANDE {growl} % {f} Hz {dbu:+d} dBu", f, toll=0.05,
+                 amp=A0 * 10 ** (dbu / 20), durata=0.3, coda=0.1,
+                 growl=growl, gv=2)
+
+    print("NASTRO A BANDE (dec. 166): 50, 500, 3000, 12000 Hz; 100 e 50 %")
+    for nastro, f in ((100, 50), (100, 500), (100, 3000), (100, 12000),
+                      (50, 500)):
+        for dbu in (0, 10):
+            caso(f"NASTRO BANDE {nastro} % {f} Hz {dbu:+d} dBu", f, toll=0.05,
+                 amp=A0 * 10 ** (dbu / 20), durata=0.3, coda=0.1,
+                 nastro=nastro, nver=6)
+
+    print("GROWL e NASTRO A BANDE insieme (fine corsa)")
+    for f in (50, 120, 500):
+        for dbu in (0, 10):
+            caso(f"BANDE insieme {f} Hz {dbu:+d} dBu", f, toll=0.05,
+                 amp=A0 * 10 ** (dbu / 20), durata=0.3, coda=0.1,
+                 growl=100, nastro=100, gv=2, nver=6)
+
     print("Canali indipendenti: R muto, L intero")
     sl, sr, n0 = suona_gen(testo, 1000, A0, 0.1, 0.03, destra=0.0,
                            growl=50, nastro=50)

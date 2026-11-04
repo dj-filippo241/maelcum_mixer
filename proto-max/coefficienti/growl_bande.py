@@ -51,8 +51,8 @@ def clip(v, rin, rf, rs, na, nb):
 
 
 class Lp1:
-    def __init__(self, f):
-        self.g = math.tan(math.pi * f / FS)
+    def __init__(self, f, fs=FS):
+        self.g = math.tan(math.pi * f / fs)
         self.s = 0.0
 
     def passo(self, x):
@@ -64,6 +64,7 @@ class Lp1:
 
 # varianti: per banda (spinta max dB, Rf, R serie, diodi a, diodi b, K)
 # K = None: tarato a pari livello a piccolo segnale con la spinta max.
+SCELTA = "D"                     # dec. 165 (Filippo: «250»)
 VAR = {
     # il GROWL LIBERO di oggi, per confronto (solo basso)
     "oggi": dict(FL=350, FM=2500,
@@ -92,14 +93,19 @@ VAR = {
 
 
 class Growl3:
-    def __init__(self, v, m):
+    def __init__(self, v, m, fs=FS):
         self.v = v
-        self.m = m
         self.lp = fw.Svf()
         self.lp2 = fw.Svf() if v.get("NL", 2) == 4 else None
-        self.g_lp = fw.g_di(v["FL"], FS)
-        self.lm = Lp1(v["FM"])
-        self.hp = [fw.Hp1(1.0, FS) for _ in range(3)]
+        self.g_lp = fw.g_di(v["FL"], fs)
+        self.lm = Lp1(v["FM"], fs)
+        self.hp = [fw.Hp1(1.0, fs) for _ in range(3)]
+        self.imposta(m)
+
+    def imposta(self, m):
+        """Manopola GROWL (0-1): miscela e spinta insieme (pot doppio)."""
+        v = self.v
+        self.m = m
         self.par = []
         for b in ("low", "mid", "high"):
             p = v[b]
@@ -114,6 +120,10 @@ class Growl3:
             self.par.append((rin, rf, rs, na, nb, k))
 
     def passo(self, x):
+        return x + self.m * self.delta(x)
+
+    def delta(self, x):
+        """Il ramo sporco meno il pulito, prima della miscela m."""
         low = self.lp.passo(x, self.g_lp, 1 / fw.Q_BW)[0]
         if self.lp2 is not None:
             low = self.lp2.passo(low, self.g_lp, 1 / fw.Q_BW)[0]
@@ -127,7 +137,7 @@ class Growl3:
                 continue
             rin, rf, rs, na, nb, k = p
             d += k * self.hp[j].passo(clip(band, rin, rf, rs, na, nb)) - band
-        return x + self.m * d
+        return d
 
 
 def corsa(args):
