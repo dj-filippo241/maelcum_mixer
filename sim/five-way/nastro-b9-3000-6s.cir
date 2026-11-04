@@ -1,0 +1,143 @@
+* ============================================================
+* 5-WAY NASTRO A BANDE, variante B9 (todo 245, 2026-11-04, PROVVISORIA)
+* Modello: proto-max/coefficienti/nastro_bande.py, VAR["B9"], classe
+* Bande (dentro: alternative.py, classe Libero = nastro-libero.cir).
+* Le celle di B8 (nastro-bande.cir) restano come prova: qui solo B9.
+*   enfasi(y1): 3 x taglio dei bassi (zero fz / polo fp, DC fz/fp)
+*               1 x taglio dei super (polo fa / zero fb, HF fa/fb)
+*               1 x inclinazione dei medi (polo fm / zero fm*R, HF 1/R)
+*       celle passive (R serie, R o R+C a massa) + buffer; l'ultima
+*       cella entra diretta nel + della spinta (ingresso ad alta Z)
+*   wn = -kl*vtac: spinta gn = 10^(gnmax u/20) (non invertente, Rg 1k)
+*        + JFET del NASTRO LIBERO
+*   w  = de-enfasi(wn): super passiva (zero fa, polo fa*gh, HF gh) diretta
+*        nel + dell'inclinazione inversa (non invertente, Rg 10k + C a
+*        massa, Rf = 10k (R-1): zero fm, polo fm*R, HF R), poi 3 x bassi
+*        (non invertente, Rf||C, DC gl, polo fp/gl, zero fp)
+*        gl = (fp/fz)*10^(-rl/nl/20), gh = (fb/fa)*10^(-rh/20)
+*   d  = kv*w - y1: differenziale a 4 R, partitore sul + = kv/2
+*   m  = y1 + mt*d (pot di miscela, qui sorgente B)
+* Manopola a curva inversa: u = 1-(1-th)^2; gn = 10^(12u/20);
+* mt = fw.nastro_law(u) = 0,85 u (pot lineare). th = 0,5 -> u = 0,75.
+* Condizioni del confronto (sim/five-way/confronto_b9.py): partenza dal
+* punto di lavoro, durata 1,5 s sotto 1 kHz e 0,5 s sopra (param dur
+* per forzarla), finestra max(10/f, 20 ms), 8 armoniche, THD Partial.
+* SINE = PICCO: 1,096 V = 0 dBu, 3,466 V = +10 dBu.
+* Copie per frequenza: nastro-b9-<f>.cir (cambia solo .param f / dur).
+* ============================================================
+.model NJ310 NJF(Beta=5m Vto=-3 Lambda=6m Cgs=25p Cgd=4p Is=10f)
+.subckt OPAMP0 inp inn out
+E1 out 0 value={limit(1e5*(V(inp)-V(inn)),-16,16)}
+.ends OPAMP0
+.param amp=1.096
+.param th=1
+.param f=3000
+.param dur=6
+.param kt=0.206
+.param kl=0.1977
+.param gnmax=12
+* --- B9 ---
+.param fz=30
+.param fp=140
+.param fa=9000
+.param fb=10800
+.param rl=12
+.param rh=5
+.param nl=3
+.param fm=1000
+.param rt=3
+.param kvdb=-3.5
+* --- derivati ---
+.param gl={(fp/fz)*pow(10,-rl/nl/20)}
+.param gh={(fb/fa)*pow(10,-rh/20)}
+.param kv={pow(10,kvdb/20)}
+.param rel={10k*(fp/fz-1)}
+.param reh={10k*(fb/fa-1)}
+.param ret={10k*(rt-1)}
+.param rdh={10k*(1/gh-1)}
+.param rdl={10k*(gl-1)}
+.param rkb={10k*kv/(2-kv)}
+.param rot={1-(1-th)*(1-th)}
+.param gn={pow(10,gnmax*rot/20)}
+.param mt={0.85*rot}
+.param tstop={if(dur>0,dur,if(f<1000,1.5,0.5))}
+.param ts={if(f>5000,1/(f*200),1/(f*400))}
+.param t0={tstop-max(10/f,0.02)}
+Vcc vcc 0 DC 18
+V1 y1 0 SINE(0 {amp} {f})
+* --- enfasi: taglio dei bassi, 3 celle ---
+Re1 y1 e1 {rel}
+Ce1 y1 e1 {1/(6.2832*fz*rel)}
+Re1g e1 0 10k
+Xe1 e1 u1 u1 OPAMP0
+Re2 u1 e2 {rel}
+Ce2 u1 e2 {1/(6.2832*fz*rel)}
+Re2g e2 0 10k
+Xe2 e2 u2 u2 OPAMP0
+Re3 u2 e3 {rel}
+Ce3 u2 e3 {1/(6.2832*fz*rel)}
+Re3g e3 0 10k
+Xe3 e3 u3 u3 OPAMP0
+* --- enfasi: taglio dei super, 1 cella ---
+Re4 u3 e4 {reh}
+Re4g e4 e4c 10k
+Ce4 e4c 0 {1/(6.2832*fb*10k)}
+Xe4 e4 u4 u4 OPAMP0
+* --- enfasi: inclinazione dei medi (polo fm, zero fm*rt), diretta nella spinta ---
+Re5 u4 u {ret}
+Re5g u e5c 10k
+Ce5 e5c 0 {1/(6.2832*fm*rt*10k)}
+* --- spinta non invertente (Rg 1k, Rf = 1k (gn-1)) + JFET (NASTRO LIBERO) ---
+Rsg spn 0 1k
+Rsf pre spn {1k*(gn-1)+1m}
+Xsp u spn pre OPAMP0
+Rtg pre gate 10k
+J1 drain gate s1 NJ310
+Rd vcc drain 1.5k
+Rsu s1 s2 150
+Rsb s2 0 900
+Cb s2 0 2200u
+Cta drain tac 10u
+Rts tac tn {10k/kt}
+Rtf tn wn {10k*kl/kt}
+Xtn 0 tn wn OPAMP0
+* --- de-enfasi dei super, 1 cella passiva (nel + dello stadio dopo) ---
+Rd1 wn d1 {rdh}
+Rd1g d1 d1c 10k
+Cd1 d1c 0 {1/(6.2832*fa*10k)}
+* --- inclinazione inversa (non invertente: zero fm, polo fm*rt, HF rt) ---
+Rd2f w2 d2n {ret}
+Rd2g d2n d2c 10k
+Cd2 d2c 0 {1/(6.2832*fm*rt*10k)}
+Xd2 d1 d2n w2 OPAMP0
+* --- de-enfasi dei bassi, 3 celle (non invertenti) ---
+Rd3g d3n 0 10k
+Rd3f w3 d3n {rdl}
+Cd3f w3 d3n {gl/(6.2832*fp*rdl)}
+Xd3 w2 d3n w3 OPAMP0
+Rd4g d4n 0 10k
+Rd4f w4 d4n {rdl}
+Cd4f w4 d4n {gl/(6.2832*fp*rdl)}
+Xd4 w3 d4n w4 OPAMP0
+Rd5g d5n 0 10k
+Rd5f w d5n {rdl}
+Cd5f w d5n {gl/(6.2832*fp*rdl)}
+Xd5 w4 d5n w OPAMP0
+* --- d = kv*w - y1 (differenziale 4 R; partitore 10k / rkb sul +) ---
+Rx1 w xp 10k
+Rx2 xp 0 {rkb}
+Rx3 y1 xn 10k
+Rx4 xn d 10k
+Xx xp xn d OPAMP0
+* --- miscela ---
+Bm m 0 V=V(y1)+{mt}*V(d)
+.options noopiter
+.tran 0 {tstop} {t0} {ts}
+.step param amp LIST 1.096 3.466
+.step param th LIST 0.5 1
+.meas tran xr RMS V(y1)
+.meas tran rm RMS V(m)
+.meas tran gmax MAX V(gate)
+.meas tran pmax MAX V(pre)
+.four {f} 8 V(m)
+.end

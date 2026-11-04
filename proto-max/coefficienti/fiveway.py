@@ -342,12 +342,14 @@ class Saturatori:
         self.k_cb = 1 / (fs * J_CB)
         self.k_c = 1 / (fs * 10e-6 * J_RTS)
 
-    def passo(self, x, mg, mt, libero=0.0, nv=0.0, gn=1.0):
+    def passo(self, x, mg, mt, libero=0.0, nv=0.0, gn=1.0, mtb=None,
+              gnb=None):
         """x in volt; restituisce (y2, dg, dt). libero = GROWL VER: 0 dec. 99,
         1 LIBERO, 2 A BANDE (dec. 165; in mezzo: dissolvenza del selettore).
         nv = NASTRO VER: 0 OGGI, 1 COMPLETO, 2 EXCITER, 3 CLASSE A, 4 LIBERO,
         5 COMPLETO MEDI, 6 A BANDE (dec. 166) (alternative.py,
-        nastro_bande.py); gn = spinta del NASTRO LIBERO (fattore)."""
+        nastro_bande.py); gn = spinta del NASTRO LIBERO (fattore); mtb e gnb
+        = miscela e spinta del NASTRO A BANDE (curva sua; None = mt, gn)."""
         if not hasattr(self, "alt"):
             import alternative as al
             import growl_bande
@@ -360,7 +362,8 @@ class Saturatori:
             self.gb = growl_bande.Growl3(growl_bande.VAR[growl_bande.SCELTA],
                                          0.0, self.fs)
         self.alt[3].gn = gn
-        self.alt[5].inner.gn = gn
+        self.alt[5].inner.gn = gn if gnb is None else gnb
+        mtb = mt if mtb is None else mtb
         lib = min(libero, 1.0)
         wb = max(libero - 1.0, 0.0)
         low = self.lp.passo(x, self.g_lp, 1 / Q_BW)[0]
@@ -378,8 +381,9 @@ class Saturatori:
         dt = -KT * vtac - y1
         pesi = [max(0.0, 1 - abs(nv - j)) for j in range(7)]
         da = [a.passo(y1) for a in self.alt]
-        d = pesi[0] * dt + sum(p * v for p, v in zip(pesi[1:], da))
-        return y1 + mt * d, dg, d
+        d = pesi[0] * dt + sum(p * v for p, v in zip(pesi[1:6], da[:5]))
+        db = pesi[6] * da[5]
+        return y1 + mt * d + mtb * db, dg, d + db
 
 
 class Completo:
@@ -398,8 +402,11 @@ class Completo:
         y = self.lin.passo(x, kill, gain, pos, width)
         import alternative as al
         gn = 10 ** (al.NL_GMAX_DB * mt / 20)       # spinta del NASTRO LIBERO
+        import nastro_bande
+        ub = nastro_bande.rotazione(mt)            # curva del NASTRO A BANDE
         v = self.sat.passo(y * LIV * PAD, mg, nastro_law(mt), libero, nv,
-                           gn)[0]
+                           gn, nastro_law(ub),
+                           10 ** (al.NL_GMAX_DB * ub / 20))[0]
         return v / (LIV * PAD)
 
 

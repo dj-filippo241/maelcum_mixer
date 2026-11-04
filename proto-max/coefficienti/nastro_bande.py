@@ -10,6 +10,9 @@ arriva al JFET con un livello diverso, quindi distorce di piu o di meno.
   E_low : taglio dei bassi, shelf 1o ordine zero FZ / polo FP (sotto FZ
           -20 log(FP/FZ) dB, sopra FP 0 dB)
   E_high: taglio dei super, polo FA / zero FB (sopra FB -20 log(FB/FA))
+  E_tilt: (B9) inclinazione dei medi, polo FM / zero FM*R (sopra -20 log R)
+Dopo il JFET il ramo ha un guadagno KV (dB): in hardware la resistenza del
+sommatore. B9 usa la curva inversa della manopola (rotazione).
 Uso: python3 proto-max/coefficienti/nastro_bande.py [variante ...]
 """
 import math
@@ -28,7 +31,8 @@ VIE = (("SUB", 50), ("KICK", 120), ("MID", 500), ("HIGH", 3000),
 POS = (0.25, 0.50, 0.75, 1.00)
 AMP = (0.549, 1.096, 3.466)          # -6 / 0 / +10 dBu di picco
 
-SCELTA = "B8"                    # dec. 166
+SCELTA = "B9"                    # dec. 166, ritocco del 2026-11-04 (todo 245)
+INVERSA = {"B9"}                 # varianti con la manopola a curva inversa
 VAR = {
     "LIBERO": None,
     # (FZ, FP, FA, FB)
@@ -43,7 +47,17 @@ VAR = {
     "B7": (80.0, 400.0, 5000.0, 10000.0, 2, 7.0, 7.0, 2),
     # B7 col volume di sub e kick riportato giu (de-enfasi bassi -12 dB)
     "B8": (80.0, 400.0, 5000.0, 10000.0, 2, 12.0, 7.0, 2),
+    # numeri di Filippo a fine corsa (SUB 0, KICK 11, MID 45, HIGH 34,
+    # SUPER 22 %): bassi 3 celle 30/140 Hz, super 1 cella 9k/10,8k,
+    # + inclinazione dei medi (FM, R) e guadagno del ramo KV dB
+    "B9": (30.0, 140.0, 9000.0, 10800.0, 1, 12.0, 5.0, 3, 1000.0, 3.0, -3.5),
 }
+
+
+def rotazione(t, nome=SCELTA):
+    """Manopola -> rotazione equivalente: curva inversa per le varianti
+    di INVERSA (a meta corsa vale 0,75), lineare per le altre."""
+    return 1 - (1 - t) ** 2 if nome in INVERSA else t
 
 
 class Bande:
@@ -51,6 +65,10 @@ class Bande:
         fz, fp, fa, fb = p[:4]
         nh, rl, rh = (p[4], p[5], p[6]) if len(p) > 4 else (1, 0.0, 0.0)
         nl = p[7] if len(p) > 7 else 1
+        fm, rt = (p[8], p[9]) if len(p) > 9 else (None, 1.0)
+        self.kv = 10 ** ((p[10] if len(p) > 10 else 0.0) / 20)
+        self.at = 1 / rt                          # inclinazione prima
+        self.gt = rt                              # e dopo (inversa)
         rl = rl / nl
         self.cl = fz / fp
         self.ab = fa / fb
@@ -60,6 +78,8 @@ class Bande:
         self.e_hi = [al.Uno(fa, fs) for _ in range(nh)]
         self.d_lo = [al.Uno(fp / self.gl, fs) for _ in range(nl)]
         self.d_hi = [al.Uno(fa * self.gh, fs) for _ in range(nh)]  # polo resta a FA
+        self.e_t = [] if fm is None else [al.Uno(fm, fs)]
+        self.d_t = [] if fm is None else [al.Uno(fm * rt, fs)]
         self.inner = al.Libero(fs)
 
     def passo(self, y1):
@@ -70,22 +90,29 @@ class Bande:
         for e in self.e_hi:
             lp, hp = e.passo(u)
             u = lp + self.ab * hp                   # taglio dei super
+        for e in self.e_t:
+            lp, hp = e.passo(u)
+            u = lp + self.at * hp                   # inclinazione dei medi
         w = self.inner.passo(u) + u                 # ramo saturato (pulito = u)
         for d in self.d_hi:
             lp, hp = d.passo(w)
             w = lp + self.gh * hp                   # de-enfasi super
+        for d in self.d_t:
+            lp, hp = d.passo(w)
+            w = lp + self.gt * hp                   # inclinazione inversa
         for d in self.d_lo:
             lp, hp = d.passo(w)
             w = self.gl * lp + hp                   # de-enfasi bassi
-        return w - y1
+        return self.kv * w - y1
 
 
 def corsa(args):
     nome, pos, amp, f = args
     p = VAR[nome]
     s = al.Libero(FS) if p is None else Bande(FS, p)
-    (s if p is None else s.inner).gn = 10 ** (al.NL_GMAX_DB * pos / 20)
-    m = fw.nastro_law(pos)
+    u = rotazione(pos, nome)
+    (s if p is None else s.inner).gn = 10 ** (al.NL_GMAX_DB * u / 20)
+    m = fw.nastro_law(u)
     dur = 6.0
     n = int(dur * FS)
     n0 = n - int(max(10 / f, 0.02) * FS)

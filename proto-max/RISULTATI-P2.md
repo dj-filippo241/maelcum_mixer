@@ -757,3 +757,53 @@ ramo del basso (come per il NASTRO), oppure il kick in parte nel ramo dei medi.
 Da fare (sessione dopo): scegliere il GROWL; ritarare il volume del NASTRO;
 portare i due in growl_bande/nastro_bande come varianti nuove, poi in MC-5WAY
 (con la curva inversa), prova_5way, netlist LTspice di §14 coi .param nuovi.
+
+## 16. NASTRO a bande B9 in MC-5WAY (2026-11-04, todo 245)
+
+Il candidato del par. 15 diventa la variante **B9** di `coefficienti/nastro_bande.py`
+(`SCELTA = "B9"`) e la voce BANDE di NASTRO VER in MC-5WAY. B8 resta nel modello come
+riferimento. Ricerca del volume: `coefficienti/ricerche/nastro_b9.py`.
+
+Circuito (modello): taglio dei bassi 3 celle zero 30 / polo 140 Hz; taglio dei super
+1 cella polo 9 kHz / zero 10,8 kHz; **inclinazione dei medi** polo 1 kHz / zero 3 kHz
+prima del JFET e inversa esatta dopo; de-enfasi ridotta di 12 dB sui bassi e 5 dB sui
+super; **guadagno del ramo −3,5 dB** dopo la de-enfasi (in hardware: la resistenza del
+sommatore). Manopola a **curva inversa**: rotazione u = 1 − (1 − t)², spinta 0 → +12 dB
+e miscela con la legge di oggi calcolate su u. A metà corsa la manopola vale u = 0,75.
+Le altre voci di NASTRO VER restano a curva lineare.
+
+Volume. Ridurre la de-enfasi abbassa anche la distorsione (MID 45 → 39 %, HIGH 34 → 27 %
+con 5 dB in meno sull'inclinazione): scartato. Il guadagno del ramo abbassa il volume e
+lascia la distorsione del ramo com'è. Senza: +4,2…+7,7 dB a fine corsa; con −3,5 dB e
+rh 5: +1,4…+4,3 dB.
+
+Tabella (modello, 192 kHz, 6 s; numeri di Filippo a fine corsa: SUB 0, KICK 11, MID 45,
+HIGH 34, SUPER 22 %):
+
+| Mix 0 dBu, manopola | SUB 50 Hz | KICK 120 Hz | MID 500 Hz | HIGH 3 kHz | SUPER 12 kHz |
+|---|---|---|---|---|---|
+| 25 % | 0,12 % · −1,4 | 1,2 % · −0,1 | 12 % · −0,6 | 4,8 % · 0,0 | 1,9 % · −0,8 |
+| 50 % | 0,43 % · +0,1 | 4,9 % · +2,0 | 32 % · +0,3 | 20 % · +1,6 | 8,7 % · +0,5 |
+| 75 % | 0,71 % · +2,3 | 9,9 % · +3,7 | 43 % · +1,1 | 33 % · +3,1 | 18 % · +1,8 |
+| 100 % | 0,81 % · +3,1 | 12 % · +4,3 | 46 % · +1,4 | 37 % · +3,7 | 22 % · +2,3 |
+
+| Fine corsa | SUB | KICK | MID | HIGH | SUPER |
+|---|---|---|---|---|---|
+| nominale −6 | 0,40 % · +3,2 | 3,3 % · +6,0 | 36 % · +4,5 | 15 % · +5,9 | 6,2 % · +3,9 |
+| picchi +10 | 3,5 % · +2,6 | 18 % · −1,2 | 42 % · −5,9 | 37 % · −2,7 | 32 % · −2,9 |
+
+Lettura: a metà corsa i medi sono già al 32 % (B8 lineare: 10 %): «lo sento solo oltre
+il 50 %» è risolto. SUB 0,8 % invece di 0: sotto l'1 %, non udibile come sporco. Sui picchi
++10 i medi si schiacciano di 5,9 dB (B8: −2,6): è il prezzo del 45 % sui medi.
+
+Da fare: LTspice della B9 (netlist nuova, `sim/five-way/`), rumore del ramo, ascolto di
+Filippo. `sim/five-way/confronto_bande.py` legge `SCELTA`: con B9 non confronta più le
+netlist della B8.
+
+Stato LTspice della B9 (2026-11-04 sera, fermato per la quota): `nastro-b9-500.cir`
+non termina. Prove `t9a-d.cir` (dur 0,05 s): con la spinta a op-amp (`OPAMP0` con
+`limit`, Rg 1k) il passo collassa a ~5e-11 s (t9a, 18 min); con la spinta come sorgente
+`B` limitata (t9b-d) finisce in 1 min. Causa: lo stadio di spinta, non l'inclinazione
+(t9d) né il differenziale (t9c). Prossimo passo: spinta come `B` (o macro lineare con
+secondo polo) in tutte le `nastro-b9-*.cir`, poi `confronto_b9.py`, rumore
+(`module-noise-b9.cir`), ascolto di Filippo. Verificato in: Python sì / LTspice no / Live no.

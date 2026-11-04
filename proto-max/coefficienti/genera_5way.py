@@ -55,10 +55,10 @@ SVF_VECCHI = 30                 # + head bump del COMPLETO, passa-alto EXCITER
 SVF_LATO = SVF_VECCHI + 2       # + GROWL A BANDE: LP4 del basso (2 SVF)
 SA_VECCHI = 23                  # + COMPLETO 5, EXCITER 1, CLASSE A 4, LIBERO 4, MEDI 5
 SA_GB = SA_VECCHI               # GROWL A BANDE: LP1 dei medi, 2 HP (3)
-SA_NB = SA_GB + 3               # NASTRO A BANDE: 8 poli, LIBERO 4 (12)
-SA_LATO = SA_NB + 12
+SA_NB = SA_GB + 3               # NASTRO A BANDE: poli di enfasi e de-enfasi, LIBERO 4
 GB = gbm.VAR[gbm.SCELTA]        # dec. 165
 NB = nbm.Bande(192000.0, nbm.VAR[nbm.SCELTA])   # dec. 166: solo i numeri
+SA_LATO = SA_NB + 2 * (len(NB.e_lo) + len(NB.e_hi) + len(NB.e_t)) + 4
 VS20, ID0, VD0 = fw.jfet_riposo()
 _CA = al.ClasseA(48000.0)
 VE20, VCAP0 = _CA.ve2, _CA.vcap
@@ -229,10 +229,10 @@ def funzioni(r):
     r()
 
 
-def libero(r, p, ingresso, s0):
-    """NASTRO LIBERO: spinta gnl, gate che conduce, JFET di oggi. Stati in
+def libero(r, p, ingresso, s0, gn="gnl"):
+    """NASTRO LIBERO: spinta gn, gate che conduce, JFET di oggi. Stati in
     sa[s0 .. s0 + 3]; uscita {p}tac (tensione sul condensatore d'uscita)."""
-    r(f"{p}vin = min(max(gnl * {ingresso}, {-al.NL_RAIL!r}), {al.NL_RAIL!r});")
+    r(f"{p}vin = min(max({gn} * {ingresso}, {-al.NL_RAIL!r}), {al.NL_RAIL!r});")
     r(f"{p}vs2 = {VS20!r} + peek(sa, {s0});")
     r(f"{p}id = {ID0!r} + peek(sa, {s0 + 1});")
     r(f"{p}vc = {VD0!r} + peek(sa, {s0 + 2});")
@@ -274,8 +274,9 @@ def growl_bande(r, b0, sa0, kq):
 
 
 def nastro_bande(r, sa0):
-    """NASTRO A BANDE (dec. 166, nastro_bande.Bande): 2 + 2 poli di enfasi,
-    LIBERO, 2 + 2 poli di de-enfasi; solo se NASTRO VER lo pesa."""
+    """NASTRO A BANDE (dec. 166, nastro_bande.Bande): poli di enfasi (bassi,
+    super, inclinazione dei medi), LIBERO con la spinta gnb della curva
+    sua, de-enfasi inversa, guadagno del ramo; solo se NASTRO VER lo pesa."""
     s = sa0 + SA_NB
     r("// NASTRO A BANDE (dec. 166)")
     r("dnb = 0;")
@@ -290,19 +291,27 @@ def nastro_bande(r, sa0):
         r(f"nbp = op1(sa, {j}, nbu, gna);")
         r(f"nbu = nbp + {NB.ab!r} * (nbu - nbp);")
         j += 1
-    libero(r, "q", "nbu", j)
+    for _ in NB.e_t:
+        r(f"nbp = op1(sa, {j}, nbu, gnt);")
+        r(f"nbu = nbp + {NB.at!r} * (nbu - nbp);")
+        j += 1
+    libero(r, "q", "nbu", j, "gnb")
     j += 4
     r(f"nbw = -{al.NL_K!r} * qtac;")
     for _ in NB.d_hi:
         r(f"nbp = op1(sa, {j}, nbw, gnh);")
         r(f"nbw = nbp + {NB.gh!r} * (nbw - nbp);")
         j += 1
+    for _ in NB.d_t:
+        r(f"nbp = op1(sa, {j}, nbw, gnu);")
+        r(f"nbw = nbp + {NB.gt!r} * (nbw - nbp);")
+        j += 1
     for _ in NB.d_lo:
         r(f"nbp = op1(sa, {j}, nbw, gnq);")
         r(f"nbw = {NB.gl!r} * nbp + nbw - nbp;")
         j += 1
     assert j == sa0 + SA_LATO
-    r("dnb = nbw - y1;")
+    r(f"dnb = {NB.kv!r} * nbw - y1;")
     r("}")
 
 
@@ -413,6 +422,15 @@ def genexpr():
       f" * (tn - 0.5) / 0.5));")
     r(f"// NASTRO LIBERO: spinta 0 -> +{al.NL_GMAX_DB:g} dB con la manopola")
     r(f"gnl = pow(10, {al.NL_GMAX_DB / 20!r} * tn);")
+    if not SEMPLICE:
+        inv = nbm.SCELTA in nbm.INVERSA
+        r("// NASTRO A BANDE: manopola a curva "
+          + ("inversa, tb = 1 - (1 - tn)^2" if inv else "lineare"))
+        r("tb = 1 - (1 - tn) * (1 - tn);" if inv else "tb = tn;")
+        r(f"mtb = {fw.NASTRO_MAX!r} * ((tb <= 0.5) * {fw.TAPER_A_MID!r} * tb"
+          f" / 0.5 + (tb > 0.5) * ({fw.TAPER_A_MID!r} + "
+          f"{1 - fw.TAPER_A_MID!r} * (tb - 0.5) / 0.5));")
+        r(f"gnb = pow(10, {al.NL_GMAX_DB / 20!r} * tb);")
     if SEMPLICE:
         assert SCELTA_GV == 1
         r("// GROWL LIBERO (spinta 0 -> +18 dB col pot)")
@@ -446,8 +464,14 @@ def genexpr():
         fz, fp, fa, fb = nbm.VAR[nbm.SCELTA][:4]
         r(f"// NASTRO A BANDE: enfasi (bassi {fz:g}/{fp:g} Hz e super"
           f" {fa:g}/{fb:g} Hz tagliati) davanti al LIBERO, de-enfasi dopo")
-        for nome, f in (("gnp", fp), ("gna", fa), ("gnh", fa * NB.gh),
-                        ("gnq", fp / NB.gl)):
+        poli = [("gnp", fp), ("gna", fa), ("gnh", fa * NB.gh),
+                ("gnq", fp / NB.gl)]
+        if NB.e_t:
+            fm = nbm.VAR[nbm.SCELTA][8]
+            r(f"// inclinazione dei medi: polo {fm:g} Hz / zero"
+              f" {fm * NB.gt:g} Hz prima del JFET, inversa dopo")
+            poli += [("gnt", fm), ("gnu", fm * NB.gt)]
+        for nome, f in poli:
             r(f"{nome} = tan(pi * {f!r} / sr4);")
     r(f"gcp = tan(pi * {al.EN_FP!r} / sr4);")
     r(f"gcz = tan(pi * {al.EN_FZ!r} / sr4);")
@@ -597,8 +621,8 @@ def genexpr():
             r(f"dme = mdl + {al.EM_FZ / al.EM_FP!r} * (mw - mdl) - y1;")
             nastro_bande(r, sa0)
             r("dn = wn0 * dt + wn1 * dco + wn2 * dex + wn3 * dca + wn4 * dli"
-              " + wn5 * dme + wn6 * dnb;")
-            r(f"{lato}_y{k} = (y1 + mt * dn) / {liv!r};")
+              " + wn5 * dme;")
+            r(f"{lato}_y{k} = (y1 + mt * dn + mtb * wn6 * dnb) / {liv!r};")
             assert i == b0 + 2 * SVF_VECCHI
         if not SEMPLICE:
             spegni(r, b0, sa0)
