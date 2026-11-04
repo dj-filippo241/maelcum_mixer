@@ -27,11 +27,15 @@ from backplane import c96, SYM_C96, FP_C96
 import celle_vca as cv
 from celle_vca import opa2, opa4, vca, iv, shaper, law_trim, C12, SOIC14
 from celle_micmono import power_18_sw, power_ln, ADG
+from banca import ponte
 
 d = Design("canale", HERE, "maelcum CANALE CDJ/LINE (v0.4) - bozza v0.1", board=(100, 220), rev="0.1-bozza")
 d.gnd = "AGND"
 d.inner_signal = True     # SMD sui due lati (dec. 142)
 C10 = "Capacitor_SMD:C_1210_3225Metric"
+# NOTA: logica in TSSOP-14 (stesso pinout del SOIC): in SOIC-14 il pin VCC (14) sta nell'angolo e il
+# 100n legato al pin cadeva sul corpo del chip (DRC courtyards_overlap, 2026-11-04)
+TSSOP14 = "Package_SO:TSSOP-14_4.4x5mm_P0.65mm"
 SIDES = ("L", "R")
 
 # 74HC: pinout dai datasheet TI letti il 2026-11-04 (SCLS100F, SCLS085L, SCLS094F), SOIC-14
@@ -67,6 +71,8 @@ d.block = "ALIMENTAZIONE +-18 audio, +-15 switch, +5, +-15 LN, +-5 riferimento"
 power_18_sw(d)
 power_ln(d)
 cv.ref5(d, "U46")
+d.power_nets("+18V", "-18V", width=0.4)   # NOTA: a 0,6 mm Freerouting lascia -18V aperta (come il MIC, todo 237)
+d.netclass["CTRL_GND"] = 0.3   # NOTA: pin TSSOP della logica (passo 0,65): pista <= 0,3 mm
 
 # ------------------------------------------------------------ ingresso e GAIN
 d.block = "INGRESSO LINE [A] e GAIN T1 [B] (dec. 162)"
@@ -84,98 +90,14 @@ opa2(d, "U1", ("INC_L", "BUF_L", "BUF_L"), ("INC_R", "BUF_R", "BUF_R"), note="bu
 opa2(d, "U2", ("GW_L", "NG_L", "GO_L"), ("GW_R", "NG_R", "GO_R"), note="GAIN T1, non invertente x3,15")
 
 
-# ------------------------------------------------------------ isolator
-def ap2(s, tag, vin, vout, c, c2x, r1, r2, rf):
-    """Allpass del 2o ordine (MFB passa-banda + sommatore), uscita = -AP (iso-incc-banca.inc)."""
-    n, m, bp, sm = [x + tag + s for x in ("APN", "APM", "APB", "APS")]
-    d.R(vin, n, r1 + " 0.1%")
-    d.R(n, "AGND", r2 + " 0.1%")
-    d.C(n, m, c2x, C10 if "n" not in c2x or float(c2x.split("n")[0]) > 50 else C12,
-        note="NOTA: 2C, coppia in parallelo da fissare col layout (RISULTATI-incroci-C §1)")
-    d.R(m, bp, rf + " 0.1%")
-    d.C(n, bp, c, C10 if c.startswith("47n") else C12)
-    d.R(vin, sm, "10k 0.1%")
-    d.R(bp, sm, "4k99 0.1%", note="sim 5k: E96 4,99k")
-    d.R(sm, vout, "10k 0.1%")
-    return [("AGND", m, bp), ("AGND", sm, vout)]
-
-
-def sk(s, tag, vin, vout, hp, r, rg, cfb, cg, cval):
-    """Sallen-Key unity. hp: C in serie (cval), R verso l'uscita (r) e verso massa (rg).
-    lp: R in serie (r), C verso l'uscita (cfb) e verso massa (cg)."""
-    a, bq = "SKA" + tag + s, "SKB" + tag + s
-    fp = lambda v: C10 if v.endswith("n") and float(v[:-1].replace("n", "")) >= 47 else C12
-    if hp:
-        d.C(vin, a, cval + " C0G", fp(cval))
-        d.C(a, bq, cval + " C0G", fp(cval))
-        d.R(a, vout, r + " 0.1%")
-        d.R(bq, "AGND", rg + " 0.1%")
-    else:
-        d.R(vin, a, r + " 0.1%")
-        d.R(a, bq, r + " 0.1%")
-        d.C(a, vout, cfb + " C0G", fp(cfb),
-            note="NOTA: coppia in parallelo da fissare col layout" if cfb in ("200n", "20n") else "")
-        d.C(bq, "AGND", cg + " C0G", fp(cg))
-    return [(bq, vout, vout)]
-
-
-def isolator(s, vin, vout, uq, usum):
-    secs = []
-    # spina HP: HP2(150, Q 0,5) SK | HP4(350) SK SK | HP4(3150) MFB + SK
-    secs += sk(s, "H1", vin, "R1" + s, True, "4k81", "4k81", None, None, "220n")
-    secs += sk(s, "H2", "R1" + s, "R2A" + s, True, "3k20", "6k42", None, None, "100n")
-    secs += sk(s, "G2", "R2A" + s, "R2" + s, True, "3k20", "6k42", None, None, "100n")
-    x, nn = "MHX" + s, "MHN" + s
-    d.C("R2" + s, x, "10n C0G", C12)
-    d.C(x, "R3A" + s, "10n C0G", C12)
-    d.C(x, nn, "10n C0G", C12)
-    d.R(x, "AGND", "2k37 0.1%", note="calcolo 2,38k")
-    d.R(nn, "R3A" + s, "10k7 0.1%")
-    secs += [("AGND", nn, "R3A" + s)]
-    secs += sk(s, "H3B", "R3A" + s, "HIO" + s, True, "3k57", "7k15", None, None, "10n")
-    # LOW: LP2(150) SK Q 0,5 + AP2(350) + AP2(3150)
-    secs += sk(s, "A1", vin, "LA" + s, False, "4k81", None, "220n", "220n", None)
-    secs += ap2(s, "P1", "LA" + s, "LB" + s, "47n C0G", "94n C0G", "6k81", "13k7", "10k2")
-    secs += ap2(s, "P2", "LB" + s, "LOO" + s, "4n7 C0G", "9n4 C0G", "7k59", "15k2", "11k4")
-    # LOW-MID: LP4(350) SK SK + AP2(3150)
-    secs += sk(s, "B1", "R1" + s, "MA" + s, False, "3k20", None, "200n", "100n", None)
-    secs += sk(s, "B2", "MA" + s, "MB" + s, False, "3k20", None, "200n", "100n", None)
-    secs += ap2(s, "P3", "MB" + s, "LMO" + s, "4n7 C0G", "9n4 C0G", "7k59", "15k2", "11k4")
-    # MID-HIGH: LP4(3150) MFB (tre R uguali, C a massa 4,5 C) + SK
-    x, nn = "MCX" + s, "MCN" + s
-    d.R("R2" + s, x, "5k05 0.1%", note="calcolo 5,07k")
-    d.R(x, "HA" + s, "5k05 0.1%")
-    d.R(x, nn, "5k05 0.1%")
-    d.C(x, "AGND", "21n15 C0G", C12, note="NOTA: 4,5 x 4,7n, coppia in parallelo da fissare col layout")
-    d.C(nn, "HA" + s, "4n7 C0G", C12)
-    secs += [("AGND", nn, "HA" + s)]
-    secs += sk(s, "C2", "HA" + s, "MHO" + s, False, "3k57", None, "20n", "10n", None)
-    # 4 manopole: pot lineare B 10k sul cavo (banda -> cursore KnW -> massa), buffer
-    for k in range(1, 5):
-        secs += [("K%dW%s" % (k, s), "K%d%s" % (k, s), "K%d%s" % (k, s))]
-        d.R("K%d%s" % (k, s), "SP" + s, "2k49 0.1%")
-    assert len(secs) == 20, len(secs)
-    for q in range(5):
-        opa4(d, "U%d" % (uq + q), *secs[4 * q:4 * q + 4], note="isolator lato %s, sezioni %d-%d" % (s[1], 4 * q + 1, 4 * q + 4))
-    # somma non invertente x10 e servo DC (eq-isolator §9)
-    d.R("SV" + s, "SP" + s, "2k 0.1%", note="ramo del servo")
-    d.R("NGS" + s, vout, "1k8 0.1%")
-    d.R("NGS" + s, "AGND", "200 0.1%")
-    d.R(vout, "SVI" + s, "1M")
-    d.C("SVI" + s, "SVO" + s, "27n C0G", C12, note="integratore 1M/27n")
-    d.R("SVO" + s, "SV" + s, "100k")
-    d.R("SV" + s, "AGND", "499 0.1%", note="polo 0,058 Hz, corsa +-129 mV")
-
-
-for s, uq in (("_L", 3), ("_R", 8)):
-    d.block = "ISOLATOR lato %s (incroci C, dec. 152; iso-incc-banca.inc)" % s[1]
-    isolator(s, "GO" + s, "EQ" + s, uq, None)
-d.block = "SOMMA DELL'ISOLATOR (non invertente) e SERVO DC"
-opa2(d, "U13", ("SP_L", "NGS_L", "EQ_L"), ("SP_R", "NGS_R", "EQ_R"), note="somma x10 (2 per banda)")
-opa2(d, "U14", ("AGND", "SVI_L", "SVO_L"), ("AGND", "SVI_R", "SVO_R"), value="OPA1642AIDR",
-     note="servo DC (classe OPA2134 nel doc; OPA1642, SBOS484D)")
+# ------------------------------------------------------------ isolator (scheda a parte)
+# Divisione PROVVISORIA (NOTE.md): banca, somma x10 e servo stanno su canale-isolator.py
+# (funzioni in banca.py). Qui solo il ponte J4: GO verso la banca, EQ di ritorno, reti dei pot.
+d.block = "PONTE verso la scheda ISOLATOR (J4)"
+ponte(d, "J4", (94, 100, 0), "NOTA: cavo piatto 2x18 verso la scheda isolator (divisione PROVVISORIA, NOTE.md)")
 
 # ------------------------------------------------------------ prese pre-fader
+d.side = "B"   # prese, meter e fader (solo SMD) sul retro: davanti l'alimentazione non trova posto (dec. 142)
 d.block = "CUE [D], SEND TAP [E] e METER [G] (pre-fader)"
 for s in SIDES:
     d.R("STB_" + s, "SEND_TAP_" + s, "47", note="driver <= 50 ohm verso il FX-SEND (slot 3)")
@@ -212,22 +134,23 @@ opa2(d, "U22", ("DP1", "DPB1", "DPB1"), ("DP2", "DIPCV", "DIPCV"), "+15LN", "-15
 d.R("DIPCV", "ECF_L", "3k01 0.1%", note="NOTA: 4,4 V x 600/3610 = 0,73 V al pin")
 d.R("DIPCV", "ECF_R", "3k01 0.1%")
 
+d.side = "F"
 d.block = "LEVETTA HPF/OFF/LPF: logica autotemporizzata (74HC14, 74HC86, 74HC74) e ADG1434"
 for k in (0, 1):
     d.R("+5VF", "FSW%d" % k, "10k", note="levetta verso CTRL_GND sulla scheda comandi")
     d.R("FSW%d" % k, "FR%d" % k, "10k", note="NOTA: antirimbalzo 1 ms")
     d.C("FR%d" % k, "CTRL_GND", "100n")
-d.part("U", HC14, "74HC14D", SOIC14, {"1A": "FR0", "1Y": "D0", "2A": "FR1", "2Y": "D1",
+d.part("U", HC14, "74HC14PW", TSSOP14, {"1A": "FR0", "1Y": "D0", "2A": "FR1", "2Y": "D1",
                                       "3A": "DLY", "3Y": "NCLK", "4A": "NCLK", "4Y": "CLK",
                                       "5A": "XQ", "5Y": "DJSEL", "6A": "CTRL_GND", "6Y": None,
                                       "VCC": "+5VF", "GND": "CTRL_GND"}, ref="U23",
        note="NOTA: antirimbalzo, ritardo Schmitt e DJSEL = NOT(Q0 xor Q1)")
 d.C("+5VF", "CTRL_GND", "100n")
-d.part("U", HC86, "74HC86D", SOIC14, {"1A": "D0", "1B": "Q0", "1Y": "X0", "2A": "D1", "2B": "Q1", "2Y": "X1",
+d.part("U", HC86, "74HC86PW", TSSOP14, {"1A": "D0", "1B": "Q0", "1Y": "X0", "2A": "D1", "2B": "Q1", "2Y": "X1",
                                       "3A": "Q0", "3B": "Q1", "3Y": "XQ", "4A": "CTRL_GND", "4B": "CTRL_GND", "4Y": None,
                                       "VCC": "+5VF", "GND": "CTRL_GND"}, ref="U24", note="NOTA: confronto levetta / stato")
 d.C("+5VF", "CTRL_GND", "100n")
-d.part("U", HC74, "74HC74D", SOIC14, {"1D": "D0", "1CLK": "CLK", "1Q": "Q0", "1QN": None, "1PRE": "+5VF", "1CLR": "+5VF",
+d.part("U", HC74, "74HC74PW", TSSOP14, {"1D": "D0", "1CLK": "CLK", "1Q": "Q0", "1QN": None, "1PRE": "+5VF", "1CLR": "+5VF",
                                       "2D": "D1", "2CLK": "CLK", "2Q": "Q1", "2QN": None, "2PRE": "+5VF", "2CLR": "+5VF",
                                       "VCC": "+5VF", "GND": "CTRL_GND"}, ref="U25", note="NOTA: stato dell'ADG")
 d.C("+5VF", "CTRL_GND", "100n")
@@ -265,12 +188,12 @@ FILI = ["AGND", "BUF_L", "GW_L", "AGND", "BUF_R", "GW_R", "AGND",
         "+REF5", "POT_F", "AGND", "MET", "FSW0", "FSW1", "BTNC", "+5VF", "CTRL_GND", "AGND", "AGND"]
 cv.cavo(d, FILI)
 d.part("J", "Connector_Generic:Conn_01x05", "1x5 ingressi", "Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical",
-       {1: "IN_L", 2: "AGND", 3: "IN_R", 4: "AGND", 5: "CHASSIS"}, ref="J3", place=(88, 5, 90),
+       {1: "IN_L", 2: "AGND", 3: "IN_R", 4: "AGND", 5: "CHASSIS"}, ref="J3", place=(88, 12, 90),
        note="NOTA: cavo verso gli RCA sulla schedina dei connettori (dec. 141)")
 
 d.audio_rules = {
-    "sensibili": r"^(INC_[LR]|NG_[LR]|GW_[LR]|SP_[LR]|NGS_[LR]|NIF_[LR]|K\dW_[LR]|DJBUS_[LR]|BUS_[HL]PF_[LR]|CUE_OUT_[LR])$",
-    "cavo": r"^(BUF|GW|LOO|LMO|MHO|HIO|K\dW)_[LR]$",
+    "sensibili": r"^(INC_[LR]|NG_[LR]|GW_[LR]|NIF_[LR]|DJBUS_[LR]|BUS_[HL]PF_[LR]|CUE_OUT_[LR])$",
+    "cavo": r"^(BUF|GW|LOO|LMO|MHO|HIO|K\dW|GO|EQ)_[LR]$",
     "rumorose": r"^(\+15SW|-15SW|\+5VF?|MET|FSW\d|FR\d|D\d|Q\d|X\d|XQ|DIFF|DLY|N?CLK|DJSEL|CUESEL|BTNC|DP.*|DIPCV|POT_F|CVP_F|SH_F|V27F[+-]|V22F[+-]|VREG[+-]|BASE[+-]|RAW.*|CTRL_GND)$",
     "regolatori": ["U40", "U41", "U42", "U43", "U44", "U45", "Q40", "Q41"],
 }

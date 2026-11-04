@@ -22,7 +22,26 @@ La stima del PIANO (~362) era vicina. Ma una 100 × 220 porta ~280 impronte coi 
 **il canale non sta su una scheda.** L'isolator da solo vale ~190 impronte (C di precisione
 in 1206/1210, 27 per lato).
 
-## Proposta di divisione (da confermare: cambia il telaio, dec. 144)
+## Divisione in due schede (PROVVISORIA, 2026-11-04)
+
+Fatta come scelta di ingegneria: pannello, comandi e backplane non cambiano (dec. 142, 144).
+Resta PROVVISORIA fino alla scelta di Filippo (todo 249, `pcb/PROPOSTA-todo170.md` P4).
+Ipotesi più neutra:
+
+- **Un C96 solo**, sulla scheda segnale (`canale.py`, 193 impronte: prese, meter e fader sul retro).
+- **Scheda isolator** (`canale-isolator.py`, cartella `isolator/`, 197 impronte, tutto davanti):
+  le due banche, la somma x10 e il servo (U3-U14, funzioni in `banca.py`, valori invariati).
+- **Ponte**: cavo piatto 2x18 (`banca.PONTE`, J4 segnale - J1 isolator): ±18, GO_L/R, EQ_L/R
+  e le 16 reti dei pot B (uscite di banda e cursori), con masse fra i gruppi.
+- **Cavo dei pot J2 invariato**: le 16 reti dei pot fanno ponte + J2. Alternativa da valutare
+  col primo prototipo: un cavo diretto isolator - scheda comandi (cursori più corti).
+- Scheda isolator senza C96: 4 fori M3 senza rete (distanziali isolati), NOTA. Bulk 2x 47u.
+- Circuito identico (distinte sommate = prima + ponte e bulk, controllato). Polarità invariata.
+- Correzioni trovate col piazzamento: J3 (RCA) sul foro H2, spostato a y 12; la logica 74HC
+  passa a TSSOP-14 (stesso pinout): in SOIC-14 il 100n del pin 14 cadeva sul corpo del chip.
+  CTRL_GND a 0,3 mm (pin TSSOP).
+
+Divisione di partenza (proposta originale):
 
 1. **CANALE segnale** (col C96): ingresso, GAIN, somma dell'isolator, prese, fader, dip,
    levetta, alimentazione. ~190 impronte.
@@ -63,4 +82,13 @@ in 1206/1210, 27 per lato).
 
 ## Esito della PCB (2026-11-04)
 
-Non provata: con 380 impronte su ~280 di capienza il giro non ha senso prima della divisione.
+Divise in due schede (sopra), ±18 a 0,4 mm (a 0,6 Freerouting lasciava -18V aperta, come il MIC).
+
+| Scheda | Impronte | Esito | DRC | Controllo audio A1/A2/A3/A4/A5 |
+|---|---|---|---|---|
+| `canale.py` (segnale, col C96) | 193 | **PASSA** al 1o giro | 0 errori; 15 silk_overlap, 11 silk_over_copper, 58 attesi | 29 / 37 / 6 / 2 / 0 |
+| `canale-isolator.py` | 197 | **PASSA** al 2o giro (1o: SKAH2_R aperta) | 0 errori; 29 silk_overlap, 44 silk_over_copper | 0 / 27 / 11 / 0 / 0 |
+
+Un PASSA singolo non è una prova (Freerouting cambia a ogni giro). A2 alto: le reti dei pot e
+del ponte fanno strada lunga (cavo). Polo RC d'ingresso, TVS e C in parallelo della banca
+restano come le NOTE sopra.
