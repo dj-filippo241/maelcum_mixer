@@ -13,12 +13,50 @@ Rigenerare (pochi secondi; senza `--solo-schema` anche il PCB, ~4 minuti):
 
 - **SCHEMA PASSA**: 131 reti, nessuna con un pin solo; schema = netlist nei due sensi; ERC 0
   errori, 1 avviso voluto («VSS non a massa» sull'ADG1434, come il FX-SEND).
-- **PCB: non generato.** 204 pezzi in distinta (206 impronte coi fori). Una 100 × 220 ne porta
-  ~160 su un lato: servono i due lati (`d.side = "B"` sui blocchi SMD, dec. 142) prima del giro
-  con Freerouting.
+- **PCB: PASSA** (todo 237, 2026-11-04), ma al limite: vedi «Giro del PCB». Scheda comandi: PASSA.
 - Distinta: `bom.csv`. Silicio: OPA1612 ×3, OPA1654 ×5, V2181L ×1, ADG1434 ×1, LM339 ×1,
   LT3045 + LT3094, LM317 + LM337, 78L15 + 79L15, 1N4148W ×13. Coincide con la §8 del design
   doc più la REV della dec. 145.
+
+## Giro del PCB (2026-11-04, todo 237)
+
+Scheda principale 100 × 220, 206 impronte, SMD sui due lati (dec. 142): in `mic.py` vanno sul
+retro i blocchi LED (LM339) e VCA del MUTE e del limiter (`d.side = "B"`); l'EQ2 resta davanti.
+Le piste ±18 V scendono da 0,6 a 0,4 mm, solo nel MIC (NOTA: 0,4 mm porta ~1 A, il ramo ne usa
+qualche decina di mA). Il generatore non cambia.
+
+Giro committato: PASSA. ERC 0 errori (1 avviso voluto). DRC 0 violazioni; avvisi: 13 via_dangling
+(fanout di massa, 5 via senza posto libero), 10 silk_overlap, 20 silk_over_copper, 53 net_conflict
+attesi. Controllo audio: **A1 26, A2 32, A3 17, A4 2, A5 0**. A1 alto: i 100n e i condensatori dei
+regolatori lontani dal pin (retro e alimentazione lunga 90 mm); da guardare col punto 5 di
+`pcb/NOTE-generatore.md`.
+
+**Esito instabile.** Freerouting non dà lo stesso risultato a ogni giro. Prove, stesso file salvo
+dove scritto:
+
+| Variante | Esito |
+|---|---|
+| LED, EQ2 e VCA sul retro, ±18 a 0,6 mm | NON PASSA: -18V aperta (11) |
+| EQ2 davanti, ±18 a 0,6 | NON PASSA: -18V aperta (11) |
+| EQ2, LED e VCA sul retro, ±18 a 0,4 | NON PASSA: 1 aperto |
+| **EQ2 davanti, ±18 a 0,4 (adesso)**, 4 giri | 2 PASSA; 1 aperto (GLOBAL_MUTE); +15LN aperta (9); 2 errori di distanza |
+
+Un PASSA su due non è una prova (NOTE-generatore, blocchi vicino ai connettori). Strade: più
+blocchi sul retro per svuotare il davanti (oggi il retro si piazza nel primo posto libero, punto 1
+di NOTE-generatore), oppure la scheda MIC su due schede (dec. 144).
+
+Scheda comandi (`mic-comandi.py`, file in `comandi/`): 34 × 186,5 mm, 10 componenti: 7 pot singoli
+Alps RK09L verticali alle posizioni di `coordinate.json` («mic»), LED bicolore, tasto MUTE, J1 2x12
+in alto. PASSA: ERC 0, DRC 0 violazioni, 0 aperti, 15 net_conflict attesi (staffe dei pot, filo
+CTRL_GND libero sul lato comandi). Ordine dei fili: `cavo.py`, letto da `mic.py` e da `mic-comandi.py`.
+GAIN 5k C: antiorario = GP2 (0 dB), orario = GP1 (+29,9 dB).
+
+NOTA della scheda comandi (da decidere o verificare):
+
+- Pot di classe 14 mm (GAIN, SEND) disegnati come RK09L 9 mm: KiCad non ha l'RK14 (come il FX-SEND).
+- LED: un bicolore 3 mm ad anodo comune al centro; il render mostra tre punti a passo 4 mm. Pezzo
+  non scelto: pinout (1 = catodo verde, 2 = anodo, 3 = catodo rosso) da verificare sul datasheet.
+- Tasto MUTE: impronta di un tasto 6 mm; ritenuta o momentaneo resta di Filippo (voce 40).
 
 ## Catena e polarità
 
@@ -63,11 +101,11 @@ del differenziale (REV dec. 145) non c'è**: il differenziale resta quello di `s
 
 ## Cosa resta
 
-1. Scheda comandi (`mic-comandi.py`): pot GAIN 5k (curva C, todo 131), EQ LOW e HIGH 10k, SEND
+1. [FATTO 2026-11-04] Scheda comandi (`mic-comandi.py`): pot GAIN 5k (curva C, todo 131), EQ LOW e HIGH 10k, SEND
    1-4 10k, LED bicolore, tasto MUTE, alle posizioni di `docs/pannelli/coordinate.json` («mic»).
    Il cavo J2 (2x12) ha già l'ordine dei fili in `mic.py` (FILI): va spostato in un `cavo.py`
    come nel FX-SEND quando nasce la scheda comandi.
-2. PCB a due lati e giro completo (PASSA prima del commit della scheda).
+2. PCB a due lati: PASSA, ma un giro su due (sopra). Da rendere stabile.
 3. Simulare coi componenti veri: limiter (raddrizzatore, superdiodo, sottrattore, mezza onda),
    logica del LED, offset del rilevatore (1 mV al pin = 0,16 dB).
 4. Correnti dei rail col silicio contato qui (§7 del design doc: ±15 LN ~20 mA è basso: con INA,

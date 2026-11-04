@@ -24,8 +24,7 @@ from celle_micmono import opa2, opa4, diode, C12, VCA, TRIM
 d = Design("mic", HERE, "maelcum MIC (dec. 97) - bozza v0.1", board=(100, 220), rev="0.1-bozza")
 d.gnd = "AGND"
 
-FILI = ["AGND", "GP1", "GINV", "GP2", "AGND", "NA", "NB", "NC", "AGND", "VHN", "WPH", "VHP",
-        "AGND", "POST", "SW1", "SW2", "SW3", "SW4", "AGND", "+5VF", "LKG", "LKR", "MUTE_SW", "CTRL_GND"]
+from cavo import CAVO as FILI     # ordine dei fili: cavo.py, letto anche dalla scheda comandi
 
 d.block = "BACKPLANE C96 (classe MIC/GEN, MSUM6)"
 cm.backplane(d, "MSUM6")
@@ -33,6 +32,7 @@ cm.backplane(d, "MSUM6")
 d.block = "ALIMENTAZIONE +-18 audio, +-15 switch, +5, +-15 LN"
 cm.power_18_sw(d)
 cm.power_ln(d)
+d.power_nets("+18V", "-18V", width=0.4)   # NOTA: a 0,6 mm Freerouting lasciava -18V aperta (todo 237)
 
 # ------------------------------------------------------------ ingresso
 d.block = "INGRESSO XLR: RFI, clamp, carico 2,32k, bias 2x47k (mic-pre.inc)"
@@ -72,11 +72,14 @@ sd, sb = cm.detector(d, "PRE")
 opa4(d, "U3", ("K2", "HP", "HP"), ("AGND", "GINV", "PRE"), sd, sb, "+15LN", "-15LN",
      note="passa-alto, stadio 2 (pot GAIN 5k sul cavo: GP1-GINV-GP2), superdiodo e buffer del LED")
 
+d.side = "B"  # 206 impronte: LED e VCA/limiter (solo SMD) sul retro, dec. 142 (todo 237)
 d.block = "LED tricolore (LM339)"
 cm.led3(d, "+15LN", "133k")
 
+d.side = "F"   # EQ2 davanti: sul retro -18V restava aperta (11 tratti)
 d.block = "EQ2 (+-18)"
 cm.eq2(d, "U4", "PRE", "POSTEQ")
+d.side = "B"
 
 # ------------------------------------------------------------ VCA del MUTE e limiter
 d.block = "VCA del MUTE e del limiter (dec. 111, 145; sim/mic/mic-limiter.cir)"
@@ -129,6 +132,7 @@ d.R("LIM", "ECM", "1k 0.1%", note="Ra")
 d.R("MUTE_CV", "ECM", "2k 0.1%", note="Rb: MUTE 2,5 V -> +0,79 V al pin = -129 dB")
 d.R("ECM", "AGND", "1k 0.1%", note="Rc")
 
+d.side = "F"
 # ------------------------------------------------------------ uscite
 d.block = "DRIVER MSUM6 L/R (invertenti, todo 227)"
 cm.msum_drivers(d, "U8", "POST", "MSUM6")
