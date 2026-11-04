@@ -19,7 +19,9 @@ from backplane import c96, SYM_C96, FP_C96, RIGA_A
 d = Design("psu-in", HERE, "maelcum PSU-IN (dec. 113) - bozza v0.1", board=(100, 220), rev="0.1-bozza")
 d.gnd = "AGND"
 d.inner_signal = True     # In2 strato di piste: le reti di potenza larghe passano sotto il C96
-FUSE = "Fuse:Fuseholder_Clip-5x20mm_Littelfuse_111_Inline_P20.00x5.00mm_D1.05mm_Horizontal"
+# NOTA: portafusibile a due pin (Stelvio-Kontek PTF78, aperto, foro passante). Le clip 5x20 hanno due pad con lo
+# stesso numero: Freerouting ne collega uno solo e il DRC conta l'altro aperto (+5V, 2026-11-04)
+FUSE = "Fuse:Fuseholder_Cylinder-5x20mm_Stelvio-Kontek_PTF78_Horizontal_Open"
 SMB = "Diode_SMD:D_SMB"
 SMC = "Diode_SMD:D_SMC"
 
