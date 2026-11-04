@@ -14,23 +14,35 @@ Rigenerare (pochi secondi; senza `--solo-schema` anche il PCB, ~4 minuti):
 
 - **SCHEMA PASSA**: 87 reti, nessuna con un pin solo; schema = netlist nei due sensi; ERC 0
   errori, 1 avviso voluto («VSS non a massa» sull'ADG1434).
-- **PCB: NON PASSA** per un difetto del generatore (vedi «Giro del PCB» sotto).
+- **PCB: PASSA** (giro del 2026-11-04, todo 237). Scheda comandi: PASSA (vedi sotto).
 - 125 pezzi in distinta (127 impronte coi fori). Silicio: OPA1612 ×1, OPA1654 ×3, ADG1434 ×1,
   LM339 ×1, LM317 + LM337, 78L15 + 79L15, 1N4148W ×6. Coincide con la §8 del design doc.
 
-## Giro del PCB (2026-11-04): NON PASSA, non committato
+## Giro del PCB (2026-11-04, todo 237): PASSA
 
-Un giro completo su 100 × 220, un lato: piazzamento e Freerouting riusciti (nessuna rete di
-segnale aperta), ma **DRC 31 errori di distanza**, tutti su reti delle classi sottili
-(+15SW, −15SW, +5VF a 0,25 mm) contro vie e piste vicine. Controllo audio A1-A5: vedi
-`out/riepilogo.json` del giro (A3 10, A4 3, A5 7).
+Scheda principale 100 × 220, un lato, 127 impronte. Il primo giro (todo 30) dava 31 errori di
+distanza sulle classi sottili: il `.kicad_pro` diceva 0,25 mm, la scheda 0,2. Il generatore ora
+prende le regole da una fonte sola (`Design._classrules`, todo 205, 0240fe8): nessuna modifica qui.
 
-Causa nel generatore, non nella scheda: `pcbgen.py` dà alle classi sottili distanza 0,2 mm e
-via 0,8 mm nel PCB (`build_pcb`, revisione «vie piccole» del master, f58b4a7), ma scrive nel
-`.kicad_pro` distanza 0,25 mm e via 1,0 mm per tutte le classi (`_write_project`). Freerouting
-lavora a 0,2, il DRC di kicad-cli controlla a 0,25. È la stessa cosa dei «3 errori nuovi di
-distanza» del giro 5 del master. Da allineare in `_write_project` (thin → 0,2 / 0,8 / 0,4),
-poi rifare il giro. I file del PCB restano fuori dal commit.
+- ERC 0 errori (1 avviso voluto, VSS dell'ADG1434). DRC 0 violazioni; avvisi: 5 silk_overlap,
+  14 silk_over_copper, 50 net_conflict attesi. Freerouting: nessuna rete di segnale aperta (la
+  massa la chiudono le colate).
+- Controllo audio: A1 9, A2 21, A3 10, A4 3, A5 0 (primo giro: A3 10, A4 3, A5 7).
+
+Scheda comandi (`mono-comandi.py`, file in `comandi/`): 34 × 186,5 mm (pannello 36 × 190,5 meno
+i margini), 9 componenti: 7 pot singoli Alps RK09L verticali alle posizioni di
+`coordinate.json` («mono»), LED bicolore, J1 2x11 in alto. PASSA: ERC 0, DRC 0 violazioni,
+0 aperti; 15 avvisi net_conflict attesi (staffe dei pot e filo CTRL_GND libero sul lato comandi).
+Ordine dei fili: `cavo.py`, letto da `mono.py` e da `mono-comandi.py`. Celle della scheda comandi
+in `celle_micmono.scheda_comandi`.
+
+NOTA della scheda comandi (da decidere o verificare):
+
+- Pot di classe 14 mm (GAIN, SEND) disegnati come RK09L 9 mm: KiCad non ha l'RK14 (come il FX-SEND).
+- LED: un bicolore 3 mm ad anodo comune al centro; il render del pannello mostra tre punti a
+  passo 4 mm. Il pezzo non è scelto: il pinout (1 = catodo verde, 2 = anodo, 3 = catodo rosso)
+  va verificato sul suo datasheet.
+- Curve: GAIN 10k A (todo 131); EQ e SEND 10k, curva non scritta (dec. 129).
 
 ## Catena e polarità
 
@@ -55,6 +67,5 @@ Polarità: POST +1, driver MSUM −1, [A2] −1 → +1 (todo 227, F2).
 
 ## Cosa resta
 
-1. Scheda comandi (`mono-comandi.py`): pot GAIN 10k A (todo 131), EQ LOW e HIGH 10k, SEND 1-4,
-   LED bicolore, alle posizioni di `coordinate.json` («mono»). Cavo J2 2x11 (FILI in `mono.py`).
+1. Scheda comandi: fatta (sopra). Restano la scelta del LED e del pot 14 mm.
 2. Simulare la logica del LED coi componenti; banco per le soglie.

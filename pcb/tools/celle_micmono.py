@@ -279,3 +279,65 @@ def cavo(d, fili, ref="J2"):
            "Connector_PinHeader_2.54mm:PinHeader_2x%02d_P2.54mm_Vertical" % n,
            {i + 1: f for i, f in enumerate(fili)}, ref=ref, place=(50, 5, 90),
            note="cavo piatto corto (<= 10 cm) verso la scheda comandi dietro il pannello (dec. 133)")
+
+
+# ------------------------------------------------------------ scheda comandi
+POT1_FP = "Potentiometer_THT:Potentiometer_Alps_RK09L_Single_Vertical"
+POT1 = boxsym("POT_SINGLE", [
+    ("1", "CCW", "passive"), ("2", "W", "passive"), ("3", "CW", "passive"), ("MP", "MP", "passive")], [],
+    ref="RV", fp=POT1_FP,
+    desc="Pot singolo, Alps RK09L verticale; 1 = antiorario, 2 = cursore, 3 = orario (catalogo Alps "
+         "RK09L rev. 2510, come pcb/fx-send/NOTE.md punto 10); MP = staffe, a telaio attraverso il pannello")
+LED_FP = "LED_THT:LED_D3.0mm-3"
+LED2 = boxsym("LED_BICOLORE_CA", [("1", "K_VERDE", "passive"), ("2", "A", "passive")],
+              [("3", "K_ROSSO", "passive")], ref="D", fp=LED_FP,
+              desc="LED bicolore verde/rosso 3 mm ad anodo comune. NOTA: pezzo non scelto, pinout "
+                   "da verificare sul suo datasheet")
+SW_FP = "Button_Switch_THT:SW_PUSH_6mm"
+SW = boxsym("TASTO", [("1", "1", "passive")], [("2", "2", "passive")], ref="SW", fp=SW_FP,
+            desc="Tasto MUTE. NOTA: impronta di un tasto 6 mm; ritenuta o momentaneo da decidere (voce 40)")
+
+
+def scheda_comandi(here, modulo, titolo, cavo, reti, tasto=None):
+    """Scheda comandi dietro il pannello, come pcb/fx-send/fx-send-comandi.py: pot, LED e tasto
+    alle posizioni di docs/pannelli/coordinate.json, cavo piatto J1 in alto (stesso ordine di J2).
+    reti = {nome manopola: (antiorario, cursore, orario, valore, nota)}; tasto = (rete a, rete b).
+    Le reti del cavo che la scheda comandi non usa restano libere (no-connect)."""
+    import json, os
+    from pcbgen import Design
+    root = os.path.join(here, "..", "..")
+    pan = json.load(open(os.path.join(root, "docs", "pannelli", "coordinate.json")))["moduli"][modulo]
+    mx, my = 1.0, 2.0                       # scheda più piccola del pannello: 1 mm per lato, 2 sopra e sotto
+    w, h = pan["larghezza"] - 2 * mx, pan["altezza"] - 2 * my
+    d = Design(modulo + "-comandi", os.path.join(here, "comandi"), titolo, board=(w, h), rev="0.1-bozza")
+    d.gnd = "AGND"
+    d.power_nets("AGND", width=0.5)
+    usate = set()
+    d.block = "COMANDI (posizioni dal render del pannello)"
+    for c in pan["comandi"]:
+        x, y = c["x"] - mx, c["y"] - my
+        if c["tipo"] == "manopola":
+            ccw, wi, cw, val, nota = reti[c["nome"]]
+            usate.update((ccw, wi, cw))
+            # i pin stanno 7,5 mm a sinistra dell'albero: nella colonna di sinistra il pot si gira,
+            # così i pin vanno verso il centro e non sul bordo
+            d.part("RV", POT1, val, POT1_FP, {"1": ccw, "2": wi, "3": cw}, anchor=(7.5, 2.5),
+                   place=(x, y, 180 if x < w / 2 else 0),
+                   note="%s; manopola %s, pot di classe %s mm (RK09L: KiCad non ha l'RK14)" % (nota, c["nome"], c["pot"]))
+        elif c["tipo"] == "led3":
+            usate.update(("+5VF", "LKG", "LKR"))
+            d.part("D", LED2, "LED bicolore VR 3 mm", LED_FP, {"1": "LKG", "2": "+5VF", "3": "LKR"},
+                   anchor=(2.54, 0), place=(x, y, 0),
+                   note="NOTA: un LED bicolore al centro (giallo = verde + rosso, celle_micmono.led3); "
+                        "il render del pannello mostra tre punti a passo 4 mm")
+        elif c["tipo"] == "bottone" and tasto:
+            usate.update(tasto)
+            d.part("SW", SW, "tasto " + c["nome"], SW_FP, {"1": tasto[0], "2": tasto[1]},
+                   anchor=(3.25, 2.25), place=(x, y, 0), note="NOTA: tasto a ritenuta fra +5VF e MUTE_SW")
+    d.block = "CAVO VERSO LA SCHEDA PRINCIPALE"
+    n = len(cavo) // 2
+    d.part("J", "Connector_Generic:Conn_02x%02d_Odd_Even" % n, "2x%d cavo piatto" % n,
+           "Connector_PinHeader_2.54mm:PinHeader_2x%02d_P2.54mm_Vertical" % n,
+           {i + 1: (f if f in usate or f == "AGND" else None) for i, f in enumerate(cavo)},
+           ref="J1", place=(w / 2, 9.0, 90), note="stesso ordine di J2 sulla scheda principale (cavo.py)")
+    return d

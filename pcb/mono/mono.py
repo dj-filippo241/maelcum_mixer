@@ -23,8 +23,7 @@ from celle_micmono import opa2, opa4, diode, C12
 d = Design("mono", HERE, "maelcum MONO (dec. 97) - bozza v0.1", board=(100, 220), rev="0.1-bozza")
 d.gnd = "AGND"
 
-FILI = ["AGND", "BUF", "GW", "AGND", "NA", "NB", "NC", "AGND", "VHN", "WPH", "VHP", "AGND",
-        "POST", "SW1", "SW2", "SW3", "SW4", "AGND", "+5VF", "LKG", "LKR", "CTRL_GND"]
+from cavo import CAVO as FILI     # ordine dei fili: cavo.py, letto anche dalla scheda comandi
 
 d.block = "BACKPLANE C96 (classe MIC/GEN, MSUM7)"
 cm.backplane(d, "MSUM7")
