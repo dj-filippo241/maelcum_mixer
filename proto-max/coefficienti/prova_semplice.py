@@ -112,9 +112,47 @@ def confronta(nome, nuovo, manopole, selettori, rnd, n_casi=6, n=2400):
     return peggiore
 
 
+def freschi():
+    """Todo 207: ogni .genexpr su disco = quello che il generatore scrive oggi.
+
+    Una legge cambiata nel generatore e rigenerata in una sola versione
+    lascia l'altra vecchia: il confronto campione per campione la vede solo
+    se un caso tocca quel tratto di corsa. Qui la si vede sempre.
+    """
+    varianti = [(genera, {}), (genera, {"SEMPLICE": True}),
+                (gf, {}), (gf, {"SEMPLICE": True}),
+                (gf, {"SEMPLICE": True, "BUS": "hp"}),
+                (gf, {"SEMPLICE": True, "BUS": "lp"}),
+                (g5, {}), (g5, {"SEMPLICE": True})]
+    vecchi = 0
+    for mod, imp in varianti:
+        prima = {k: getattr(mod, k) for k in ("SEMPLICE", "BUS", "NOME")
+                 if hasattr(mod, k)}
+        nome = prima["NOME"]
+        if imp.get("BUS"):
+            nome += "-" + imp["BUS"].upper() + "F"
+        elif imp.get("SEMPLICE"):
+            nome += "-S"
+        try:
+            for k, v in imp.items():
+                setattr(mod, k, v)
+            mod.NOME = nome
+            atteso = mod.genexpr()
+        finally:
+            for k, v in prima.items():
+                setattr(mod, k, v)
+        su_disco = leggi(nome)
+        ok = su_disco == atteso
+        vecchi += not ok
+        print(f"  {'ok  ' if ok else 'VECCHIO'} {nome}.genexpr"
+              + ("" if ok else ": rilancia il generatore per questa versione"))
+    return vecchi
+
+
 def main():
     rnd = random.Random(7)
-    errori = 0
+    print("File su disco contro i generatori di oggi")
+    errori = freschi()
     for nome, nuovo, manopole, selettori in DISPOSITIVI:
         print(f"{nome}-S contro {nome} con {selettori}")
         errori += confronta(nome, nuovo, manopole, selettori, rnd) > TOLL
