@@ -44,7 +44,8 @@ il CUE contro il master in cuffia.
 | Ricevitore bus HPF / LPF del filtro | −1 | filter §2bis |
 | Core filtro (2 sezioni SVF, HP e LP = −Vin ciascuna) | +1 | filter §3 |
 | Overdrive col VCA vero e il ramo pulito da x (rimedio F1) | −1 | filter §5ter, `od2-pol-c.cir` |
-| MIC e MONO, ingresso → POST, driver MSUM, buffer d'iniezione | +1 | mic-mono §2, §3.1 (scambio dell'INA da togliere, todo 30) |
+| MIC e MONO, ingresso → POST, buffer d'iniezione | +1 | mic-mono §2, §3.1; schema `pcb/mic/mic.py` senza scambio dell'INA (todo 30) |
+| MIC e MONO, driver MSUM (F2) | −1 | `pcb/tools/celle_micmono.py`, 20k/20k (todo 30) |
 | CUE summer | −1 | sistema-cue §7 |
 | Buffer MON nel modulo CUE | +1 | sistema-cue §7 |
 

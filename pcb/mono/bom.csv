@@ -1,0 +1,70 @@
+quantita;valore;impronta;riferimenti;nota
+2;220u 35V;CP_Radial_D8.0mm_P3.50mm;C1 C2;
+2;1u 50V;C_1206_3216Metric;C12 C13;
+3;1u 25V;C_1206_3216Metric;C14 C15 C25;
+1;100n C0G;C_1206_3216Metric;C16;film o C0G: polo 1,6 Hz col bias 1M
+1;47p C0G;C_0805_2012Metric;C17;
+1;100n C0G;C_1206_3216Metric;C18;hold: niente altro sul nodo (sim/meter)
+15;100n;C_0805_2012Metric;C19 C20 C21 C22 C23 C24 C26 C31 C32 C35 C36 C37 C38 C39 C40;
+2;180n C0G;C_1206_3216Metric;C27 C28;
+2;10n C0G;C_1206_3216Metric;C29 C30;
+1;47u 10V;CP_Radial_D5.0mm_P2.00mm;C3;
+2;10p C0G;C_0805_2012Metric;C33 C34;NOTA: Cf come i ricevitori a massa virtuale
+2;10u 35V;CP_Radial_D5.0mm_P2.00mm;C4 C8;
+2;47u 35V;CP_Radial_D6.3mm_P2.50mm;C5 C9;
+2;470u 25V;CP_Radial_D8.0mm_P3.50mm;C6 C10;
+2;100u 25V;CP_Radial_D6.3mm_P2.50mm;C7 C11;
+1;1N4148W;D_SOD-123;D1;scarica Cadj
+1;S1G;D_SMA;D2;protezione inversa
+3;1N4148W;D_SOD-123;D3 D7 D8;
+1;S1G;D_SMA;D4;
+1;TVS bidir. low-cap 24 V;D_SOD-323;D5;NOTA: tensione di lavoro sopra gli 8,7 Vp di +18 dBu
+1;1N4148W;D_SOD-123;D6;NOTA: clamp 1N4148W al posto del BAV199 (pinout non verificato)
+1;1N4148W;D_SOD-123;D9;rosso acceso durante il latch
+5;ferrite 600R;L_1206_3216Metric;FB1 FB2 FB3 FB4 FB5;
+1;C96 maschio;DIN41612_C_3x32_Male_Horizontal_THT;J1;DIN 41612 C 3x32, angolo retto
+1;2x11 cavo piatto;PinHeader_2x11_P2.54mm_Vertical;J2;cavo piatto corto (<= 10 cm) verso la scheda comandi dietro il pannello (dec. 133)
+1;jack TS (cavo);PinHeader_1x02_P2.54mm_Vertical;J3;NOTA: cavo verso il jack TS; sleeve ad AGND del modulo (grounding §4)
+1;2N7002;SOT-23;Q1;spegne il verde durante il latch del rosso
+1;2N7002;SOT-23;Q2;GLOBAL_MUTE alto = muto
+1;BD139;TO-126-3_Vertical;Q40;
+1;BD140;TO-126-3_Vertical;Q41;
+2;120 1%;R_0805_2012Metric;R1 R4;
+1;1k 0.1%;R_0805_2012Metric;R10;G = 3,15 = +9,97 dB
+11;10k 0.1%;R_0805_2012Metric;R11 R29 R30 R47 R48 R49 R50 R51 R52 R53 R54;
+1;2k49 0.1%;R_0805_2012Metric;R12;
+1;3M;R_0805_2012Metric;R14;release 0,3 s (dec. 81)
+1;165k 0.1%;R_0805_2012Metric;R15;
+1;7k68 0.1%;R_0805_2012Metric;R16;
+1;6k65 0.1%;R_0805_2012Metric;R17;
+1;1k1 0.1%;R_0805_2012Metric;R18;
+3;10k;R_0805_2012Metric;R19 R20 R22;
+1;1k74 1%;R_0805_2012Metric;R2;E96 1,74k = 19,4 V (fx-send NOTE punto 16)
+1;750k;R_0805_2012Metric;R21;latch del rosso: 0,69 x 750k x 1u = 0,52 s
+1;1k;R_0805_2012Metric;R23;~2,8 mA nel rosso (LED alta efficienza, metering §1)
+1;1k;R_0805_2012Metric;R24;~2,8 mA nel verde
+2;324 0.1%;R_0805_2012Metric;R25 R26;
+1;4k75 0.1%;R_0805_2012Metric;R27;NOTA: mic-mono §5.1 dice 4,7k/2,25k (~5 kHz); backend.inc 5,23k/2,5k
+1;2k26 0.1%;R_0805_2012Metric;R28;E96 di 2,25k
+1;1k;R_0805_2012Metric;R3;NOTA: cap-moltiplicatore come il FX-SEND (~50 mA)
+3;49k9 0.1%;R_0805_2012Metric;R31 R32 R33;
+4;20k 0.1%;R_0805_2012Metric;R34 R35 R37 R38;
+2;20k 0.1%;R_0805_2012Metric;R36 R39;R di somma lato sorgente (dec. 97)
+4;2k2;R_0805_2012Metric;R40 R41 R42 R43;
+1;10k;R_0805_2012Metric;R44;IN alto = suona (VIH 2,0 V)
+1;100k;R_0805_2012Metric;R46;senza master il modulo resta muto (fail-safe, fx-send NOTE 5)
+1;1k74 1%;R_0805_2012Metric;R5;
+3;1k;R_0805_2012Metric;R6 R13 R45;
+1;1k 1%;R_0805_2012Metric;R7;
+1;1M 1%;R_0805_2012Metric;R8;Zin 1 MOhm
+1;2k15 0.1%;R_0805_2012Metric;R9;
+1;OPA1654AIDR;SOIC-14_3.9x8.7mm_P1.27mm;U10;buffer d'iniezione, non invertenti
+1;OPA1654AIDR;SOIC-14_3.9x8.7mm_P1.27mm;U3;buffer 1 MOhm, make-up (pot GAIN 10k A sul cavo: AGND-GW-BUF), superdiodo e buffer del LED
+1;LM339DR;SOIC-14_3.9x8.7mm_P1.27mm;U30;NOTA: GND a CTRL_GND (correnti dei LED fuori da AGND); ingressi riferiti ad AGND
+1;OPA1654AIDR;SOIC-14_3.9x8.7mm_P1.27mm;U4;EQ2: LOW, HIGH follower, HIGH invertente, HIGH somma
+1;LM317;TO-220-3_Vertical;U40;
+1;LM337;TO-220-3_Vertical;U41;
+1;78L15;SOT-89-3;U42;
+1;79L15;SOT-89-3;U43;
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U8;driver MSUM invertenti (F2)
+1;ADG1434YRUZ;TSSOP-20_4.4x6.5mm_P0.65mm;U9;mute globale delle mandate (dec. 94b): D e SxA sul nodo, SxB a massa

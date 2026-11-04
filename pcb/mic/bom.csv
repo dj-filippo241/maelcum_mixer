@@ -1,0 +1,108 @@
+quantita;valore;impronta;riferimenti;nota
+2;220u 35V;CP_Radial_D8.0mm_P3.50mm;C1 C2;
+2;1u 50V;C_1206_3216Metric;C12 C13;
+3;1u 25V;C_1206_3216Metric;C14 C15 C39;
+1;4u7 25V;C_1206_3216Metric;C16;rumore del riferimento (datasheet: 4,7 uF)
+3;4u7 25V;C_1206_3216Metric;C17 C19 C20;
+2;10u 25V;C_1206_3216Metric;C18 C21;
+2;100p C0G;C_0805_2012Metric;C22 C23;RFI verso il telaio
+26;100n;C_0805_2012Metric;C24 C25 C26 C27 C33 C34 C35 C36 C37 C38 C40 C45 C46 C47 C48 C52 C53 C54 C56 C57 C60 C61 C62 C63 C64 C65;
+2;220n C0G;C_1210_3225Metric;C28 C29;
+1;47u 10V;CP_Radial_D5.0mm_P2.00mm;C3;
+1;22p C0G;C_0805_2012Metric;C30;
+2;47p C0G;C_0805_2012Metric;C31 C49;
+1;100n C0G;C_1206_3216Metric;C32;hold: niente altro sul nodo (sim/meter)
+2;10u 35V;CP_Radial_D5.0mm_P2.00mm;C4 C8;
+2;180n C0G;C_1206_3216Metric;C41 C42;
+2;10n C0G;C_1206_3216Metric;C43 C44;
+2;47u 35V;CP_Radial_D6.3mm_P2.50mm;C5 C9;
+1;1u C0G;C_1206_3216Metric;C50;Ch: C0G o film
+1;1u C0G;C_1206_3216Metric;C51;Cs: lisciatura 0,1 ms
+1;220n C0G;C_1206_3216Metric;C55;rampa 1,1 ms (dec. 111)
+2;10p C0G;C_0805_2012Metric;C58 C59;NOTA: Cf come i ricevitori a massa virtuale
+2;470u 25V;CP_Radial_D8.0mm_P3.50mm;C6 C10;
+2;100u 25V;CP_Radial_D6.3mm_P2.50mm;C7 C11;
+1;1N4148W;D_SOD-123;D1;scarica Cadj
+1;1N4148W;D_SOD-123;D10;rosso acceso durante il latch
+1;1N4148W;D_SOD-123;D13;diodo del superdiodo
+1;S1G;D_SMA;D2;protezione inversa
+8;1N4148W;D_SOD-123;D3 D6 D8 D9 D11 D12 D14 D15;
+1;S1G;D_SMA;D4;
+2;1N4148W;D_SOD-123;D5 D7;NOTA: clamp 1N4148W al posto del BAV199 (pinout non verificato)
+7;ferrite 600R;L_1206_3216Metric;FB1 FB2 FB3 FB4 FB5 FB6 FB7;
+1;C96 maschio;DIN41612_C_3x32_Male_Horizontal_THT;J1;DIN 41612 C 3x32, angolo retto
+1;2x12 cavo piatto;PinHeader_2x12_P2.54mm_Vertical;J2;cavo piatto corto (<= 10 cm) verso la scheda comandi dietro il pannello (dec. 133)
+1;XLR (cavo);PinHeader_1x03_P2.54mm_Vertical;J3;NOTA: cavo verso l'XLR femmina; pin 1 a CHASSIS al connettore (grounding §4)
+1;2N7002;SOT-23;Q1;spegne il verde durante il latch del rosso
+1;2N7002;SOT-23;Q2;GLOBAL_MUTE alto = muto
+1;BD139;TO-126-3_Vertical;Q40;
+1;BD140;TO-126-3_Vertical;Q41;
+2;120 1%;R_0805_2012Metric;R1 R4;
+2;47k 1%;R_0805_2012Metric;R10 R12;bias di modo comune (CMRR 74 dB)
+1;2k32 1%;R_0805_2012Metric;R13;Zin differenziale 2,26 kOhm
+2;499 0.1%;R_0805_2012Metric;R14 R15;
+1;32.4 0.1%;R_0805_2012Metric;R16;Rg: G1 = 1 + 998/32,4 = 31,8
+1;1k 0.1%;R_0805_2012Metric;R17;caldo sull'ingresso -: il differenziale inverte (todo 227)
+3;1k 0.1%;R_0805_2012Metric;R18 R19 R20;
+1;1k74 1%;R_0805_2012Metric;R2;E96 1,74k = 19,4 V (fx-send NOTE punto 16)
+1;8k45 0.1%;R_0805_2012Metric;R21;
+1;16k9 0.1%;R_0805_2012Metric;R22;R_fb = R_gnd/2: Butterworth
+1;332 0.1%;R_0805_2012Metric;R23;
+1;5k36 0.1%;R_0805_2012Metric;R24;
+17;10k 0.1%;R_0805_2012Metric;R25 R43 R44 R53 R54 R56 R57 R64 R65 R85 R86 R87 R88 R89 R90 R91 R92;
+1;2k49 0.1%;R_0805_2012Metric;R26;
+1;3M;R_0805_2012Metric;R28;release 0,3 s (dec. 81)
+1;133k 0.1%;R_0805_2012Metric;R29;
+1;1k;R_0805_2012Metric;R3;NOTA: cap-moltiplicatore come il FX-SEND (~50 mA)
+1;7k68 0.1%;R_0805_2012Metric;R30;
+1;6k65 0.1%;R_0805_2012Metric;R31;
+1;1k1 0.1%;R_0805_2012Metric;R32;
+4;10k;R_0805_2012Metric;R33 R34 R36 R68;
+1;750k;R_0805_2012Metric;R35;latch del rosso: 0,69 x 750k x 1u = 0,52 s
+1;1k;R_0805_2012Metric;R37;~2,8 mA nel rosso (LED alta efficienza, metering §1)
+1;1k;R_0805_2012Metric;R38;~2,8 mA nel verde
+2;324 0.1%;R_0805_2012Metric;R39 R40;
+1;4k75 0.1%;R_0805_2012Metric;R41;NOTA: mic-mono §5.1 dice 4,7k/2,25k (~5 kHz); backend.inc 5,23k/2,5k
+1;2k26 0.1%;R_0805_2012Metric;R42;E96 di 2,25k
+3;49k9 0.1%;R_0805_2012Metric;R45 R46 R47;
+7;20k 0.1%;R_0805_2012Metric;R48 R52 R55 R72 R73 R75 R76;
+1;5k1;R_0805_2012Metric;R49;valore del datasheet a -15 V (master: 6,19k a -18 V)
+1;1k74 1%;R_0805_2012Metric;R5;
+1;150k;R_0805_2012Metric;R50;
+1;51;R_0805_2012Metric;R51;
+1;1k;R_0805_2012Metric;R58;attacco 1 ms
+1;1M;R_0805_2012Metric;R59;rilascio 1 s (variante 2)
+3;1k;R_0805_2012Metric;R6 R27 R83;
+1;100;R_0805_2012Metric;R60;
+1;16k 0.1%;R_0805_2012Metric;R61;NOTA: inseguitore su SM, così il sottrattore non carica Ch
+1;10k 0.1%;R_0805_2012Metric;R62;G = 10k/16k = 0,625
+1;169k 0.1%;R_0805_2012Metric;R63;SUBP = 0,838 V = VTH x 10/26: VTH 2,179 V
+1;10k 0.1%;R_0805_2012Metric;R66;Rf: a riposo LIM a massa virtuale (11k con Ra)
+1;10k;R_0805_2012Metric;R67;NOTA: tasto a ritenuta fra +5VF e MUTE_SW, come il MONO del master
+1;1k 0.1%;R_0805_2012Metric;R69;Ra
+2;150k 0.1%;R_0805_2012Metric;R7 R8;
+1;2k 0.1%;R_0805_2012Metric;R70;Rb: MUTE 2,5 V -> +0,79 V al pin = -129 dB
+1;1k 0.1%;R_0805_2012Metric;R71;Rc
+2;20k 0.1%;R_0805_2012Metric;R74 R77;R di somma lato sorgente (dec. 97)
+4;2k2;R_0805_2012Metric;R78 R79 R80 R81;
+1;10k;R_0805_2012Metric;R82;IN alto = suona (VIH 2,0 V)
+1;100k;R_0805_2012Metric;R84;senza master il modulo resta muto (fail-safe, fx-send NOTE 5)
+2;10 1%;R_0805_2012Metric;R9 R11;limita la corrente dei clamp
+1;50k;Potentiometer_Bourns_3266W_Vertical;RV1;trim di simmetria (vca-trim §3.1)
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U1;coppia INA
+1;OPA1654AIDR;SOIC-14_3.9x8.7mm_P1.27mm;U10;buffer d'iniezione, non invertenti
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U2;differenziale; seconda sezione libera, inseguitore a massa
+1;OPA1654AIDR;SOIC-14_3.9x8.7mm_P1.27mm;U3;passa-alto, stadio 2 (pot GAIN 5k sul cavo: GP1-GINV-GP2), superdiodo e buffer del LED
+1;LM339DR;SOIC-14_3.9x8.7mm_P1.27mm;U30;NOTA: GND a CTRL_GND (correnti dei LED fuori da AGND); ingressi riferiti ad AGND
+1;OPA1654AIDR;SOIC-14_3.9x8.7mm_P1.27mm;U4;EQ2: LOW, HIGH follower, HIGH invertente, HIGH somma
+1;LM317;TO-220-3_Vertical;U40;
+1;LM337;TO-220-3_Vertical;U41;
+1;78L15;SOT-89-3;U42;
+1;79L15;SOT-89-3;U43;
+1;LT3045EMSE;MSOP-12-1EP_3x4.039mm_P0.65mm_EP1.651x2.845mm;U44;EN/UV a IN; ILIM a massa; PG libero; PGFB a IN (come master-segnale.py)
+1;LT3094EMSE;MSOP-12-1EP_3x4.039mm_P0.65mm_EP1.651x2.845mm;U45;EN/UV a IN; PG libero; PGFB a IN; ILIM a massa; VIOC libero
+1;V2181L;SOIC-8_3.9x4.9mm_P1.27mm;U5;
+1;OPA1654AIDR;SOIC-14_3.9x8.7mm_P1.27mm;U6;I/V del VCA, raddrizzatore A e B, superdiodo
+1;OPA1654AIDR;SOIC-14_3.9x8.7mm_P1.27mm;U7;inseguitore di SM, sottrattore, mezza onda, inseguitore del MUTE
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U8;driver MSUM invertenti (F2)
+1;ADG1434YRUZ;TSSOP-20_4.4x6.5mm_P0.65mm;U9;mute globale delle mandate (dec. 94b): D e SxA sul nodo, SxB a massa
