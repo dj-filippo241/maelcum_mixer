@@ -384,13 +384,25 @@ class Design:
     def _classname(w):
         return "P%03d" % round(w * 100)
 
+    @staticmethod
+    def _classrules(w):
+        """Distanza, via e foro di una classe di pista larga w: una fonte sola per la scheda
+        e per il .kicad_pro. Piste sottili (passo fine, logica): via e distanze come il
+        default; con la via da 1 mm Freerouting non chiudeva SETP, +5V e CTRL_GND (master).
+        Prima il .kicad_pro dava 0,25 mm anche alle sottili: Freerouting tracciava a 0,2 e il
+        DRC contava 36 errori di distanza (FX-SEND, 2026-11-04)."""
+        thin = w < 0.6
+        return {"clearance": 0.2 if thin else 0.25, "via_diameter": 0.8 if thin else 1.0,
+                "via_drill": 0.4 if thin else 0.5}
+
     def _write_project(self):
         # le classi di rete vanno nel progetto: se si ritocca in KiCad, router e DRC le conoscono
         classes = [{"name": "Default", "clearance": 0.2, "track_width": 0.25,
                     "via_diameter": 0.8, "via_drill": 0.4}]
         for w in sorted(set(self.netclass.values())):
-            classes.append({"name": self._classname(w), "clearance": 0.25, "track_width": w,
-                            "via_diameter": 1.0, "via_drill": 0.5})
+            c = {"name": self._classname(w), "track_width": w}
+            c.update(self._classrules(w))
+            classes.append(c)
         assign = [{"netclass": self._classname(w), "pattern": net} for net, w in sorted(self.netclass.items())]
         pro = {"meta": {"filename": self.name + ".kicad_pro", "version": 3},
                "board": {"design_settings": {"defaults": {}, "rules": {"min_clearance": 0.2, "min_track_width": 0.12,
@@ -480,12 +492,10 @@ class Design:
                 if cname not in classes:
                     nc = pcbnew.NETCLASS(cname)
                     nc.SetTrackWidth(mm(w))
-                    # piste sottili (passo fine, logica): via e distanze come il default;
-                    # con la via da 1 mm Freerouting non chiudeva SETP, +5V e CTRL_GND (master)
-                    thin = w < 0.6
-                    nc.SetClearance(mm(0.2 if thin else 0.25))
-                    nc.SetViaDiameter(mm(0.8 if thin else 1.0))
-                    nc.SetViaDrill(mm(0.4 if thin else 0.5))
+                    cr = self._classrules(w)
+                    nc.SetClearance(mm(cr["clearance"]))
+                    nc.SetViaDiameter(mm(cr["via_diameter"]))
+                    nc.SetViaDrill(mm(cr["via_drill"]))
                     ns.SetNetclass(cname, nc)
                     classes[cname] = nc
                 ns.SetNetclassPatternAssignment(net, cname)

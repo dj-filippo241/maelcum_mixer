@@ -110,3 +110,18 @@ Tutto [PROVVISORIO].
 - Piste di Freerouting: corrette per il DRC, non ottimizzate per rumore e diafonia. Prima dell'ordine serve un passaggio a mano sui nodi critici: NB, NSH, gli ingressi degli op-amp, i ritorni dei bulk.
 - Misure della scheda principale [PROVVISORIO]: dipendono dalla meccanica (q29), vedi punti 8 e 9.
 - Dissipazione di LM317/337 e BD139/140 non verificata sul rame.
+
+## Rigenerazione del 2026-11-04 (todo 205)
+
+17. **Valori corretti:** R di ADJ degli LM317/337 da 1,72k a 1,74k E96 (19,4 V); tolta la NOTA
+    provvisoria su GLOBAL_MUTE (polarità confermata, `RISULTATI-mute-ctrl.md`).
+18. **Errore del generatore trovato:** le vie piccole delle reti sottili (29/10) davano 0,2 mm di
+    distanza alla scheda e 0,25 mm al `.kicad_pro`. Freerouting tracciava a 0,2, il DRC contava
+    36 errori di distanza: NON PASSA. Ora le regole di classe hanno una fonte sola
+    (`Design._classrules`). Esito: principale e comandi **PASSA**. Principale: ERC 0 errori,
+    DRC 0 errori e 0 collegamenti mancanti, 51 avvisi attesi. Controllo audio A1-A5:
+    10/24/12/5/6 (prima 10/27/12/9/6).
+19. **Non fatto alla rigenerazione** (cambiano il circuito, restano al todo 205 o a uno nuovo):
+    lo schema nuovo degli assign (switch dopo la R d'iniezione, IN da un 74HC74 col comparatore
+    dello zero, `RISULTATI-fx-send-assign`) e il buffer d'iniezione comune per lato
+    (`RISULTATI-send-chain-v2` §2). La scheda resta la v0.2 degli assign.
