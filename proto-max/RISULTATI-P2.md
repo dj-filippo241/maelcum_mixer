@@ -716,3 +716,44 @@ Totale dei due rami: 18 sezioni di op-amp per lato (5 quad), 10 diodi,
   trim o selezione a banco, §5bis.6) e dei diodi, temperatura. Il
   modello usa gli stessi parametri del datasheet: un pezzo diverso
   sposta tutte e due le cose insieme, e si misura sul prototipo.
+
+## 15. Ritocco chiesto da Filippo dopo l'ascolto (2026-11-04, PROPOSTA, non applicata)
+
+Ascolto delle voci BANDE in MC-5WAY. Filippo: GROWL «ok, un poco in più di
+distorsione» su KICK e MID (risposta 2: vie del 5-way, sub com'è); NASTRO
+«non abbastanza, lo sento bene solo oltre il 50 %»; a fine corsa vuole SUB 0 %,
+KICK 11 %, MID 45 %, HIGH 34 %, SUPER 22 % di distorsione, con curva inversa
+della manopola. Script di ricerca in `coefficienti/ricerche/` (modello, mix a
+0 dBu interni, fine corsa, 192 kHz, 1,5-2 s: numeri indicativi, da rifare a 6 s).
+
+**Curva inversa** (`nastro_curva.py`): u = 1 − (1 − t)², stessa legge per
+miscela e spinta. A metà corsa dà quello che oggi dà a ore 2 (MID 21 %, HIGH
+27 %); al 25 % MID 7,7 %. Fine corsa invariato. Hardware: pot doppio a curva
+inversa (o lineare caricato).
+
+**NASTRO, tetto del JFET** (`nastro_cerca2.py`): la spinta oltre +12 dB non
+sporca di più i medi (28 % fra +12 e +20 dB), e anche col ramo tutto sporco
+(miscela 1,0) i medi si fermano a ~38 %. Leva che funziona: rinforzare le
+armoniche DOPO il JFET con una de-enfasi che sale, tolta prima.
+
+**NASTRO, candidato** (`nastro_tilt.py`): taglio dei bassi 3 celle zero 30 /
+polo 140 Hz; inclinazione dei medi polo 1 kHz / zero 3 kHz prima del JFET e
+inversa dopo (nuova); taglio dei super 1 cella polo 9 kHz / zero 10,8 kHz.
+Fine corsa: SUB 0,8 %, KICK ~12 %, MID 45,4 %, HIGH 34,3 %, SUPER 21,3 %.
+Da sistemare: il volume sale di +4…+7 dB a fine corsa (va ritarata la
+de-enfasi: rl, rh, guadagno del ramo); SUB 0,8 % invece di 0 (zero più basso).
+
+**GROWL** (`growl_cerca.py`, variante D di partenza: SUB 28, KICK 42, MID 23):
+- spinta dei medi +6 → +12 dB: MID 25 % appena (la 4,7k in serie li tiene morbidi);
+- 4,7k → 1k in serie ai diodi dei medi: KICK 44, MID 25 (+2 / +2);
+- 470 → 150 ohm in serie ai diodi del basso: KICK 54-55 %, ma SUB 34-35 %
+  (sale anche il sub) e il kick sui picchi +10 a 57 %, −7 dB;
+- spinta del basso +23 dB con 470 ohm: SUB 26, KICK 40, MID 26-27;
+- Rf dei medi 22k-47k: MID 26-28 %, KICK scende a 33-39 %.
+Nessuna leva semplice alza KICK e MID lasciando il SUB fermo: KICK e SUB
+passano dallo stesso clipper. Strada da provare: un'enfasi 50 → 120 Hz nel
+ramo del basso (come per il NASTRO), oppure il kick in parte nel ramo dei medi.
+
+Da fare (sessione dopo): scegliere il GROWL; ritarare il volume del NASTRO;
+portare i due in growl_bande/nastro_bande come varianti nuove, poi in MC-5WAY
+(con la curva inversa), prova_5way, netlist LTspice di §14 coi .param nuovi.
