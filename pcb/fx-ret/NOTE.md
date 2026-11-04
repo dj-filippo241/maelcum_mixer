@@ -23,9 +23,28 @@ La stima del PIANO (~300 impronte) era bassa del 37 %: i 5 shaper (15 pezzi l'un
 trimmer e i 10 VCA col loro trim (7 pezzi l'uno) pesano più di «12 per chip». Una 100 × 220
 porta ~280 impronte coi due lati: **il FX-RET non sta su una scheda.**
 
-## Proposta di divisione (da confermare: cambia il telaio, dec. 144)
+## Divisione in due schede (PROVVISORIA, 2026-11-04)
 
-Due schede affiancate sotto il pannello del ritorno, come il master (dec. 140):
+Fatta come scelta di ingegneria: pannello, comandi e backplane non cambiano (dec. 142: più
+schede affiancate sotto un pannello; dec. 144: cambia la scheda, non il circuito). Resta
+PROVVISORIA finché Filippo non sceglie il foglio di disposizione e conferma le due schede
+affiancate (todo 249, `pcb/PROPOSTA-todo170.md` P4). Ipotesi più neutra:
+
+- **Un C96 solo**, sulla scheda segnale. La scheda reroute non tocca il backplane.
+- **Ponte**: cavo piatto 2x16 (`ponte.py`, J4 segnale - J1 reroute). Porta ±18, ±15LN, ±REF5,
+  RRN_L/R, le 8 uscite DIR dei driver d'iniezione e i 4 cursori POT_R. Solo reti a bassa
+  impedenza: le 10k verso i net dei bus S1-S4 restano sulla scheda segnale, accanto al C96.
+- **Cavo dei pot J2 invariato**: i POT_R passano dalla scheda segnale al ponte.
+- Scheda reroute senza C96: 4 fori M3 senza rete (distanziali isolati), NOTA da decidere col
+  telaio. Bulk locali dopo il cavo (2x 47u, 2x 10u, 2x 1u): le uniche parti nuove.
+- Circuito identico: le distinte delle due schede sommate = la distinta di prima + ponte e
+  bulk (controllato). Polarità invariata (stessi stadi, stesso ordine).
+
+Schede: `fx-ret.py` (segnale, 199 impronte: METER e FADER sul retro) e `fx-ret-reroute.py`
+(cartella `reroute/`, 225 impronte: reroute 3 e 4 sul retro, trimmer SMD 3214W, NOTA sotto). Correzione: J3 (jack del
+pedale) si sovrapponeva al foro H2, spostato da y 5 a y 12.
+
+Divisione di partenza (proposta originale):
 
 1. **FX-RET segnale** (col C96): somma del bus, driver del pedale, ritorno, GAIN, EQ2, meter,
    fader, alimentazione. ~200 impronte.
@@ -61,6 +80,26 @@ Due schede affiancate sotto il pannello del ritorno, come il master (dec. 140):
 
 ## Esito della PCB (2026-11-04)
 
-Un giro completo (tutto sul lato componenti, nessun blocco col retro): Freerouting è rimasto
-acceso 55 minuti senza finire ed è stato fermato. Nessuna PCB salvata: la scheda va prima
-divisa (sopra). Lo schema passa.
+Primo giro a scheda unica: Freerouting acceso 55 minuti senza finire, fermato. Poi la divisione.
+
+| Scheda | Impronte | Esito | DRC | Controllo audio A1/A2/A3/A4/A5 |
+|---|---|---|---|---|
+| `fx-ret.py` (segnale, col C96) | 199 | **PASSA** al 3o giro | 0 errori; 2 via_dangling, 10 silk_overlap, 14 silk_over_copper, 52 attesi | 19 / 67 / 27 / 3 / 4 |
+| `fx-ret-reroute.py` | 225 | **PASSA** al 4o giro | 0 errori; 8 silk_overlap, 24 silk_over_copper | 8 / 20 / 8 / 2 / 0 |
+
+Giri della scheda segnale: ±18 a 0,6 mm = -18V aperta (23); ±18 a 0,4 = 1 errore di distanza
+(via da 1 mm di V27F+ a 0,22 mm da un pad di U30); anche V27F± a 0,4 = PASSA.
+
+Giri della scheda reroute: ±18/±15LN a 0,6 = +15LN aperta (19); a 0,4 = ECR3_R ed ECR1_R aperte:
+i trimmer 3266 a foro passante restano davanti, il retro mette il VCA lontano (fino a 115 mm).
+Con trimmer SMD i reroute 3 e 4 vanno interi sul retro: NDR3 aperta; le 20k del driver
+d'iniezione nel blocco del driver (davanti) = PASSA.
+
+NOTA nuove della divisione:
+
+11. **Trimmer SMD Bourns 3214W** sulla scheda reroute (12 pezzi: simmetria, law, offset) al posto
+    del 3266W. I giri (vca-trim §3.2 chiede 25 giri per il law) vanno verificati sul datasheet.
+12. **±18, ±15LN e V27F± a 0,4 mm** (come il MIC): 0,4 mm porta ~1 A, il ramo qualche centinaio di mA.
+
+A2 alto sulla scheda segnale (67): reti del cavo dei pot e del ponte lunghe. Un PASSA singolo
+non è una prova (Freerouting cambia a ogni giro).

@@ -1,0 +1,41 @@
+quantita;valore;impronta;riferimenti;nota
+2;47u 25V;CP_Radial_D6.3mm_P2.50mm;C1 C2;NOTA: bulk locale dopo il cavo
+4;470n C0G;C_1210_3225Metric;C15 C26 C37 C48;NOTA: smoothing 1 ms (dec. 80) come C sul 2k: 2k x 470n = 0,94 ms
+2;10u 25V;C_1206_3216Metric;C3 C4;NOTA: locale dopo il cavo
+2;1u;C_1206_3216Metric;C5 C6;NOTA: locale dopo il cavo
+36;100n;C_0805_2012Metric;C7 C8 C10 C11 C13 C14 C16 C17 C18 C19 C21 C22 C24 C25 C27 C28 C29 C30 C32 C33 C35 C36 C38 C39 C40 C41 C43 C44 C46 C47 C49 C50 C51 C52 C53 C54;
+8;22p C0G;C_0805_2012Metric;C9 C12 C20 C23 C31 C34 C42 C45;
+12;1N4148W;D_SOD-123;D1 D2 D3 D4 D5 D6 D7 D8 D9 D10 D11 D12;
+1;2x16 ponte reroute;PinHeader_2x16_P2.54mm_Vertical;J1;NOTA: cavo piatto 2x16 dalla scheda segnale (J4 di fx-ret.py)
+24;20k 0.1%;R_0805_2012Metric;R1 R5 R6 R10 R27 R31 R32 R36 R53 R57 R58 R62 R79 R83 R84 R88 R105 R107 R109 R111 R113 R115 R117 R119;
+8;20k 0.1%;R_0805_2012Metric;R106 R108 R110 R112 R114 R116 R118 R120;driver d'iniezione invertente (F3)
+4;37.4k 0.1%;R_0805_2012Metric;R11 R37 R63 R89;
+4;43.2k 0.1%;R_0805_2012Metric;R12 R38 R64 R90;
+4;1M 0.1%;R_0805_2012Metric;R13 R39 R65 R91;
+4;18.7k 0.1%;R_0805_2012Metric;R14 R40 R66 R92;
+4;40.2k 0.1%;R_0805_2012Metric;R15 R41 R67 R93;
+4;2.61k 0.1%;R_0805_2012Metric;R16 R42 R68 R94;
+4;3.83k 0.1%;R_0805_2012Metric;R17 R43 R69 R95;
+8;10k 0.1%;R_0805_2012Metric;R18 R19 R44 R45 R70 R71 R96 R97;
+8;6k19;R_0805_2012Metric;R2 R7 R28 R33 R54 R59 R80 R85;5,1k del datasheet a -15 V riscalato a -18 V (come il master)
+4;2k 0.1%;R_0805_2012Metric;R20 R46 R72 R98;stadio del partitore x(-1/5): CV al pin = out/10
+4;100k;R_0805_2012Metric;R21 R47 R73 R99;pot staccato = shaper a 0 V (come il master)
+12;1k 0.1%;R_0805_2012Metric;R22 R23 R25 R48 R49 R51 R74 R75 R77 R100 R101 R103;
+4;909 0.1%;R_0805_2012Metric;R24 R50 R76 R102;E96: 909 (doc: 900)
+4;1M5;R_0805_2012Metric;R26 R52 R78 R104;
+8;150k;R_0805_2012Metric;R3 R8 R29 R34 R55 R60 R81 R86;
+8;51;R_0805_2012Metric;R4 R9 R30 R35 R56 R61 R82 R87;
+8;50k;Potentiometer_Bourns_3214W_Vertical;RV1 RV2 RV5 RV6 RV9 RV10 RV13 RV14;trim di simmetria (THD minima)
+4;200;Potentiometer_Bourns_3214W_Vertical;RV3 RV7 RV11 RV15;trim di law, 25 giri (vca-trim §3.2): montato solo se la coppia esce da 0,5 dB
+4;50k;Potentiometer_Bourns_3214W_Vertical;RV4 RV8 RV12 RV16;trim d'offset di coppia
+8;V2181L;SOIC-8_3.9x4.9mm_P1.27mm;U10 U11 U14 U15 U18 U19 U22 U23;
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U12;I/V dei VCA del reroute 1
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U13;shaper R1
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U16;I/V dei VCA del reroute 2
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U17;shaper R2
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U20;I/V dei VCA del reroute 3
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U21;shaper R3
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U24;I/V dei VCA del reroute 4
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U25;shaper R4
+1;OPA1654AIDR;SOIC-14_3.9x8.7mm_P1.27mm;U26;reroute 1-4, lato L
+1;OPA1654AIDR;SOIC-14_3.9x8.7mm_P1.27mm;U27;reroute 1-4, lato R

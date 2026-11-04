@@ -4,7 +4,7 @@ quantita;valore;impronta;riferimenti;nota
 3;4u7 25V;C_1206_3216Metric;C13 C15 C16;
 2;10u 25V;C_1206_3216Metric;C14 C17;
 1;1u;C_1206_3216Metric;C18;
-64;100n;C_0805_2012Metric;C19 C20 C23 C24 C25 C26 C29 C30 C31 C32 C33 C34 C39 C40 C41 C42 C47 C48 C51 C52 C53 C54 C56 C57 C59 C60 C62 C63 C64 C65 C67 C68 C70 C71 C73 C74 C75 C76 C78 C79 C81 C82 C84 C85 C86 C87 C89 C90 C92 C93 C95 C96 C97 C98 C99 C100 C101 C102 C104 C105 C107 C108 C110 C111;
+28;100n;C_0805_2012Metric;C19 C20 C23 C24 C25 C26 C29 C30 C31 C32 C33 C34 C39 C40 C41 C42 C47 C48 C51 C52 C53 C54 C56 C57 C59 C60 C62 C63;
 2;10p C0G;C_0805_2012Metric;C21 C22;Cf obbligatorio sul net lungo (fx-module §2bis.4)
 2;15n C0G;C_1206_3216Metric;C27 C28;integratore 1M/15n
 1;47u 10V;CP_Radial_D5.0mm_P2.00mm;C3;
@@ -14,13 +14,13 @@ quantita;valore;impronta;riferimenti;nota
 1;47p C0G;C_0805_2012Metric;C49;
 2;47u 35V;CP_Radial_D6.3mm_P2.50mm;C5 C9;
 1;100n C0G;C_1206_3216Metric;C50;hold: niente altro sul nodo (sim/meter)
-10;22p C0G;C_0805_2012Metric;C55 C58 C66 C69 C77 C80 C88 C91 C103 C106;
+2;22p C0G;C_0805_2012Metric;C55 C58;
 2;470u 25V;CP_Radial_D8.0mm_P3.50mm;C6 C10;
-5;470n C0G;C_1210_3225Metric;C61 C72 C83 C94 C109;NOTA: smoothing 1 ms (dec. 80) come C sul 2k: 2k x 470n = 0,94 ms
+1;470n C0G;C_1210_3225Metric;C61;NOTA: smoothing 1 ms (dec. 80) come C sul 2k: 2k x 470n = 0,94 ms
 2;100u 25V;CP_Radial_D6.3mm_P2.50mm;C7 C11;
 1;1N4148W;D_SOD-123;D1;scarica Cadj
 1;S1G;D_SMA;D2;protezione inversa
-17;1N4148W;D_SOD-123;D3 D10 D11 D12 D13 D14 D15 D16 D17 D18 D19 D20 D21 D22 D23 D24 D25;
+5;1N4148W;D_SOD-123;D3 D10 D11 D12 D13;
 1;S1G;D_SMA;D4;
 1;LM4040-5.0;SOT-23;D5;
 2;TVS bidir <=5 pF;D_SOD-323;D6 D7;NOTA: parte da scegliere (TVS bidirezionale low-cap, fx-module §8.4)
@@ -29,24 +29,18 @@ quantita;valore;impronta;riferimenti;nota
 1;C96 maschio;DIN41612_C_3x32_Male_Horizontal_THT;J1;DIN 41612 C 3x32, angolo retto
 1;2x18 cavo piatto;PinHeader_2x18_P2.54mm_Vertical;J2;cavo piatto corto verso la scheda comandi dietro il pannello (dec. 133)
 1;1x7 jack pedale;PinHeader_1x07_P2.54mm_Vertical;J3;NOTA: cavo verso i jack SEND/RETURN del pedale; posizione dei jack non decisa
+1;2x16 ponte reroute;PinHeader_2x16_P2.54mm_Vertical;J4;NOTA: cavo piatto 2x16 verso la scheda reroute (divisione PROVVISORIA, NOTE.md)
 1;BD139;TO-126-3_Vertical;Q40;
 1;BD140;TO-126-3_Vertical;Q41;
 2;120 1%;R_0805_2012Metric;R1 R4;
-18;10k 0.1%;R_0805_2012Metric;R10 R11 R12 R14 R33 R34 R45 R46 R78 R79 R110 R111 R142 R143 R174 R175 R202 R203;
+10;10k 0.1%;R_0805_2012Metric;R10 R11 R12 R14 R33 R34 R45 R46 R82 R83;
 2;100;R_0805_2012Metric;R13 R15;R serie verso il jack (fx-module §4)
 2;100;R_0805_2012Metric;R16 R21;Rprot
 2;1M;R_0805_2012Metric;R17 R22;Rbias 1 Mohm (fx-module §4)
 2;10k 0.1%;R_0805_2012Metric;R18 R23;Rf2: inseguitore, servo sul nodo FB
-2;47;R_0805_2012Metric;R188 R194;NOTA: l'I/V fa da buffer d'uscita (<= 50 ohm), 47R verso il backplane
 2;1M;R_0805_2012Metric;R19 R24;Rinj
-1;68.1k 0.1%;R_0805_2012Metric;R196;
-1;357k 0.1%;R_0805_2012Metric;R197;
-1;20.0k 0.1%;R_0805_2012Metric;R198;
-1;38.3k 0.1%;R_0805_2012Metric;R199;
 1;1k74 1%;R_0805_2012Metric;R2;E96 1,74k = 19,4 V (fx-send NOTE punto 16)
 2;1M;R_0805_2012Metric;R20 R25;Rsi: il servo legge il primo invertente (fx-module §5)
-1;976 0.1%;R_0805_2012Metric;R200;
-1;1.33k 0.1%;R_0805_2012Metric;R201;
 2;1k24 0.1%;R_0805_2012Metric;R26 R38;Ra
 2;3k24 0.1%;R_0805_2012Metric;R27 R39;
 2;4k02 0.1%;R_0805_2012Metric;R28 R40;x1,24 (todo 220)
@@ -57,45 +51,35 @@ quantita;valore;impronta;riferimenti;nota
 6;49k9 0.1%;R_0805_2012Metric;R35 R36 R37 R47 R48 R49;
 1;1k74 1%;R_0805_2012Metric;R5;
 1;20k 0.1%;R_0805_2012Metric;R50;NOTA: (L+R)/2 con due 20k: 10k equivalenti
-29;20k 0.1%;R_0805_2012Metric;R51 R55 R59 R60 R63 R67 R68 R87 R91 R92 R95 R99 R100 R119 R123 R124 R127 R131 R132 R151 R155 R156 R159 R163 R164 R183 R187 R189 R193;
+5;20k 0.1%;R_0805_2012Metric;R51 R63 R67 R69 R73;
 1;4k02 0.1%;R_0805_2012Metric;R52;g = 4,02/14,02 = 0,287 (doc 0,288), come il master
 1;3M;R_0805_2012Metric;R54;release 0,3 s (dec. 81)
-10;6k19;R_0805_2012Metric;R56 R64 R88 R96 R120 R128 R152 R160 R184 R190;5,1k del datasheet a -15 V riscalato a -18 V (come il master)
-10;150k;R_0805_2012Metric;R57 R65 R89 R97 R121 R129 R153 R161 R185 R191;
-10;51;R_0805_2012Metric;R58 R66 R90 R98 R122 R130 R154 R162 R186 R192;
+8;10k 0.1%;R_0805_2012Metric;R55 R56 R57 R58 R59 R60 R61 R62;R lato sorgente sul net del bus (driver d'iniezione sulla scheda reroute)
 2;1k;R_0805_2012Metric;R6 R53;
-8;20k 0.1%;R_0805_2012Metric;R61 R69 R93 R101 R125 R133 R157 R165;driver d'iniezione invertente (F3)
-8;10k 0.1%;R_0805_2012Metric;R62 R70 R94 R102 R126 R134 R158 R166;R lato sorgente sul net del bus
+2;6k19;R_0805_2012Metric;R64 R70;5,1k del datasheet a -15 V riscalato a -18 V (come il master)
+2;150k;R_0805_2012Metric;R65 R71;
+2;51;R_0805_2012Metric;R66 R72;
+2;47;R_0805_2012Metric;R68 R74;NOTA: l'I/V fa da buffer d'uscita (<= 50 ohm), 47R verso il backplane
 2;150k 0.1%;R_0805_2012Metric;R7 R8;
-4;37.4k 0.1%;R_0805_2012Metric;R71 R103 R135 R167;
-5;43.2k 0.1%;R_0805_2012Metric;R72 R104 R136 R168 R195;
-4;1M 0.1%;R_0805_2012Metric;R73 R105 R137 R169;
-4;18.7k 0.1%;R_0805_2012Metric;R74 R106 R138 R170;
-4;40.2k 0.1%;R_0805_2012Metric;R75 R107 R139 R171;
-4;2.61k 0.1%;R_0805_2012Metric;R76 R108 R140 R172;
-4;3.83k 0.1%;R_0805_2012Metric;R77 R109 R141 R173;
-5;2k 0.1%;R_0805_2012Metric;R80 R112 R144 R176 R204;stadio del partitore x(-1/5): CV al pin = out/10
-5;100k;R_0805_2012Metric;R81 R113 R145 R177 R205;pot staccato = shaper a 0 V (come il master)
-15;1k 0.1%;R_0805_2012Metric;R82 R83 R85 R114 R115 R117 R146 R147 R149 R178 R179 R181 R206 R207 R209;
-5;909 0.1%;R_0805_2012Metric;R84 R116 R148 R180 R208;E96: 909 (doc: 900)
-5;1M5;R_0805_2012Metric;R86 R118 R150 R182 R210;
+1;43.2k 0.1%;R_0805_2012Metric;R75;
+1;68.1k 0.1%;R_0805_2012Metric;R76;
+1;357k 0.1%;R_0805_2012Metric;R77;
+1;20.0k 0.1%;R_0805_2012Metric;R78;
+1;38.3k 0.1%;R_0805_2012Metric;R79;
+1;976 0.1%;R_0805_2012Metric;R80;
+1;1.33k 0.1%;R_0805_2012Metric;R81;
+1;2k 0.1%;R_0805_2012Metric;R84;stadio del partitore x(-1/5): CV al pin = out/10
+1;100k;R_0805_2012Metric;R85;pot staccato = shaper a 0 V (come il master)
+3;1k 0.1%;R_0805_2012Metric;R86 R87 R89;
+1;909 0.1%;R_0805_2012Metric;R88;E96: 909 (doc: 900)
 1;1k5;R_0805_2012Metric;R9;NOTA: ~6,7 mA nel riferimento (come il master)
-10;50k;Potentiometer_Bourns_3266W_Vertical;RV1 RV2 RV5 RV6 RV9 RV10 RV13 RV14 RV17 RV18;trim di simmetria (THD minima)
-5;200;Potentiometer_Bourns_3266W_Vertical;RV3 RV7 RV11 RV15 RV19;trim di law, 25 giri (vca-trim §3.2): montato solo se la coppia esce da 0,5 dB
-5;50k;Potentiometer_Bourns_3266W_Vertical;RV4 RV8 RV12 RV16 RV20;trim d'offset di coppia
+1;1M5;R_0805_2012Metric;R90;
+2;50k;Potentiometer_Bourns_3266W_Vertical;RV1 RV2;trim di simmetria (THD minima)
+1;200;Potentiometer_Bourns_3266W_Vertical;RV3;trim di law, 25 giri (vca-trim §3.2): montato solo se la coppia esce da 0,5 dB
+1;50k;Potentiometer_Bourns_3266W_Vertical;RV4;trim d'offset di coppia
 1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U1;somma del bus, invertente
-10;V2181L;SOIC-8_3.9x4.9mm_P1.27mm;U10 U11 U14 U15 U18 U19 U22 U23 U28 U29;
-1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U12;I/V dei VCA del reroute 1
-1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U13;shaper R1
-1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U16;I/V dei VCA del reroute 2
-1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U17;shaper R2
 1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U2;driver del pedale, inseguitore (pad fisso 0 dB, dec. 108)
-1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U20;I/V dei VCA del reroute 3
-1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U21;shaper R3
-1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U24;I/V dei VCA del reroute 4
-1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U25;shaper R4
-1;OPA1654AIDR;SOIC-14_3.9x8.7mm_P1.27mm;U26;reroute 1-4, lato L
-1;OPA1654AIDR;SOIC-14_3.9x8.7mm_P1.27mm;U27;reroute 1-4, lato R
+2;V2181L;SOIC-8_3.9x4.9mm_P1.27mm;U28 U29;
 1;OPA1642AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U3;buffer JFET hi-Z (OPA1642, SBOS484D)
 1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U30;I/V del fader
 1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U31;shaper F

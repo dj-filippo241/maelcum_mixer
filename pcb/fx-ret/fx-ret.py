@@ -26,6 +26,7 @@ from backplane import c96, SYM_C96, FP_C96
 import celle_vca as cv
 from celle_vca import opa2, opa4, vca, iv, shaper, law_trim, C12
 from celle_micmono import power_ln
+from ponte import ponte
 
 d = Design("fx-ret", HERE, "maelcum FX-RET (dec. 130) - bozza v0.1", board=(100, 220), rev="0.1-bozza")
 d.gnd = "AGND"
@@ -50,6 +51,8 @@ d.block = "ALIMENTAZIONE +-18 audio, +5, +-15 LN, +-5 riferimento"
 cv.power_18(d)
 power_ln(d)
 cv.ref5(d, "U46")
+d.power_nets("+18V", "-18V", width=0.4)   # NOTA: a 0,6 mm Freerouting lascia -18V aperta (come il MIC, todo 237)
+d.power_nets("V27F+", "V27F-", width=0.4)   # NOTA: via da 1 mm di V27F+ a 0,22 mm dal pad di U30 (DRC)
 
 # ------------------------------------------------------------ bus e mandata al pedale
 d.block = "SOMMA DEL BUS (slot 1, Rf 10k, Cf 10p) e DRIVER DEL PEDALE"
@@ -88,6 +91,7 @@ for s, ug, ueq in (("L", "U5", "U7"), ("R", "U6", "U8")):
     cv.eq2(d, ueq, "_" + s, "G2_" + s, "RRN_" + s)
 
 # ------------------------------------------------------------ meter
+d.side = "B"   # METER e FADER (solo SMD) sul retro: davanti l'alimentazione non trova posto (dec. 142)
 d.block = "METER del ritorno (mono centrato, g = 0,288; detector meter-det-03s.cir)"
 d.R("RRN_L", "MG", "20k 0.1%", note="NOTA: (L+R)/2 con due 20k: 10k equivalenti")
 d.R("RRN_R", "MG", "20k 0.1%")
@@ -100,24 +104,15 @@ d.R("HOLD", "AGND", "3M", note="release 0,3 s (dec. 81)")
 opa4(d, "U9", ("MG", "MGB", "MGB"), ("MGB", "HOLD", "DOUT"), ("HOLD", "MET", "MET"), ("AGND", "NU9", "NU9"),
      note="inseguitore di scala, superdiodo, buffer dell'hold; quarta sezione libera")
 
-# ------------------------------------------------------------ reroute
+# ------------------------------------------------------------ reroute (scheda a parte)
+# Divisione PROVVISORIA (NOTE.md): VCA, I/V, shaper, trim e driver d'iniezione dei 4 reroute
+# stanno su fx-ret-reroute.py. Qui restano le 10k verso i net dei bus, accanto al C96.
+d.block = "PONTE verso la scheda REROUTE (J4) e 10k verso i bus S1-S4"
 for j in range(1, 5):
-    t = "R%d" % j
-    d.block = "REROUTE verso S%d (2 VCA, I/V, driver invertente, shaper reroute, trim)" % j
-    base = 10 + 4 * (j - 1)
-    for k, s in enumerate(SIDES):
-        vca(d, "U%d" % (base + k), "RRN_" + s, "NI%s_%s" % (t, s), "EC%s_%s" % (t, s), "%s%s" % (t.lower(), s.lower()))
-        iv(d, "NI%s_%s" % (t, s), "IV%s_%s" % (t, s))
-        d.R("IV%s_%s" % (t, s), "ND%s_%s" % (t, s), "20k 0.1%")
-        d.R("ND%s_%s" % (t, s), "DI%s_%s" % (t, s), "20k 0.1%", note="driver d'iniezione invertente (F3)")
-        d.R("DI%s_%s" % (t, s), "S%d_OUT_%s" % (j, s), "10k 0.1%", note="R lato sorgente sul net del bus")
-    opa2(d, "U%d" % (base + 2), ("AGND", "NI%s_L" % t, "IV%s_L" % t), ("AGND", "NI%s_R" % t, "IV%s_R" % t),
-         note="I/V dei VCA del reroute %d" % j)
-    shaper(d, "U%d" % (base + 3), t, *cv.REROUTE, tau="470n C0G")
-    law_trim(d, t, "EC%s_L" % t, "EC%s_R" % t)
-d.block = "DRIVER D'INIEZIONE dei reroute (2 OPA1654, invertenti unity)"
-opa4(d, "U26", *[("AGND", "NDR%d_L" % j, "DIR%d_L" % j) for j in range(1, 5)], note="reroute 1-4, lato L")
-opa4(d, "U27", *[("AGND", "NDR%d_R" % j, "DIR%d_R" % j) for j in range(1, 5)], note="reroute 1-4, lato R")
+    for s in SIDES:
+        d.R("DIR%d_%s" % (j, s), "S%d_OUT_%s" % (j, s), "10k 0.1%",
+            note="R lato sorgente sul net del bus (driver d'iniezione sulla scheda reroute)")
+ponte(d, "J4", (94, 110, 0), "NOTA: cavo piatto 2x16 verso la scheda reroute (divisione PROVVISORIA, NOTE.md)")
 
 # ------------------------------------------------------------ fader e uscita
 d.block = "FADER (2 VCA, shaper del fader, dec. 126) e USCITA verso MSUM (slot 6)"
@@ -129,6 +124,8 @@ opa2(d, "U30", ("AGND", "NIF_L", "FAD_L"), ("AGND", "NIF_R", "FAD_R"), note="I/V
 shaper(d, "U31", "F", *cv.FADER, tau="470n C0G")
 law_trim(d, "F", "ECF_L", "ECF_R")
 
+d.side = "F"
+
 # ------------------------------------------------------------ cavi
 d.block = "CAVO SCHEDA COMANDI (J2) e JACK DEL PEDALE (J3)"
 FILI = ["AGND", "GA_L", "GW_L", "O2A_L", "AGND", "GA_R", "GW_R", "O2A_R",
@@ -139,11 +136,11 @@ FILI = ["AGND", "GA_L", "GW_L", "O2A_L", "AGND", "GA_R", "GW_R", "O2A_R",
 cv.cavo(d, FILI)
 d.part("J", "Connector_Generic:Conn_01x07", "1x7 jack pedale", "Connector_PinHeader_2.54mm:PinHeader_1x07_P2.54mm_Vertical",
        {1: "SEND_L", 2: "SEND_R", 3: "AGND", 4: "JRET_L", 5: "JRET_R", 6: "AGND", 7: "CHASSIS"}, ref="J3",
-       place=(88, 5, 90), note="NOTA: cavo verso i jack SEND/RETURN del pedale; posizione dei jack non decisa")
+       place=(88, 12, 90), note="NOTA: cavo verso i jack SEND/RETURN del pedale; posizione dei jack non decisa")
 
 d.audio_rules = {
-    "sensibili": r"^(BUS_IN_[LR]|NFB_[LR]|RIN_[LR]|GW_[LR]|VK2_[LR]|NB_[LR]|NSH_[LR]|NVH_[LR]|NHB_[LR]|NI.*_[LR]|NIF_[LR]|NDR\d_[LR]|S\d_OUT_[LR])$",
-    "cavo": r"^(GA|GW|O2A|NA|NB|NC|VHN|WPH|VHP)_[LR]$",
+    "sensibili": r"^(BUS_IN_[LR]|NFB_[LR]|RIN_[LR]|GW_[LR]|VK2_[LR]|NB_[LR]|NSH_[LR]|NVH_[LR]|NHB_[LR]|NIF_[LR]|S\d_OUT_[LR])$",
+    "cavo": r"^((GA|GW|O2A|NA|NB|NC|VHN|WPH|VHP)_[LR]|RRN_[LR]|DIR\d_[LR])$",
     "rumorose": r"^(\+5VF?|MET|POT_.*|CVP_.*|SH_.*|V27F[+-]|VREG[+-]|BASE[+-]|RAW.*|CTRL_GND)$",
     "regolatori": ["U40", "U41", "U44", "U45", "Q40", "Q41"],
 }
