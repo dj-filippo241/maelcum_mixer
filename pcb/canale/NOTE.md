@@ -60,3 +60,7 @@ in 1206/1210, 27 per lato).
 - Divisione in due schede, poi PCB.
 - Cavo J2 (36 fili) e scheda comandi: GAIN doppio, 4 pot doppi B dell'isolator, fader,
   levetta, tasto CUE, LM3915.
+
+## Esito della PCB (2026-11-04)
+
+Non provata: con 380 impronte su ~280 di capienza il giro non ha senso prima della divisione.
