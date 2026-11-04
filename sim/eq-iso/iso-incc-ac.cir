@@ -1,0 +1,66 @@
+* ============================================================
+* EQ DI CANALE v0.5 — ISOLATOR, INCROCI C 150 LR2 / 350 / 3150 Hz (dec. 152)
+* e manopole lineari (law=0) o PIONEER ideale (law=1, dec. 146). todo 211, 2026-11-04.
+* Circuito in iso-incc-banca.inc. Casi (kcase): 0 centro | 1-4 una banda a zero
+* (LOW, LOW-MID, MID-HIGH, HIGH) | 5 tutte a zero | 6-9 una al massimo | 10 tutte al
+* massimo | 20-26 tutte a 0,05/0,1/0,2/0,25/0,3/0,4/0,75 | 30 LOW+LM a zero | 31 MH+HIGH a zero.
+* Generato da uno script di sessione (valori in tabella): rigenerare a mano con cura.
+* AC: mag in dB e fase; gd = fase a f e 1,02 f; mx = picchi dei nodi interni.
+.include ../lib/opamp-audio.inc
+.param f1=150 f2=350 f3=3150
+.param vosv=0
+V1 vin 0 DC 0 AC 1
+.include iso-incc-banca.inc
+.param t1={table(kcase,0,0.5,1,0,2,0.5,3,0.5,4,0.5,5,0,6,1,7,0.5,8,0.5,9,0.5,10,1,20,0.05,21,0.1,22,0.2,23,0.25,24,0.3,25,0.4,26,0.75,30,0,31,0.5)}
+.param t2={table(kcase,0,0.5,1,0.5,2,0,3,0.5,4,0.5,5,0,6,0.5,7,1,8,0.5,9,0.5,10,1,20,0.05,21,0.1,22,0.2,23,0.25,24,0.3,25,0.4,26,0.75,30,0,31,0.5)}
+.param t3={table(kcase,0,0.5,1,0.5,2,0.5,3,0,4,0.5,5,0,6,0.5,7,0.5,8,1,9,0.5,10,1,20,0.05,21,0.1,22,0.2,23,0.25,24,0.3,25,0.4,26,0.75,30,0.5,31,0)}
+.param t4={table(kcase,0,0.5,1,0.5,2,0.5,3,0.5,4,0,5,0,6,0.5,7,0.5,8,0.5,9,1,10,1,20,0.05,21,0.1,22,0.2,23,0.25,24,0.3,25,0.4,26,0.75,30,0.5,31,0)}
+.step param law list 0 1
+.step param kcase list 0 1 2 3 4 5 6 7 8 9 10 20 21 22 23 24 25 26 30 31
+.ac dec 200 2 100k
+.meas ac g5 FIND V(out) AT 5
+.meas ac g10 FIND V(out) AT 10
+.meas ac g20 FIND V(out) AT 20
+.meas ac g50 FIND V(out) AT 50
+.meas ac g80 FIND V(out) AT 80
+.meas ac g150 FIND V(out) AT 150
+.meas ac g229 FIND V(out) AT 229
+.meas ac g350 FIND V(out) AT 350
+.meas ac g1050 FIND V(out) AT 1050
+.meas ac g3150 FIND V(out) AT 3150
+.meas ac g5000 FIND V(out) AT 5000
+.meas ac g8000 FIND V(out) AT 8000
+.meas ac g20000 FIND V(out) AT 20000
+.meas ac g35000 FIND V(out) AT 35000
+.meas ac pa30 FIND V(out) AT 30
+.meas ac pb30 FIND V(out) AT 30.6
+.meas ac pa60 FIND V(out) AT 60
+.meas ac pb60 FIND V(out) AT 61.2
+.meas ac pa100 FIND V(out) AT 100
+.meas ac pb100 FIND V(out) AT 102
+.meas ac pa150 FIND V(out) AT 150
+.meas ac pb150 FIND V(out) AT 153
+.meas ac pa300 FIND V(out) AT 300
+.meas ac pb300 FIND V(out) AT 306
+.meas ac pa500 FIND V(out) AT 500
+.meas ac pb500 FIND V(out) AT 510
+.meas ac pa1000 FIND V(out) AT 1000
+.meas ac pb1000 FIND V(out) AT 1020
+.meas ac pa3150 FIND V(out) AT 3150
+.meas ac pb3150 FIND V(out) AT 3213
+.meas ac pa10000 FIND V(out) AT 10000
+.meas ac pb10000 FIND V(out) AT 10200
+.meas ac mx_low_o MAX mag(V(low_o)) FROM 10 TO 40k
+.meas ac mx_lb MAX mag(V(lb)) FROM 10 TO 40k
+.meas ac mx_lm_o MAX mag(V(lm_o)) FROM 10 TO 40k
+.meas ac mx_mb MAX mag(V(mb)) FROM 10 TO 40k
+.meas ac mx_ma MAX mag(V(ma)) FROM 10 TO 40k
+.meas ac mx_mh_o MAX mag(V(mh_o)) FROM 10 TO 40k
+.meas ac mx_ha MAX mag(V(ha)) FROM 10 TO 40k
+.meas ac mx_r1 MAX mag(V(r1)) FROM 10 TO 40k
+.meas ac mx_r2b MAX mag(V(r2b)) FROM 10 TO 40k
+.meas ac mx_r3 MAX mag(V(r3)) FROM 10 TO 40k
+.meas ac mx_r3b MAX mag(V(r3b)) FROM 10 TO 40k
+.meas ac mx_sp MAX mag(V(sp)) FROM 10 TO 40k
+.meas ac mx_out MAX mag(V(out)) FROM 10 TO 40k
+.end

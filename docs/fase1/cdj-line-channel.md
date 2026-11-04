@@ -146,6 +146,8 @@ completamento, §9 integrazione). Qui solo l'interfaccia col canale.
   contatto di fondo corsa (voce 40). Niente taper custom.
 - **Silicio per canale stereo**: 12 quad OPA1654 + 1 dual OPA1612 + 1
   dual per i servo.
+  **[REV 2026-11-04, todo 211: incroci C (dec. 152) → 10 quad OPA1654;
+  curva PIONEER (dec. 146) non realizzabile col pot lineare, eq-isolator §10.]**
 - Numeri musicali rinviati all'ascolto (docs/02 B7): incroci, boost,
   law.
 

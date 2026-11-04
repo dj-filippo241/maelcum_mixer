@@ -275,3 +275,22 @@ Seconda prova (stesso giorno): Filippo «risonanza alzala un po nella
 curva». RES_G90 1/6 -> 1/8: Q / Q base 2,0 a 30 %, 3,17 a 50 %, 5,04 a
 70 %, 6,35 a 80 %, 7,13 a 85 %, 8,0 a 90 %; fischio da ~93 %, fine corsa
 invariata (-0,25).
+
+## Filtro sui bus (2026-11-04, todo 216, dec. 159)
+
+Generatore: `genera_filtro.py --bus hpf` e `--bus lpf` scrivono
+`MC-FILTRO-HPF` e `MC-FILTRO-LPF` (351 righe gen~ ciascuno): il -S
+(core OTA (a'), Butterworth) con una sezione sola, senza MODO e senza
+ramo OFF. La sezione riceve la somma dei canali (Live somma le tracce a
+guadagno 1, come il ricevitore Rf 10k del bus): il tetto sul taglio e il
+DRIVE sulla somma vengono dallo stesso core di prima, che ha gia il tetto
+di 1,55 V (RISULTATI-D5 §7: uscita fra -1 e +1,2 dBu sul taglio).
+
+Prova: `prova_semplice.py` confronta ogni bus con MC-FILTRO-S su HPF o
+LPF, 6 casi, da -20 a +12 dBu: scarto 0. `MC-FILTRO` e `MC-FILTRO-S`
+rigenerati identici. Montaggio: `montaggio.md` §MC-FILTRO-HPF.
+
+Non verificato: l'instradamento in Live (Audio To verso una traccia
+audio nel gruppo, dai forum Ableton); la CPU di due istanze. Differenze
+dal mixer vero: click al cambio di Audio To (manca il dip della dec. 163);
+bus senza canali non muto (dec. 159 c).

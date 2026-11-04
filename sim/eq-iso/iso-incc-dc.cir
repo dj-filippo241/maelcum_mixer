@@ -1,0 +1,24 @@
+* ============================================================
+* EQ DI CANALE v0.5 — ISOLATOR, INCROCI C 150 LR2 / 350 / 3150 Hz (dec. 152)
+* e manopole lineari (law=0) o PIONEER ideale (law=1, dec. 146). todo 211, 2026-11-04.
+* Circuito in iso-incc-banca.inc. Casi (kcase): 0 centro | 1-4 una banda a zero
+* (LOW, LOW-MID, MID-HIGH, HIGH) | 5 tutte a zero | 6-9 una al massimo | 10 tutte al
+* massimo | 20-26 tutte a 0,05/0,1/0,2/0,25/0,3/0,4/0,75 | 30 LOW+LM a zero | 31 MH+HIGH a zero.
+* Generato da uno script di sessione (valori in tabella): rigenerare a mano con cura.
+* DC: continua in ingresso 0/20 mV, offset del servo 2 mV (massimo OPA2134). Casi 0 centro, 6 LOW al massimo.
+.include ../lib/opamp-audio.inc
+.param f1=150 f2=350 f3=3150
+.param vosv=2m
+.param law=0
+V1 vin 0 DC 0 AC 1
+.include iso-incc-banca.inc
+.param t1={table(kcase,0,0.5,1,0,2,0.5,3,0.5,4,0.5,5,0,6,1,7,0.5,8,0.5,9,0.5,10,1,20,0.05,21,0.1,22,0.2,23,0.25,24,0.3,25,0.4,26,0.75,30,0,31,0.5)}
+.param t2={table(kcase,0,0.5,1,0.5,2,0,3,0.5,4,0.5,5,0,6,0.5,7,1,8,0.5,9,0.5,10,1,20,0.05,21,0.1,22,0.2,23,0.25,24,0.3,25,0.4,26,0.75,30,0,31,0.5)}
+.param t3={table(kcase,0,0.5,1,0.5,2,0.5,3,0,4,0.5,5,0,6,0.5,7,0.5,8,1,9,0.5,10,1,20,0.05,21,0.1,22,0.2,23,0.25,24,0.3,25,0.4,26,0.75,30,0.5,31,0)}
+.param t4={table(kcase,0,0.5,1,0.5,2,0.5,3,0.5,4,0,5,0,6,0.5,7,0.5,8,0.5,9,1,10,1,20,0.05,21,0.1,22,0.2,23,0.25,24,0.3,25,0.4,26,0.75,30,0.5,31,0)}
+.step param kcase list 0 6
+.dc V1 0 20m 20m
+.meas dc y0 FIND V(out) AT 0
+.meas dc y20 FIND V(out) AT 20m
+.meas dc vi20 FIND V(svo) AT 20m
+.end

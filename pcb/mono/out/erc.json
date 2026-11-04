@@ -1,0 +1,53 @@
+{
+    "$schema": "https://schemas.kicad.org/erc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-11-04T10:24:12",
+    "ignored_checks": [
+        {
+            "description": "Global label only appears once in the schematic",
+            "key": "single_global_label"
+        },
+        {
+            "description": "Four connection points are joined together",
+            "key": "four_way_junction"
+        },
+        {
+            "description": "SPICE model issue",
+            "key": "simulation_model_issue"
+        },
+        {
+            "description": "Assigned footprint doesn't match footprint filters",
+            "key": "footprint_filter"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning",
+        "exclusion"
+    ],
+    "kicad_version": "10.0.7",
+    "sheets": [
+        {
+            "path": "/",
+            "uuid_path": "/61d76b0c-0897-537e-b3a6-1a3659f19c75",
+            "violations": [
+                {
+                    "description": "Pin VSS not connected to ground net",
+                    "items": [
+                        {
+                            "description": "Symbol U9 Pin 5 [VSS, Power input, Line]",
+                            "pos": {
+                                "x": 124.46,
+                                "y": 302.26
+                            },
+                            "uuid": "39163a3f-007b-564a-b709-9a2c2c5565a3"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "ground_pin_not_ground"
+                }
+            ]
+        }
+    ],
+    "source": "mono.kicad_sch"
+}

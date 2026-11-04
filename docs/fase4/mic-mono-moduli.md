@@ -231,7 +231,7 @@ hard-short [BLOCCATO]. Livello 0 dBu nominale (dec. 94a).
 entra su [A2] (un ricevitore a massa virtuale), la mandata FX ne passa due
 (bus S e [A2]): voce e ritorno del pedale escono con segni opposti. I due
 driver verso MSUM diventano invertenti unity (20k/20k 0,1 %); le mandate
-restano non invertenti. Da riportare nello schema (todo 30).
+restano non invertenti. Riportato nello schema il 2026-11-04 (REV in fondo).
 
 Con fino a 4 moduli, MASTER SUM resta a 7 contributori (dec. 94a): i
 moduli MIC si sommano sul net MSUM6 e i moduli MONO sul net MSUM7, in
@@ -431,4 +431,26 @@ MUTE_CV ─Rb─┼── pin 3 EC−      Rc da pin 3 a massa
   lo chiede (con 25 dB di tetto i numeri erano identici).
 - **Non simulati**: raddrizzatore e picco con op-amp veri, offset del rilevatore
   (1 mV al pin = 0,16 dB), soglia contro le tolleranze. Banco.
-- **Prototipo**: MC-MIC non ha ancora il limiter; va aggiunto per sentirlo.
+- **Prototipo**: MC-MIC ha il limiter dal 2026-11-04 (todo 208, `proto-max/RISULTATI-P4.md`): da sentire.
+
+## REV 2026-11-04 — schema e distinta (todo 30)
+
+Schede scritte col generatore: `pcb/mic/mic.py`, `pcb/mono/mono.py`, celle comuni in
+`pcb/tools/celle_micmono.py`. Esito: **SCHEMA PASSA** per tutti e due (ERC 0 errori). Stato,
+scelte NOTA e cosa resta: `pcb/mic/NOTE.md`, `pcb/mono/NOTE.md`.
+
+- **Polarità (todo 227)**: lo scambio degli ingressi del differenziale non c'è (caldo
+  sull'ingresso −, come `mic-pre.inc`); i due driver verso MSUM6/MSUM7 sono invertenti
+  20k/20k 0,1 %, poi 20k di somma lato sorgente. MIC e MONO escono +1 all'XLR del master.
+- **Conteggio** (distinta del generatore, fori esclusi): MIC **204 pezzi**, MONO **125**.
+  Silicio come la §8 più la REV della dec. 145: MIC OPA1612 ×3, OPA1654 ×5, V2181L ×1,
+  ADG1434 ×1, LM339 ×1, 1N4148W ×13; MONO OPA1612 ×1, OPA1654 ×3, ADG1434 ×1, LM339 ×1,
+  1N4148W ×6. Nel limiter i diodi sono 5, non 4 (mezza onda a due diodi); in più un
+  inseguitore su SM (la sezione libera del secondo quad): senza, il sottrattore carica Ch.
+- **Mandate**: 2k2 fra il cursore del pot SEND e l'ADG1434. Il POST del MONO arriva a
+  +23 dBu, oltre i ±15 V dello switch; la 2k2 limita la corrente nei diodi di protezione.
+  Mute −53 dB col pot tutto aperto.
+- **Da correggere in questo documento**: il ±15 LN del MIC nasce dal ±18, non dal raw ±22
+  (LT3045/LT3094: 20 V massimi in ingresso); la corrente sul ±15 LN del MIC è ~45 mA, non 20.
+- **Discordanza aperta**: §5.1 dà alla HIGH 4,7k/2,25k (~5 kHz), `backend.inc` e il FX-SEND
+  5,23k/2,49k (~4,5 kHz). Lo schema segue la §5.1.
