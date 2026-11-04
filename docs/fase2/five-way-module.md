@@ -784,6 +784,29 @@ Unica salita: il GROWL su un basso molto piano, +2 dB a fine corsa.
 > Rumore: il ramo GROWL ha più guadagno (×4,7 invece di ×2,2 prima del
 > kg): da rimisurare con `drive2-noise.cir` prima di congelare.
 
+> **[REV 2026-11-03 — DECISIONI 165 e 166, PROVVISORIE fino all'ascolto in
+> MC-5WAY e alla verifica LTspice]** (`proto-max/RISULTATI-P2.md` §12; modelli
+> `proto-max/coefficienti/growl_bande.py`, `nastro_bande.py`, `combo_bande.py`)
+> 1. **GROWL a bande** (sostituisce il GROWL LIBERO della dec. 155 b). Ramo
+>    del basso: LP Butterworth 4 poli a **250 Hz** (era 2 poli a 350 Hz,
+>    dec. 99 g), clipper Rf 47k, 1 / 3 diodi con **470 Ω** in serie (era
+>    2,2k), spinta 0 → +20 dB, miscela 0,9. Ramo dei medi (nuovo): banda fra
+>    l'LP e un polo a 2,5 kHz (rest = x − low; mid = LP1(rest); somma esatta),
+>    clipper morbido Rf 10k, 3 + 3 diodi con 4,7k, spinta 0 → +6 dB, a pari
+>    livello a piccolo segnale. Alti puliti. Fine corsa, mix 0 dBu: SUB 28 %,
+>    KICK 42 %, 500 Hz 23 %, 1 kHz 6 %, 3 kHz 2,3 %, 12 kHz 0 %.
+> 2. **NASTRO a bande** (dal NASTRO LIBERO, voce nuova di NASTRO VER): enfasi
+>    2 × (zero 80 / polo 400 Hz) che taglia i bassi e 2 × (polo 5 k / zero
+>    10 kHz) che taglia i super davanti allo stadio di spinta + JFET; de-enfasi
+>    inversa dopo, con 12 dB in meno sui bassi e 7 dB in meno sui super.
+>    Fine corsa, mix 0 dBu: SUB 1,6 %, KICK 2,8 %, MID 30 %, HIGH 36 %,
+>    SUPER 26 %; sui picchi +10 dBu SUB 6,3 %, KICK 18 %.
+> 3. Insieme a fine corsa sub e kick vanno al 52 % e al 77 % (il NASTRO sporca
+>    le armoniche del GROWL): accettato come gesto estremo (dec. 166 e).
+> Da fare: rumore dei rami nuovi (il ramo del basso guadagna +20 dB a segnale
+> minimo, il NASTRO a bande sui medi come il LIBERO), netlist LTspice, conto
+> dei pezzi.
+
 ### 5bis.5 Rumore MISURATO e conteggi (`sim/five-way/drive2-noise.cir`, 2026-10-13)
 
 Circuito reale (op-amp con rumore, pot 10k veri, buffer dei cursori,

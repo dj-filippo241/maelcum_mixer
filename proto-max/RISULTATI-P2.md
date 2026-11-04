@@ -433,3 +433,75 @@ Modello contro LTspice (`sim/five-way/alt-completo-medi.cir`,
 `alt-completo-medi-8000.cir`, `confronto_alt.py`): 1 kHz scarto 0,05
 punti e 0,02 dB; 8 kHz 0,11 punti e 0,02 dB. `confronto_alt.py` usa ora
 miscele fisse (i B25-B99 dei netlist), non la law della manopola.
+
+## 12. GROWL e NASTRO a bande (2026-11-03, dec. 165 e 166)
+
+Revisione delle tabelle di distorsione con Filippo. Modello del prototipo
+(`fiveway.py`, `alternative.py`), 192 kHz, THD da 8 armoniche, volume RMS
+rispetto all'ingresso. Livelli interni: −16 piano, −6 nominale, 0 dBu =
+mix di Filippo, +10 picchi. Vie del crossover E: SUB 50 Hz, KICK 120 Hz,
+MID 500 Hz, HIGH 3 kHz, SUPER 12 kHz. Il modello di oggi riproduce le
+tabelle LTspice già scritte (GROWL LIBERO fine corsa sul mix: 15 %, +5,0 dB,
+come §8; NASTRO LIBERO come §10). Le versioni nuove NON hanno ancora una
+netlist LTspice [PROVVISORIO].
+
+Prima lettura (stato di oggi, tutte le voci con la manopola NASTRO lineare):
+il GROWL LIBERO sui picchi a +10 dBu scende al 7,5 % (le 2,2k in serie ai
+diodi lo riportano lineare) e a 1 kHz al nominale sporca al 57 % perdendo
+4,4 dB (il passa-basso a 2 poli lascia entrare i medi, la spinta +18 dB li
+porta ai diodi); il NASTRO LIBERO distorce uguale su tutte le vie (39 % sul
+mix a fine corsa).
+
+### GROWL a bande, variante D (`coefficienti/growl_bande.py`)
+
+Circuito in five-way §5bis REV 2026-11-03. Varianti provate: B (LP 2 poli
+350 Hz: 500 Hz al 56 %, 1 kHz al 100 %), C (4 poli 350 Hz: 500 Hz al 45 %),
+D (4 poli 250 Hz, scelta di Filippo), E (4 poli 200 Hz: kick 51 % e −5,9 dB
+sul colpo).
+
+| Via, fine corsa | piano −16 | nominale −6 | mix 0 | picchi +10 |
+|---|---|---|---|---|
+| SUB 50 Hz | 32 % · +16,8 dB | 31 % · +8,6 | 28 % · +4,2 | 22 % · −1,7 |
+| KICK 120 Hz | 36 % · +16,0 | 40 % · +7,0 | 42 % · +2,4 | 33 % · −4,0 |
+| MID 500 Hz | 9,6 % · +7,6 | 20 % · +4,9 | 23 % · +2,0 | 20 % · −3,0 |
+| 1 kHz | 0,01 % · +1,0 | 0,82 % · +0,9 | 6,0 % · −0,1 | 7,2 % · −2,6 |
+| HIGH 3 kHz | 0 % · 0,0 | 0,11 % · 0,0 | 2,3 % · −0,2 | 5,3 % · −1,3 |
+| SUPER 12 kHz | 0 % | 0 % | 0 % | 0,68 % |
+
+A metà corsa, sul mix: SUB 18 % +0,7 dB, KICK 24 % −0,8, 500 Hz 7,1 %,
+1 kHz 1,4 %, 3 kHz 0,2 %. Al 10 %: SUB 3,2 %, 500 Hz 0,25 %.
+
+### NASTRO a bande, variante B8 (`coefficienti/nastro_bande.py`)
+
+Varianti provate: B1-B3 (taglio dei bassi a una cella, super a una cella:
+super 43-53 %, sub e kick +10 dB di volume), B4-B5 (super a due celle,
+de-enfasi parziale: sub 31 % sui picchi), B6-B7 (bassi a due celle), B8
+(B7 col volume dei bassi corretto, scelta).
+
+| Via | mix, 50 % | mix, 100 % | nominale, 100 % | picchi, 100 % |
+|---|---|---|---|---|
+| SUB 50 Hz | 0,28 % · −1,8 dB | 1,6 % · +1,4 | 0,77 % · +1,4 | 6,3 % · +1,0 |
+| KICK 120 Hz | 0,63 % · −0,5 | 2,8 % · +5,1 | 1,3 % · +5,2 | 18 % · +2,4 |
+| MID 500 Hz | 10 % · +1,2 | 30 % · +5,1 | 19 % · +7,9 | 24 % · −2,6 |
+| HIGH 3 kHz | 14 % · −0,4 | 36 % · +2,1 | 29 % · +5,3 | 28 % · −5,7 |
+| SUPER 12 kHz | 2,7 % · −2,3 | 26 % · −1,6 | 8,0 % · +0,3 | 31 % · −6,8 |
+
+La tabella mette ogni via allo stesso livello; nella musica sub e kick sono
+più forti e i super più deboli. Volume a fine corsa disomogeneo fra le vie
+(−1,6…+5,1 dB sul mix): da rifinire dopo l'ascolto.
+
+### Insieme (`coefficienti/combo_bande.py`, GROWL D + NASTRO B8)
+
+| Sul mix 0 dBu | SUB | KICK | MID | HIGH | SUPER |
+|---|---|---|---|---|---|
+| GROWL 100 % | 28 % · +4,2 | 42 % · +2,4 | 23 % · +2,0 | 2,3 % · −0,2 | 0 % |
+| NASTRO 100 % | 1,6 % · +1,4 | 2,8 % · +5,1 | 30 % · +5,1 | 36 % · +2,1 | 26 % · −1,6 |
+| tutte e due 100 % | 52 % · +3,7 | 77 % · +4,5 | 29 % · +5,2 | 36 % · +2,0 | 26 % · −1,6 |
+| tutte e due 50 % | 23 % · −1,0 | 32 % · −1,1 | 9,3 % · +0,4 | 13 % · −0,8 | 2,7 % · −2,3 |
+
+Sui picchi +10, tutte e due 100 %: SUB 34 %, KICK 48 %. Le armoniche del
+GROWL (100-500 Hz) cadono dove il NASTRO sporca: a fine corsa il basso
+diventa un ringhio fitto. Filippo: va bene, è il gesto estremo (dec. 166 e).
+
+Da fare: GROWL D e NASTRO B8 in MC-5WAY (GROWL VER e NASTRO VER) per
+l'ascolto; netlist LTspice dei due circuiti; rumore dei rami nuovi.
