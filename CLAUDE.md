@@ -18,6 +18,7 @@ Il repository non contiene software da compilare né test: contiene documenti di
 8. **Lingua e registro (feedback Filippo 2026-09-18)**: quando il discorso tocca l'orecchio — sensazioni sonore, impatto musicale di una scelta tecnica — usare un linguaggio disteso e concreto: spiegare cosa si sente, in che situazione, con che gesto. La sintesi va bene per la contabilità di progetto, non per la musica.
 9. **Questo file resta corto.** Qui sta solo lo stato corrente. La cronaca di una sessione (finding, tentativi, numeri superati) va in `docs/storico-sessioni.md` o nel design doc del modulo, non qui.
 10. **Archiviato non vuol dire cancellato.** I design superati (drive v0.3, overdrive v0.1, EQ a contribuzione bipolare, VAS discreto) restano nel repository come alternativa o come prova del vicolo cieco.
+11. **Dove è verificato.** Ogni consegna del prototipo chiude con la riga «Verificato in: Python / LTspice / Live (sì o no)». Passare le prove in Python non vuol dire funzionare in Live: è successo almeno 6 volte (15/10, 29/10, 31/10). Rapporto BURN del 4/11.
 
 Origine delle decisioni: **[F]** = detta da Filippo · **[R]** = dal resoconto ChatGPT · **[C]** = proposta di Claude accettata da Filippo.
 
