@@ -24,7 +24,7 @@ Origine delle decisioni: **[F]** = detta da Filippo · **[R]** = dal resoconto C
 
 ## Comandi
 
-KiCad 10.0.7 sta in `/Applications/KiCad` (copiato dal .dmg: `brew install --cask kicad` vuole sudo e fallisce senza terminale; Homebrew non lo gestisce). CLI: `/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli`. Schemi e PCB ripartiti il 2026-10-27 (richiesta di Filippo): ogni scheda nasce da `pcb/<modulo>/<modulo>.py` col generatore `pcb/tools/pcbgen.py` (schema, PCB 4 strati, Freerouting, ERC/DRC) e si rigenera, non si ritocca a mano. Fatta: FX-SEND (PASSA col generatore nuovo e i blocchi vicino al connettore, todo 205/196, `pcb/fx-send/NOTE.md`). MIC e MONO: SCHEMA PASSA, PCB da fare (todo 237). In corso: master, scheda di segnale scritta, NON PASSA per spazio (`pcb/master/NOTE.md`, todo 199).
+KiCad 10.0.7 sta in `/Applications/KiCad` (copiato dal .dmg: `brew install --cask kicad` vuole sudo e fallisce senza terminale; Homebrew non lo gestisce). CLI: `/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli`. Schemi e PCB ripartiti il 2026-10-27 (richiesta di Filippo): ogni scheda nasce da `pcb/<modulo>/<modulo>.py` col generatore `pcb/tools/pcbgen.py` (schema, PCB 4 strati, Freerouting, ERC/DRC) e si rigenera, non si ritocca a mano. Fatta: FX-SEND (PASSA col generatore nuovo e i blocchi vicino al connettore, todo 205/196, `pcb/fx-send/NOTE.md`). MIC e MONO: PCB e schede comandi PASSA (il MIC passa 2 giri su 4, todo 248). Canale, FX-RET, PSU-IN: SCHEMA PASSA, PCB da dividere o NON PASSA (todo 167). In corso: master, NON PASSA (`pcb/master/NOTE.md`, todo 204).
 
 Generare una scheda (Python di KiCad, ~4 min; con `--solo-schema` solo schema, ERC e distinta, esito «SCHEMA PASSA», pochi secondi):
 
@@ -76,6 +76,7 @@ Regole di simulazione (ognuna nasce da un errore già pagato; il contesto sta ne
 - SVF con OTA della RES a Iabc quasi zero: il `.op` non converge (9 minuti a vuoto). Usare `.tran ... uic` e misurare il segnale con `PP`, non `RMS`: col partitore l'offset dell'OTA sale di 1/k.
 - Regolatori in anello (LDO del box, `sim/system/psu-box-*`): mai `uic`; accensione da zero, così il `.op` è banale. Con `uic`, con `limit()` brusco o con diodi a N 0,05, LTspice non termina.
 - `perl -e 'alarm ...'` ferma lo script ma non `LTspice.exe` dentro wine: il processo resta al 300 % di CPU. Controllare con `ps aux | grep -i LTspice.exe` e chiuderlo per PID.
+- Modello Python dei saturatori: THD a 12 kHz solo a 192 kHz (a 96 kHz le armoniche si ripiegano: 107 % falso). Script con `multiprocessing` sempre con `if __name__ == "__main__"`.
 - `.step param x list ...`: LTspice esegue i valori in ordine crescente, non in quello scritto. Leggere le misure con quell'ordine (MONO del master, todo 200).
 - Un `.param` scritto due volte in un netlist con `.step`: `.four` non stampa niente e il log non dà errore.
 - Non fermare LTspice con `pkill -f <nome netlist>`: uccide anche lo script. `drive2-chain` a 150 Hz non termina (causa ignota): usare 50 Hz o 1 kHz.
