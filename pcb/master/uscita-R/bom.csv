@@ -1,0 +1,64 @@
+quantita;valore;impronta;riferimenti;nota
+1;1000u 35V;CP_Radial_D12.5mm_P5.00mm;C1;bulk locale [M] (master-out §3.8)
+2;15n C0G;C_1206_3216Metric;C15 C18;fc 0,048 Hz (Test 12)
+1;1000u 35V;CP_Radial_D12.5mm_P5.00mm;C2;
+1;1u;C_1206_3216Metric;C21;
+2;100n 50V;C_0805_2012Metric;C3 C4;
+2;10u 35V;CP_Radial_D5.0mm_P2.00mm;C5 C7;
+2;47u 35V;CP_Radial_D6.3mm_P2.50mm;C6 C8;
+10;100n;C_0805_2012Metric;C9 C10 C11 C12 C13 C14 C16 C17 C19 C20;
+1;1N4148W;D_SOD-123;D1;scarica Cadj
+1;S1G;D_SMA;D2;protezione inversa
+37;1N4148W;D_SOD-123;D3 D5 D6 D7 D8 D9 D10 D11 D12 D13 D14 D15 D16 D17 D18 D19 D20 D21 D22 D23 D24 D25 D26 D27 D28 D29 D30 D31 D32 D33 D34 D35 D36 D37 D38 D39 D40;
+1;S1G;D_SMA;D4;
+2;BAT54W;SOT-323_SC-70;D41 D42;
+1;1N4148W;D_SOD-123;D43;scarica delle bobine: 1,0 ms (RISULTATI-mute-ctrl)
+2;ferrite 600R 2A;L_1206_3216Metric;FB1 FB2;
+1;C96 maschio;DIN41612_C_3x32_Male_Horizontal_THT;J1;DIN 41612 C 3x32; classe MASTER-OUT (dec. 143): RAW+-26, +5V, CTRL_GND, c9
+1;2x7 cavo piatto;PinHeader_2x07_P2.54mm_Vertical;J2;cavo piatto dalla scheda di segnale (stessa piedinatura del suo J2)
+1;2x5 cavo;PinHeader_2x05_P2.54mm_Vertical;J3;NOTA: verso la schedina XLR/TRS sul retro (dec. 141)
+1;G6K-2F DC5;Relay_DPDT_Omron_G6K-2F;K1;MASTER R caldo e freddo
+1;G6K-2F DC5;Relay_DPDT_Omron_G6K-2F;K2;BOOTH R caldo e freddo
+2;BF245A;TO-92_Inline_Wide;Q1 Q8;CCS ~4 mA (NJF245 in sim; Idss da selezionare)
+1;AO3400A;SOT-23;Q15;driver dei relè, logic level
+1;2N7002;SOT-23;Q16;inverte c9: c9 alto (muto) -> relè diseccitati
+2;MJE340;TO-126-3_Vertical;Q2 Q9;pass del rail +: 0,75 W a riposo, rame >= 4 cm2 (v0.3 punto 1); pinout da verificare
+2;BF245A;TO-92_Inline_Wide;Q3 Q10;CCS ~4 mA
+2;MJE350;TO-126-3_Vertical;Q4 Q11;pass del rail -: 0,75 W a riposo, rame >= 4 cm2; pinout da verificare
+2;BC847B;SOT-23;Q5 Q12;moltiplicatore di Vbe (QMULT in sim): vicino a Q1/Q2 per l'inseguimento termico
+2;MJE340;TO-126-3_Vertical;Q6 Q13;finale +; corto: 106 mA auto-limitati, 1,0 W medi
+2;MJE350;TO-126-3_Vertical;Q7 Q14;finale -
+2;120 1%;R_0805_2012Metric;R1 R3;
+2;2k2 1%;R_0805_2012Metric;R11 R22;
+2;1k 1%;R_0805_2012Metric;R12 R23;
+4;33 1%;R_1206_3216Metric;R13 R14 R24 R25;
+1;1k 0.1%;R_0805_2012Metric;R15;Rsrc: con Rinj 1M attenua 0,999, Rf/Rg guadagna 1,001
+1;1M 1%;R_0805_2012Metric;R16;iniezione del servo
+3;1k 0.1%;R_0805_2012Metric;R17 R27 R29;
+1;1M 1%;R_0805_2012Metric;R18;
+2;220k 1%;R_0805_2012Metric;R19 R30;
+1;1k62 1%;R_0805_2012Metric;R2;18,1 V
+1;1k 0.1%;R_0805_2012Metric;R26;freddo invertente: resistenze appaiate 0,1 % (CMRR ~60 dB)
+1;1M 1%;R_0805_2012Metric;R28;NOTA: servo sul piedino + con partitore 1M/1k (cella dei servo)
+1;100k 0.1%;R_0805_2012Metric;R31;
+2;118k 1%;R_0805_2012Metric;R33 R35;
+4;10k 1%;R_0805_2012Metric;R34 R36 R37 R38;
+2;4k7;R_0805_2012Metric;R39 R41;
+1;1k62 1%;R_0805_2012Metric;R4;
+1;680k;R_0805_2012Metric;R40;tenuta: 680k x 1u, soglia a meta' = 0,47 s
+1;10k;R_0805_2012Metric;R42;NOTA: CLIP alto = LED acceso (clip)
+1;100;R_0805_2012Metric;R43;
+1;100k;R_0805_2012Metric;R44;pull-up come negli altri moduli: master assente = muto
+1;1k;R_0805_2012Metric;R45;
+1;10k;R_0805_2012Metric;R46;
+3;10k 0.1%;R_0805_2012Metric;R5 R6 R32;
+1;47;R_0805_2012Metric;R7;NOTA: 47 ohm di uscita prima del relè
+5;47;R_0805_2012Metric;R8 R9 R10 R20 R21;
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U1;NOTA: ricevitore del cavo J2 (il caldo e il freddo caricano 500 ohm); caldo del booth
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U11;composito H: rail a bootstrap (dec. 86); niente 100n rail-OUT (v0.3c)
+2;TL071;SOIC-8_3.9x4.9mm_P1.27mm;U12 U22;servo DC su +-18 statici (FET, Iq bassa: non pesa sul bootstrap)
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U2;freddo del booth; sezione B libera a massa
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U21;composito C: rail a bootstrap (dec. 86); niente 100n rail-OUT (v0.3c)
+1;LM339;SOIC-14_3.9x8.7mm_P1.27mm;U3;NOTA: clip detector (correzione 20 della review)
+1;LM317;TO-220-3_Vertical;U40;NOTA: +-18 locali, ~30 mA
+1;LM337;TO-220-3_Vertical;U41;

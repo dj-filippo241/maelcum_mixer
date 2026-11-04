@@ -22,6 +22,8 @@ d = Design("master-segnale", os.path.join(HERE, "segnale"), "maelcum MASTER sche
            board=(100, 220), rev="0.2-bozza")
 d.gnd = "AGND"
 d.inner_signal = True     # SMD sui due lati: In2 strato di piste, massa piena su In1
+d.fanout_more = True      # via di massa anche di traverso: pad senza via = isola di colata (giri 9, 11)
+d.link_pairs = True       # pad gemelli (C96 a3/a4, cursore e capo dei trimmer) uniti prima di Freerouting (giro 10)
 SOIC8 = "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
 C12 = "Capacitor_SMD:C_1206_3216Metric"
 OPA = "Amplifier_Operational:OPA1612AxD"
@@ -68,7 +70,11 @@ for k, n in enumerate(slot):
     b["b%d" % (3 * k + 2)] = n + "_R"
     b["b%d" % (3 * k + 3)] = "AGND"
 b["b31"], b["b32"] = "VIE_TAP_L", "VIE_TAP_R"
-pins = c96(b, a=A_STANDARD)   # RAW±26, c9 e c17 vanno alle schede d'uscita (dec. 143)
+# RAW±26, c9 e c17 vanno alle schede d'uscita (dec. 143). +5V e CTRL_GND (a21-a24) non servono qui:
+# la scheda comandi li prende dalla scheda d'uscita L (J4), così non attraversano 200 mm di scheda
+# (giri 1-6: sempre aperti). CTRL_GND resta sui ritorni di riga c (c16-c28), uniti lungo il C96.
+# RAW+-22 (a5-a8) non servono qui: le univa solo un ponticello pin-pin del C96 (giro 8: RAW+22 aperta).
+pins = c96(b, a=[k for k in A_STANDARD if k not in ("a5", "a6", "a7", "a8", "a21", "a22", "a23", "a24")])
 d.part("J", SYM_C96, "C96 maschio", FP_C96, pins, ref="J1", place=(50, 213.5, 180),
        note="DIN 41612 C 3x32, angolo retto; a9-a12 sulle schede d'uscita (dec. 143)")
 d.part("H", "Mechanical:MountingHole_Pad", "CHASSIS", "MountingHole:MountingHole_3.2mm_M3_Pad",
@@ -78,9 +84,10 @@ d.part("H", "Mechanical:MountingHole_Pad", "CHASSIS", "MountingHole:MountingHole
 
 # ------------------------------------------------------------ alimentazione
 d.block = "ALIMENTAZIONE +-18 (LM317/337 + cap-moltiplicatore), +-15 LN (LT3045/LT3094)"
-d.power_nets("RAW+27", "RAW-27", "RAW+22", "RAW-22", "AGND", "CHASSIS", width=0.8)
-d.power_nets("+5V", "CTRL_GND", width=0.5)    # relè e LED: ~0,3 A; 0,8 mm non passava dal C96 a J2/J3
-d.power_nets("+18V", "-18V", "+15LN", "-15LN", "V27F+", "V27F-", width=0.6)
+d.power_nets("RAW+27", "RAW-27", "AGND", "CHASSIS", width=0.8)
+d.power_nets("CTRL_GND", width=0.4)
+d.power_nets("+18V", "-18V", "+15LN", "-15LN", width=0.4)   # 0,6 lasciava aperta -18V (giro 6); <= 0,15 A
+d.power_nets("V27F+", "V27F-", width=0.6)
 FB = "Inductor_SMD:L_1206_3216Metric"
 d.part("FB", "Device:FerriteBead_Small", "ferrite 600R", FB, {1: "RAW+27", 2: "V27F+"})
 d.part("FB", "Device:FerriteBead_Small", "ferrite 600R", FB, {1: "RAW-27", 2: "V27F-"})
@@ -202,6 +209,7 @@ d.R("INS_RET_R", "AGND", "100k")
 opa("U6", ("INS_RET_L", "PROG_L", "PROG_L"), ("INS_RET_R", "PROG_R", "PROG_R"), note="nodo di programma")
 
 # ------------------------------------------------------------ quattro buffer dal nodo di programma
+d.side = "B"     # giro 8: sul retro, per far posto ai LEVEL sul davanti
 d.block = "BUFFER [A] [B] [C] [N] (un buffer per uscita, voce 11)"
 opa("U7", ("PROG_L", "BA_L", "BA_L"), ("PROG_R", "BA_R", "BA_R"), "+18V", "-18V", note="[A] verso MASTER LEVEL")
 opa("U8", ("PROG_L", "BB_L", "BB_L"), ("PROG_R", "BB_R", "BB_R"), "+18V", "-18V", note="[B] verso BOOTH LEVEL")
@@ -224,7 +232,10 @@ d.R("MONB_L", "MON_OUT_L", "47")
 d.R("MONB_R", "MON_OUT_R", "47")
 
 # ------------------------------------------------------------ MASTER LEVEL e BOOTH LEVEL
-d.side = "B"
+# Sul lato componenti (giro 8, 2026-11-04): sul retro i trimmer a foro passante restavano in alto
+# col loro blocco e i VCA e i partitori finivano 70-110 mm piu' in basso (LT_M, ECM_MR lunghe;
+# giro 7 NON PASSA per ECM_MR). Il retro si piazza ancora senza guardare le reti.
+d.side = "F"
 d.block = "MASTER LEVEL [D]: 2 VCA, shaper (shaper-master.cir), trim di law (vca-trim §3.2)"
 vca("U12", "BA_L", "NIM_L", "ECM_ML")
 vca("U13", "BA_R", "NIM_R", "ECM_MR")
@@ -280,7 +291,7 @@ shaper("B", "43.2k", [("68.1k", "357k"), ("20.0k", "38.3k"), ("976", "1.33k")])
 law_trim("B", "CVP_B", "ECM_BL", "ECM_BR")
 
 # ------------------------------------------------------------ VIE_TAP (dec. 111 b)
-d.side = "F"
+d.side = "B"     # giro 8: sul retro, per far posto ai LEVEL sul davanti
 d.block = "VIE_TAP [V]: driver dopo MASTER LEVEL verso b31-b32"
 opa("U20", ("MAST_L", "VTD_L", "VTD_L"), ("MAST_R", "VTD_R", "VTD_R"), "+18V", "-18V")
 d.R("VTD_L", "VIE_TAP_L", "47")
@@ -318,11 +329,11 @@ d.part("J", "Connector_Generic:Conn_02x07_Odd_Even", "2x7 cavo piatto",
        {i + 1: n for i, n in enumerate(J2)}, ref="J2", place=(72, 5, 90),
        note="NOTA: cavo piatto verso le schede di uscita affiancate (dec. 142); AGND fra i segnali")
 J3 = ["POT_M", "AGND", "POT_B", "AGND", "+REF5", "AGND", "MONO_SW", "AGND",
-      "MET_L", "AGND", "MET_R", "AGND", "VREFA", "VREFB", "CLIP_L", "CLIP_R", "+5V", "+5V", "CTRL_GND", "CTRL_GND"]
+      "MET_L", "AGND", "MET_R", "AGND", "VREFA", "VREFB", "CLIP_L", "CLIP_R", None, None, None, None]
 d.part("J", "Connector_Generic:Conn_02x10_Odd_Even", "2x10 cavo piatto",
        "Connector_PinHeader_2.54mm:PinHeader_2x10_P2.54mm_Vertical",
        {i + 1: n for i, n in enumerate(J3)}, ref="J3", place=(30, 5, 90),
-       note="cavo piatto corto verso la scheda comandi (pot, MONO, LED)")
+       note="cavo piatto corto verso la scheda comandi (pot, MONO, meter); pin 17-20 liberi: +5V dalla J4 della scheda d'uscita L")
 
 d.audio_rules = {
     "sensibili": r"^((NS|NIM|NIB|PROG|INS_RET|MSUM\d)_[LR]|NM|NSV|NLO|SDN|SDP|RDN|RDP|VIN_u\d+)$",

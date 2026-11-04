@@ -545,6 +545,8 @@ class Design:
         gnd = self.gnd
         if layers == 4:
             self._fanout(b, nets[gnd], mm, pcbnew)
+        if getattr(self, "link_pairs", False):
+            self._link_pairs(b, mm, pcbnew)
         zl = ([pcbnew.In1_Cu] if sig2 else [pcbnew.In1_Cu, pcbnew.In2_Cu]) if layers == 4 else []
         for layer in zl:
             self._zone(b, nets[gnd], layer, X0, Y0, W, H, mm, pcbnew)
@@ -593,6 +595,14 @@ class Design:
                     sgn, half = math.copysign(1, dy or 1), sz.y / 2
                     offs = [pcbnew.VECTOR2I(0, int(sgn * (half + mm(0.75)))),
                             pcbnew.VECTOR2I(0, int(-sgn * (half + mm(0.75))))]
+                # d.fanout_more (default spento): se i due posti sull'asse sono occupati, anche di
+                # traverso e piu' lontano. Un pad di massa senza via resta un'isola di colata
+                # (master, giri 9 e 11: C78, C53 -> unconnected_items)
+                if getattr(self, "fanout_more", False):
+                    hx, hy = sz.x / 2, sz.y / 2
+                    for dist in (0.75, 1.1, 1.5):
+                        for ux, uy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                            offs.append(pcbnew.VECTOR2I(int(ux * (hx + mm(dist))), int(uy * (hy + mm(dist)))))
                 # prima verso l'esterno; se cade su un pad di un'altra rete (es. il pin di massa
                 # dell'ADG1434 accanto al suo 100n) verso l'interno, sotto il corpo del chip
                 vp = None
@@ -624,6 +634,55 @@ class Design:
                 b.Add(t)
                 n += 1
         self.notes.append("fanout di massa: %d via, %d senza posto libero" % (n, saltate))
+
+    def _link_pairs(self, b, mm, pcbnew, dmax=4.0):
+        """d.link_pairs = True (default spento): unisce con una pista dritta due pad vicini della
+        stessa impronta e della stessa rete, a foro passante (pin doppi del C96, cursore e capo di un trimmer).
+        Freerouting li lascia spesso aperti (master, 2026-11-04: RV4-2/RV4-3, J1-a3/a4, J4).
+        La pista si salta se passa a meno di 0,3 mm da un pad di un'altra rete. Masse escluse."""
+        n = 0
+        tutti = [pd for f in b.GetFootprints() for pd in f.Pads()]
+        for fp in b.GetFootprints():
+            per = {}
+            for pad in fp.Pads():
+                net = pad.GetNetname()
+                # solo foro passante: Freerouting conta come aperta una pista fra due pin SMD
+                # che non ha tracciato lui (giro 11 del master: 11 falsi aperti), il DRC no
+                if pad.GetAttribute() != pcbnew.PAD_ATTRIB_PTH:
+                    continue
+                if net and net not in self.masse and not net.startswith("unconnected-"):
+                    per.setdefault(net, []).append(pad)
+            for net, pads in per.items():
+                for a, c in zip(pads, pads[1:]):
+                    pa, pc = a.GetPosition(), c.GetPosition()
+                    if math.hypot(pa.x - pc.x, pa.y - pc.y) > mm(dmax):
+                        continue
+                    w = mm(self.netclass.get(net, 0.25))
+                    lay = pcbnew.F_Cu if a.IsOnLayer(pcbnew.F_Cu) and c.IsOnLayer(pcbnew.F_Cu) else (
+                        pcbnew.B_Cu if a.IsOnLayer(pcbnew.B_Cu) and c.IsOnLayer(pcbnew.B_Cu) else None)
+                    if lay is None:
+                        continue
+                    ok = True
+                    for k in range(1, 20):
+                        q = pcbnew.VECTOR2I(pa.x + (pc.x - pa.x) * k // 20, pa.y + (pc.y - pa.y) * k // 20)
+                        if any(o.GetNetCode() != a.GetNetCode() and o.IsOnLayer(lay) and o.HitTest(q, w // 2 + mm(0.3))
+                               for o in tutti):
+                            ok = False
+                            break
+                    if not ok:
+                        continue
+                    t = pcbnew.PCB_TRACK(b)
+                    t.SetStart(pa)
+                    t.SetEnd(pc)
+                    t.SetWidth(w)
+                    t.SetLayer(lay)
+                    t.SetNet(a.GetNet())
+                    b.Add(t)
+                    n += 1
+                    self._linked = getattr(self, "_linked", set())
+                    ra, rc = "%s-%s" % (fp.GetReference(), a.GetNumber()), "%s-%s" % (fp.GetReference(), c.GetNumber())
+                    self._linked |= {(ra, rc), (rc, ra)}
+        self.notes.append("piste fra pad gemelli: %d" % n)
 
     def _zone(self, b, net, layer, X0, Y0, W, H, mm, pcbnew, prio=0):
         z = pcbnew.ZONE(b)
@@ -1134,6 +1193,18 @@ class Design:
         aperti = {}
         for m in re.finditer(r"Net '([^']+)' \((\d+) unrouted", r.stdout + r.stderr):
             aperti[m.group(1)] = int(m.group(2))
+        # le piste di _link_pairs Freerouting le conta come aperte anche se ci sono (il DRC no):
+        # quei collegamenti si tolgono dal conto. Senza d.link_pairs non cambia niente.
+        linked = getattr(self, "_linked", set())
+        if linked:
+            aperti = {}
+            for m in re.finditer(r"Net '([^']+)' \(\d+ unrouted[^\n]*\n((?:\s+- [^\n]+\n)*)", r.stdout + r.stderr):
+                conn = re.findall(r"- (\S+)\s+->\s+(\S+)", m.group(2))
+                k = sum(1 for c in conn if c not in linked)
+                if k:
+                    aperti[m.group(1)] = k
+                else:
+                    aperti.pop(m.group(1), None)
         b = pcbnew.LoadBoard(pcb)
         pcbnew.ImportSpecctraSES(b, ses)
         b.Save(pcb)

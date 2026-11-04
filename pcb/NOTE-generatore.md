@@ -142,6 +142,22 @@ Le vie piccole delle reti sottili (29/10) stavano nella scheda (0,2 mm) ma non n
 `.kicad_pro` (0,25 mm): Freerouting tracciava a 0,2 e il DRC contava errori di distanza
 (FX-SEND 36; probabile causa dei 3 del master, giro 5). Ora una fonte sola, `Design._classrules`.
 
+## Pad gemelli e fanout di traverso (2026-11-04, master)
+
+Due opzioni nuove, spente di default (FX-SEND rigenerato con le opzioni spente: PASSA):
+
+- `d.link_pairs = True`: due pad a foro passante vicini (<= 4 mm) della stessa impronta e della
+  stessa rete si uniscono con una pista dritta prima di Freerouting. Freerouting li lascia spesso
+  aperti (cursore e capo di un trimmer, pin doppi del C96; sulla J4 2x2 del master sempre). Su
+  pin SMD no: Freerouting conta come aperta una pista che non ha tracciato lui (il DRC no). Per lo
+  stesso motivo, con l'opzione accesa i collegamenti già uniti escono dal conto degli aperti.
+- `d.fanout_more = True`: se i due posti della via di massa sull'asse del pad sono occupati, si
+  prova anche di traverso e più lontano (0,75 / 1,1 / 1,5 mm). Un pad di massa senza via resta
+  un'isola di colata quando il routing la spezza. Master: pad senza via da 15 a 5.
+
+Regola per i connettori: due pin vicini della stessa rete su un header fanno fallire Freerouting
+su tutta la rete. Pin alternati (+5V, CTRL_GND, +5V, CTRL_GND) o `link_pairs`.
+
 ## Cosa resta (in ordine)
 
 1. **Retro vicino ai connettori.** Il retro si piazza ancora nel primo posto libero.

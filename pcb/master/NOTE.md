@@ -1,7 +1,17 @@
-# MASTER: note delle schede (bozza, 2026-10-28)
+# MASTER: note delle schede (bozza, 2026-10-28; giri del 2026-11-04 in fondo)
 
-Stato: `master-segnale.py` scritto, 100 × 220 coi due lati (dec. 142): **NON PASSA** (sotto). Non committato
-come scheda finché non passa (regola delle PCB).
+Stato al 2026-11-04 (todo 204 e 206): tre schede da 100 × 220, generate dal loro file.
+
+| Scheda | File | Impronte | Esito | Audio A1/A2/A3/A4/A5 |
+|---|---|---|---|---|
+| segnale | `master-segnale.py` | 283 | **PASSA** (giro 13) | 28/33/28/1/0 |
+| uscita L | `master-uscita.py L` | 155 | **PASSA** (giro 4) | 2/9/9/0/0 |
+| uscita R | `master-uscita.py R` | 144 | **PASSA** (giro 2) | 2/9/9/0/0 |
+
+Freerouting non dà lo stesso risultato a ogni giro: segnale 2 PASSA su 8 giri del 4/11 (i primi
+col generatore senza le due opzioni nuove), uscita L 1 su 2 dopo la correzione di J4, R 2 su 2.
+Valori dei componenti [PROVVISORIO]. A1 della segnale (28) sono i regolatori e i loro C: punto 5
+di `pcb/NOTE-generatore.md`.
 
 ## Finding: la scheda di segnale da sola non sta in 100 × 165 mm
 
@@ -83,3 +93,72 @@ Strade scritte il 2026-10-28 (la 1 è diventata la dec. 143):
 - [CHIUSO 2026-10-28] `footprint_symbol_mismatch` sui 6 ponticelli JP: l'impronta del ponticello a stagno è fuori distinta, il simbolo no. Ora il generatore li tiene fuori da tutte e due.
 - Aperti: pin liberi di D5
   (LM4040 NC), U42 (PG) e U43 (PG, VIOC) contati come net_conflict.
+
+## Giri del 2026-11-04 (todo 204 e 206)
+
+### Scheda di segnale
+
+Modifiche nel file, senza toccare il circuito:
+
+1. **+5V e CTRL_GND fuori dal C96 della segnale** (a21-a24): nessun pezzo li usa. La scheda comandi
+   li prende dalla J4 della scheda d'uscita L. CTRL_GND resta sui ritorni c16-c28.
+2. **RAW±22 fuori** (a5-a8): nessun pezzo li usa; li univa solo un ponticello pin-pin del C96
+   (giro 8: RAW+22 aperta).
+3. **MASTER LEVEL e BOOTH LEVEL sul lato componenti.** Sul retro i trimmer a foro passante restavano
+   in alto col blocco e i VCA e i partitori finivano 70-110 mm più in basso: LT_M e ECM_MR lunghe
+   oltre 100 mm (rete di CV sensibile), ECM_MR aperta al giro 7. Per far posto: BUFFER [A][B][C][N]
+   e VIE_TAP sul retro.
+4. Piste di potenza: +-18 e +-15 LN a 0,4 mm (<= 0,15 A; 0,6 lasciava aperta -18V), CTRL_GND 0,4.
+5. `d.link_pairs` e `d.fanout_more` (opzioni nuove del generatore, sotto).
+
+| Giro | Modifica | Esito |
+|---|---|---|
+| 6 (agente prima) | +5V e CTRL_GND dalla J4 della L | PASSA alle 13:19 |
+| 7 | stesso file, di nuovo | NON PASSA: ECM_MR (RV4-2/RV4-3) |
+| 8 | LEVEL sul davanti, BUFFER e VIE_TAP sul retro | NON PASSA: RAW+22 (a5-a6) |
+| 9 | senza RAW±22 | NON PASSA: isola di massa su C78 (pad senza via) |
+| 10 | stesso file | NON PASSA: ECM_MR, ECM_BR (RV-2/RV-3), RAW-27 (a3-a4) |
+| 11 | `link_pairs` su tutti i pad | NON PASSA: isola su C53; 11 falsi aperti fra pin SMD gemelli |
+| 12 | `link_pairs` solo foro passante, `fanout_more` | DRC 0 aperti; Freerouting conta RV8-2/3 aperta (falso) |
+| 13 | il conto ignora le piste gemelle | **PASSA** |
+
+**Finding: Freerouting non unisce due pad vicini della stessa impronta e della stessa rete.**
+Cursore e capo di un trimmer (RV4-2/3, RV8-2/3), pin doppi del C96 (a3/a4, a5/a6, a21/a22,
+a23/a24 dei giri 1-5), J4 della L. Ogni giro ne lascia aperti alcuni a caso; sulla J4 sempre.
+Rimedio nel generatore: una pista dritta prima di Freerouting (`d.link_pairs`).
+
+**Isole di massa.** Un pad SMD di massa senza via di fanout («senza posto libero») si collega
+solo con la colata del suo strato; se il routing la spezza resta un'isola (C78, C53). Con
+`d.fanout_more` i pad senza via scendono da 15 a 5. I 5 restano un rischio a ogni giro.
+
+### Schede d'uscita (todo 206)
+
+`master-uscita.py L|R` (bozza dell'agente prima, controllata contro master-out §3.3-3.8 e
+`RISULTATI-mute-ctrl.md`): una per lato, ognuna col suo C96 (a9-a26, c9; la L anche a5-a6
+RAW+22 e c17 AC_OK, dec. 143). Uguali salvo il mute controller [L] e il relè del REC, solo sulla L;
+la R comanda i suoi relè dalla GLOBAL_MUTE (c9).
+
+**J4 della L** (+5V e CTRL_GND verso la scheda comandi): con i pin 1-2 a +5V e 3-4 a CTRL_GND
+Freerouting lasciava aperte TUTTA +5V e TUTTA CTRL_GND (giri 1-2, anche con J4 spostata).
+Prova sul `.dsn`: senza J4, o coi pin alternati (+5V, CTRL_GND, +5V, CTRL_GND), 0 aperti.
+Ora i pin sono alternati. La scheda comandi va disegnata con la stessa piedinatura.
+
+| Scheda | Giro | Esito |
+|---|---|---|
+| L | 1 (agente prima), 2 (J4 spostata a x 50) | NON PASSA: +5V, CTRL_GND |
+| L | 3 (pin di J4 alternati) | NON PASSA: -18V (12 collegamenti) |
+| L | 4 (stesso file) | **PASSA** |
+| R | 1 (agente prima, file vecchio), 2 | **PASSA** |
+
+Sulle uscite restano 4 «violazioni preesistenti» che Freerouting segnala: via di fanout di massa
+troppo vicine ai pad -18V dei 100n (C10, C12, C14, C17 sulla L). Il DRC di KiCad non le conta.
+Probabile causa del giro 3 della L. Da guardare nel fanout del generatore.
+
+### Cosa resta
+
+1. Clip detector delle uscite: soglia e tenuta scritte a mano (NOTA, «da simulare»): simulare.
+2. Scheda comandi (pot, tasto MONO, LM3915, LED) e schedina dei connettori: da scrivere.
+   J3 della segnale (pin 17-20 liberi) e J4 della L sono i suoi due cavi.
+3. Pinout di MJE340/MJE350 sull'impronta BD139/BD140 («da verificare» nel file): dal datasheet.
+4. A1 della segnale: regolatori coi C a più di 10 mm.
+5. Nessuna domanda di design per Filippo da questi giri: nessuna modifica al backplane né al pannello.

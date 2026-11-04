@@ -1,0 +1,104 @@
+quantita;valore;impronta;riferimenti;nota
+2;220u 35V;CP_Radial_D8.0mm_P3.50mm;C1 C2;
+1;4u7 25V;C_1206_3216Metric;C11;rumore del riferimento (datasheet: 4,7 uF)
+3;4u7 25V;C_1206_3216Metric;C12 C14 C15;
+2;10u 25V;C_1206_3216Metric;C13 C16;
+1;1u;C_1206_3216Metric;C17;
+52;100n;C_0805_2012Metric;C18 C19 C20 C21 C25 C26 C27 C28 C30 C31 C33 C34 C35 C36 C37 C38 C39 C40 C41 C42 C43 C44 C45 C46 C47 C48 C49 C50 C53 C54 C55 C56 C57 C58 C59 C60 C63 C64 C65 C66 C67 C68 C71 C72 C73 C74 C77 C78 C79 C80 C81 C82;
+2;10p C0G;C_0805_2012Metric;C22 C23;
+1;47p C0G;C_0805_2012Metric;C24;stesso polo dell'I/V del VCA (20k // 22p): separazione piatta fino a 20 kHz
+5;22p C0G;C_0805_2012Metric;C29 C51 C52 C61 C62;
+2;10u 35V;CP_Radial_D5.0mm_P2.00mm;C3 C7;
+1;100n C0G;C_0805_2012Metric;C32;rampa 1 ms (dec. 80, senza BBM)
+2;47u 35V;CP_Radial_D6.3mm_P2.50mm;C4 C8;
+2;470u 25V;CP_Radial_D8.0mm_P3.50mm;C5 C9;
+2;100u 25V;CP_Radial_D6.3mm_P2.50mm;C6 C10;
+2;47p C0G;C_0805_2012Metric;C69 C75;
+2;100n C0G;C_1206_3216Metric;C70 C76;hold: niente altro sul nodo (sim/meter)
+1;1N4148W;D_SOD-123;D1;scarica Cadj
+1;S1G;D_SMA;D2;protezione inversa
+10;1N4148W;D_SOD-123;D3 D6 D7 D8 D9 D10 D11 D12 D13 D14;
+1;S1G;D_SMA;D4;
+1;LM4040-5.0;SOT-23;D5;
+2;ferrite 600R;L_1206_3216Metric;FB1 FB2;
+1;C96 maschio;DIN41612_C_3x32_Male_Horizontal_THT;J1;DIN 41612 C 3x32, angolo retto; a9-a12 sulle schede d'uscita (dec. 143)
+1;2x7 cavo piatto;PinHeader_2x07_P2.54mm_Vertical;J2;NOTA: cavo piatto verso le schede di uscita affiancate (dec. 142); AGND fra i segnali
+1;2x10 cavo piatto;PinHeader_2x10_P2.54mm_Vertical;J3;cavo piatto corto verso la scheda comandi (pot, MONO, meter); pin 17-20 liberi: +5V dalla J4 della scheda d'uscita L
+1;BD139;TO-126-3_Vertical;Q40;
+1;BD140;TO-126-3_Vertical;Q41;
+2;120 1%;R_0805_2012Metric;R1 R4;
+11;10k 0.1%;R_0805_2012Metric;R10 R11 R30 R32 R34 R85 R86 R111 R112 R130 R132;
+1;43.2k 0.1%;R_0805_2012Metric;R104;
+1;357k 0.1%;R_0805_2012Metric;R106;
+1;20.0k 0.1%;R_0805_2012Metric;R107;
+1;976 0.1%;R_0805_2012Metric;R109;
+1;1.33k 0.1%;R_0805_2012Metric;R110;
+33;20k 0.1%;R_0805_2012Metric;R12 R13 R14 R15 R16 R19 R20 R21 R22 R23 R24 R27 R28 R29 R31 R33 R35 R39 R40 R41 R42 R43 R44 R45 R46 R65 R69 R73 R74 R94 R98 R102 R103;
+2;10k 0.1%;R_0805_2012Metric;R122 R126;g = 0,287 (FS +24 dBu -> 5,00 V; doc 0,288)
+2;4k02 0.1%;R_0805_2012Metric;R123 R127;
+2;3M;R_0805_2012Metric;R125 R129;release 0,3 s (dec. 81)
+1;5k 0.1%;R_0805_2012Metric;R131;
+1;4k64 0.1%;R_0805_2012Metric;R133;doc 4,625k: E96 4,64k = 1,585 V (+0,02 dB)
+2;0;R_0805_2012Metric;R17 R25;MSUM6 (mic) dritto sul nodo: R di somma nei moduli (dec. 97)
+2;0;R_0805_2012Metric;R18 R26;MSUM7 (mono) dritto sul nodo: R di somma nei moduli (dec. 97)
+1;1k72 1%;R_0805_2012Metric;R2;19,2 V
+1;1k;R_0805_2012Metric;R3;NOTA: cap-moltiplicatore come il FX-SEND (~150 mA qui)
+5;6k19;R_0805_2012Metric;R36 R66 R70 R95 R99;NOTA: 5,1k del datasheet a -15 V riscalato a -18 V (2,4 mA)
+5;150k;R_0805_2012Metric;R37 R67 R71 R96 R100;
+5;51;R_0805_2012Metric;R38 R68 R72 R97 R101;
+1;10k;R_0805_2012Metric;R47;NOTA: tasto a ritenuta verso +5 REF; aperto = stereo
+1;10k;R_0805_2012Metric;R48;
+1;7k15 0.1%;R_0805_2012Metric;R49;
+1;1k72 1%;R_0805_2012Metric;R5;
+1;1k 0.1%;R_0805_2012Metric;R50;5 V x 1/8,15 = 0,613 V = -100 dB
+1;47;R_0805_2012Metric;R51;NOTA: 47 ohm di uscita, stabilità sul cavo del backplane
+7;47;R_0805_2012Metric;R52 R61 R62 R63 R64 R120 R121;
+1;100k;R_0805_2012Metric;R53;ricevitore >= 100k; tiene l'ingresso senza ponticello
+1;100k;R_0805_2012Metric;R54;
+2;6k81 0.1%;R_0805_2012Metric;R55 R58;
+2;3k16 0.1%;R_0805_2012Metric;R56 R59;
+2;757 0.1%;R_0805_2012Metric;R57 R60;
+3;1k;R_0805_2012Metric;R6 R124 R128;
+2;150k 0.1%;R_0805_2012Metric;R7 R8;
+2;68.1k 0.1%;R_0805_2012Metric;R75 R105;
+1;137k 0.1%;R_0805_2012Metric;R76;ramo d'offset per il +6 dB (shaper-master.cir)
+1;1.91k 0.1%;R_0805_2012Metric;R77;
+2;2.43k 0.1%;R_0805_2012Metric;R78 R82;
+1;16.9k 0.1%;R_0805_2012Metric;R79;
+2;38.3k 0.1%;R_0805_2012Metric;R80 R108;
+1;1.82k 0.1%;R_0805_2012Metric;R81;
+1;1.96k 0.1%;R_0805_2012Metric;R83;
+1;2.61k 0.1%;R_0805_2012Metric;R84;
+2;2k 0.1%;R_0805_2012Metric;R87 R113;NOTA: stadio del partitore x(-1/5): CV al pin = out/10
+2;100k;R_0805_2012Metric;R88 R114;NOTA: pot staccato = shaper a 0 V = taglio massimo
+6;1k 0.1%;R_0805_2012Metric;R89 R90 R92 R115 R116 R118;
+1;1k5;R_0805_2012Metric;R9;NOTA: ~6,7 mA nel riferimento
+2;909 0.1%;R_0805_2012Metric;R91 R117;E96: 909 (doc: 900)
+2;1M5;R_0805_2012Metric;R93 R119;
+5;50k;Potentiometer_Bourns_3266W_Vertical;RV1 RV2 RV3 RV6 RV7;trim di simmetria (THD minima)
+2;200;Potentiometer_Bourns_3266W_Vertical;RV4 RV8;trim di law, 25 giri (vca-trim §3.2)
+2;50k;Potentiometer_Bourns_3266W_Vertical;RV5 RV9;trim d'offset di coppia
+2;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U1 U20;
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U10;[C] REC
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U11;[N] MON verso il CUE
+4;V2181L;SOIC-8_3.9x4.9mm_P1.27mm;U12 U13 U17 U18;
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U14;I/V MASTER
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U15;shaper M
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U16;shaper B
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U19;I/V BOOTH
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U2;M e S
+2;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U21 U23;follower di scala e superdiodo
+2;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U22 U24;buffer dell'hold verso gli LM3915; seconda sezione libera, a inseguitore a massa
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U25;vrefA 5,000 V e vrefB 1,58 V
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U3;I/V del VCA di S e uscita R'
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U30;+5 e -5 V di riferimento
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U4;uscita L' e follower della rampa MONO
+1;LM317;TO-220-3_Vertical;U40;
+1;LM337;TO-220-3_Vertical;U41;
+1;LT3045EMSE;MSOP-12-1EP_3x4.039mm_P0.65mm_EP1.651x2.845mm;U42;EN/UV a IN; ILIM a massa = limite massimo; PG libero; PGFB a IN (fast start-up e PG spenti)
+1;LT3094EMSE;MSOP-12-1EP_3x4.039mm_P0.65mm_EP1.651x2.845mm;U43;EN/UV a IN; PG libero; PGFB a IN (fast start-up e PG spenti); ILIM a massa; VIOC libero
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U5;driver <= 50 ohm
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U6;nodo di programma
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U7;[A] verso MASTER LEVEL
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U8;[B] verso BOOTH LEVEL
+1;V2181L;SOIC-8_3.9x4.9mm_P1.27mm;U9;VCA del MONO: 0 dB a tasto spento, -100 dB a tasto premuto
