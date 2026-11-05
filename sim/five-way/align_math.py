@@ -14,7 +14,8 @@ Uso: python3 align_math.py  (nessuna dipendenza esterna)
 import cmath
 import math
 
-F1, F2, F3, F4 = 90.0, 350.0, 1200.0, 3500.0
+import sys
+F1, F2, F3, F4 = (80.0, 170.0, 1200.0, 6000.0) if "--e" in sys.argv else (90.0, 350.0, 1200.0, 3500.0)
 N = 8000
 FMIN, FMAX = 5.0, 60e3
 

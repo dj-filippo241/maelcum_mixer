@@ -72,9 +72,9 @@
 - NON è il crossover acustico: quello lo fa il DSP esterno; il 5-way è uno
   STRUMENTO performance ispirato ai preamp dub/soundsystem.
 - Riferimento interno −6 dB (pad in / makeup out, decisione 73).
-- KILL: 5 sezioni = 5 vie (SUB ~10-90, KICK ~90-350, MID ~350-1,2k,
-  HIGH ~1,2-3,5k, SUPER ~3,5-20k [PROVVISORIO dec. 66 — conferma a orecchio
-  = questione 67]); 24 dB/ott; overlap deliberato senza buchi; banca
+- KILL: 5 sezioni = 5 vie (SUB ~10-80, KICK ~80-170, MID ~170-1,2k,
+  HIGH ~1,2-6k, SUPER ~6-20k: incroci E dell'impianto, dec. 150; erano
+  90/350/1,2k/3,5k, dec. 66); 24 dB/ott; overlap deliberato senza buchi; banca
   complementare (somma piatta); kill PRIMA dell'EQ creativo (il boost non
   ripristina materiale killato); kill switch per via (altoparlanti fisici).
 - EQ CREATIVO: gain/position/width per banda; gain −∞/0/+15 (EQ1-3), +12
@@ -130,8 +130,13 @@ cannot be restored" — corpus §16; "boost non ripristina materiale killato"
 
 ## 3. Kill bank — matematica complementare (questione 8: RISPOSTA v0.2)
 
-**Scelta [PROVVISORIA — frequenze = questione 67]**: crossover Linkwitz-Riley
-4° ordine ai 4 punti (90/350/1,2k/3,5 kHz): ogni edge = due Butterworth 2°
+**REV 2026-11-05 (todo 259): incroci E, 80 / 170 / 1,2k / 6k Hz (dec. 150).**
+Il testo sotto è scritto coi valori di partenza 90/350/1,2k/3,5k: la
+matematica non cambia, cambiano frequenze, valori e numeri misurati.
+Banca agli incroci E: §3.2 e §8.2bis (`bank-aligned-e.cir`).
+
+**Scelta**: crossover Linkwitz-Riley
+4° ordine ai 4 punti (in origine 90/350/1,2k/3,5 kHz; oggi 80/170/1,2k/6k): ogni edge = due Butterworth 2°
 ordine (Q 0,707) in cascata. Proprietà che risponde ai requisiti:
 - 24 dB/ott ✓ (4 poli per edge);
 - "overlap deliberato senza buchi" = la sovrapposizione −6 dB delle LR ✓;
@@ -198,6 +203,41 @@ picco. In ascolto: l'energia sotto ~100 Hz arriva ~7 ms dopo il medio-alto,
 dentro la finestra di fusione (~20 ms) — comportamento normale di un
 crossover ripido; il DSP acustico a valle fa il suo allineamento. Comunque
 dato da confermare a orecchio (questione 67, ascolto M4L).
+
+### 3.2 Incroci E (dec. 150, REV 2026-11-05) — valori e numeri
+
+Stessa banca, stesse sezioni, frequenze 80 / 170 / 1,2k / 6k Hz. Valori di
+partenza [PROVVISORIO — regola 3], formule del §3.1:
+
+| Edge | Sallen-Key (C, R; HP: R a massa = 2R) | AP2 (C, R1 / R2 / Rf) |
+|---|---|---|
+| 80 Hz | 100 nF, 14,1 k (HP 28,1 k) | — (nessuna banda lo compensa) |
+| 170 Hz | 100 nF, 6,62 k (HP 13,2 k) | 47 nF, 14,1 k / 28,2 k / 21,1 k |
+| 1,2 kHz | 10 nF, 9,38 k (HP 18,8 k) | 10 nF, 9,38 k / 18,8 k / 14,1 k |
+| 6 kHz | 4,7 nF, 3,99 k (HP 7,98 k) | 1,5 nF, 12,5 k / 25,0 k / 18,8 k |
+
+Numero di sezioni e di chip invariato (16 SK + 6 AP2 per lato).
+
+**Group delay della somma**: picco 10,1 ms a 54 Hz (era 7,9 ms a 58 Hz).
+8,8 ms a 10 Hz, 1,5 ms a 350 Hz, 0,53 ms a 1,2k, 0,15 ms a 3,5k. Il
+crossover a 80/170 è più stretto e più basso: il ritardo dei bassi sale
+di ~2 ms, sempre dentro la finestra di fusione (~20 ms).
+
+**Cosa si sente coi kill** (residuo minimo dentro la banda tolta, §8.2bis):
+
+| Kill | Incroci E | Prima (90/350/1,2k/3,5k) |
+|---|---|---|
+| SUB | −96 dB a 5 Hz, −34 dB a 30 Hz | −76 a 10 Hz |
+| KICK | **−9,6 dB a 117 Hz** | −18,4 |
+| MID | −28 dB a 450 Hz | −16,4 |
+| HIGH | −22,4 dB a 2,7 kHz | −14,0 |
+| SUPER | −32 dB a 15 kHz, −50 a 25 kHz | −50,5 a 15k |
+
+KICK è una via stretta (80-170 Hz, poco più di un'ottava): col kill il
+kick cala di ~10 dB ma non sparisce, perché le code di SUB e MID ci si
+sovrappongono. MID e HIGH, più larghe, si tolgono molto meglio di prima.
+È lo stesso comportamento del prototipo MC-5WAY con CROSSOVER E, che
+usa la stessa banca.
 
 **Gate di kill [REV 2026-09-30 pomeriggio → decisione 88, design CHIUSO
 §8.10]**: **switch analogico di precisione in configurazione π SPDT** per
@@ -994,6 +1034,16 @@ Altri risultati:
 - Idea collegata (da valutare nel design di sistema, questione 18 CUE): le
   prese di banda allineate in fase sono utili anche per un monitoring CUE
   coerente in fase.
+
+### 8.2bis Banca agli incroci E (`bank-aligned-e.cir`, `align_math.py --e`, 2026-11-05, todo 259)
+
+LTspice (stessa macro e stessi casi del §8.2, frequenze 80/170/1,2k/6k):
+nessun kill, scarto peggiore −0,011 dB su 5 Hz-60 kHz (requisito ±0,1 dB).
+Calcolo esatto (`align_math.py --e`): errore 1,3e-15, kill e group delay
+uguali a LTspice al centesimo di dB. Residui dei kill: tabella del §3.2.
+Varianti lite agli incroci E: A (3 AP2/lato) −0,054 dB, B −0,009, C −0,002.
+
+Verificato in: Python sì / LTspice sì / Live no (MC-5WAY usa già gli incroci E).
 
 ### 8.3 v0.2 — Celle parametriche + cascata (`param-cell.cir`, `param-cascade.cir`)
 
