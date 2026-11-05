@@ -6,7 +6,7 @@ Esito: **SCHEMA PASSA** (ERC 0 errori), 41 componenti. **PCB: PASSA** (2026-11-0
 ## Cosa c'è
 
 Per ogni rail: fusibile di gruppo 5x20, TVS verso il proprio 0 V, Schottky inverso, bulk.
-±22,0 audio (pin raw ±27): T2,5 A, SMBJ26A, 2,2 mF. ±19 LN (pin raw ±22): T1 A, SMBJ22A, 1 mF.
+±22,0 audio (pin raw ±27): T4 A (era T2,5 A, todo 258), SMBJ26A, 2,2 mF. ±19 LN (pin raw ±22): T1 A, SMBJ22A, 1 mF.
 [M] ±27 raw (a9-a12): T500 mA, SMBJ33A, 1 mF 63 V. +5: T2 A, SMBJ5.0A, 1 mF. V_FAN: T500 mA.
 Stella: un 0 ohm 2512 per ogni 0 V del cavo verso AGND; bond unico AGND-CTRL_GND (0 ohm);
 bond CHASSIS-AGND su un ponticello removibile (grounding §2). Pull-up 10k di AC_OK (c17).

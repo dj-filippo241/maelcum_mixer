@@ -252,7 +252,7 @@ con un filo suo, mai su AGND né su CTRL_GND.
 
 | Livello | Dove | Valori [PROVVISORIO] |
 |---|---|---|
-| Gruppo | PSU-IN, 5×20 accessibili | ±22: T2,5 A per ramo · ±19: T1 A · [M]: T500 mA · +5: T2 A · V_FAN: T500 mA |
+| Gruppo | PSU-IN, 5×20 accessibili | ±22: T4 A per ramo (REV 2026-11-05) · ±19: T1 A · [M]: T500 mA · +5: T2 A · V_FAN: T500 mA |
 | Modulo | backplane, PTC per slot e per rail | canale 0,3 A · 5-way 0,6 A · FX 0,4 A · filtro 0,3 A · FX-SEND, CUE, mic, mono 0,1-0,2 A · opzionali 0,1-0,3 A |
 
 Motivo del cambio rispetto a `sistema-psu.md` §4 (un fusibile 5×20 per
@@ -260,6 +260,18 @@ modulo e per rail): coi moduli opzionali i fusibili diventerebbero ~40. Le
 PTC si ripristinano da sole a guasto rimosso e non chiedono accesso. Il
 regolatore locale di ogni modulo resta il primo limite (1,5-2,2 A con
 protezione termica).
+
+**REV 2026-11-05 (todo 258): ±22 da T2,5 A a T4 A.** Dopo la dec. 131 il
+ramo audio assorbe 2,12 A base, 2,44 A con gli opzionali, 2,70 A di
+progetto. Il T2,5 A lavorava all'85 %, al 98 % e al 108 % della nominale:
+un fusibile ritardato non va tenuto oltre il ~75 % in continuo (regola
+di derating dei costruttori, scritta a memoria, non riletta), altrimenti
+invecchia e salta senza guasto. Il T4 A lavora al 53 / 61 / 68 %, con
+margine anche a 45 °C nel mixer. Coordinamento: resta sotto il T8 A del
+W1 nel box, quindi con un LDO del box in corto (TVS in conduzione) apre
+prima il fusibile del mixer. Un corto a valle lo prende il limite
+dell'LDO del box (~4 A a freddo, ~3,3 A a caldo, Rsense 0,15 Ω) e le PTC
+per slot. Gli altri gruppi restano: ±19 T1 A su 0,60 A (60 %).
 
 ### 4.4 Supervisor: soglie e tempi
 

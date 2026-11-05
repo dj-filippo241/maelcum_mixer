@@ -62,9 +62,9 @@ def rail(cin, out, zero, fuse, tvs, schottky, bulk, bulk_fp, neg=False, nota="")
 
 D18 = "Capacitor_THT:CP_Radial_D18.0mm_P7.50mm"
 D12 = "Capacitor_THT:CP_Radial_D12.5mm_P5.00mm"
-d.block = "RAIL AUDIO +-22,0 V (pin raw +-27): T2,5 A, TVS 26 V, 2,2 mF"
-rail("C+22", "RAW+27", "0V_A", "T2.5A", "SMBJ26A", "SS54", "2200u 35V", D18)
-rail("C-22", "RAW-27", "0V_A", "T2.5A", "SMBJ26A", "SS54", "2200u 35V", D18, neg=True)
+d.block = "RAIL AUDIO +-22,0 V (pin raw +-27): T4 A, TVS 26 V, 2,2 mF"
+rail("C+22", "RAW+27", "0V_A", "T4A", "SMBJ26A", "SS54", "2200u 35V", D18)
+rail("C-22", "RAW-27", "0V_A", "T4A", "SMBJ26A", "SS54", "2200u 35V", D18, neg=True)
 d.block = "RAIL LN +-19 V (pin raw +-22): T1 A, TVS 22 V, 1 mF"
 rail("C+19", "RAW+22", "0V_LN", "T1A", "SMBJ22A", "SS54", "1000u 35V", D12)
 rail("C-19", "RAW-22", "0V_LN", "T1A", "SMBJ22A", "SS54", "1000u 35V", D12, neg=True)
