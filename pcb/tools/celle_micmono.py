@@ -88,16 +88,33 @@ def backplane(d, msum):
 
 
 # ------------------------------------------------------------ alimentazione
-def power_18_sw(d, base=40):
-    """+-18 audio (LM317/337 + cap-moltiplicatore, come fx-send.py), +-15 switch (78L15/79L15), +5VF."""
+def _sub(d, blocco, nome):
+    """Con blocco (stringa) ogni regolatore fa un blocco suo coi suoi condensatori: il
+    piazzamento li tiene vicini (A1 del controllo audio, todo 248). Senza: niente cambia."""
+    if blocco:
+        d.block = "%s: %s" % (blocco, nome)
+
+
+def power_18_sw(d, base=40, blocco=None):
+    """+-18 audio (LM317/337 + cap-moltiplicatore, come fx-send.py), +-15 switch (78L15/79L15), +5VF.
+    blocco: vedi _sub (default None = un blocco solo, quello già scritto dal modulo)."""
     d.power_nets("RAW+27", "RAW-27", "RAW+22", "RAW-22", "+5V", "AGND", "CTRL_GND", "CHASSIS", width=0.8)
     d.power_nets("+15SW", "-15SW", "+5VF", width=0.25)
     d.power_nets("+18V", "-18V", "V27F+", "V27F-", "V22F+", "V22F-", width=0.6)
+    # con blocco, ogni ferrite va col suo regolatore: il blocco ha un pin del C96 e si piazza
+    # vicino al connettore, non al centro della scheda (todo 248)
+    sub = {"V27F+": "+18V (LM317 + BD139)", "V27F-": "-18V (LM337 + BD140)",
+           "V22F+": "+15SW (78L15)", "V22F-": "-15SW (79L15)", "+5VF": "+5VF"}
     for a, b in (("RAW+27", "V27F+"), ("RAW-27", "V27F-"), ("RAW+22", "V22F+"), ("RAW-22", "V22F-"), ("+5V", "+5VF")):
+        _sub(d, blocco, sub[b])
         d.part("FB", "Device:FerriteBead_Small", "ferrite 600R", FB, {1: a, 2: b})
+    _sub(d, blocco, "+18V (LM317 + BD139)")
     d.CP("V27F+", "AGND", "220u 35V", CPF)
+    _sub(d, blocco, "-18V (LM337 + BD140)")
     d.CP("AGND", "V27F-", "220u 35V", CPF)
+    _sub(d, blocco, "+5VF")
     d.CP("+5VF", "CTRL_GND", "47u 10V", "Capacitor_THT:CP_Radial_D5.0mm_P2.00mm")
+    _sub(d, blocco, "+18V (LM317 + BD139)")
     d.part("U", "Regulator_Linear:LM317_TO-220", "LM317", "Package_TO_SOT_THT:TO-220-3_Vertical",
            {"VI": "V27F+", "VO": "VREG+", "ADJ": "ADJ+"}, ref="U%d" % base)
     d.R("VREG+", "ADJ+", "120 1%")
@@ -111,6 +128,7 @@ def power_18_sw(d, base=40):
     d.part("Q", "Transistor_BJT:BD139", "BD139", "Package_TO_SOT_THT:TO-126-3_Vertical",
            {"C": "VREG+", "B": "BASE+", "E": "+18V"}, ref="Q%d" % base)
     d.CP("+18V", "AGND", "100u 25V", "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm")
+    _sub(d, blocco, "-18V (LM337 + BD140)")
     d.part("U", "Regulator_Linear:LM337_TO220", "LM337", "Package_TO_SOT_THT:TO-220-3_Vertical",
            {"VI": "V27F-", "VO": "VREG-", "ADJ": "ADJ-"}, ref="U%d" % (base + 1))
     d.R("VREG-", "ADJ-", "120 1%")
@@ -124,21 +142,28 @@ def power_18_sw(d, base=40):
     d.part("Q", "Transistor_BJT:BD140", "BD140", "Package_TO_SOT_THT:TO-126-3_Vertical",
            {"C": "VREG-", "B": "BASE-", "E": "-18V"}, ref="Q%d" % (base + 1))
     d.CP("AGND", "-18V", "100u 25V", "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm")
+    _sub(d, blocco, "+15SW (78L15)")
     d.part("U", "Regulator_Linear:L78L15_SOT89", "78L15", "Package_TO_SOT_SMD:SOT-89-3",
            {"IN": "V22F+", "GND": "AGND", "OUT": "+15SW"}, ref="U%d" % (base + 2))
+    _sub(d, blocco, "-15SW (79L15)")
     d.part("U", "Regulator_Linear:L79L15_SOT89", "79L15", "Package_TO_SOT_SMD:SOT-89-3",
            {"VI": "V22F-", "GND": "AGND", "VO": "-15SW"}, ref="U%d" % (base + 3))
+    _sub(d, blocco, "+15SW (78L15)")
     d.C("V22F+", "AGND", "1u 50V", C12)
+    _sub(d, blocco, "-15SW (79L15)")
     d.C("AGND", "V22F-", "1u 50V", C12)
+    _sub(d, blocco, "+15SW (78L15)")
     d.C("+15SW", "AGND", "1u 25V", C12)
+    _sub(d, blocco, "-15SW (79L15)")
     d.C("AGND", "-15SW", "1u 25V", C12)
 
 
-def power_ln(d, base=44):
+def power_ln(d, base=44, blocco=None):
     """+-15 LN dal +-18 (LT3045 / LT3094, come master-segnale.py). Il design doc dice «da raw
     +-22», ma LT3045 e LT3094 reggono 20 V in ingresso: NOTA, si parte dal +-18."""
     d.power_nets("+15LN", "-15LN", width=0.6)
     MSE = "Package_SO:MSOP-12-1EP_3x4.039mm_P0.65mm_EP1.651x2.845mm"
+    _sub(d, blocco, "+15LN (LT3045)")
     d.part("U", "Regulator_Linear:LT3045xMSE", "LT3045EMSE", MSE, {
         1: "+18V", 2: "+18V", 3: "+18V", 4: "+18V", 5: None, 6: "AGND", 7: "+18V", 8: "SETP",
         9: "AGND", 10: "+15LN", 11: "+15LN", 12: "+15LN", 13: "AGND"}, ref="U%d" % base,
@@ -149,6 +174,7 @@ def power_ln(d, base=44):
     d.C("SETP", "AGND", "4u7 25V", C12, note="rumore del riferimento (datasheet: 4,7 uF)")
     d.C("+18V", "AGND", "4u7 25V", C12)
     d.C("+15LN", "AGND", "10u 25V", C12)
+    _sub(d, blocco, "-15LN (LT3094)")
     d.part("U", "Regulator_Linear:LT3094xMSE", "LT3094EMSE", MSE, {
         1: "-18V", 2: "-18V", 13: "-18V", 3: "-18V", 4: None, 5: "-18V", 6: "AGND", 7: None, 8: "SETN",
         9: "AGND", 10: "-15LN", 11: "-15LN", 12: "-15LN"}, ref="U%d" % (base + 1),

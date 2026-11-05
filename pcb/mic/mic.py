@@ -14,15 +14,187 @@ pcb/mic/NOTE.md). XLR su un cavo a J3: la sua posizione sul pannello non è deci
 Fonti: sim/mic/mic-pre.inc, sim/mic/mic-limiter.cir, sim/fx/fx-eq2-pot10k.cir, master-segnale.py.
 Valori [PROVVISORIO]. Le scelte non scritte nei documenti sono segnate NOTA (pcb/mic/NOTE.md).
 """
-import os, sys
+import math, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "tools"))
+import pcbgen
 from pcbgen import Design
 import celle_micmono as cm
 from celle_micmono import opa2, opa4, diode, C12, VCA, TRIM
 
-d = Design("mic", HERE, "maelcum MIC (dec. 97) - bozza v0.1", board=(100, 220), rev="0.1-bozza")
+class MicDesign(Design):
+    """Design del generatore più una regola di piazzamento locale (todo 248): i C a montaggio
+    superficiale di un regolatore U (stesso blocco, una rete non di massa su un pin del
+    regolatore) si legano a quel pin come i 100n degli op-amp, e viaggiano col chip. Prima
+    il piazzamento a file li metteva a 13-20 mm dal pin (A1 del controllo audio)."""
+
+    def _decaps(self):
+        groups = super()._decaps()
+        regs = set(self.audio_rules.get("regolatori", []))
+        taken = {c for caps in groups.values() for c, _ in caps}
+        for u in self.parts:
+            if u.ref not in regs or not u.ref.startswith("U") or u.place:
+                continue
+            used = {pin for _, pin in groups.get(u.ref, [])}
+            for c in self.parts:
+                if not c.ref.startswith("C") or c.block != u.block or c.place or c.ref in taken \
+                        or not pcbgen._smd(c.fp):
+                    continue
+                sup = [n for n in c.nets.values() if n and n not in self.masse]
+                if len(sup) != 1 or sup[0] not in self.power:
+                    continue      # solo i C di un'alimentazione: SETP/SETN lasciano posto al fanout del pin 9
+                pins = [k for k, n in sorted(u.nets.items()) if n == sup[0] and k not in used]
+                if pins:
+                    groups.setdefault(u.ref, []).append((c.ref, pins[0]))
+                    self._regpins[c.ref] = pins
+                    used.add(pins[0])
+                    taken.add(c.ref)
+        return groups
+
+    _regpins = {}
+
+    def route(self, pcb, passes=40):
+        """Freerouting fino a d.route_tries volte (4), finché non resta niente di aperto (todo 248).
+
+        Perché cambia da un giro all'altro: il piazzamento è identico, ma la scheda scritta da
+        build_pcb tiene pezzi e pin in un ordine diverso a ogni costruzione, il .dsn lo eredita e
+        Freerouting dà un risultato diverso per ogni ordine. Rileggere lo stesso file dà lo stesso
+        ordine e lo stesso risultato (tre tentativi sulla stessa scheda: tre volte lo stesso
+        aperto; anche esportando il .dsn in un processo nuovo). Per questo ogni nuovo tentativo
+        ricostruisce la scheda con build_pcb e cambia il numero massimo di passate (-mp 40, poi
+        20, 30): Freerouting oscilla fra due stati dalla passata ~14 e si ferma in uno diverso.
+        Il controllo è il DRC di kicad-cli sugli errori (aperti e distanze), con le colate di
+        massa come nel giro vero e le classi del .kicad_pro. Resta il tentativo che passa (o
+        l'ultimo). Un PASSA al secondo o terzo tentativo è scritto nelle note del riepilogo."""
+        import shutil
+        import pcbnew
+        import json
+        import subprocess
+        prova = os.path.join(self.outdir, "out", "prova-routing.kicad_pcb")
+        prova_pro, prova_drc = prova[:-len(".kicad_pcb")] + ".kicad_pro", prova + ".drc.json"
+        tries = getattr(self, "route_tries", 4)
+        esiti = []
+        for k in range(tries):
+            if k:
+                n = len(self.notes)
+                pcb = self.build_pcb()
+                del self.notes[n:]          # le note del piazzamento sono già scritte
+            mp = passes if k == 0 else (20, 30, 15)[(k - 1) % 3]
+            res = super().route(pcb, mp)
+            sig = {n: c for n, c in res.get("aperti", {}).items() if n not in (self.gnd, "CHASSIS")}
+            shutil.copy(pcb, prova)
+            shutil.copy(os.path.join(self.outdir, self.name + ".kicad_pro"), prova_pro)
+            self.pours(prova)
+            subprocess.run([pcbgen.CLI, "pcb", "drc", "--format", "json", "--severity-error",
+                            "-o", prova_drc, prova], capture_output=True)
+            rep = json.load(open(prova_drc)) if os.path.exists(prova_drc) else {}
+            unc = len(rep.get("unconnected_items", []))
+            tipi = {}
+            for v in rep.get("violations", []):
+                if v.get("severity") == "error":
+                    tipi[v.get("type")] = tipi.get(v.get("type"), 0) + 1
+            dist = sum(tipi.values())
+            esiti.append("giro %d (-mp %d): %s, DRC %d aperti, errori %s" % (k + 1, mp, sig or "Freerouting chiuso", unc, tipi or 0))
+            if res.get("ok") and not sig and unc == 0 and dist == 0 and rep:
+                break
+        for f in (prova, prova_pro, prova_drc, prova[:-len(".kicad_pcb")] + ".kicad_prl"):
+            if os.path.exists(f):
+                os.remove(f)
+        self.notes.append("Freerouting (mic.py, %d tentativi al più): %s" % (tries, "; ".join(esiti)))
+        res["tentativi"] = len(esiti)
+        return res
+
+    def _attach(self, fps, ic, caps):
+        """Il C di un regolatore va sul pin d'angolo (il più lontano dal centro) fra quelli della
+        sua rete: sul pin di mezzo copriva il pin 9 di massa dell'LT3094, che restava senza via."""
+        c0, used, out = fps[ic].GetPosition(), set(), []
+        pads = {pd.GetNumber(): pd.GetPosition() for pd in fps[ic].Pads()}
+        for cref, pin in caps:
+            cand = [k for k in self._regpins.get(cref, []) if k in pads and k not in used]
+            if cand:
+                pin = max(cand, key=lambda k: (pads[k].x - c0.x) ** 2 + (pads[k].y - c0.y) ** 2)
+            used.add(pin)
+            out.append((cref, pin))
+        super()._attach(fps, ic, out)
+
+    def _fanout(self, b, net, mm, pcbnew):
+        """Fanout del generatore, poi una seconda ricerca per i pad di massa rimasti senza via
+        (todo 248): un pad di massa senza via lascia un'isola di colata su F.Cu o B.Cu, e il DRC
+        dava «unconnected» a giri alterni (U45.9, C56, C61, il pad esposto di U44).
+        - pad esposto (lato corto >= 1,5 mm): via al centro;
+        - altri: 8 direzioni, distanze crescenti fino a 2,5 mm, con gli stessi controlli del
+          generatore (niente pad di altre reti sulla via o sulla pista, 0,85 mm da un'altra via)."""
+        super()._fanout(b, net, mm, pcbnew)
+        code = net.GetNetCode()
+        vias = [t.GetPosition() for t in b.GetTracks() if t.GetClass() == "PCB_VIA" and t.GetNetCode() == code]
+        altri = [pd for f in b.GetFootprints() for pd in f.Pads() if pd.GetNetCode() != code]
+        X0, Y0, (W, H) = 50.0, 50.0, self.board
+        n_ep = n = saltate = 0
+
+        def add(pad, vp, track):
+            v = pcbnew.PCB_VIA(b)
+            v.SetPosition(vp)
+            v.SetWidth(mm(0.6))
+            v.SetDrill(mm(0.3))
+            v.SetNet(net)
+            b.Add(v)
+            vias.append(vp)
+            if track:
+                t = pcbnew.PCB_TRACK(b)
+                t.SetStart(pad.GetPosition())
+                t.SetEnd(vp)
+                t.SetWidth(mm(0.4))
+                t.SetLayer(pcbnew.F_Cu if pad.IsOnLayer(pcbnew.F_Cu) else pcbnew.B_Cu)
+                t.SetNet(net)
+                b.Add(t)
+
+        for fp in b.GetFootprints():
+            for pad in fp.Pads():
+                if pad.GetNetCode() != code or pad.GetAttribute() != pcbnew.PAD_ATTRIB_SMD:
+                    continue
+                pp, sz = pad.GetPosition(), pad.GetSize()
+                reach = max(sz.x, sz.y) / 2 + mm(1.0)
+                if any((v.x - pp.x) ** 2 + (v.y - pp.y) ** 2 <= reach ** 2 for v in vias):
+                    continue
+                if min(sz.x, sz.y) >= mm(1.5):
+                    add(pad, pp, False)
+                    n_ep += 1
+                    continue
+                vp = None
+                for dist in (0.75, 1.0, 1.3, 1.7, 2.1, 2.5):
+                    for k in range(8):
+                        a = math.radians(45 * k)
+                        ex = abs(math.cos(a)) * sz.x / 2 + abs(math.sin(a)) * sz.y / 2
+                        r = ex + mm(dist)
+                        cand = pcbnew.VECTOR2I(int(pp.x + r * math.cos(a)), int(pp.y + r * math.sin(a)))
+                        if not (X0 + 1.2 < cand.x / 1e6 < X0 + W - 1.2 and Y0 + 1.2 < cand.y / 1e6 < Y0 + H - 1.2):
+                            continue
+                        mids = [pcbnew.VECTOR2I(pp.x + (cand.x - pp.x) * j // 4, pp.y + (cand.y - pp.y) * j // 4)
+                                for j in (1, 2, 3)]
+                        lay_ok = lambda o: o.IsOnLayer(pcbnew.F_Cu if pad.IsOnLayer(pcbnew.F_Cu) else pcbnew.B_Cu)
+                        if any(o.HitTest(cand, mm(0.3 + 0.25)) for o in altri):
+                            continue
+                        if any(lay_ok(o) and o.HitTest(q, mm(0.2 + 0.2)) for o in altri for q in mids):
+                            continue
+                        if any((cand.x - q.x) ** 2 + (cand.y - q.y) ** 2 < mm(0.85) ** 2 for q in vias):
+                            continue
+                        vp = cand
+                        break
+                    if vp:
+                        break
+                if vp is None:
+                    saltate += 1
+                    continue
+                add(pad, vp, True)
+                n += 1
+        self.notes.append("fanout di massa, seconda ricerca (mic.py): %d via, %d nei pad esposti, %d ancora senza"
+                          % (n, n_ep, saltate))
+
+d = MicDesign("mic", HERE, "maelcum MIC (dec. 97) - bozza v0.1", board=(100, 220), rev="0.1-bozza")
 d.gnd = "AGND"
+d.inner_signal = True     # SMD sui due lati (dec. 142): In2 strato di piste, massa piena su In1, come master e canale
+d.cluster_gap = 0.8      # 0,5 di default: SMB e MUTE_CV (U7, retro) restavano aperte (todo 248)
+d.link_pairs = True   # pin gemelli del C96 (+5V, CTRL_GND): Freerouting li lasciava aperti (todo 248)
 
 from cavo import CAVO as FILI     # ordine dei fili: cavo.py, letto anche dalla scheda comandi
 
@@ -30,8 +202,8 @@ d.block = "BACKPLANE C96 (classe MIC/GEN, MSUM6)"
 cm.backplane(d, "MSUM6")
 
 d.block = "ALIMENTAZIONE +-18 audio, +-15 switch, +5, +-15 LN"
-cm.power_18_sw(d)
-cm.power_ln(d)
+cm.power_18_sw(d, blocco="ALIM")   # un blocco per regolatore coi suoi C: A1 (todo 248)
+cm.power_ln(d, blocco="ALIM")
 d.power_nets("+18V", "-18V", width=0.4)   # NOTA: a 0,6 mm Freerouting lasciava -18V aperta (todo 237)
 
 # ------------------------------------------------------------ ingresso
