@@ -414,7 +414,8 @@ def genexpr():
         r(f"aw = (tw <= 0.5) * {mw / 0.5!r} * tw + (tw > 0.5) * "
           f"({mw!r} + {(1 - mw) / 0.5!r} * (tw - 0.5));")
         r(f"ke{n} = ({am!r} + {1 - am!r} * aw) / {fw.WIDTH_Q0!r};")
-    r(f"mg = s_growl / 100;")
+    r(f"// GROWL: curva lenta, mg = t^{fw.GROWL_ESP:g}")
+    r(f"mg = pow(s_growl / 100, {fw.GROWL_ESP!r});")
     tn = "s_nastro / 100"
     r(f"tn = {tn};")
     r(f"mt = {fw.NASTRO_MAX!r} * ((tn <= 0.5) * {fw.TAPER_A_MID!r} * tn / 0.5"
@@ -425,8 +426,9 @@ def genexpr():
     if not SEMPLICE:
         inv = nbm.SCELTA in nbm.INVERSA
         r("// NASTRO A BANDE: manopola a curva "
-          + ("inversa, tb = 1 - (1 - tn)^2" if inv else "lineare"))
-        r("tb = 1 - (1 - tn) * (1 - tn);" if inv else "tb = tn;")
+          + (f"inversa, tb = 1 - (1 - tn)^{nbm.INV_ESP:g}" if inv
+             else "lineare"))
+        r(f"tb = 1 - pow(1 - tn, {nbm.INV_ESP!r});" if inv else "tb = tn;")
         r(f"mtb = {fw.NASTRO_MAX!r} * ((tb <= 0.5) * {fw.TAPER_A_MID!r} * tb"
           f" / 0.5 + (tb > 0.5) * ({fw.TAPER_A_MID!r} + "
           f"{1 - fw.TAPER_A_MID!r} * (tb - 0.5) / 0.5));")

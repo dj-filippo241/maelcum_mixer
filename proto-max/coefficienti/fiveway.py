@@ -241,6 +241,16 @@ NASTRO_MAX = 0.85               # 30 % poco, 70 % «un po piu aggressivo» (Fili
 # 2026-10-31 (Filippo, libretto 9.3: «nastro forse deve essere piu udibile
 # prima nella curva»): taper log 20 % (come WIDTH, dec. 129) al posto del
 # taper A 10 % [PROVVISORIO]. Il nome resta per i generatori.
+# Curva della manopola GROWL (tutte le voci di GROWL VER): mg = t^GROWL_ESP.
+# Lineare fino al 2026-11-05; poi 1,5 (Filippo: «sale un po piu lenta»;
+# a meta corsa 0,35). Hardware: pot a curva logaritmica.
+GROWL_ESP = 1.5
+
+
+def growl_law(theta):
+    return theta ** GROWL_ESP
+
+
 TAPER_A_MID = 0.5               # 2026-10-31 seconda prova: pot lineare (era 0,2, poi 0,1)
 
 
@@ -404,7 +414,7 @@ class Completo:
         gn = 10 ** (al.NL_GMAX_DB * mt / 20)       # spinta del NASTRO LIBERO
         import nastro_bande
         ub = nastro_bande.rotazione(mt)            # curva del NASTRO A BANDE
-        v = self.sat.passo(y * LIV * PAD, mg, nastro_law(mt), libero, nv,
+        v = self.sat.passo(y * LIV * PAD, growl_law(mg), nastro_law(mt), libero, nv,
                            gn, nastro_law(ub),
                            10 ** (al.NL_GMAX_DB * ub / 20))[0]
         return v / (LIV * PAD)

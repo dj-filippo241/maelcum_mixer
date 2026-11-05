@@ -830,3 +830,20 @@ Rumore (`module-noise-b9.cir`, `noise_total.py`): NASTRO B9 a fine corsa −79,8
 (B8: −79,1; target −80), a metà manopola −83,3, tutto chiuso −85,9.
 
 Verificato in: Python sì / LTspice sì sotto 1 kHz, no a 3 e 12 kHz / Live no (da sentire).
+
+## 17. Curve delle manopole GROWL e NASTRO (2026-11-05, richiesta di Filippo)
+
+Filippo: «sulla curva del growl vorrei che salisse un po più lenta, quella del nastro un po più
+veloce». Fine corsa invariati: cambia solo come si arriva al 100 %.
+
+| Manopola | 25 % | 50 % | 75 % | Formula |
+|---|---|---|---|---|
+| GROWL prima (lineare) | 25 % | 50 % | 75 % | mg = t |
+| GROWL ora | 12,5 % | 35 % | 65 % | mg = t^1,5 (`fiveway.GROWL_ESP`) |
+| NASTRO B9 prima | 44 % | 75 % | 94 % | 1 − (1 − t)^2 |
+| NASTRO B9 ora | 51 % | 82 % | 97 % | 1 − (1 − t)^2,5 (`nastro_bande.INV_ESP`) |
+
+La curva del GROWL vale per le tre voci di GROWL VER (DEC.99, LIBERO, BANDE) e per MC-5WAY-S.
+Hardware: GROWL = pot doppio a curva logaritmica, NASTRO = pot a curva logaritmica inversa
+(taper C). La riga «500 Hz 0 dBu 50 %» del par. 16 ora corrisponde alla manopola al 42 %.
+

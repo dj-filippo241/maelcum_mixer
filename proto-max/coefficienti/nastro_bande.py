@@ -33,6 +33,9 @@ AMP = (0.549, 1.096, 3.466)          # -6 / 0 / +10 dBu di picco
 
 SCELTA = "B9"                    # dec. 166, ritocco del 2026-11-04 (todo 245)
 INVERSA = {"B9"}                 # varianti con la manopola a curva inversa
+# Esponente della curva inversa: 2 fino al 2026-11-05 (a meta corsa 0,75);
+# 2,5 dal 2026-11-05 (Filippo: «un po piu veloce»; a meta corsa 0,82).
+INV_ESP = 2.5
 VAR = {
     "LIBERO": None,
     # (FZ, FP, FA, FB)
@@ -56,8 +59,8 @@ VAR = {
 
 def rotazione(t, nome=SCELTA):
     """Manopola -> rotazione equivalente: curva inversa per le varianti
-    di INVERSA (a meta corsa vale 0,75), lineare per le altre."""
-    return 1 - (1 - t) ** 2 if nome in INVERSA else t
+    di INVERSA (1 - (1 - t)^INV_ESP), lineare per le altre."""
+    return 1 - (1 - t) ** INV_ESP if nome in INVERSA else t
 
 
 class Bande:
