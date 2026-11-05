@@ -872,3 +872,24 @@ Scarto massimo: 0,09 punti di THD e 0,20 dB di livello (12 kHz). Durata 6 s (500
 0,02 punti, 0,00 dB.
 
 Verificato in: Python sì / LTspice sì a 50, 120, 500, 3k, 12k Hz / Live no (da sentire, todo 255).
+
+## 19. Kill tagliato allo zero della via in MC-5WAY (2026-11-05, todo 226, dec. 164)
+
+Come l'hardware (five-way §8.11): per via e per lato la levetta passa all'interruttore al
+primo passaggio per lo zero della via (cambio di segno fra due sotto-campioni a 4×), o dopo
+20 ms (`fw.KILL_ZC_TMAX`). L e R tagliano ciascuno al proprio zero. Vale anche per MC-5WAY-S.
+Stato in `Data zk` (gen~) e in `fw.Banca` (modello).
+
+Prova nuova in `prova_5way.py` (seno 0 dBu, kill a 102,1 ms): il salto più grande dopo il gesto
+diviso il passo normale del seno. Modello, stesso gesto, allo zero contro secco:
+
+| Via | Allo zero | Secco | Ritardo del gesto |
+|---|---|---|---|
+| SUB 40 Hz | 1,00 | 699 | 5,0 ms |
+| KICK 120 Hz | 1,00 | 106 | 0,8 ms |
+| MID 500 Hz | 1,00 | 47 | 0,6 ms |
+
+Il ritardo dipende dalla fase al momento del gesto: al massimo mezzo periodo della via.
+
+Verificato in: Python sì (prova_5way PASS, prova_semplice PASS) / LTspice sì per il circuito
+(`kill-zc.cir`, §8.11) / Live no (da sentire sul KICK con musica vera).

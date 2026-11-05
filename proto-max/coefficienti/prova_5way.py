@@ -179,6 +179,26 @@ def main():
                  amp=A0 * 10 ** (dbu / 20), durata=0.3, coda=0.1,
                  growl=100, nastro=100, gv=2, nver=6)
 
+    print("KILL allo zero (dec. 164): nessun gradino al gesto")
+    for v, f in ((0, 40), (1, 120), (2, 500)):
+        g = pf.nuovo(testo)
+        g.imposta(**gen_param())
+        n1 = int(0.1021 * FS)
+        n2 = n1 + int(0.03 * FS)
+        ys = []
+        for i in range(n2):
+            if i == n1:
+                g.imposta(**gen_param(kill=tuple(0 if j == v else 1
+                                                  for j in range(5))))
+            ys.append(g.campione(A0 * math.sin(2 * math.pi * f * i / FS),
+                                 0.0)[0])
+        passo = [abs(ys[i] - ys[i - 1]) for i in range(1, n2)]
+        prima = max(passo[n1 - int(0.05 * FS):n1 - 1])
+        dopo = max(passo[n1 - 1:])
+        # un taglio secco a meta onda darebbe un salto di ~10-60 volte
+        controlla(f"KILL {fw.VIE[v]} {f} Hz: salto massimo / passo del"
+                  " seno", dopo / prima, 1.0, 0.5)
+
     print("Canali indipendenti: R muto, L intero")
     sl, sr, n0 = suona_gen(testo, 1000, A0, 0.1, 0.03, destra=0.0,
                            growl=50, nastro=50)

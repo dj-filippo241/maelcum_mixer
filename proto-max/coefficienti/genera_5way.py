@@ -355,6 +355,7 @@ def genexpr():
     nsa = SA_VECCHI if SEMPLICE else SA_LATO
     r(f"Data sv({2 * 2 * nsv});")
     r(f"Data sa({2 * nsa});")
+    r("Data zk(30);  // kill allo zero: per lato e via stato, campione prima, conteggio")
     pos_data = len(g.righe)
     r("@@DATA@@")
     lisci = [n for n, _ in GAIN + POS + WID + SAT]
@@ -389,9 +390,11 @@ def genexpr():
                                  for j, v in enumerate(varianti))
             r(f"gx{c} = tan(pi * ({termini}) / sr4);")
     r()
-    r("// KILL: 1 = via aperta (interruttore, taglio netto: dec. 88)")
+    r("// KILL: 1 = via aperta (interruttore, dec. 88). La levetta scatta al")
+    r("// primo passaggio per lo zero della via, o dopo 20 ms (dec. 164)")
     for v, (nome, _) in enumerate(KILL):
         r(f"a{v} = 1 - {nome};")
+    r(f"ztm = {fw.KILL_ZC_TMAX!r} * sr4;")
     r()
     r("// celle EQ: GAIN (famiglia eq-serie §10), POSITION esponenziale,")
     r("// WIDTH continuo Q3...Q0,3, taper log 20 % (fw.q_width; dec. 117, 129)")
@@ -516,7 +519,22 @@ def genexpr():
                       f" {kq!r});")
                     i += 2
                 r(f"v{v} = ya;")
-            r("ya = a0 * v0 + a1 * v1 + a2 * v2 + a3 * v3 + a4 * p4;")
+            zb = 0 if lato == "L" else 15
+            for v in range(5):
+                b = zb + 3 * v
+                r(f"zv = {'p4' if v == 4 else f'v{v}'};")
+                r(f"zs = peek(zk, {b});")
+                r(f"zn = peek(zk, {b + 2});")
+                r(f"zt = 1 - a{v};")
+                r("zc = abs(zt - zs) > 0.5;")
+                r("zn = zc * (zn + 1);")
+                r(f"zw = zc * max(peek(zk, {b + 1}) * zv <= 0, zn >= ztm);")
+                r("zs = zs + zw * (zt - zs);")
+                r(f"poke(zk, zs, {b});")
+                r(f"poke(zk, zv, {b + 1});")
+                r(f"poke(zk, zn, {b + 2});")
+                r(f"z{v} = 1 - zs;")
+            r("ya = z0 * v0 + z1 * v1 + z2 * v2 + z3 * v3 + z4 * p4;")
             r("// EQ creativo: 5 campane in serie")
             for n in range(1, 6):
                 r(f"ya = ya + b{n} * ke{n} * svbp(sv, {i}, ya, ge{n}, ke{n});")

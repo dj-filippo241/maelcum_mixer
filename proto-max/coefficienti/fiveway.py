@@ -127,12 +127,23 @@ def g_di(f, fs):
     return math.tan(math.pi * f / fs)
 
 
+# Kill tagliato allo zero della via (dec. 164, five-way §8.11): la levetta
+# passa all'interruttore al primo passaggio per lo zero, o dopo 20 ms.
+KILL_ZC_TMAX = 0.020
+
+
 class Banca:
     """Banca LR4 allineata in fase, 5 vie, kill a interruttore."""
 
     def __init__(self, fs, crossover=CROSSOVER):
         self.fs = fs
         self.g = [g_di(f, fs) for f in crossover]
+        # kill allo zero (dec. 164): per via stato (1 = chiusa), campione
+        # prima, conteggio verso il tempo massimo
+        self.zs = [0.0] * 5
+        self.zp = [0.0] * 5
+        self.zn = [0] * 5
+        self.ztm = KILL_ZC_TMAX * fs
         self.k = 1 / Q_BW
         # spina: 2 sezioni HP per crossover
         self.spina = [[Svf(), Svf()] for _ in range(4)]
@@ -160,7 +171,19 @@ class Banca:
                     y = y - 2 * k * bp
             vie.append(y)
         vie.append(prese[4])
-        return sum(kv * y for kv, y in zip(kill, vie)), vie
+        aperte = []
+        for v, (kv, y) in enumerate(zip(kill, vie)):
+            zt = 1 - kv
+            if zt != self.zs[v]:
+                self.zn[v] += 1
+                if self.zp[v] * y <= 0 or self.zn[v] >= self.ztm:
+                    self.zs[v] = zt
+                    self.zn[v] = 0
+            else:
+                self.zn[v] = 0
+            self.zp[v] = y
+            aperte.append(1 - self.zs[v])
+        return sum(a * y for a, y in zip(aperte, vie)), vie
 
 
 class Cella:
