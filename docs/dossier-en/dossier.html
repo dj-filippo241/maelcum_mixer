@@ -1,0 +1,964 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maelcum Mixer Dossier</title>
+<style>
+  @page { size: A4; margin: 16mm; }
+  :root {
+    --ink: #1b1b1b;
+    --muted: #555;
+    --rule: #bbb;
+    --soft: #f2f2ef;
+    --accent: #2a4d69;
+    --lock: #1f6b3a;
+    --prov: #8a5a00;
+    --open: #9b1c1c;
+    --sup: #666;
+  }
+  html { background: #fff; }
+  body {
+    margin: 0 auto; max-width: 180mm; padding: 0 16px;
+    background: #fff; color: var(--ink);
+    font-family: "Charter", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    font-size: 10.2pt; line-height: 1.42;
+  }
+  h1, h2, h3, h4, th, .tag, .caption, .meta, nav, .kpi {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+  h1 { font-size: 24pt; margin: 0 0 4pt; letter-spacing: -0.01em; }
+  h2 {
+    font-size: 15pt; color: var(--accent); margin: 0 0 8pt;
+    border-bottom: 1.5pt solid var(--accent); padding-bottom: 3pt;
+    page-break-before: always; break-before: page; padding-top: 2pt;
+  }
+  h2.first { page-break-before: auto; break-before: auto; }
+  h3 { font-size: 11.5pt; margin: 14pt 0 4pt; page-break-after: avoid; break-after: avoid; }
+  h4 { font-size: 10pt; margin: 10pt 0 3pt; page-break-after: avoid; break-after: avoid; }
+  p { margin: 0 0 6pt; }
+  ul, ol { margin: 0 0 6pt; padding-left: 16pt; }
+  li { margin: 0 0 2pt; }
+  code, pre { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 8.4pt; }
+  pre {
+    background: var(--soft); border: 0.5pt solid var(--rule); padding: 6pt 8pt;
+    white-space: pre-wrap; page-break-inside: avoid; break-inside: avoid; line-height: 1.3;
+  }
+  table {
+    width: 100%; border-collapse: collapse; margin: 4pt 0 9pt; font-size: 8.8pt;
+    page-break-inside: auto;
+  }
+  thead { display: table-header-group; }
+  tr { page-break-inside: avoid; break-inside: avoid; }
+  th, td { border: 0.5pt solid var(--rule); padding: 2.5pt 4pt; vertical-align: top; text-align: left; }
+  th { background: var(--soft); font-weight: 600; font-size: 8.4pt; }
+  td.n, th.n { text-align: right; white-space: nowrap; }
+  .tag {
+    display: inline-block; font-size: 7pt; font-weight: 700; letter-spacing: 0.04em;
+    padding: 0 3pt; border-radius: 2pt; border: 0.6pt solid currentColor; vertical-align: 1pt;
+    white-space: nowrap;
+  }
+  .lock { color: var(--lock); } .prov { color: var(--prov); } .open { color: var(--open); } .sup { color: var(--sup); }
+  .sim { color: var(--accent); }
+  figure { margin: 8pt 0 10pt; page-break-inside: avoid; break-inside: avoid; }
+  figure img { width: 100%; height: auto; display: block; border: 0.5pt solid var(--rule); }
+  .caption { font-size: 8.4pt; color: var(--muted); margin-top: 3pt; }
+  .note {
+    border-left: 2.5pt solid var(--accent); background: var(--soft);
+    padding: 5pt 8pt; margin: 6pt 0 9pt; page-break-inside: avoid; break-inside: avoid;
+  }
+  .warn { border-left-color: var(--open); }
+  .meta { color: var(--muted); font-size: 9pt; }
+  .src { color: var(--muted); font-size: 8.2pt; }
+  nav ol { columns: 2; column-gap: 18pt; font-size: 9.4pt; padding-left: 14pt; }
+  nav li { break-inside: avoid; }
+  nav a, a { color: var(--accent); text-decoration: none; }
+  .kpi { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6pt; margin: 8pt 0 10pt; }
+  .kpi div { border: 0.5pt solid var(--rule); padding: 5pt 6pt; page-break-inside: avoid; }
+  .kpi b { display: block; font-size: 13pt; color: var(--accent); }
+  .kpi span { font-size: 7.8pt; color: var(--muted); }
+  .cover { padding-top: 30mm; }
+  @media screen and (max-width: 640px) {
+    .kpi { grid-template-columns: repeat(2, 1fr); }
+    nav ol { columns: 1; }
+    table { display: block; overflow-x: auto; }
+  }
+</style>
+</head>
+<body>
+
+<section class="cover">
+<p class="meta">Technical dossier &middot; state as of 2026-11-04 &middot; decisions 1&ndash;168</p>
+<h1>Maelcum Mixer</h1>
+<p style="font-size:13pt;margin-bottom:10pt">A one-off, fully analogue, modular dub performance mixer for a 5-way sound system</p>
+<p class="meta">Owner and musical decisions: Filippo. Engineering (topologies, simulations, PCB generation): Claude, under Filippo's review. Written for a reader who already designs preamps and lays out PCBs.</p>
+
+<div class="note warn">
+<b>Read this first.</b> Nothing in this dossier has been built or measured on a bench. Every circuit number below comes from LTspice simulation or from Python models, and is labelled as such. The musical behaviour (control laws, character of the saturators and filter) is being validated by ear on a Max for Live prototype. Component purchases are on hold until that prototype is complete. The PCBs exist only as generated drafts.
+</div>
+
+<h3>Status tags used throughout</h3>
+<table>
+<thead><tr><th>Tag</th><th>Italian original</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><span class="tag lock">LOCKED</span></td><td>BLOCCATO</td><td>Decided; recorded in <code>docs/01-decisioni-bloccate.md</code> with date and origin.</td></tr>
+<tr><td><span class="tag prov">PROVISIONAL</span></td><td>PROVVISORIO</td><td>Working target; values may move after listening or bench work.</td></tr>
+<tr><td><span class="tag open">OPEN</span></td><td>APERTO</td><td>Not decided yet; listed in <code>docs/02-questioni-aperte.md</code>.</td></tr>
+<tr><td><span class="tag sup">SUPERSEDED</span></td><td>SUPERATO</td><td>Older design kept in the repository as an alternative or as evidence of a dead end.</td></tr>
+<tr><td><span class="tag sim">SIM</span></td><td>&mdash;</td><td>Number produced by LTspice (netlist named) or by a Python model. No number here is a bench measurement.</td></tr>
+</tbody>
+</table>
+<p class="src">Decision origin codes in the source files: [F] stated by Filippo, [R] from the original ChatGPT brief, [C] proposed by Claude and accepted by Filippo.</p>
+
+<nav>
+<h3>Contents</h3>
+<ol>
+<li><a href="#c1">What it is, design philosophy</a></li>
+<li><a href="#c2">System architecture and signal flow</a></li>
+<li><a href="#c3">Gain staging, headroom, noise, polarity, VCAs</a></li>
+<li><a href="#c4">DJ channel (line, phono, isolator EQ)</a></li>
+<li><a href="#c5">FX-SEND micro-module</a></li>
+<li><a href="#c6">FX-RET modules and feedback matrix</a></li>
+<li><a href="#c7">Global filter</a></li>
+<li><a href="#c8">5-way performance EQ / dub preamp</a></li>
+<li><a href="#c9">Master, booth, rec</a></li>
+<li><a href="#c10">CUE and headphones</a></li>
+<li><a href="#c11">MIC and MONO modules</a></li>
+<li><a href="#c12">Metering</a></li>
+<li><a href="#c13">Control hardware</a></li>
+<li><a href="#c14">Power, grounding, backplane</a></li>
+<li><a href="#c15">PCB approach and board status</a></li>
+<li><a href="#c16">Verification method</a></li>
+<li><a href="#c17">Budget</a></li>
+<li><a href="#c18">Open questions: where a builder's review helps</a></li>
+<li><a href="#ga">Appendix A: glossary of Italian names</a></li>
+<li><a href="#gb">Appendix B: repository map</a></li>
+</ol>
+</nav>
+</section>
+
+<!-- ============================================================ -->
+<h2 id="c1">1. What it is, design philosophy</h2>
+
+<p>Maelcum is a single, hand-built mixer for Filippo's own sound system (Horns &amp; Bricks, 4 ways today and a fifth soon). It replaces the DJ mixer, a Soundcraft EPM6 and a Ligwa preamp, and feeds a dbx DriveRack VENU360 directly. The VENU360 handles crossover, delay and speaker protection (dec. 132). It is used outdoors.</p>
+
+<p>It is a hybrid of three instruments, without forking into separate products (dec. 111):</p>
+<ul>
+<li><b>DJ mixer</b>: 4 stereo channels, isolator EQ, 100 mm faders, CUE, a global HPF/LPF filter in the style of the Xone:92/96.</li>
+<li><b>Sound-system preamp</b>: a 5-way performance EQ with one kill per physical way of the rig, and two saturators (GROWL, NASTRO).</li>
+<li><b>Live dub desk</b>: 4 FX buses to external pedals, with a 4&times;4 feedback matrix that includes self-feedback, plus mic and mono instrument inputs.</li>
+</ul>
+
+<h3>Global constraints <span class="tag lock">LOCKED</span></h3>
+<table>
+<thead><tr><th>Constraint</th><th>Value</th></tr></thead>
+<tbody>
+<tr><td>Signal path</td><td>100 % analogue. No ADC, DAC or DSP inside. System DSP (crossover, limiting, delay) is external.</td></tr>
+<tr><td>Nominal level</td><td>0 dBu (0.775 V rms); hot programme ~+10 dBu; internal extreme ~+18 dBu.</td></tr>
+<tr><td>Output capability</td><td>&ge; +24 dBu clean, only at the master XLR stage.</td></tr>
+<tr><td>Dynamics</td><td>No compressor, limiter or AGC. Single exception: a fixed limiter on the MIC module (dec. 145).</td></tr>
+<tr><td>Intentional nonlinearity</td><td>Only in the filter overdrive and the 5-way drive. Soft, recoverable, electrically non-destructive at extreme settings.</td></tr>
+<tr><td>Bandwidth</td><td>&minus;3 dB at &le; 8 Hz &hellip; 35 kHz with filters off; 10 Hz within &plusmn;1 dB; no AC coupling with a corner above 5 Hz in the main path (DC servos). Deliberate exception: phono subsonic at 18 Hz (dec. 138).</td></tr>
+<tr><td>Stereo</td><td>L/R everywhere, no pan, linked controls, mono-compatible.</td></tr>
+<tr><td>Interconnect</td><td>Single-ended 0 dBu between modules; balanced only to the outside world (master XLR, mic XLR) (dec. 94a).</td></tr>
+<tr><td>Buffering</td><td>Low-Z between stages and modules; a dedicated buffer on every output, never split.</td></tr>
+<tr><td>Construction</td><td>Modular on a backplane; no access to internal nodes between modules; no hot-swap; test points on every module.</td></tr>
+<tr><td>Environment</td><td>Outdoor sound system, up to 40 &deg;C ambient; conformal coating; sealed pots; flight case (dec. 111e, 119).</td></tr>
+<tr><td>Cost</td><td>One-off: optimised for sound and serviceability, not for cost.</td></tr>
+</tbody>
+</table>
+
+<div class="note"><b>System requirement on the external DSP</b> (dec. 111c): the mixer can produce infrasonic content (filter self-oscillation down to ~15&ndash;30 Hz, FX feedback loops, GROWL). The VENU360 must high-pass and limit each way. Today the VENU360 cuts below 37 Hz (dec. 137), so the 10 Hz band requirement is kept as an electrical property, not as a musical gesture.</div>
+
+<h3>Build order <span class="tag lock">LOCKED</span></h3>
+<p>Phase 1 = channel + FX (one complete bus) + master out + basic PSU, to validate the backplane and the method. Phase 2 = 5-way and filter. Then mic, mono, CUE, full metering, chassis. Before any perfboard, control laws and character are validated on the Max for Live prototype (dec. 78). The prototype does not validate electrical behaviour (noise, real saturation, mechanical tracking).</p>
+
+<p class="src">Sources: SPECIFICA.md §1, §16; docs/01 dec. 78, 111, 132, 137, 138, 145.</p>
+
+<!-- ============================================================ -->
+<h2 id="c2">2. System architecture and signal flow</h2>
+
+<figure>
+<img src="../diagrammi/en/schema-totale.svg" alt="Whole-system block diagram">
+<div class="caption">Figure 1. Whole-system signal flow: 4 DJ channels, post-fader HPF/LPF buses into the global filter, DJ bus into the 5-way, 4 FX buses with the reroute matrix, MIC/MONO, master sum, booth, rec, CUE.</div>
+</figure>
+
+<pre>
+CDJ/LINE or PHONO -&gt; protection -&gt; buffer -&gt; GAIN (dual pot) -&gt; ISOLATOR EQ 4 bands -&gt; split
+   split (post-EQ, pre-fader): CUE tap -&gt; CUE bus
+                               SEND tap -&gt; FX-SEND module (EQ2, LEVEL, assign S1..S4)
+                               METER -&gt; FADER (VCA) -&gt; HPF/OFF/LPF switch
+                                   OFF -&gt; DJ bus     HPF -&gt; HPF bus     LPF -&gt; LPF bus
+HPF bus -&gt; filter HPF section (2 cores L/R) -&gt; overdrive -&gt; DJ bus
+LPF bus -&gt; filter LPF section (2 cores L/R) -&gt; overdrive -&gt; DJ bus
+DJ bus -&gt; 5-WAY (pad -6, kill bank 5 ways, 5 parametric cells, GROWL, NASTRO, meter, make-up +6) -&gt; MASTER SUM
+FX bus n -&gt; FX-RET n: bus summer -&gt; pedal out ... pedal in -&gt; GAIN -&gt; EQ2 -&gt; meter -&gt; fader (VCA) -&gt; MASTER SUM
+                                                         \-&gt; 4 reroute VCAs (3 cross + self) -&gt; FX buses
+MIC, MONO (up to 4 modules) -&gt; MASTER SUM, plus 4 send pots each onto S1..S4
+MASTER SUM (7 contributors) -&gt; MONO switch -&gt; MASTER LEVEL (VCA) -&gt; meter -&gt; HV bootstrapped stage -&gt; XLR
+     BOOTH (pre-level) -&gt; XLR      REC (pre-everything, 0 dBu fixed)      MON tap -&gt; CUE module
+</pre>
+
+<h3>Key architectural decisions</h3>
+<table>
+<thead><tr><th>Topic</th><th>Decision</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>Filter position</td><td>After the fader, on the sum of the assigned channels, like the Xone:92 (manual block diagram p. 26). 4 mono cores (HPF L/R, LPF L/R) instead of 8; a section with no channel assigned is muted (dec. 159).</td><td><span class="tag lock">LOCKED</span></td></tr>
+<tr><td>What reaches the 5-way</td><td>Only the DJ bus. FX returns, mic and mono bypass it and go straight to MASTER SUM.</td><td><span class="tag lock">LOCKED</span></td></tr>
+<tr><td>Master chain</td><td>SUM &rarr; LEVEL &rarr; METER (post-level) &rarr; OUT.</td><td><span class="tag lock">LOCKED</span></td></tr>
+<tr><td>FX modules</td><td>4 identical FX-SEND micro-modules (one per channel) and 4 identical FX-RET modules (one per bus) (dec. 91a, 130).</td><td><span class="tag lock">LOCKED</span></td></tr>
+<tr><td>Feedback</td><td>Each return has 4 destinations: the 3 other buses and itself (dec. 91b). The return fader does not touch the loop: fader down, the feedback keeps running.</td><td><span class="tag lock">LOCKED</span></td></tr>
+<tr><td>MASTER SUM</td><td>7 stereo contributors: 5-way, 4 FX returns, MIC net (MSUM6), MONO net (MSUM7).</td><td><span class="tag lock">LOCKED</span></td></tr>
+<tr><td>Crossfader</td><td>Removed entirely, not even as an option (dec. 161).</td><td><span class="tag lock">LOCKED</span></td></tr>
+<tr><td>Optional modules</td><td>Prepared in backplane and PSU, not designed: per-way outputs after the master sum, graphic EQ insert, siren in a MONO slot (dec. 111b).</td><td><span class="tag prov">PROVISIONAL</span></td></tr>
+</tbody>
+</table>
+
+<h3>Inter-module buses</h3>
+<p>All buses are multidrop nets on the backplane, with the injection resistor (10 k) on the source side and a virtual-earth receiver (Rf 10 k, Cf 10 pF) in the receiving module: DJ L/R, HPF L/R, LPF L/R, FX S1&ndash;S4 L/R, MASTER SUM contributors, CUE L/R. Each receiver inverts; see the polarity rule in &sect;3.4.</p>
+
+<p class="src">Sources: SPECIFICA.md §2, §3, §7; docs/01 dec. 91, 94, 111, 130, 159, 161; docs/fase3/sistema-backplane.md §4.</p>
+
+<!-- ============================================================ -->
+<h2 id="c3">3. Gain staging, headroom, noise, polarity, VCAs</h2>
+
+<h3>3.1 Supply domains</h3>
+<table>
+<thead><tr><th>Domain</th><th>Generated</th><th>Feeds</th><th>Sine capability</th></tr></thead>
+<tbody>
+<tr><td>&plusmn;18 V audio</td><td>Locally per module: LM317/337 at 19.2 V + capacitance multiplier, from the &plusmn;22.0 V pre-regulated audio rail</td><td>Channel, filter, 5-way, FX and master summing, master level VCA, generic</td><td>~+23 dBu</td></tr>
+<tr><td>&plusmn;15 V ultra-low-noise</td><td>Locally: pre-reg &plusmn;16.5 V + LT3045/LT3094, from the &plusmn;19 V LN rail</td><td>Phono front-end, mic first stage, CV generation, metering, CUE, filter OTAs</td><td>~+20 dBu</td></tr>
+<tr><td>&plusmn;15 V switch/logic</td><td>Locally: 78L15/79L15 from the LN rail</td><td>ADG1434-class switches (kill, assign, routing)</td><td>&mdash;</td></tr>
+<tr><td>[M] raw HV</td><td>Dedicated winding W3, raw (&plusmn;27 V nominal; statics &plusmn;23.6&hellip;29.2 V over mains &plusmn;10 %)</td><td>Only the master HV output stage</td><td>+25.2&hellip;+25.5 dBu worst case <span class="tag sim">SIM</span></td></tr>
+<tr><td>+5 V control</td><td>Regulated in the external box</td><td>LEDs, logic, mute relays</td><td>&mdash;</td></tr>
+</tbody>
+</table>
+<p>Rule: no raw or pre-regulated rail ever feeds an op-amp directly. The &plusmn;18 V and &plusmn;15 V rails are never distributed on the backplane: each module isolates its own regulator noise (dec. 93).</p>
+
+<h3>3.2 Levels per node</h3>
+<table>
+<thead><tr><th>Node</th><th class="n">Nominal</th><th class="n">Max programme</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Line/CDJ input</td><td class="n">0 dBu</td><td class="n">+8 dBu</td><td>Sources &minus;10 dBV &hellip; +4 dBu</td></tr>
+<tr><td>Phono out of RIAA block</td><td class="n">&minus;2 dBu</td><td class="n">+5 dBu</td><td>5 mV MM &times; 42 dB</td></tr>
+<tr><td>Channel post-GAIN</td><td class="n">0 dBu</td><td class="n">+10 dBu</td><td>Extreme +18 (hot source + gain +10): soft OPA1612 saturation</td></tr>
+<tr><td>Channel post-EQ</td><td class="n">0 dBu</td><td class="n">+16 dBu</td><td>Extreme +20 with stacked boosts: intentionally at the limit</td></tr>
+<tr><td>DJ bus (4 channels)</td><td class="n">0 dBu</td><td class="n">+12 dBu</td><td>4 correlated channels at 0 dBu</td></tr>
+<tr><td>Filter core input (sum)</td><td class="n">0 dBu</td><td class="n">+12 dBu</td><td>0 / +6 / +12 dBu with 1 / 2 / 4 correlated channels; core ceiling at cutoff &minus;1&hellip;+1.2 dBu (see &sect;7, A23)</td></tr>
+<tr><td>5-way internal (after &minus;6 dB pad)</td><td class="n">&minus;6 dBu</td><td class="n">+15 dBu</td><td>Worst +21 dBu with extreme boosts, within +23</td></tr>
+<tr><td>5-way out (after +6 make-up)</td><td class="n">0 dBu</td><td class="n">+18 dBu</td><td>&rarr; MASTER SUM</td></tr>
+<tr><td>FX bus summer (12 contributors)</td><td class="n">0 dBu</td><td class="n">+10.8 / +21.6 dBu</td><td>Uncorrelated / correlated worst case</td></tr>
+<tr><td>Pedal send</td><td class="n">0 dBu</td><td class="n">+16 dBu peaks</td><td>Fixed 0 dB pad (dec. 108); level set only by FX-SEND LEVEL</td></tr>
+<tr><td>FX return in (&ge; 1 M&Omega;)</td><td class="n">&minus;20 dBu typ.</td><td class="n">+18 dBu tolerated</td><td>Rule: level_in &times; gain &le; +23 dBu, left to operator discipline (dec. 84)</td></tr>
+<tr><td>MASTER SUM</td><td class="n">0 dBu</td><td class="n">+16&hellip;+18 dBu</td><td>Margin &ge; 5 dB</td></tr>
+<tr><td>Master XLR</td><td class="n">0 dBu</td><td class="n">+24 dBu</td><td>Capability +25.4&hellip;+25.6 dBu <span class="tag sim">SIM</span></td></tr>
+<tr><td>REC</td><td class="n">0 dBu fixed</td><td class="n">follows sum</td><td>Solder pads 0/&minus;10/&minus;20 dB</td></tr>
+</tbody>
+</table>
+<p>The meters use an absolute scale with full scale = +24 dBu on every zone (saturation of the &plusmn;18 V domain).</p>
+
+<h3>3.3 Noise budget <span class="tag sim">SIM</span></h3>
+<p>Method: noise density <code>V(onoise)</code> read at 10&ndash;16 points and integrated in Python (<code>sim/mic/noise_total.py</code>). <code>.meas INTEG</code> on <code>.noise</code> is banned: in LTspice 26.0.2 it returns totals ~21.5 dB optimistic, and every &radic;INTEG total in documents dated before 2026-09-30 is invalid. VCA noise is included (&minus;98 dBV floor, datasheet). Op-amp en is included explicitly (an earlier quirk dropped it from <code>.noise</code>).</p>
+
+<div class="kpi">
+<div><b>&minus;82.9</b><span>dBu A, system, filters off (target &le; &minus;78, dec. 89)</span></div>
+<div><b>&minus;94.5</b><span>dBu A, channel out (target &le; &minus;80)</span></div>
+<div><b>&minus;85.9</b><span>dBu A, 5-way module, drive closed (target &le; &minus;80)</span></div>
+<div><b>&minus;119.2</b><span>dBu, master XLR stage (target &le; &minus;92)</span></div>
+</div>
+
+<table>
+<thead><tr><th>Block / condition</th><th class="n">dBu A-wtd</th><th>Netlist / source</th></tr></thead>
+<tbody>
+<tr><td>Channel (EQ centred, fader VCA, GAIN dual pot)</td><td class="n">&minus;94.5</td><td><code>sim/gain-pot/RISULTATI-gain-pot.md</code></td></tr>
+<tr><td>FX return</td><td class="n">&minus;96.1</td><td>same</td></tr>
+<tr><td>5-way, drive closed</td><td class="n">&minus;85.9</td><td><code>sim/five-way/module-noise-v04-servo.cir</code></td></tr>
+<tr><td>DJ bus summer</td><td class="n">&minus;107.3</td><td>docs/06 §10</td></tr>
+<tr><td>Master summing + level</td><td class="n">&minus;96.2</td><td>docs/06 §10</td></tr>
+<tr><td>FX send bus, with reroute at weight 1 (worst)</td><td class="n">&minus;91.5</td><td><code>sim/fx/RISULTATI-fx-ret-bus-130.md</code> (target &minus;88)</td></tr>
+<tr><td><b>System, filters off</b></td><td class="n"><b>&minus;82.9</b></td><td>docs/06 §14. Shares: 5-way 50 %, 4 channels 27 %, FX returns 18 %, master summing 5 % (docs/06 §10)</td></tr>
+<tr><td>System, all 4 channel EQs at max</td><td class="n">&minus;80.6</td><td>docs/06 §10</td></tr>
+<tr><td>System with FX sends assigned (4 sends at max per bus)</td><td class="n">&minus;82.8&hellip;&minus;81.8</td><td>docs/06 §15; &minus;80.4 with reroutes at weight 1</td></tr>
+<tr><td>System, LPF only in use, overdrive closed</td><td class="n">&minus;80.6</td><td>docs/06 §16</td></tr>
+<tr><td>System, HPF only (fc 1 kHz), overdrive closed</td><td class="n">&minus;79.2</td><td>docs/06 §16</td></tr>
+<tr><td>System, HPF and LPF, overdrive closed</td><td class="n">&minus;78.0</td><td>docs/06 §16 (PASS by 0.0 dB)</td></tr>
+<tr><td>System, HPF and LPF, overdrive half</td><td class="n">&minus;76.8</td><td>accepted operating condition (dec. 100)</td></tr>
+<tr><td>System, HPF and LPF, overdrive fully open, in silence</td><td class="n">&minus;72.0</td><td>accepted operating condition (dec. 100)</td></tr>
+<tr><td>With 1 MIC at 30 dB + 3 MONO, sends closed</td><td class="n">~&minus;82.5</td><td>docs/06 §10 (before the fader-VCA and GAIN-pot updates)</td></tr>
+</tbody>
+</table>
+<p>Measurement conditions for the system target: inputs terminated, nominal gains, master fader at unity (docs/06 §2). The 5-way band-split saturators (dec. 165&ndash;166, provisional) raise the module noise at full rotation; see &sect;8.</p>
+
+<h3>3.4 Polarity convention</h3>
+<ol>
+<li>Every path from a source to the master XLR is non-inverting (XLR pin 2 in phase with the input).</li>
+<li>Every FX feedback loop (cross and self) is non-inverting.</li>
+<li>Every virtual-earth receiver counts &minus;1 (DJ bus, HPF/LPF buses, FX buses, MASTER SUM, CUE sum). A new path is counted end to end across modules, not only inside one module.</li>
+</ol>
+<p>A full audit on 2026-11-03 (<code>docs/fase3/sistema-polarita.md</code>) found four inverted paths (filter, MIC/MONO, reroute loop, CUE). Fixes: the filter overdrive cell outputs inverted; MIC/MONO MSUM drivers are inverting unity (20 k/20 k); the reroute injection driver is inverting unity (20 k/20 k 0.1 %). Note for netlists: the THAT 2181 / V2181 VCA plus I/V converter is <b>non-inverting</b> (datasheet Rev 03 p. 7); a voltage-mode VCA macro plus R, or an F source pushing current into the I/V node, has the opposite sign of the real chip.</p>
+
+<h3>3.5 VCAs</h3>
+<p>THAT 218x is end-of-life. The design uses the CoolAudio V2181(L) clone (same pinout as the THAT 2181: 1 IN, 2 EC+, 3 EC&minus;, 4 SYM, 5 V&minus;, 6 GND, 7 V+, 8 OUT). The clone datasheet (Rev. 1.0) has no electrical table, only graphs; working assumption: clone = THAT grade C. Its real control-constant spread is unpublished and will be measured on the lot.</p>
+<table>
+<thead><tr><th>Role</th><th class="n">Chips</th><th>Tracking target</th></tr></thead>
+<tbody>
+<tr><td>Faders: 4 channels + 4 FX returns, mono 100 mm fader &rarr; CV &rarr; one VCA per side (dec. 126)</td><td class="n">16</td><td>&le; 0.5 dB</td></tr>
+<tr><td>FX reroute: 4 returns &times; 4 destinations, stereo</td><td class="n">32</td><td>&le; 0.5 dB <span class="tag prov">PROVISIONAL</span></td></tr>
+<tr><td>MASTER LEVEL</td><td class="n">2</td><td>&le; 0.25 dB</td></tr>
+<tr><td>BOOTH LEVEL</td><td class="n">2</td><td>&le; 0.25 dB <span class="tag prov">PROVISIONAL</span></td></tr>
+<tr><td>Master MONO (side channel)</td><td class="n">1</td><td>&mdash;</td></tr>
+<tr><td>MIC mute + fixed limiter</td><td class="n">1 per MIC</td><td>&mdash;</td></tr>
+<tr><td><b>Total</b></td><td class="n"><b>~54</b></td><td></td></tr>
+</tbody>
+</table>
+<p>VCAs removed during the design: GAIN of channels and returns now on selected dual linear pots in the signal path (dec. 162, &minus;16 chips); filter DRIVE on a dual pot (&minus;4); 5-way kills on analogue switches (dec. 88, &minus;10); crossfader removed (dec. 161).</p>
+<p><b>Trim strategy</b> <span class="tag prov">PROVISIONAL</span>: symmetry trim on every chip (50 k multiturn between &plusmn;15 V LN &rarr; 150 k &rarr; pin 4, 51 &Omega; to ground; &plusmn;5.1 mV range, twice grade C), because the clone's THD rises from ~0.005 % to ~0.3 % with 2 mV of symmetry error. Pairs are matched on a jig (gain at CV 0 and at &minus;40 dB). Monte Carlo on a 62-chip lot with &plusmn;3 % constant and &plusmn;0.2 dB offset: 86 % of matched pairs within 0.25 dB and 100 % within 0.5 dB from +10 to &minus;60 dB, without law trims. Law trims are fitted only on MASTER and BOOTH; other boards carry the footprints. CV enters only EC&minus; (bipolar), one port for the whole range. Control constant drift +0.33 %/K, compensation ready.</p>
+
+<p class="src">Sources: docs/fase1/gain-staging-sheet.md §1&ndash;3; docs/06 §10&ndash;16; docs/fase3/sistema-polarita.md; docs/fase3/sistema-vca-trim.md §2&ndash;6; docs/01 dec. 88, 89, 93, 100, 126, 162.</p>
+
+<!-- ============================================================ -->
+<h2 id="c4">4. DJ channel (line, phono, isolator EQ)</h2>
+
+<figure>
+<img src="../diagrammi/en/canale-cdj.svg" alt="DJ channel block diagram">
+<div class="caption">Figure 2. DJ channel (one of four, stereo): input and phono selector, GAIN, isolator EQ, CUE and SEND taps, meter, fader VCA, HPF/OFF/LPF routing switch.</div>
+</figure>
+
+<p>Status: channel v0.4, isolator v0.5 (crossovers C). Chain <span class="tag lock">LOCKED</span>: RCA &rarr; protection &rarr; LINE or PHONO front-end &rarr; GAIN &rarr; isolator EQ &rarr; split (CUE, SEND tap) &rarr; METER &rarr; FADER &rarr; HPF/OFF/LPF.</p>
+
+<h3>4.1 Stages</h3>
+<table>
+<thead><tr><th>Stage</th><th>Design</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>Line input</td><td>RCA, protection, buffer; DC block at the line input at 0.72 Hz.</td><td><span class="tag lock">LOCKED</span></td></tr>
+<tr><td>GAIN</td><td>&minus;&infin; &rarr; 0 (detent) &rarr; +10 dB. Selected dual linear pot in the signal path (dec. 162), no VCA. Tracking &le; 0.5 dB only with tightly selected pots (0.5 % between tracks) and only from about &minus;10 dB up. The left half of the knob behaves as a trim; silence only in the last 5&ndash;10 %.</td><td><span class="tag lock">LOCKED</span>; pot selection to be measured</td></tr>
+<tr><td>Isolator EQ</td><td>4 bands in parallel, each knob silence &rarr; 0 dB (centre) &rarr; +6 dB; see &sect;4.2.</td><td><span class="tag lock">LOCKED</span> topology; values <span class="tag prov">PROVISIONAL</span></td></tr>
+<tr><td>CUE and SEND taps</td><td>Post-EQ, pre-fader, buffered (driver &le; 50 &Omega;). The SEND tap goes to the channel's own FX-SEND module.</td><td><span class="tag lock">LOCKED</span></td></tr>
+<tr><td>Meter</td><td>Pre-fader, after the EQ, does not see the filter (dec. 161b). 10 LEDs.</td><td><span class="tag lock">LOCKED</span></td></tr>
+<tr><td>Fader</td><td>Mono 100 mm fader &rarr; diode CV shaper &rarr; one V2181 per side + I/V (dec. 126). Curve &minus;12 dB at mid travel <span class="tag prov">PROVISIONAL</span>; closed &ge; 102 dB <span class="tag sim">SIM</span>.</td><td><span class="tag lock">LOCKED</span></td></tr>
+<tr><td>HPF/OFF/LPF switch</td><td>After the fader. Sends the channel to the DJ bus, HPF bus or LPF bus via an ADG1434 (10 k injection on each net). Click suppression by a fader-VCA dip (dec. 163): self-timed logic (74HC86 + 74HC14 + 74HC74) detects the lever change, pulls the VCA down through two buffered RC cells (10 k/50 n) into EC&minus; (to &minus;100 dB in ~1 ms), switches the ADG at ~1.6 ms, releases in ~3 ms.</td><td><span class="tag lock">LOCKED</span>; CV feedthrough and lever bounce to bench</td></tr>
+</tbody>
+</table>
+<p>Dip result <span class="tag sim">SIM</span> (<code>sim/cdj/RISULTATI-filtsel-dip.md</code>): hard switching gives a click +14 dB above the music on the receiving bus; with the dip there is no click on the receiving bus and +1.8 dB on the bus being left (the earlier 1 ms ramp gave +6.1 dB). Audible as a 3&ndash;4 ms breath; CUE, sends and meter do not see it.</p>
+
+<h3>4.2 Isolator EQ v0.5</h3>
+<pre>
+in -+- LP2(150, Q 0.5) - AP2(350) - AP2(3150) --------------- pot LOW --+
+    +- HP2(150, Q 0.5) -+- LP4(350) - AP2(3150) ------------- pot LM ---+
+                        +- HP4(350) -+- LP4(3150) MFB+SK ---- pot MH ---+- non-inverting sum x2 - out
+                                     +- HP4(3150) MFB+SK ---- pot HIGH -+
+</pre>
+<ul>
+<li>Crossovers C: 150 Hz LR2 (soft), 350 Hz, 3150 Hz (dec. 152). The first crossover is LR2, so LP2 &minus; HP2 is a first-order allpass; the minus sign for the upper branches comes from making one section of each 3150 Hz LR4 a unity-gain MFB, without extra inverters.</li>
+<li>Knob law: catalogue linear-B dual pot (dec. 168). The &ldquo;PIONEER&rdquo; curve chosen by ear on the prototype (dec. 146) is met above centre; below centre the linear pot cuts less (+4.0 dB difference at 9 o'clock, +10.3 dB at 5 % rotation). A search over 160 000 resistor networks confirmed no passive network around a linear pot makes the curve steeper.</li>
+<li>No end-of-travel contact (dec. 127): the real mute of the channel is the fader.</li>
+<li>DC servo on the sum (pole 0.058 Hz, residual &le; 2 mV), injected through the + input of the stage via a divider.</li>
+<li>Silicon: 20 OPA1654 sections per side, 10 quads per stereo channel; 27 precision capacitors per side (1206/1210).</li>
+</ul>
+<table>
+<thead><tr><th>Measurement <span class="tag sim">SIM</span></th><th>Value</th></tr></thead>
+<tbody>
+<tr><td>Flat at centre, 20 Hz&ndash;35 kHz</td><td>+0.001&hellip;+0.004 dB</td></tr>
+<tr><td>Circuit vs Max prototype</td><td>within 0.05 dB where the prototype is above &minus;10 dB; phase within 0.5&deg;</td></tr>
+<tr><td>Single band closed</td><td>LOW &minus;19.7 dB @ 50 Hz; LOW-MID &minus;7.7 dB @ 229 Hz; MID-HIGH &minus;26.5 dB @ 1050 Hz; HIGH &minus;31.2 dB @ 8 kHz</td></tr>
+<tr><td>All bands closed</td><td>&minus;48 dB flat with a 20 &Omega; pot residual (the &minus;54 dB of dec. 127 assumed 10 &Omega;)</td></tr>
+<tr><td>Noise</td><td>&minus;97.4 dBu A centred; &minus;92.4 all at max; &minus;104.8 all closed</td></tr>
+<tr><td>Group delay</td><td>3.5 ms @ 30 Hz, 2.7 ms @ 150 Hz, 0.4 ms @ 1 kHz</td></tr>
+<tr><td>Polarity</td><td>Non-inverting at DC; phase towards &minus;180&deg; above a few hundred Hz (first-order allpass at 150 Hz), identical to the prototype</td></tr>
+</tbody>
+</table>
+<p>Not done: Monte Carlo of the new topology, real THD and clipping, stability of the MFB cells with the real OPA1654, E6 capacitor pairs.</p>
+
+<h3>4.3 Phono MM front-end (v0.1)</h3>
+<p>MM only (dec. 62). Load 47 k&Omega; &parallel; 100/200/300 pF selectable <span class="tag prov">PROVISIONAL</span>. Total gain 42 dB @ 1 kHz. Topology (dec. 79): flat OPA1612 stage &times;21 &rarr; Sallen-Key subsonic (now fixed at 18 Hz, dec. 138) &rarr; <b>passive RIAA</b> network &rarr; OPA1654 stage &times;60.6, on &plusmn;15 V LN. Dedicated turntable ground to the star.</p>
+<table>
+<thead><tr><th>Parameter <span class="tag sim">SIM</span></th><th>Value</th></tr></thead>
+<tbody>
+<tr><td>RIAA accuracy</td><td>&le; &plusmn;0.05 dB, 100 Hz&ndash;20 kHz</td></tr>
+<tr><td>EIN</td><td>1.79 &micro;V (10 Hz&ndash;20 kHz), output &minus;79.8 dBu, 19 dB below vinyl surface noise (recalculated 2026-09-30 after the INTEG quirk)</td></tr>
+<tr><td>Overload</td><td>+18 dBu clean (~20 dB above 5 mV); clip +24.9 dBu</td></tr>
+<tr><td>Warp</td><td>Clean up to ~25 mV @ 10 Hz</td></tr>
+</tbody>
+</table>
+<p>Selector LINE/PHONO (small lever) after the phono block, before GAIN. MC is a separate future variant.</p>
+
+<p class="src">Sources: SPECIFICA.md §4; docs/fase1/cdj-line-channel.md §3; docs/fase1/eq-isolator-v0.4.md §9&ndash;10; docs/fase1/phono-stage.md (via SPECIFICA §4); docs/01 dec. 126&ndash;127, 146, 152, 162&ndash;163, 168.</p>
+
+<!-- ============================================================ -->
+<h2 id="c5">5. FX-SEND micro-module (&times;4)</h2>
+
+<figure>
+<img src="../diagrammi/en/fx-send.svg" alt="FX-SEND block diagram">
+<div class="caption">Figure 3. FX-SEND (one per channel): input buffer, EQ2, LEVEL, four assign switches onto the S1&ndash;S4 bus nets.</div>
+</figure>
+
+<p>One identical module per channel (dec. 91a). The 4 assign buttons stay on the channel panel and drive the switches through +5 V logic lines; audio never passes through panel contacts. Behaviour <span class="tag lock">LOCKED</span>: tap post-EQ, pre-filter, pre-fader; LEVEL &minus;&infin;&hellip;0 dB (no positive gain); assigns multiple and simultaneous; buffered injection onto the buses.</p>
+
+<pre>
+SEND_IN L/R -&gt; buffer (OPA1612) -&gt; EQ2: LOW Baxandall shelf ~120 Hz, HIGH subtractive ~4.5 kHz
+            -&gt; LEVEL (dual 10 k log A) -&gt; injection buffers (OPA1654) -&gt; 10 k
+            -&gt; ADG1434 pi-SPDT on the virtual-earth side (series + shunt) -&gt; S1..S4 nets
+</pre>
+
+<ul>
+<li><b>EQ2</b>: LOW shelf ~120 Hz, law &ldquo;holds the bass for most of the travel, cuts fast only at the extreme&rdquo;; HIGH ~4.5 kHz, &ldquo;cuts at once, then gradually&rdquo; <span class="tag lock">LOCKED</span>. PCB v0.2 reordered the LOW cell as a Baxandall so Za and Zb become the two halves of one 10 k dual pot per side; response within 0.31 dB of the earlier version <span class="tag sim">SIM</span>. The HIGH kill gives a +2.1 dB bump at the corner (known, accepted gesture).</li>
+<li><b>LEVEL</b>: dual 10 k log A: &minus;20 dB at mid travel, 0 dB at the end (dec. 108). It is the only control of the level to the pedal (pedal pad fixed at 0 dB).</li>
+<li><b>Assign switching</b> (REV 2026-11-03): the ADG1434 IN pin is a logic input (VIH 2.0 / VIL 0.8 V, tTRANS 140 ns), so an RC on IN gives no ramp. Remedy: switching at the zero crossing (one comparator per side + 74HC74 per assign): step &minus;51/&minus;54 dB, no click above programme, delay 20&ndash;80 &micro;s <span class="tag sim">SIM</span>. At &plusmn;15 V the switch clips above +22.4&hellip;+22.7 dBu, below the +24 dBu requirement, so the switch now sits <b>after</b> the 10 k injection resistor on the virtual-earth node, where it sees ~8 mV.</li>
+<li><b>Noise</b>: an assigned send gives &minus;101.7 dBu A at the bus with LEVEL at max, &minus;110.7 at &minus;20 dB <span class="tag sim">SIM</span> (<code>sim/fx/RISULTATI-send-chain-v2.md</code>).</li>
+<li>Listens to GLOBAL_MUTE (c9): the sends mute with the global mute so the self-feedback matrix is not excited during power transitions (dec. 94b).</li>
+</ul>
+<p>Board: the first PCB of the project; main board 100 &times; 220 mm, 4 layers, 120 parts, plus a 34 &times; 83 mm controls board carrying the 3 dual pots, linked by a 2&times;12 ribbon. Status in &sect;15.</p>
+
+<p class="src">Sources: docs/fase1/fx-send-module.md §2, REV 2026-10-27; docs/06 §15; pcb/fx-send/NOTE.md; docs/01 dec. 91, 94, 108.</p>
+
+<!-- ============================================================ -->
+<h2 id="c6">6. FX-RET modules (&times;4) and feedback matrix</h2>
+
+<figure>
+<img src="../diagrammi/en/fx.svg" alt="FX return and reroute block diagram">
+<div class="caption">Figure 4. FX bus n: bus summer, pedal driver, return path (JFET buffer, GAIN, EQ2, meter, fader VCA), and the four reroute VCAs (3 cross + self).</div>
+</figure>
+
+<p>Status v0.3-WIP. One module per bus (dec. 130). Each FX-RET n contains: virtual-earth summer of net Sn, pedal driver and jack, return path, 4 stereo reroute VCA pairs with their CV shapers.</p>
+
+<h3>6.1 Bus and pedal interface</h3>
+<ul>
+<li>Summer: virtual earth, 10 k / 10 k <span class="tag prov">PROVISIONAL</span>, 12 stereo contributors (4 FX-SEND, up to 4 MIC/MONO, 4 reroutes). Cf 10 pF mandatory on Rf (the net is long: without it +3&hellip;+5.6 dB HF peaking <span class="tag sim">SIM</span>).</li>
+<li>Pedal send: high-headroom driver, fixed 0 dB pad (dec. 108), protection. Return: protection/DC control, hi-Z &ge; 1 M&Omega; JFET buffer, tolerance &minus;20&hellip;+18 dBu, interface bandwidth ~5 Hz&ndash;40 kHz; protection R + low-capacitance TVS (&le; 5 pF), DC servo with free corner 0.05&ndash;0.5 Hz. Mono pedals get a controlled mono sum, never a hard L/R short.</li>
+<li>Return: GAIN &minus;&infin;&rarr;0&rarr;+20 dB on a selected dual linear pot (dec. 162; ~0.8 dB tracking towards +20 accepted), EQ2 LOW ~100&ndash;150 Hz / HIGH ~4&ndash;6 kHz, meter post-gain/EQ pre-fader, fader VCA, out to MSUM.</li>
+</ul>
+
+<h3>6.2 Feedback matrix <span class="tag lock">LOCKED</span> behaviour</h3>
+<p>Each return feeds 4 destinations (3 cross + self) through attenuation-only VCAs. Control chain: pot &rarr; CV buffer &rarr; piecewise map &rarr; smoothing 1&ndash;5 ms &rarr; VCA. No limiter. Reroute is pre-fader: lowering the return fader does not stop the loop. Loop gain: g_loop(dB) = return GAIN + reroute(dB) + pedal gain; LEVEL is not in the loop.</p>
+<table>
+<thead><tr><th>Pot travel</th><th>0&ndash;20 %</th><th>20&ndash;45 %</th><th>45&ndash;70 %</th><th>70&ndash;85 %</th><th>85&ndash;95 %</th><th>95&ndash;100 %</th></tr></thead>
+<tbody><tr><td>Reroute level (dB)</td><td>&minus;&infin;&hellip;&minus;40</td><td>&minus;40&hellip;&minus;20</td><td>&minus;20&hellip;&minus;10</td><td>&minus;10&hellip;&minus;4</td><td>&minus;4&hellip;&minus;1</td><td>&minus;1&hellip;0</td></tr></tbody>
+</table>
+<p>Reroute injection: VCA &rarr; I/V &rarr; inverting unity driver &le; 50 &Omega; &rarr; 10 k onto the destination net. VCA current is never sent bare onto a 70 cm backplane node.</p>
+<table>
+<thead><tr><th>Loop result <span class="tag sim">SIM</span></th><th>Value</th></tr></thead>
+<tbody>
+<tr><td>Pedal modelled as tanh &plusmn;12 V, g_loop 0.8 / 1.0 / 1.2 / 2.0</td><td>decays / sustains / &plusmn;7.90 V = +20.2 dBu / &plusmn;11.49 V = +23.4 dBu; never at the rails (clamp &plusmn;16.5 V). Bounding comes from the pedal.</td></tr>
+<tr><td>Dry loop (no pedal), g 3 and 10</td><td>runaway held only by the clamps; legitimate only with self below unity (operator discipline, recoverable)</td></tr>
+<tr><td>Self loop through the backplane</td><td>&minus;0.03 dB and &minus;5.5&deg; at 20 kHz</td></tr>
+<tr><td>Bus noise, VCAs closed &rarr; 4 VCAs at floor</td><td>&minus;101.3 &rarr; &minus;91.5 dBu A (target &minus;88)</td></tr>
+<tr><td>Crosstalk into a virtual-earth net</td><td>1 pF from a driven line = &minus;58 dB at 20 kHz &rArr; PCB rule: virtual-earth nets in guarded stripline, &le; 0.2 pF to any driven line</td></tr>
+</tbody>
+</table>
+<p>Board count: 410 footprints, 34 chips (10 V2181 per module), 20 trimmers 3266. Does not fit one 100 &times; 220 board; split into signal + reroute boards (provisional, &sect;15).</p>
+
+<p class="src">Sources: SPECIFICA.md §7; docs/fase1/fx-module.md §2bis, §4, §8.5; pcb/fx-ret/NOTE.md; docs/01 dec. 84, 91, 108, 130, 162.</p>
+
+<!-- ============================================================ -->
+<h2 id="c7">7. Global filter</h2>
+
+<figure>
+<img src="../diagrammi/en/filtro.svg" alt="Filter module block diagram">
+<div class="caption">Figure 5. Filter module after dec. 159: HPF and LPF bus receivers, two stereo sections of OTA state-variable cores, resonance, overdrive, section mute, outputs back onto the DJ bus.</div>
+</figure>
+
+<p>Status v0.2 / v0.3-WIP. Reference character: Sherman Filterbank (resonance), Xone:96 (law). Six panel knobs: HPF FREQ/RES/DRIVE, LPF FREQ/RES/DRIVE.</p>
+
+<h3>7.1 Architecture <span class="tag lock">LOCKED</span></h3>
+<ul>
+<li>Post-fader on bus sums (dec. 159): 4 mono cores. Equivalent to per-channel filtering while linear; differences accepted: DRIVE saturates the sum and follows the faders, one resonance whistle per section, no beating between cores. A section with no channel assigned is muted from the FILT_MODE bits (no idle whistle).</li>
+<li>Range: LPF 10 Hz&ndash;35 kHz; HPF 20 Hz&ndash;35 kHz (dec. 137). 24 dB/oct, 4 poles = 2 cascaded 2-pole SVFs, Butterworth alignment (dec. 148b).</li>
+<li>Law (dec. 102): Xone:96 curve, FREQ exponential 20 Hz&ndash;20 kHz over the central 90 %, last 5 % each side to 10 Hz / 35 kHz (HPF: 20 Hz at 0 %). Piecewise diode CV shaper, break points trimmable on the bench.</li>
+<li>Exponential converter with temperature compensation; Iref PTAT (LM334 class): gm constant within 0.23 % from 35 to 65 &deg;C <span class="tag sim">SIM</span>.</li>
+</ul>
+
+<h3>7.2 Core (a&prime;): LM13700 with 1/30 divider (dec. 109, 148a)</h3>
+<pre>
+summer -hp-&gt; 2.9k -+-&gt; OTA1 -&gt; 1.1 nF -&gt; buffer -bp-&gt; 2.9k -+-&gt; OTA2 -&gt; 1.1 nF -&gt; buffer -&gt; LP
+                  100R                                    100R
+                                                 +-&gt; OTA RES (two halves, gpos - gneg) -&gt; summer
+bp -&gt; 4.7k -&gt; 2+2 1N4148 antiparallel -&gt; summer   (non-linear loss limiter)
+</pre>
+<p>The bare OTA core does not work at project levels: the LM13700 has a structural state ceiling of 52 mV at f0, so a 0 dBu signal compresses (~1 % THD) and collapses at +10 dBu. The 1/30 divider raises the state ceiling at cutoff to 1.56 V; OTA noise and offset referred to the states rise 30&times;. C = 1.1 nF C0G/PP matched keeps the Iabc &rarr; fc map.</p>
+<table>
+<thead><tr><th>Result <span class="tag sim">SIM</span></th><th>Value</th></tr></thead>
+<tbody>
+<tr><td>Resonance peak (2-pole, fc ~1 kHz)</td><td>+21 dB @ RES 85 % on &minus;30 dBu; +7.2 / +8.5 dB @ 70/85 % on &minus;10 dBu; ~+1 dB on 0 dBu (accepted, Xone-like, dec. 110)</td></tr>
+<tr><td>Self-oscillation</td><td>~+5 dBu at end of travel, tracks cutoff over three decades; note falls a few semitones near the end (accepted as character)</td></tr>
+<tr><td>Core THD at 0 dBu</td><td>1.5&ndash;2 %</td></tr>
+<tr><td>Noise per 4-pole core</td><td>&minus;84.3 dBu A</td></tr>
+<tr><td>DC offset at LP out</td><td>3.9 mV typ. Vos; ~40 mV estimated at max Vos, vs. 83 mV servo range (margin ~2&times;)</td></tr>
+<tr><td>Sum of channels at cutoff (A23)</td><td>Core output stays between &minus;1 and +1.2 dBu. 1 channel: unchanged. 2 correlated channels: resonance on programme vanishes, cut at RES 0 deeper by 3.7 dB. 4 channels: 9 dB. THD 1.4&ndash;1.8 %. In band, the sum passes clean up to +12 dBu.</td></tr>
+</tbody>
+</table>
+
+<h3>7.3 Resonance law (dec. 153) and DRIVE</h3>
+<ul>
+<li>RES: Q grows uniformly to 8&times; the base at 90 % travel, then self-oscillation from ~93 %. Hardware: linear pot wired in reverse, diode shaper for gpos = 8<sup>&minus;&theta;/0.9</sup>, precision half-wave rectifier for gneg above 90 %, two OTA halves (gres = gpos &minus; gneg). The whistle threshold is a resistor ratio on the same reference as the knob, so it does not drift.</li>
+<li>DRIVE: overdrive v0.2, a symmetric clipper in parallel with the clean path, fixed output ceiling ~+5.5 dBu; law m = &theta; on a dual linear pot in the signal path, no VCA (dec. 149, 155a; todo 212). In-band at full drive: +2.8 / +3.9 / +4.6 dBu and 19 / 29 / 34 % THD at 0 / +6 / +12 dBu input <span class="tag sim">SIM</span>. The overdrive cell outputs inverted to fix system polarity.</li>
+</ul>
+<p>Archived alternative: clean core (c-B), op-amp integrators + THAT 218x per section, RES by an OTA that removes damping, fully designed and simulated (&minus;88.4 dBu A worst case per core, +16 VCAs). Filippo chose the OTA character (dec. 148a).</p>
+
+<p class="src">Sources: SPECIFICA.md §5; docs/fase2/filter-module.md §2bis, §5, §5ter, §5quater; sim/filtro/RISULTATI-D5.md (via filter §2bis); docs/02 A18, A23; docs/01 dec. 102, 109&ndash;110, 137, 148&ndash;149, 153, 159.</p>
+
+<!-- ============================================================ -->
+<h2 id="c8">8. 5-way performance EQ / dub preamp</h2>
+
+<figure>
+<img src="../diagrammi/en/five-way.svg" alt="5-way module block diagram">
+<div class="caption">Figure 6. 5-way module: DJ bus receiver, &minus;6 dB pad, phase-aligned LR4 kill bank with per-way switches, five parametric SVF cells, GROWL and NASTRO saturators, meter, +6 dB make-up.</div>
+</figure>
+
+<p>Status: v0.3; cells v0.2.1; drive v0.4 with band-split revisions <span class="tag prov">PROVISIONAL</span>. Order <span class="tag lock">LOCKED</span>: kill bank &rarr; creative EQ &rarr; drive &rarr; meter (boost cannot restore killed material). Internal reference &minus;6 dB (pad in, make-up out, dec. 73).</p>
+
+<h3>8.1 Kill bank</h3>
+<ul>
+<li>5 ways = the 5 ways of the rig. Crossover variant E, the rig's own frequencies: 80 / 170 / 1.2k / 6k Hz (dec. 150a); realignment to the VENU360 data still due.</li>
+<li>Linkwitz-Riley 4th order per edge. Plain LR4 at 5 ways leaves &minus;3&hellip;&minus;5 dB holes; the bank is <b>phase-aligned</b> (shared HP spine + allpass compensation): flat sum &minus;0.0002&hellip;&minus;0.008 dB over 5 Hz&ndash;60 kHz <span class="tag sim">SIM</span>. SUB band is LP4 down to DC (no AC coupling).</li>
+<li>Gates: precision &pi; SPDT (ADG1434 class, series + shunt to ground when off), off-isolation &minus;95 dB @ 20 kHz, all-kill &le; &minus;85.5 dB <span class="tag sim">SIM</span>; 2 unity inverters per side on SUB/MID for polarity; dedicated &plusmn;15 V rail (dec. 88, which replaced 10 gate VCAs for noise).</li>
+<li>Zero-crossing kill (dec. 164): per way and side, a comparator with a few mV of hysteresis and a 74HC74 copy the lever onto IN at the first zero crossing; ~20 ms timeout. Residual step with real chain delay: &minus;80 / &minus;70 / &minus;58 / &minus;46 / &minus;32 dB (SUB&hellip;SUPER). Gesture delay at most half a period: SUB 13.5 ms, KICK 6.3, MID 2.9, HIGH 0.4, SUPER 0.08 ms <span class="tag sim">SIM</span>. Cost: 3 quad comparators, 5 dual 74HC74, ~40 passives.</li>
+<li>Kill levers: sealed ON-OFF-(ON), up = latched kill, down = momentary (dec. 121).</li>
+</ul>
+
+<h3>8.2 Creative EQ: 5 parametric cells</h3>
+<ul>
+<li>Gains &minus;&infin;/0/+15 dB (bands 1&ndash;3), +12 (band 4), +9 (band 5); ranges <span class="tag prov">PROVISIONAL</span> 20&ndash;120 / 80&ndash;400 / 250&ndash;1.5k / 800&ndash;5k / 3&ndash;20k Hz; WIDTH continuous Q3&hellip;Q0.3 (dec. 117); POSITION moves the centre without changing gain or Q.</li>
+<li>Cell v0.2.1: OTA integrators rejected (same 52 mV state ceiling). Op-amp integrators with a <b>bootstrapped JFET VCR</b> (gate at Vcm + vds/2, cancelling the quadratic term), position via Vcm, core at a local &minus;12 dBu reference with &times;4 make-up absorbed in the output summer. Dual matched JFETs; thermal drift handled by a replica servo in the same dual <span class="tag sim">SIM</span>.</li>
+<li>Results <span class="tag sim">SIM</span>: detent &plusmn;0.0001 dB, boost &plusmn;0.02 dB on targets, notch &minus;46&hellip;&minus;47 dB, position law &plusmn;0.03 % over 2.6 octaves, THD 0.005 % nominal / 0.125 % worst at +10 dBu.</li>
+</ul>
+
+<h3>8.3 Drive: GROWL and NASTRO</h3>
+<p>Two saturators in <b>parallel</b> with the clean path (dec. 99): each knob is a pot dosing the difference signal (saturated minus clean). Knob closed = wiper at ground = output exactly equals input, and the saturator noise does not enter. Branches are trimmed to equal level at nominal, so volume does not move: a fixed calibration, no detector, no automatic dynamics. No VCAs in the drive.</p>
+<table>
+<thead><tr><th>Version</th><th>Circuit</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>GROWL, band-split (dec. 165)</td><td>Bass branch: 4-pole Butterworth LP at 250 Hz, clipper Rf 47 k with 1 / 3 diodes and 470 &Omega; in series, push 0&rarr;+20 dB, mix 0.9. New mid branch (between the LP and a pole at 2.5 kHz, exact sum): soft clipper Rf 10 k, 3+3 diodes with 4.7 k, push 0&rarr;+6 dB. Highs clean. 7 op-amp sections, 10 diodes, 3-gang pot per side.</td><td><span class="tag prov">PROVISIONAL</span>; LTspice matches the model within 0.03 THD points</td></tr>
+<tr><td>NASTRO, band-split (dec. 166), current candidate B9</td><td>Pre-emphasis / de-emphasis around a JFET common-source stage (J310 class): bass cut (3 cells zero 30 / pole 140 Hz), super cut (pole 9 kHz / zero 10.8 kHz), mid tilt (pole 1 kHz / zero 3 kHz) before the JFET and exact inverse after; reverse-curve knob u = 1 &minus; (1 &minus; t)&sup2;. 11 op-amp sections, 1 JFET per side.</td><td><span class="tag prov">PROVISIONAL</span>; LTspice matches at 50/120/500 Hz, 3 and 12 kHz runs do not terminate (todo 256)</td></tr>
+</tbody>
+</table>
+<p>Noise of the module with band-split drives <span class="tag sim">SIM</span>: at full rotation GROWL &minus;78.2, NASTRO &minus;79.1, both &minus;71.1 dBu A; at mid travel &minus;85.5 / &minus;85.6. Drives closed: &minus;85.9 dBu A, independent of the other knobs. The earlier v0.4 circuits (single GROWL clipper, single JFET NASTRO, grid in five-way §5bis.3) and the v0.3 VCA/JFET/PNP drive remain in the document as alternatives.</p>
+
+<p class="src">Sources: SPECIFICA.md §6; docs/fase2/five-way-module.md §2, §3, §4.2, §5bis, §8.10&ndash;8.11; proto-max/RISULTATI-P2.md §16; docs/01 dec. 73, 88, 99, 117, 121, 150, 164&ndash;166.</p>
+
+<!-- ============================================================ -->
+<h2 id="c9">9. Master, booth, rec</h2>
+
+<figure>
+<img src="../diagrammi/en/master-out.svg" alt="Master out block diagram">
+<div class="caption">Figure 7. Master: 7-contributor sum, MONO matrix, MASTER LEVEL VCA, meter tap, bootstrapped HV output stage to balanced XLR; booth and rec taps.</div>
+</figure>
+
+<p>Status: v0.3, output stage <b>final</b> in simulation (dec. 83, 86).</p>
+<ul>
+<li>MASTER SUM: virtual earth, 7 stereo contributors; MSUM6 (MIC) and MSUM7 (MONO) are multidrop nets with 20 k source-side resistors.</li>
+<li>MONO switch (dec. 111d): M/S matrix (two op-amps per side, 0.1 % resistors) + one VCA on the width, 1 ms ramp; source fully on one side gives &minus;6 dB on both outputs. Law of MASTER and MONO approved by ear (dec. 151).</li>
+<li>MASTER LEVEL: VCA pair on a single CV, &minus;&infin;&rarr;0 (centre detent, dec. 139)&rarr;+6 dB, tracking &le; 0.25 dB.</li>
+<li>Output: front on &plusmn;18 V &rarr; composite HV stage on the dedicated [M] rail, OPA1612 supplies <b>bootstrapped</b> on the output (a discrete gain VAS was rejected in simulation, archived as <code>compG-*</code>). Active balanced XLR, no transformer, Z<sub>out</sub> &lt; 50 &Omega;.</li>
+<li>BOOTH: pre-level, &minus;&infin;&hellip;0, own VCA pair, own buffer, XLR. REC: pre-everything, 0 dBu fixed, solder-pad attenuation. XLR and REC jacks on a small rear board (dec. 141).</li>
+<li>Protection: short/DC/RF/transients at the connector; power-on mute ~1.5&ndash;2 s and power-off &lt; 10&ndash;20 ms with relays and an analogue controller fed by the rail supervisor and AC_OK. DC servo, no series capacitors.</li>
+<li>Insert send/return for an optional graphic EQ and VIE_TAP for optional per-way outputs are on the backplane.</li>
+</ul>
+<table>
+<thead><tr><th>Output stage <span class="tag sim">SIM</span>, Iq 40 mA</th><th>Value</th></tr></thead>
+<tbody>
+<tr><td>Swing</td><td>&plusmn;20.4&ndash;20.9 V = +25.4&hellip;+25.6 dBu (bare follower: +23.2); worst mains &minus;10 % still &ge; +24 dBu with &ge; 1.2 dB margin</td></tr>
+<tr><td>THD at +24 dBu</td><td>0.00012 % @ 1 kHz; 0.0042 % @ 35 kHz</td></tr>
+<tr><td>Noise</td><td>&minus;119 dBu</td></tr>
+<tr><td>Frequency response</td><td>8 Hz&ndash;35 kHz &plusmn;0.008 dB</td></tr>
+<tr><td>Short circuit</td><td>Self-limited at 106 mA; Q1 1.0 W average (programme worst case)</td></tr>
+<tr><td>DC servo</td><td>30 &micro;V, fc 0.048 Hz</td></tr>
+<tr><td>Bootstrap pass devices</td><td>~1 W average &rArr; &ge; 4 cm&sup2; copper or a small heatsink</td></tr>
+</tbody>
+</table>
+<p>Boards: master = 3 slots on the backplane (dec. 143): one signal board and two output boards (L, R) that take only power and control from the C96 ([M] on a9&ndash;a12, +5 V, CTRL_GND, GLOBAL_MUTE, AC_OK).</p>
+
+<p class="src">Sources: SPECIFICA.md §9; docs/fase1/master-out.md (addendum dec. 111); docs/fase3/sistema-backplane.md §2; pcb/master/NOTE.md; docs/01 dec. 83, 86, 139, 141, 143, 151.</p>
+
+<!-- ============================================================ -->
+<h2 id="c10">10. CUE and headphones</h2>
+
+<figure>
+<img src="../diagrammi/en/cue.svg" alt="CUE module block diagram">
+<div class="caption">Figure 8. CUE: cue sum from the four channels, MON tap from the master (post-sum, pre-level), blend, level, headphone amplifier with two outputs.</div>
+</figure>
+
+<ul>
+<li>Quality class: Pioneer DJM headphone path (dec. 96): a mixing tool, no audiophile requirement.</li>
+<li>CUE only on DJ channels (post-EQ, pre-filter, pre-fader); several CUEs sum. No CUE for FX, mic, mono; no headphone meter.</li>
+<li>MON tap = master post-sum, pre-level (DJM-900NXS2 behaviour). BLEND: CCW cue, centre 50/50 (&minus;6/&minus;6), CW master; dual 10 k linear. LEVEL dual 10 k log.</li>
+<li>Amplifier v0.2: OPA1612 + diamond buffer on local &plusmn;18 V; two 6.3 mm stereo jacks (dec. 128) with 10 &Omega; series R and a local protection relay. The CUE module ignores GLOBAL_MUTE and has its own power protection (Filippo's choice).</li>
+</ul>
+<table>
+<thead><tr><th>Result <span class="tag sim">SIM</span></th><th>Value</th></tr></thead>
+<tbody>
+<tr><td>Noise</td><td>&minus;114.5 dBu A (24.5 dB margin on &minus;90)</td></tr>
+<tr><td>THD at 1 V rms</td><td>0.005 % into 16 &Omega;; 0.0008 % into 32 &Omega;</td></tr>
+<tr><td>Current clamp / idle</td><td>126&ndash;168 mA / 20 mA; no closed-loop peaking</td></tr>
+</tbody>
+</table>
+<p>Bench verification of the headphone amplifier is still pending (todo 7). An earlier THD claim was invalid (netlist with the Vbe multiplier disabled) and was redone.</p>
+
+<p class="src">Sources: SPECIFICA.md §10; docs/fase1/gain-staging-sheet.md §2 (CUE); docs/fase3/sistema-cue.md (via SPECIFICA); docs/01 dec. 96, 128.</p>
+
+<!-- ============================================================ -->
+<h2 id="c11">11. MIC and MONO modules</h2>
+
+<figure>
+<img src="../diagrammi/en/mic-mono.svg" alt="MIC and MONO modules block diagram">
+<div class="caption">Figure 9. MIC (balanced XLR, instrumentation front-end, HPF 60 Hz, EQ2, MUTE with fixed limiter) and MONO (hi-Z jack, FET buffer, gain, EQ2); both with 4 send pots and a tricolour LED.</div>
+</figure>
+
+<p>Two separate modules (dec. 97), up to 4 in total in any combination; first prototype 1 MIC + 3 MONO. Controls of each, and no others: GAIN, EQ2, 4 send pots (one per FX bus, &minus;&infin;&hellip;0 dB, post-EQ, no buttons), one tricolour LED (green &ge; &minus;6 dBu, yellow &ge; +11, red &ge; +17 with latch, pre-EQ; thresholds <span class="tag prov">PROVISIONAL</span>). No CUE, filter, 5-way or fader. Out to MASTER SUM.</p>
+<table>
+<thead><tr><th></th><th>MIC</th><th>MONO</th></tr></thead>
+<tbody>
+<tr><td>Input</td><td>XLR balanced, Z<sub>in</sub> ~2 k&Omega;, no phantom (V1)</td><td>Mono jack, hi-Z buffer (FET, 1 M&Omega;), tolerates +18 dBu</td></tr>
+<tr><td>Gain</td><td>30&ndash;60 dB: OPA1612 instrumentation amp at 30 dB fixed + 0&hellip;+30 dB stage</td><td>&minus;&infin;&rarr;0&rarr;+10: passive pot + make-up +10 dB</td></tr>
+<tr><td>Fixed filter</td><td>HPF 60 Hz</td><td>&mdash;</td></tr>
+<tr><td>EQ2</td><td>LOW ~120 Hz / HIGH ~5 kHz, &minus;&infin;&rarr;0&rarr;+6, broad</td><td>same</td></tr>
+<tr><td>MUTE</td><td>Latching button (dec. 167), VCA with 1 ms ramp; mutes the sends too</td><td>&mdash;</td></tr>
+<tr><td>Limiter</td><td>Fixed, always on, in the MUTE VCA, no controls: threshold +12 dBu at module out, release 1 s (dec. 145) <span class="tag prov">PROVISIONAL</span></td><td>none</td></tr>
+<tr><td>Simulated numbers</td><td>EIN &minus;126.5 dBu (150 &Omega;); CMRR 74 dB with an unbalanced 10 &Omega; source; overload 300 mV rms <span class="tag sim">SIM</span></td><td>Module noise &minus;101.3 dBu A <span class="tag sim">SIM</span></td></tr>
+<tr><td>MSUM driver</td><td>Inverting unity (polarity fix), net MSUM6</td><td>same, net MSUM7</td></tr>
+</tbody>
+</table>
+<p class="src">Sources: SPECIFICA.md §8; docs/fase4/mic-mono-moduli.md REV dec. 111 and 145; pcb/mic/NOTE.md, pcb/mono/NOTE.md; docs/01 dec. 97, 145, 167.</p>
+
+<!-- ============================================================ -->
+<h2 id="c12">12. Metering</h2>
+
+<figure>
+<img src="../diagrammi/en/metering.svg" alt="Metering block diagram">
+<div class="caption">Figure 10. Metering: detector chain per zone, shared reference tree, LM3915-class bar drivers, purple clip latch.</div>
+</figure>
+
+<ul>
+<li>Colour semantics <span class="tag lock">LOCKED</span>: BLUE low &middot; GREEN safe &middot; YELLOW loud &middot; AMBER hard &middot; RED extreme &middot; PURPLE real clipping (dedicated detector, latch ~300&ndash;500 ms).</li>
+<li>Zones (dec. 90a): green &le; +6 / amber +6&hellip;+18 / red +18&hellip;+24 / purple latch &ge; +23 dBu. Absolute scale, full scale +24 dBu on every zone; identical calibration between channels by construction (shared reference tree).</li>
+<li>Bars: master 2 &times; 20 segments (LM3915 cascade, 3 dB per step), DJ &times;4, FX return &times;4 (dec. 116), 5-way &times;1, all 10 segments: 11 bars. MIC/MONO: one tricolour LED. No meters on booth, rec, headphones, sends.</li>
+<li>Ballistics (dec. 81): attack &lt; 1 ms, release ~0.3 s (bench range 0.2&ndash;0.5 s), Pioneer DJM-like. Detector: super-diode + anti-windup clamp + 100 nF hold.</li>
+<li>LED current: worst case 133 segments &times; 5 mA &asymp; 0.67 A on +5 V (1.15 A peak total against 1.25 A sizing). Recommendation 2 mA high-efficiency LEDs, to confirm for sunlight readability outdoors.</li>
+</ul>
+<p class="src">Sources: SPECIFICA.md §11; docs/fase3/sistema-metering.md §1; docs/01 dec. 53, 81, 90, 116.</p>
+
+<!-- ============================================================ -->
+<h2 id="c13">13. Control hardware</h2>
+
+<table>
+<thead><tr><th>Item</th><th>Decision</th></tr></thead>
+<tbody>
+<tr><td>Rotaries</td><td>115 knobs: 64 large 14 mm (Alps RK14K class), 10 medium (14 mm with ~12 mm cap), 41 small 9 mm (Alps RK09 class). Main knobs staggered as on the Xone:DB4 (dec. 118, 125). All shafts 6 mm D; rubberised caps, probably 3D-printed (dec. 124).</td></tr>
+<tr><td>Pot types</td><td>66 single (38 &rarr; CV linear, 28 on MIC/MONO), 43 dual (incl. 21 with custom law via linear pot + law resistors, 16 linear for the isolator).</td></tr>
+<tr><td>Faders</td><td>8 mono 100 mm faders &rarr; CV &rarr; VCA pair (dec. 120, 126); curve &ldquo;like Pioneer DJM&rdquo;, about &minus;12 dB at mid travel (dec. 129) <span class="tag prov">PROVISIONAL</span>.</td></tr>
+<tr><td>Kills</td><td>Sealed levers ON-OFF-(ON) (dec. 121).</td></tr>
+<tr><td>Filter mode</td><td>Sealed 3-position lever: up HPF, centre OFF, down LPF (dec. 122).</td></tr>
+<tr><td>Buttons</td><td>CUE and FX assign: illuminated latching buttons; LINE/PHONO: small lever (dec. 123). 25 logic buttons/levers in total.</td></tr>
+<tr><td>Sealing</td><td>Closed-body pots without IP rating; dust and liquid protection from panel gaskets and the flight-case lid; pots replaceable without re-making the board (dec. 119).</td></tr>
+<tr><td>Headphones</td><td>Two 6.3 mm stereo jacks (dec. 128).</td></tr>
+<tr><td>Pot laws</td><td>Provisional until listening (dec. 129): secondary EQs and 5-way GAIN = linear + law resistors; WIDTH log ~20 %; FX-SEND LEVEL and headphones log A 10 %; MIC/MONO GAIN and SEND log A.</td></tr>
+<tr><td>Open</td><td>Make and model of every part, stock codes (some RK14K dual 10 k B with detent have a 1000-piece MOQ); which knob groups move to 9 mm (todo 218); FX-SEND 9 mm dual pot choice (todo 217).</td></tr>
+</tbody>
+</table>
+<p>Pots mount on separate <b>controls boards</b> parallel to the panel, held by the pot nuts, with shaft positions taken from <code>docs/pannelli/coordinate.json</code>, and connect to the vertical main boards by ribbon cable (dec. 133, 135&ndash;136). Panel layout and the division into modules are Filippo's decisions.</p>
+<p class="src">Sources: SPECIFICA.md §15; docs/fase3/sistema-comandi.md; docs/01 dec. 118&ndash;129; pcb/fx-send/NOTE.md.</p>
+
+<!-- ============================================================ -->
+<h2 id="c14">14. Power, grounding, backplane</h2>
+
+<figure>
+<img src="../diagrammi/en/psu.svg" alt="Power supply block diagram">
+<div class="caption">Figure 11. External PSU box (toroid, rectifiers, bulk, discrete MOSFET LDO pre-regulators, +5 V, AC_OK) and the PSU-IN module in the mixer (TVS, group fuses, star, supervisor, fans).</div>
+</figure>
+
+<h3>14.1 External box (dec. 113) <span class="tag prov">PROVISIONAL</span></h3>
+<p>Linear, no switching (dec. 90c). The box holds the transformer, rectifiers, bulk and pre-regulators; final regulation, star and branch protection stay in the mixer. Cable &le; 2 m, circular IP65 connector, 20 contacts including a dedicated PE conductor.</p>
+<table>
+<thead><tr><th>Winding (dec. 131)</th><th>Rating</th><th>Box output</th><th>Load</th></tr></thead>
+<tbody>
+<tr><td>W1 audio</td><td>2 &times; 21 V, 7.0 A; bulk 22 mF per branch; fuse T8 A</td><td>&plusmn;22.0 V, discrete MOSFET LDO</td><td>2.12 A base, 2.44 A with all options, 2.70 A design, per branch</td></tr>
+<tr><td>W2 low-noise</td><td>2 &times; 18 V, 1.5 A; fuse T2 A</td><td>&plusmn;19 V, discrete MOSFET LDO</td><td>0.60 A design</td></tr>
+<tr><td>W3 [M]</td><td>2 &times; 20 V, 0.4 A</td><td>raw &plusmn;27 V nominal</td><td>master HV stage only</td></tr>
+<tr><td>W4</td><td>9 V, 2.5 A</td><td>+5 V (LM1084/LM2940 class, 1.25 A sizing) and V_FAN</td><td>LEDs, logic, relays, fans</td></tr>
+</tbody>
+</table>
+<ul>
+<li>Toroid ~420 VA with electrostatic screen and thermal fuse; criterion: every winding &le; 80 % at design load even at mains +10 %. Primary fuse T3.15 A.</li>
+<li>LDO topology: P-MOSFET pass (N-MOSFET mirror on the negative), error amp powered from raw (36&ndash;40 V class) driving the gate through an NPN with emitter resistor, integrator compensation, PNP current limit on Rsense (0.15 &Omega; for W1 after dec. 131), 2.5 V shunt reference with ~0.1 s soft start. Integrated LDOs (LT1083/1085) were rejected: they need 1.2&ndash;1.3 V dropout and only ~1 V remains in the ripple valley at mains &minus;10 %.</li>
+<li>Simulated with the real transformer (EMF + winding resistance) <span class="tag sim">SIM</span>, at the 2.03 A load step (2026-10-26, before the 7 A winding): at the mixer 21.82&ndash;21.94 V, ripple &le; 3 mV pp, minimum MOSFET margin 1.19 V, local rails drop out 20.1 ms after mains loss at &minus;10 % while the mute acts within 12.7 ms. Heatsink R&theta; &le; 0.43 K/W after dec. 131.</li>
+<li>AC_OK: the box senses mains loss; the master's mute controller acts before modules lose supply.</li>
+<li>Heat inside the mixer ~118 / 132 W (base / with options) after dec. 131. Two thermostatic fans, off below ~35 &deg;C inside, linear control, filtered intakes (dec. 112).</li>
+</ul>
+
+<h3>14.2 PSU-IN module (in the mixer)</h3>
+<p>Per rail: group fuse (5&times;20) &rarr; TVS to its own 0 V &rarr; reverse Schottky &rarr; bulk. Fuse placed before the TVS, so a shorted box LDO opens the fuse. Star: one 0 &Omega; 2512 per cable 0 V to AGND; single AGND&ndash;CTRL_GND bond; CHASSIS&ndash;AGND bond on a removable jumper. Pull-up for AC_OK. PTC per slot and per rail on the backplane. Fan driver circuit: not yet defined.</p>
+
+<h3>14.3 Grounding <span class="tag prov">PROVISIONAL</span></h3>
+<table>
+<thead><tr><th>Plane</th><th>Carries</th><th>Meets the others</th></tr></thead>
+<tbody>
+<tr><td>AGND</td><td>Signal returns and local-rail returns</td><td>It is the reference: the star (now on PSU-IN)</td></tr>
+<tr><td>CTRL_GND</td><td>Logic returns: mode bits, mute, CV, LEDs</td><td>Single AGND&ndash;CTRL_GND bond at the star</td></tr>
+<tr><td>CHASSIS/SHIELD</td><td>Connector shields, chassis, heatsinks</td><td>Single CHASSIS&ndash;AGND bond at the star, removable for hum diagnosis</td></tr>
+</tbody>
+</table>
+<p>Goal: no return current crosses another module's path; common impedance &lt; 1 m&Omega; (&lt; 0.3 &micro;V for 300 mA = &minus;128 dBu). XLR pin 1 &rarr; RC &rarr; star; RCA through an isolated washer; dedicated turntable ground. The hybrid 1 nF/1 M&Omega; chassis scheme was not adopted. Hum behaviour is a bench item.</p>
+
+<h3>14.4 Backplane</h3>
+<p>Connector: DIN 41612 type C, 3 &times; 32 (C96), 2.54 mm pitch: the three physical rows give the power / audio / control separation. ~19 female connectors (male right-angle on the modules); 2 pins per power rail (&ge; 3 A against &le; 1.1 A per rail). Estimated backplane length ~75 cm, in two pieces (budget). Lines are electrically short (&le; 0.5 m per path, &le; 40 kHz), no terminated pairs.</p>
+<table>
+<thead><tr><th>Row a: power (same map for every class)</th><th>Row b: audio</th><th>Row c: control</th></tr></thead>
+<tbody>
+<tr>
+<td>a1&ndash;a4 &plusmn;22.0 V audio (labelled &ldquo;raw &plusmn;27&rdquo;)<br>a5&ndash;a8 &plusmn;19 V LN (&ldquo;raw &plusmn;22&rdquo;)<br>a9&ndash;a12 [M] raw HV (master output boards only)<br>a13&ndash;a20 AGND (8 pins, module star radial)<br>a21&ndash;a22 +5 V<br>a23&ndash;a24 CTRL_GND<br>a25&ndash;a26 CHASSIS/SHIELD<br>a27&ndash;a32 spare</td>
+<td>10 stereo slots of (L, R, AGND) = b1&ndash;b30; AGND every third pin isolates slots. b31&ndash;b32 spare (VIE_TAP on master). Slot meaning per module class (e.g. channel: DJ bus out, CUE out, SEND tap, HPF bus out, LPF bus out). Virtual-earth nets: guarded stripline, &le; 0.2 pF to driven lines; Cf 10 pF on each receiver.</td>
+<td>c1&ndash;c8 FILT_MODE CH1&ndash;4 [1:0] (0/+5 V, 10 k series, 100 k pull-down)<br>c9 GLOBAL_MUTE<br>c10&ndash;c13 CV_BUS 0&ndash;5 V &times;4 (free)<br>c14&ndash;c15 LED_DIM / service<br>c16, c20, c24, c28 CTRL_GND interleaved<br>c17 AC_OK (open collector)<br>rest spare</td>
+</tr>
+</tbody>
+</table>
+<p>The C96 pinout used by the PCB generator lives only in <code>pcb/tools/backplane.py</code>; a module script writes only row b.</p>
+
+<p class="src">Sources: docs/fase3/sistema-psu-esterno.md §0&ndash;2, §4; sim/system/RISULTATI-psu-box.md §6&ndash;7; docs/fase3/sistema-grounding.md §1&ndash;2; docs/fase3/sistema-backplane.md §1&ndash;6 and REVs; pcb/psu-in/NOTE.md; docs/09 §4; docs/01 dec. 90, 93, 112&ndash;113, 131.</p>
+
+<!-- ============================================================ -->
+<h2 id="c15">15. PCB approach and board status</h2>
+
+<h3>15.1 Boards as code</h3>
+<p>Every board is generated from <code>pcb/&lt;module&gt;/&lt;module&gt;.py</code> by <code>pcb/tools/pcbgen.py</code> (KiCad 10.0.7 Python): netlist &rarr; schematic &rarr; placement &rarr; 4-layer PCB (In1 and In2 = AGND planes) &rarr; Freerouting &rarr; ERC/DRC &rarr; audio checks &rarr; BOM. Boards are regenerated, never edited by hand. A run ends with <b>PASS</b> or <b>FAIL</b> (exit code 1), and FAIL is never committed. &ldquo;WORSE&rdquo; lines compare every ERC/DRC/audio count with the previous run. Deterministic UUIDs, so git shows only real differences. A schematic-only mode (<code>--solo-schema</code>) runs in seconds; a full board takes ~4 minutes.</p>
+
+<h3>15.2 Audio checks (<code>pcb/tools/audiocheck.py</code>), starting thresholds</h3>
+<table>
+<thead><tr><th>Rule</th><th>What</th><th>Threshold</th></tr></thead>
+<tbody>
+<tr><td>A1</td><td>100 nF from supply pin</td><td>&le; 3 mm pad-to-pad, &le; 5 mm trace; regulators &le; 10 mm</td></tr>
+<tr><td>A2</td><td>Virtual earths and inverting inputs</td><td>&le; 25 mm trace, &le; 1 via; cable nets &le; 40 mm</td></tr>
+<tr><td>A3</td><td>Passives of a sensitive net from the op-amp pin</td><td>&le; 6 mm</td></tr>
+<tr><td>A4</td><td>Estimated coupling from noisy nets</td><td>&le; 0.05 pF</td></tr>
+<tr><td>A5</td><td>Sensitive traces inside the regulator area</td><td>none (+3 mm)</td></tr>
+</tbody>
+</table>
+<p>For now the audio check reports and flags regressions but does not block. Thresholds are to be revised against the first built board.</p>
+
+<h3>15.3 Board format</h3>
+<ul>
+<li>Generated drafts are 100 &times; 220 mm, SMD on both sides where needed (<code>d.side = "B"</code>), several boards side by side under one panel (dec. 142). Rule of thumb: ~160 footprints on one side, ~280 on two; estimate from the real count (trimmers, 100 nF, regulators, jumpers), not from design-doc circuits. Fill ceiling 70 % per board (dec. 156).</li>
+<li>Dec. 158 (inclined chassis, ~150 mm front, ~215 mm rear) turns the boards under the panel into trapezoids ~185 mm tall at the rear and ~120 mm towards the player. Reconciling the 220 mm drafts with this is open (todo 249).</li>
+<li>Chassis: 19" rack width, whole rack units (dec. 157); chassis form never limits function (dec. 144): if a circuit does not fit, the board or the chassis changes, not the circuit.</li>
+<li>Assembly: SMD by the PCB fab; pots, connectors and large parts by hand (dec. 134).</li>
+</ul>
+
+<h3>15.4 Board status (2026-11-04)</h3>
+<table>
+<thead><tr><th>Board</th><th class="n">Footprints</th><th>Result</th><th>Audio A1/A2/A3/A4/A5</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>FX-SEND main</td><td class="n">120</td><td>PASS</td><td>9/14/12/2/0</td><td>Blocks placed near their connector (todo 196); + controls board (4 parts) PASS</td></tr>
+<tr><td>MIC main</td><td class="n">206</td><td>PASS</td><td>26/32/17/2/0</td><td>Both sides; passes 2 routing runs out of 4 (todo 248); + controls board PASS</td></tr>
+<tr><td>MONO main</td><td class="n">127</td><td>PASS</td><td>9/21/10/3/0</td><td>One side; + controls board PASS</td></tr>
+<tr><td>Master signal</td><td class="n">283</td><td>PASS (run 13)</td><td>28/33/28/1/0</td><td>2 PASS in 8 runs on 2026-11-04</td></tr>
+<tr><td>Master output L / R</td><td class="n">155 / 144</td><td>PASS</td><td>2/9/9/0/0</td><td>Plug into the backplane for power and control only</td></tr>
+<tr><td>Channel signal (with C96)</td><td class="n">193</td><td>PASS</td><td>29/37/6/2/0</td><td>Split <span class="tag prov">PROVISIONAL</span>; 2&times;18 ribbon bridge</td></tr>
+<tr><td>Channel isolator (no C96)</td><td class="n">197</td><td>PASS</td><td>0/27/11/0/0</td><td>Both banks, sum &times;10, servo</td></tr>
+<tr><td>FX-RET signal (with C96)</td><td class="n">199</td><td>PASS</td><td>19/67/27/3/4</td><td>Split <span class="tag prov">PROVISIONAL</span>; 2&times;16 ribbon bridge (low-impedance nets only)</td></tr>
+<tr><td>FX-RET reroute (no C96)</td><td class="n">225</td><td>PASS</td><td>8/20/8/2/0</td><td>SMD trimmers on the reroute board</td></tr>
+<tr><td>PSU-IN</td><td class="n">41</td><td>PASS</td><td>&mdash;</td><td>PTF78 2-pin fuse holder (5&times;20 clips with doubled pads defeat Freerouting)</td></tr>
+<tr><td>5-way, filter, CUE, metering, backplane, PSU box</td><td class="n">&mdash;</td><td>not yet generated</td><td>&mdash;</td><td>Board plan estimates only (<code>pcb/PIANO-schede.md</code>)</td></tr>
+</tbody>
+</table>
+<p>Real counts showed the plan estimates were low: the channel (380 footprints) and FX-RET (410) do not fit one 100 &times; 220 board, hence the splits; the master signal board alone has 282&ndash;283. The splits keep circuit, panel, controls and backplane unchanged; Filippo still has to confirm them with the layout sheet (todo 249).</p>
+
+<h3>15.5 Generator lessons</h3>
+<ul>
+<li>Nets touching TSSOP pins (0.65 mm pitch) need traces &le; 0.3 mm, or Freerouting will not connect them.</li>
+<li>Cluster gap around each op-amp (<code>d.cluster_gap</code>) 0.5 mm: at 0.2 mm Freerouting leaves nets open. Each R/C is bound to its op-amp pin and travels with the chip.</li>
+<li>&plusmn;18 V supply traces at 0.4 mm: at 0.6 mm Freerouting left &minus;18 V open on several boards.</li>
+<li>Freerouting is not deterministic: a single PASS with a net at the limit is not proof.</li>
+<li>Two adjacent pins of the same net on a header make Freerouting fail the whole net: alternate pins (+5 V, CTRL_GND, +5 V, CTRL_GND) or the <code>link_pairs</code> option (pre-routed straight link between twin through-hole pads).</li>
+<li>Class rules come from a single source (<code>Design._classrules</code>): via sizes in the board and in <code>.kicad_pro</code> once differed and produced false clearance errors.</li>
+<li>Decoupling 100 nF placed ~2 mm from its pin automatically; ground vias outward first, then under the chip body; <code>fanout_more</code> tries diagonal positions.</li>
+<li>Design bug found by review of the generated schematic: FX-SEND assign mute left the ADG1434 IN at 1.21 V, between the 0.8 and 2.0 V thresholds. Fixed (100 k to ground, 1 k series): 4.55 V on, 0.45 V muted.</li>
+</ul>
+<p>Next steps for the generator: back-side placement near connectors, fixed reference designators per block, a declared source (<code>fonte=</code>) for every value checked against the <code>.cir</code>, a CTRL_GND island for assign logic, regulator input/output capacitors &le; 10 mm.</p>
+
+<p class="src">Sources: pcb/NOTE-generatore.md; pcb/*/NOTE.md; pcb/*/out/riepilogo.json; pcb/PIANO-schede.md; docs/01 dec. 134, 142, 144, 156&ndash;158.</p>
+
+<!-- ============================================================ -->
+<h2 id="c16">16. Verification method</h2>
+
+<p>Method <span class="tag lock">LOCKED</span>: requirement &rarr; transfer function &rarr; topology &rarr; components &rarr; simulation &rarr; PCB constraints &rarr; prototype &rarr; measurement &rarr; revision. No component values are frozen before the topology is chosen.</p>
+
+<h3>16.1 Tools</h3>
+<table>
+<thead><tr><th>Tool</th><th>Use</th></tr></thead>
+<tbody>
+<tr><td>LTspice 26.0.2 in batch</td><td>All circuit numbers. Shared models in <code>sim/lib/</code> (op-amps, THAT 2181, LM13700), included by relative path. Results exist only when transcribed into a <code>sim/&lt;folder&gt;/RISULTATI-*.md</code> with the netlist name.</td></tr>
+<tr><td>Python (stdlib)</td><td>Noise integration, Fourier tables (THD partial and total), netlist lint (<code>sim/lint_cir.py</code>), shaper fits, VCA Monte Carlo, saturator models (THD at 12 kHz only at 192 kHz).</td></tr>
+<tr><td>Max for Live prototype</td><td>Musical validation by ear in Ableton Live before any perfboard (dec. 78): P0 channel, P1 filter, P2 5-way built and in listening; P3 (FX, master) and P4 (MIC) built, to be loaded. Prototype devices are generated from Python; a check verifies every <code>.genexpr</code> on disk matches the generator.</td></tr>
+<tr><td>KiCad 10 + Freerouting</td><td>Generated boards with PASS/FAIL gate (&sect;15).</td></tr>
+</tbody>
+</table>
+
+<h3>16.2 Simulation rules learned the hard way</h3>
+<ul>
+<li>Noise: never <code>.meas INTEG</code> on <code>.noise</code>; read density at 10&ndash;16 points. Only linear 4-node E sources propagate noise; a behavioural E does not.</li>
+<li><code>SINE</code> takes peak: 0 dBu = 1.095 Vp; +18 dBu = 8.70 Vp (6.16 V is rms; used as peak it is +15 dBu).</li>
+<li><code>.tran</code> with feedback loops needs <code>.nodeset</code>; op-amp macro in two variants (linear mirror for AC/noise, <code>abs</code> for transient). The single-pole <code>OP1612</code> macro is always stable; stability work needs an inline second pole. OPA1612 current is 3.6 mA per channel, not 2.</li>
+<li>Power supplies: transformer with open-circuit EMF and winding resistance, never ideal (rms winding current ~1.9&times; DC). Regulator loops: never <code>uic</code>, start from zero.</li>
+<li><code>.step param ... list</code> runs values in ascending order, not written order. A <code>.param</code> written twice with <code>.step</code> silences <code>.four</code> without an error.</li>
+<li>OTA SVF at near-zero Iabc: <code>.op</code> does not converge; use <code>.tran ... uic</code> and measure peak-to-peak.</li>
+</ul>
+
+<h3>16.3 What is verified where</h3>
+<table>
+<thead><tr><th>Area</th><th>Python model</th><th>LTspice</th><th>Live (by ear)</th><th>Bench</th></tr></thead>
+<tbody>
+<tr><td>Channel + isolator</td><td>yes</td><td>yes</td><td>yes (P0)</td><td>no</td></tr>
+<tr><td>Filter (core, RES, DRIVE)</td><td>yes</td><td>yes</td><td>yes (P1); on buses ready, listening pending</td><td>no</td></tr>
+<tr><td>5-way bank, cells, kill</td><td>yes</td><td>yes</td><td>yes (P2); zero-cross kill not yet in the prototype</td><td>no</td></tr>
+<tr><td>GROWL / NASTRO band-split</td><td>yes</td><td>partial (NASTRO 3/12 kHz runs do not terminate)</td><td>in listening</td><td>no</td></tr>
+<tr><td>FX send/return, feedback</td><td>yes</td><td>yes</td><td>P3 built; buses silent in Live (send~/receive~ unsupported between M4L devices, todo 209)</td><td>no</td></tr>
+<tr><td>Master out</td><td>&mdash;</td><td>yes (final)</td><td>law of MASTER and MONO approved</td><td>no</td></tr>
+<tr><td>MIC / MONO</td><td>yes</td><td>yes</td><td>P4 built, to be loaded</td><td>no</td></tr>
+<tr><td>CUE, metering, PSU, shaper</td><td>&mdash;</td><td>yes</td><td>&mdash;</td><td>no</td></tr>
+</tbody>
+</table>
+<div class="note warn">Passing in Python does not mean working in Live: it happened at least six times (2026-10-15, 10-29, 10-31). Every prototype delivery ends with &ldquo;Verified in: Python / LTspice / Live (yes or no)&rdquo;. Nothing has been measured on a bench. Purchases are on hold until the prototype is complete; phase 1 perfboard (channel, FX, master, basic PSU) comes next.</div>
+
+<h3>16.4 Bench items already identified</h3>
+<ul>
+<li>Real JFET coefficients and spread (5-way cells, NASTRO); V2181 constant spread and temperature scale (+0.33 %/K, compensation ready).</li>
+<li>Dip feedthrough of the fader CV and lever bounce; ADG1434 charge injection on the zero-cross kill.</li>
+<li>Selected dual-pot tracking for GAIN (0.5 % between tracks).</li>
+<li>Filter: converter pre-distortion; offset &times;30 against the servo range.</li>
+<li>Headphone amplifier, master out, EQ/FX/meter models (todo 7, 8, 9); MIC/MONO (todo 29); FX-SEND ribbon hum and LOW-cell stability (todo 171).</li>
+<li>Hum with the removable chassis bond; PSU regulation, mute timing, fan thermostat.</li>
+<li>Meter release constant (0.2&ndash;0.5 s) and LED readability in sunlight.</li>
+</ul>
+
+<p class="src">Sources: CLAUDE.md (project rules and simulation rules); SPECIFICA.md §16; docs/02 list C; docs/proto-max/piano.md; project todo list (2026-11-04).</p>
+
+<!-- ============================================================ -->
+<h2 id="c17">17. Budget</h2>
+<p>Estimate dated 2026-10-22, generated by <code>docs/budget/genera_budget.py</code>. Materials for one unit, euro, VAT excluded unless stated, lots of tens of pieces. Quantities at that date (~54 VCAs, 115 knobs). Nothing has been ordered.</p>
+<table>
+<thead><tr><th>Item</th><th class="n">Per module</th><th class="n">Copies</th><th class="n">Complete setup</th></tr></thead>
+<tbody>
+<tr><td>DJ channel with phono</td><td class="n">191&ndash;348</td><td class="n">4</td><td class="n">763&ndash;1,392</td></tr>
+<tr><td>FX-SEND</td><td class="n">40&ndash;72</td><td class="n">4</td><td class="n">160&ndash;288</td></tr>
+<tr><td>FX-RET</td><td class="n">112&ndash;221</td><td class="n">4</td><td class="n">448&ndash;884</td></tr>
+<tr><td>Filter, OTA core (a&prime;)</td><td class="n">109&ndash;227</td><td class="n">1</td><td class="n">109&ndash;227</td></tr>
+<tr><td>5-way</td><td class="n">366&ndash;666</td><td class="n">1</td><td class="n">366&ndash;666</td></tr>
+<tr><td>Master out (with booth and MONO)</td><td class="n">133&ndash;244</td><td class="n">1</td><td class="n">133&ndash;244</td></tr>
+<tr><td>CUE and headphones</td><td class="n">66&ndash;116</td><td class="n">1</td><td class="n">66&ndash;116</td></tr>
+<tr><td>Metering</td><td class="n">58&ndash;151</td><td class="n">1</td><td class="n">58&ndash;151</td></tr>
+<tr><td>MIC</td><td class="n">68&ndash;123</td><td class="n">1</td><td class="n">68&ndash;123</td></tr>
+<tr><td>MONO</td><td class="n">38&ndash;70</td><td class="n">3</td><td class="n">115&ndash;211</td></tr>
+<tr><td>Backplane</td><td class="n">20&ndash;42</td><td class="n">1</td><td class="n">20&ndash;42</td></tr>
+<tr><td>PSU-IN and fans</td><td class="n">56&ndash;108</td><td class="n">1</td><td class="n">56&ndash;108</td></tr>
+<tr><td>External PSU box</td><td class="n">480&ndash;914</td><td class="n">1</td><td class="n">480&ndash;914</td></tr>
+<tr><td><b>Module electronics</b></td><td></td><td></td><td class="n"><b>2,843&ndash;5,366</b></td></tr>
+<tr><td>PCBs, one prototype run</td><td></td><td></td><td class="n">485&ndash;1,065</td></tr>
+<tr><td>Wiring, hardware, caps, spares (incl. 22 spare VCAs)</td><td></td><td></td><td class="n">300&ndash;590</td></tr>
+<tr><td>Chassis, engraved panels, flight case</td><td></td><td></td><td class="n">1,250&ndash;2,550</td></tr>
+<tr><td>Prototype: perfboard and second PCB run</td><td></td><td></td><td class="n">411&ndash;889</td></tr>
+<tr><td><b>Total, VAT excluded</b></td><td></td><td></td><td class="n"><b>5,289&ndash;10,460</b></td></tr>
+<tr><td><b>Total, VAT 22 % included</b></td><td></td><td></td><td class="n"><b>6,452&ndash;12,761</b></td></tr>
+</tbody>
+</table>
+<p>Reduced setup (2 channels, 2 FX-SEND, 1 MIC, 1 MONO): 4,750&ndash;9,480 &euro; VAT excluded. Excluded: assembly labour, optional modules, measuring instruments (710&ndash;1,300 &euro;), per-order shipping. Biggest single item: engraved panels (~24 %). Cost drivers: VCAs and their ~253 trimmers (the trim work is days at the bench), weak price data for the V2181L clone (no current EU price list found), panel supplier choice. The budget predates some changes (board splits, GAIN and DRIVE on dual pots); it has not been regenerated since.</p>
+<p class="src">Source: docs/09-budget.md §1, §2, §4&ndash;10.</p>
+
+<!-- ============================================================ -->
+<h2 id="c18">18. Open questions: where a builder's review helps</h2>
+
+<h3>18.1 Decisions pending with Filippo (from docs/02 and the todo list)</h3>
+<table>
+<thead><tr><th>Item</th><th>Question</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>A23</td><td>Filter ceiling at cutoff with summed channels: accept as character, receiver at &minus;6 dB with recovery after the core (+6 dB core noise, system ~&minus;73, FAIL), or a larger divider (1/40&ndash;1/60). Recommended: accept. Decision after listening on the bus prototype.</td><td><span class="tag open">OPEN</span></td></tr>
+<tr><td>B6 / todo 246, 247, 255</td><td>Character of the band-split GROWL and NASTRO; whether the NASTRO super band loses 14 dB (as in the prototype) or 7 dB (as in dec. 166).</td><td><span class="tag open">OPEN</span></td></tr>
+<tr><td>B8 / B9</td><td>FX EQ2, return GAIN laws, where feedback starts on the travel, MIC limiter threshold and LED thresholds: waiting for the rebuilt FX buses in Live.</td><td><span class="tag open">OPEN</span></td></tr>
+<tr><td>B3</td><td>Realign 5-way crossover E to the VENU360 data (37 / 80 / 170 / 1100 Hz, fifth way above ~8&ndash;12 kHz).</td><td><span class="tag open">OPEN</span></td></tr>
+<tr><td>todo 249, 252</td><td>Board splits of channel and FX-RET; FX-SEND C96 choice; board heights (trapezoids of dec. 158); pot wiring path on the channel.</td><td><span class="tag open">OPEN</span></td></tr>
+<tr><td>A13 / todo 217, 218</td><td>Make and model of knobs, faders, buttons; pot tapers; which groups move to 9 mm pots.</td><td><span class="tag open">OPEN</span></td></tr>
+<tr><td>A10, A11, A12</td><td>Chassis name and size; bench instruments; VCA purchase (lot sized after the prototype).</td><td>deferred</td></tr>
+</tbody>
+</table>
+
+<h3>18.2 Engineering questions where experience would help most</h3>
+<ol>
+<li><b>Nonlinear stages without a bench.</b> GROWL and NASTRO band-split circuits exist only as models and LTspice. JFET spread (Idss, Vp bins), diode matching in the clippers, the noise penalty at full rotation (&minus;71.1 dBu A with both) and the NASTRO 3/12 kHz runs that do not terminate. Is the parallel-blend topology robust to real parts? Would you bin JFETs or trim per unit?</li>
+<li><b>OTA filter core at project levels.</b> The 1/30 divider trades noise and offset (&times;30) for headroom; the sum of channels hits a &minus;1&hellip;+1.2 dBu ceiling at cutoff. Is there a better way to raise the ceiling without the noise penalty? Is the ~2&times; offset margin against the servo enough with real LM13700 lots?</li>
+<li><b>Long multidrop virtual-earth nets on a ~75 cm backplane.</b> 12 contributors per FX bus, 10 k injection, Cf 10 pF, guarded stripline &le; 0.2 pF. Crosstalk is &minus;58 dB per pF at 20 kHz. Would you rather convert to current-mode or balanced internal buses, or receive locally and send low-Z?</li>
+<li><b>Grounding.</b> Single star on PSU-IN, removable chassis bond, PE in the umbilical, external box. Outdoor rig with pedals and a turntable. Any trap you would expect with ~19 slots and a 2 m DC umbilical?</li>
+<li><b>Discrete MOSFET LDOs in the box.</b> Stability across load steps and cable inductance, current limit at hot heatsink, soft start versus inrush of the mixer's bulk capacitors.</li>
+<li><b>VCA clone.</b> V2181L with no electrical table; ~54 chips, symmetry trim on each, matching jig. Experience with lot-to-lot spread, and with law trims you could avoid.</li>
+<li><b>Analogue switches.</b> ADG1434 &pi; SPDT for kills, assigns and routing; zero-crossing switching; switches moved to virtual-earth nodes for headroom. Charge injection and off-isolation on a real layout.</li>
+<li><b>PCB density and generated layouts.</b> 4 layers, inner AGND planes, both-side SMD, 380&ndash;410 footprints per module split over two boards with ribbon bridges. The audio-check thresholds (A1&ndash;A5) are guesses until a board is built. Review of a generated board (FX-SEND is the most mature) would calibrate them.</li>
+<li><b>Thermal.</b> ~118&ndash;132 W inside the mixer, two thermostatic fans, 40 &deg;C outdoor ambient, bootstrapped master stage at ~1 W per pass device.</li>
+<li><b>Isolator MFB cells</b> with the OPA1654 under real capacitive loading; precision capacitor sourcing in E6 pairs.</li>
+</ol>
+
+<p class="src">Sources: docs/02-questioni-aperte.md lists A, B, C; project todo list (2026-11-04); docs/fase2/filter-module.md §2bis; docs/fase1/fx-module.md §2bis; sistema-backplane.md §4; RISULTATI-P2 §15&ndash;16.</p>
+
+<!-- ============================================================ -->
+<h2 id="ga">Appendix A: glossary of Italian names</h2>
+<table>
+<thead><tr><th>Name in files / diagrams</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td>GROWL</td><td>5-way saturator for sub and bass (&ldquo;tube pushed hard&rdquo; character).</td></tr>
+<tr><td>NASTRO</td><td>&ldquo;Tape&rdquo;: JFET tape-style saturator of the 5-way.</td></tr>
+<tr><td>BANDE / a bande</td><td>Band-split version of a saturator.</td></tr>
+<tr><td>LIBERO, VER (GROWL VER, NASTRO VER)</td><td>&ldquo;Free&rdquo; variant; version selector in the prototype.</td></tr>
+<tr><td>PULITO</td><td>&ldquo;Clean&rdquo;: the archived (c-B) filter core with VCAs.</td></tr>
+<tr><td>Canale</td><td>Channel. <code>canale-isolator</code> = the isolator board of the channel.</td></tr>
+<tr><td>Filtro</td><td>Filter.</td></tr>
+<tr><td>Vie, VIE_TAP</td><td>Ways (of the sound system); tap for optional per-way outputs.</td></tr>
+<tr><td>Segnale / Uscita</td><td>Signal board / output board (master).</td></tr>
+<tr><td>Comandi</td><td>Controls board (pots, parallel to the panel).</td></tr>
+<tr><td>Ponte</td><td>Ribbon-cable bridge between the two boards of a split module.</td></tr>
+<tr><td>Reroute, SELF</td><td>Feedback matrix send from a return to a bus; to its own bus.</td></tr>
+<tr><td>Dip</td><td>Short fader-VCA dip that hides the routing switch change.</td></tr>
+<tr><td>Kill tagliato allo zero</td><td>Kill switched at the zero crossing.</td></tr>
+<tr><td>Levetta</td><td>Toggle lever.</td></tr>
+<tr><td>Riga a / b / c</td><td>C96 row a (power), b (audio), c (control).</td></tr>
+<tr><td>MSUM1&ndash;7, S1&ndash;S4</td><td>MASTER SUM contributor nets; FX bus nets.</td></tr>
+<tr><td>FILT_MODE, GLOBAL_MUTE, AC_OK, CV_BUS</td><td>Row-c control lines (filter mode bits, global mute, mains-present, spare CVs).</td></tr>
+<tr><td>[M]</td><td>Dedicated raw HV rail for the master output stage.</td></tr>
+<tr><td>LN</td><td>Low-noise rail domain (&plusmn;15 V).</td></tr>
+<tr><td>PASSA / NON PASSA, PEGGIO</td><td>PASS / FAIL of a board generation; WORSE than the previous run.</td></tr>
+<tr><td>BLOCCATO / PROVVISORIO / APERTO / SUPERATO</td><td>LOCKED / PROVISIONAL / OPEN / SUPERSEDED.</td></tr>
+<tr><td>RISULTATI-*.md</td><td>Results file of a simulation folder.</td></tr>
+<tr><td>Libretto</td><td>Listening booklet (<code>proto-max/tutorial-live.html</code>) used for decisions by ear.</td></tr>
+<tr><td>MC-CHANNEL, MC-FILTRO, MC-5WAY, MC-MIC, MC-SEND/BUS/RET/MASTER</td><td>Max for Live prototype devices.</td></tr>
+<tr><td>Incroci</td><td>Crossover frequencies.</td></tr>
+<tr><td>Ore 9 / ore 11</td><td>Knob at 9 / 11 o'clock.</td></tr>
+<tr><td>Todo n, dec. n, voce n, A/B/C n</td><td>Task number; locked decision number (docs/01); historic open-question item (docs/02); entry of the open lists A/B/C.</td></tr>
+</tbody>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="gb">Appendix B: repository map</h2>
+<pre>
+CLAUDE.md                       project rules, current state, commands
+SPECIFICA.md                    consolidated requirements specification
+docs/01-decisioni-bloccate.md   locked decisions (1-168; 103 and 104 revoked)
+docs/02-questioni-aperte.md     open items: lists A (on paper), B (by ear), C (engineering)
+docs/03 ... 11                  critical review, filter architecture, benchmarks, noise budget (06),
+                                benchmark review (07, 08), EQ benchmark, budget (09), sound rig (10)
+docs/fase1/                     channel, isolator EQ, phono, FX-SEND, FX module, master out,
+                                gain-staging sheet (reference for levels and domains)
+docs/fase2/                     filter module, 5-way module
+docs/fase3/                     system: PSU, external PSU, grounding, backplane, polarity, controls,
+                                VCA trim, metering, CUE, shaper
+docs/fase4/                     MIC and MONO modules
+docs/diagrammi/                 generated block diagrams (en/ = English versions used here)
+docs/pannelli/                  panel renders and coordinates (Filippo's layout)
+docs/proto-max/                 Max for Live prototype plan
+proto-max/                      prototype generators, devices, RISULTATI-P0..P4
+sim/lib/                        shared models: op-amps, THAT 2181, LM13700
+sim/&lt;module&gt;/                   LTspice netlists (.cir) and RISULTATI-*.md
+sim/run_ltspice.sh              LTspice batch wrapper
+pcb/tools/                      pcbgen.py (generator), backplane.py (C96 pinout), audiocheck.py
+pcb/&lt;module&gt;/                   module script (.py), KiCad files, BOM, out/ (ERC, DRC, summary), NOTE.md
+pcb/NOTE-generatore.md          generator revision notes and remaining work
+pcb/PIANO-schede.md             board plan per module and chassis
+cheap/                          parallel low-cost variant (does not touch docs/ or sim/)
+</pre>
+<p class="src">Superseded material kept for reference: <code>sim/cdj-eq/</code> (bipolar-contribution EQ), <code>sim/eq-serie/</code> and <code>eq-serie-v0.3.md</code> (series EQ), <code>sim/master-out/compG-*</code> (discrete VAS), <code>sim/five-way/drive-*</code> (drive v0.3), filter §5bis (overdrive v0.1).</p>
+
+</body>
+</html>
