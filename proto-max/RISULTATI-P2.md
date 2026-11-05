@@ -847,3 +847,28 @@ La curva del GROWL vale per le tre voci di GROWL VER (DEC.99, LIBERO, BANDE) e p
 Hardware: GROWL = pot doppio a curva logaritmica, NASTRO = pot a curva logaritmica inversa
 (taper C). La riga «500 Hz 0 dBu 50 %» del par. 16 ora corrisponde alla manopola al 42 %.
 
+Le tabelle del par. 16 a 25 / 50 / 75 % sono calcolate con la curva vecchia (^2).
+
+## 18. NASTRO B9 in LTspice a tutte le frequenze (2026-11-05, todo 256)
+
+Causa del blocco a 3 e 12 kHz: il passo di LTspice collassava a t ~1,6 ns, subito dopo il
+punto di lavoro (migliaia di «tolerance relaxed»), poi ogni giro durava ~40 min. Rimedio:
+`.options cshunt=1e-15` (1 fF da ogni nodo a massa) in tutti i `nastro-b9*.cir`. Provati
+anche `method=gear` e la macro senza anti-windup: non bastano. 1 fF accanto ai 0,159 pF della
+macro OPAMP0 non sposta il polo. Tempi: 15-67 s per frequenza, 287 s il 3 kHz da 6 s.
+I netlist usano ora la curva nuova u = 1 − (1 − th)^2,5 (par. 17): le righe a 50 % sono a u = 0,82.
+
+`confronto_b9.py` (modello contro LTspice, THD Partial e livello, 0 / +10 dBu):
+
+| Frequenza | 50 %, 0 dBu | 100 %, 0 dBu | 100 %, +10 dBu |
+|---|---|---|---|
+| 50 Hz | 0,53 % · +0,84 / 0,53 % | 0,81 % · +3,14 / 0,81 % | 3,46 / 3,47 % |
+| 120 Hz | 6,58 / 6,58 % | 11,52 / 11,53 % | 16,50 / 16,55 % |
+| 500 Hz | 34,20 / 34,22 % | 43,95 / 43,98 % | 41,78 / 41,77 % |
+| 3 kHz | 22,58 / 22,62 % | 32,49 % · +6,54 / 32,56 % · +6,54 | 32,95 / 33,03 % |
+| 12 kHz | 11,11 / 11,21 % | 19,73 / 19,80 % | 27,91 % · +2,07 / 27,97 % · +1,87 |
+
+Scarto massimo: 0,09 punti di THD e 0,20 dB di livello (12 kHz). Durata 6 s (500 e 3000 Hz):
+0,02 punti, 0,00 dB.
+
+Verificato in: Python sì / LTspice sì a 50, 120, 500, 3k, 12k Hz / Live no (da sentire, todo 255).

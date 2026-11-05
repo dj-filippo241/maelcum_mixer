@@ -17,8 +17,8 @@
 *        gl = (fp/fz)*10^(-rl/nl/20), gh = (fb/fa)*10^(-rh/20)
 *   d  = kv*w - y1: differenziale a 4 R, partitore sul + = kv/2
 *   m  = y1 + mt*d (pot di miscela, qui sorgente B)
-* Manopola a curva inversa: u = 1-(1-th)^2; gn = 10^(12u/20);
-* mt = fw.nastro_law(u) = 0,85 u (pot lineare). th = 0,5 -> u = 0,75.
+* Manopola a curva inversa: u = 1-(1-th)^2,5 (era ^2 fino al 2026-11-05); gn = 10^(12u/20);
+* mt = fw.nastro_law(u) = 0,85 u (pot lineare). th = 0,5 -> u = 0,82.
 * Condizioni del confronto (sim/five-way/confronto_b9.py): partenza dal
 * punto di lavoro, durata 1,5 s sotto 1 kHz e 0,5 s sopra (param dur
 * per forzarla), finestra max(10/f, 20 ms), 8 armoniche, THD Partial.
@@ -61,7 +61,7 @@ E1 out 0 value={limit(V(n1),-16,16)}
 .param rdh={10k*(1/gh-1)}
 .param rdl={10k*(gl-1)}
 .param rkb={10k*kv/(2-kv)}
-.param rot={1-(1-th)*(1-th)}
+.param rot={1-pow(1-th,2.5)}
 .param gn={pow(10,gnmax*rot/20)}
 .param mt={0.85*rot}
 .param tstop={if(dur>0,dur,if(f<1000,1.5,0.5))}
@@ -133,7 +133,9 @@ Rx4 xn d 10k
 Xx xp xn d OPAMP0
 * --- miscela ---
 Bm m 0 V=V(y1)+{mt}*V(d)
-.options noopiter
+.options noopiter cshunt=1e-15
+* cshunt 1 fF su ogni nodo (todo 256): senza, a 3 e 12 kHz il passo collassa a t ~1,6 ns
+* e un giro dura 40 min; 1 fF accanto ai 0,159 pF della macro non sposta il polo
 .tran 0 {tstop} {t0} {ts}
 .step param amp LIST 1.096 3.466
 .step param th LIST 0.5 1
