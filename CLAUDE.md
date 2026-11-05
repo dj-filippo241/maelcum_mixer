@@ -24,7 +24,7 @@ Origine delle decisioni: **[F]** = detta da Filippo · **[R]** = dal resoconto C
 
 ## Comandi
 
-KiCad 10.0.7 sta in `/Applications/KiCad` (copiato dal .dmg: `brew install --cask kicad` vuole sudo e fallisce senza terminale; Homebrew non lo gestisce). CLI: `/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli`. Schemi e PCB ripartiti il 2026-10-27 (richiesta di Filippo): ogni scheda nasce da `pcb/<modulo>/<modulo>.py` col generatore `pcb/tools/pcbgen.py` (schema, PCB 4 strati, Freerouting, ERC/DRC) e si rigenera, non si ritocca a mano. Fatta: FX-SEND (PASSA col generatore nuovo e i blocchi vicino al connettore, todo 205/196, `pcb/fx-send/NOTE.md`). MIC e MONO: PCB e schede comandi PASSA (il MIC passa 2 giri su 4, todo 248). Canale, FX-RET, PSU-IN: SCHEMA PASSA, PCB da dividere o NON PASSA (todo 167). In corso: master, NON PASSA (`pcb/master/NOTE.md`, todo 204).
+KiCad 10.0.7 sta in `/Applications/KiCad` (copiato dal .dmg: `brew install --cask kicad` vuole sudo e fallisce senza terminale; Homebrew non lo gestisce). CLI: `/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli`. Schemi e PCB ripartiti il 2026-10-27 (richiesta di Filippo): ogni scheda nasce da `pcb/<modulo>/<modulo>.py` col generatore `pcb/tools/pcbgen.py` (schema, PCB 4 strati, Freerouting, ERC/DRC) e si rigenera, non si ritocca a mano. PCB a PASSA (2026-11-05): FX-SEND, MIC (5 giri su 5, todo 248), MONO, master (segnale + uscita L e R, todo 204/206), PSU-IN, canale (segnale + isolator) e FX-RET (segnale + reroute): le divisioni in due schede sono PROVVISORIE (todo 249). Da generare: 5-way, filtro, CUE, metering, backplane, box. Esiti in `pcb/<modulo>/NOTE.md`.
 
 Generare una scheda (Python di KiCad, ~4 min; con `--solo-schema` solo schema, ERC e distinta, esito «SCHEMA PASSA», pochi secondi):
 
@@ -37,6 +37,7 @@ Regole delle PCB (nate il 2026-10-27):
 - La generazione finisce con PASSA o NON PASSA (codice 1): un NON PASSA non si committa. Le righe PEGGIO confrontano col giro prima. Controllo audio: `pcb/tools/audiocheck.py`, regole in `d.audio_rules`. Pinout del C96 solo da `pcb/tools/backplane.py`. Stato e piano: `pcb/NOTE-generatore.md`.
 - La forma del telaio non limita la funzione (dec. 144): se un circuito non sta, cambia la scheda o il telaio, non il circuito. Schede alte 220 mm, SMD sui due lati con `d.side = "B"`, più schede affiancate sotto un pannello (dec. 142). Una 100 × 220 porta ~160 impronte su un lato, ~280 coi due. Si stima dal conteggio vero (trimmer, 100n, regolatori, ponticelli), non dai circuiti del design doc.
 - Le reti che toccano pin TSSOP (passo 0,65) vogliono piste ≤ 0,3 mm: con 0,6 Freerouting non le collega.
+- Freerouting non collega due pin vicini dello stesso componente sulla stessa rete (pad doppi, pin doppi del C96, cursore e capo dei trimmer): pin alternati o `link_pairs` (pcbgen.py). Freerouting non è deterministico: un PASSA singolo non è una prova; il MIC fa fino a 4 tentativi.
 - Grappolo attorno all'op-amp: `d.cluster_gap` 0,5 mm. Con 0,2 mm Freerouting lascia reti aperte (FX-SEND: NON PASSA).
 - I datasheet di analog.com non si scaricano da qui (timeout, errore HTTP/2). Copia funzionante: la pagina radiolocman del pezzo → link «Download PDF» su rlocman.ru (così è arrivato l'ADG1434 Rev. E; il PDF è l'URL dentro `rs.php?u=`, con curl `-L`). Alps (tech.alpsalpine.com) e il catalogo Alpha (taiwanalpha.com.tw/downloads) si scaricano. Pinout sempre dal datasheet, mai a memoria.
 
@@ -75,7 +76,8 @@ Regole di simulazione (ognuna nasce da un errore già pagato; il contesto sta ne
 - Alimentatori: simulare il trasformatore con EMF a vuoto e resistenza d'avvolgimento, mai ideale (corrente efficace d'avvolgimento ~1,9× la DC).
 - SVF con OTA della RES a Iabc quasi zero: il `.op` non converge (9 minuti a vuoto). Usare `.tran ... uic` e misurare il segnale con `PP`, non `RMS`: col partitore l'offset dell'OTA sale di 1/k.
 - Regolatori in anello (LDO del box, `sim/system/psu-box-*`): mai `uic`; accensione da zero, così il `.op` è banale. Con `uic`, con `limit()` brusco o con diodi a N 0,05, LTspice non termina.
-- `perl -e 'alarm ...'` ferma lo script ma non `LTspice.exe` dentro wine: il processo resta al 300 % di CPU. Controllare con `ps aux | grep -i LTspice.exe` e chiuderlo per PID.
+- `perl -e 'alarm ...'` ferma lo script ma non `LTspice.exe` dentro wine: il processo resta al 300 % di CPU. Controllare con `ps aux | grep -i LTspice.exe` e chiuderlo per PID. Un processo rimasto appeso continua a scrivere il log dello stesso netlist e sporca il giro dopo (NASTRO B9, 2026-11-04).
+- Op-amp ideale `limit(1e5*...)` senza polo in un ramo non lineare (NASTRO B9): il passo collassa. Macro con polo: A0 1e5, R 1e10, C 0,1592 pF (100 Hz, GBW 10 MHz). Con 159 pF la banda è 10 kHz e i numeri sopra 1 kHz sono falsi.
 - Modello Python dei saturatori: THD a 12 kHz solo a 192 kHz (a 96 kHz le armoniche si ripiegano: 107 % falso). Script con `multiprocessing` sempre con `if __name__ == "__main__"`.
 - `.step param x list ...`: LTspice esegue i valori in ordine crescente, non in quello scritto. Leggere le misure con quell'ordine (MONO del master, todo 200).
 - Un `.param` scritto due volte in un netlist con `.step`: `.four` non stampa niente e il log non dà errore.
