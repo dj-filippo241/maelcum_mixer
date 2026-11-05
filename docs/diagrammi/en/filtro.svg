@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 940" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C05A1B"/></marker>
+    <marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8A4A9E"/></marker>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2F6D8E"/></marker>
+    <marker id="ark" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker>
+  </defs>
+  <rect width="1560" height="940" fill="#FBFAF7"/>
+  <text x="40" y="52" font-size="24" font-weight="700" fill="#141414">GLOBAL FILTER MODULE</text>
+  <text x="40" y="76" font-size="13" fill="#666">maelcum mixer — design v0.2 + D5 · post-fader, on the HPF and LPF buses: 4 mono cores (dec. 159) · HPF 20 Hz–35 kHz, LPF 10 Hz–35 kHz (dec. 137)</text>
+  <rect x="1221" y="34" width="299" height="24" rx="12" fill="#1F7A4D"/>
+  <text x="1370.5" y="50" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">core (a′) 4-pole Butterworth (dec. 148)</text>
+  <rect x="40" y="120" width="200" height="86" rx="6" fill="#141414" stroke="#141414" stroke-width="1.5"/>
+  <text x="140" y="143.55" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">FROM THE BACKPLANE</text>
+  <text x="140" y="159.55" font-size="10.5" fill="#ddd" text-anchor="middle">HPF bus and LPF bus (nets)</text>
+  <text x="140" y="175.55" font-size="10.5" fill="#ddd" text-anchor="middle">= sum of the assigned channels,</text>
+  <text x="140" y="191.55" font-size="10.5" fill="#ddd" text-anchor="middle">post-fader (dec. 159)</text>
+  <rect x="285" y="120" width="150" height="86" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="360" y="143.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">RECEIVERS</text>
+  <text x="360" y="159.55" font-size="10.5" fill="#444" text-anchor="middle">2 stereo buses</text>
+  <text x="360" y="175.55" font-size="10.5" fill="#444" text-anchor="middle">virtual earth Rf 10k</text>
+  <text x="360" y="191.55" font-size="10.5" fill="#444" text-anchor="middle">(inverting)</text>
+  <rect x="480" y="100" width="330" height="126" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="645" y="136.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">4-POLE SVF CORE × 4 (mono)</text>
+  <text x="645" y="152.05" font-size="10" fill="#444" text-anchor="middle">2 (a′) sections: Q 0.541 + Q 1.307 (Butterworth)</text>
+  <text x="645" y="167.55" font-size="10" fill="#8A4A9E" text-anchor="middle">LM13700 OTA + 1/30 divider (dec. 109, 148)</text>
+  <text x="645" y="183.05" font-size="10" fill="#444" text-anchor="middle">integrator C 1.1 nF · max output +2.9 dBu</text>
+  <text x="645" y="198.55" font-size="10" fill="#444" text-anchor="middle">clean (c-B): designed and archived (dec. 148)</text>
+  <rect x="855" y="100" width="270" height="126" rx="6" fill="#F1F7F3" stroke="#1F7A4D" stroke-width="1.5"/>
+  <text x="990" y="136.55" font-size="13" font-weight="700" fill="#1F7A4D" text-anchor="middle">OVERDRIVE v0.2 (§5ter)</text>
+  <text x="990" y="152.05" font-size="10" fill="#444" text-anchor="middle">clipper 2.2k + 2+2 diodes, blended with clean</text>
+  <text x="990" y="167.55" font-size="10" fill="#444" text-anchor="middle">DRIVE: dual linear pot, m = θ (dec. 155a)</text>
+  <text x="990" y="183.05" font-size="10" fill="#444" text-anchor="middle">no VCA (todo 212) · DC servo</text>
+  <text x="990" y="198.55" font-size="10" fill="#444" text-anchor="middle">inverted output: polarity fix F1</text>
+  <rect x="1170" y="120" width="180" height="86" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="1260" y="143.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">SECTION MUTE</text>
+  <text x="1260" y="159.55" font-size="10.5" fill="#444" text-anchor="middle">silent when no channel</text>
+  <text x="1260" y="175.55" font-size="10.5" fill="#444" text-anchor="middle">selects it</text>
+  <text x="1260" y="191.55" font-size="10.5" fill="#444" text-anchor="middle">(FILT_MODE bits, dec. 159)</text>
+  <rect x="1395" y="120" width="125" height="86" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="1457.5" y="151.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">OUTPUT</text>
+  <text x="1457.5" y="167.55" font-size="10.5" fill="#444" text-anchor="middle">2 outputs</text>
+  <text x="1457.5" y="183.55" font-size="10.5" fill="#444" text-anchor="middle">→ DJ bus (R 10k)</text>
+  <path d="M 240 163 L 283 163" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 435 163 L 478 163" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 810 163 L 853 163" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 1125 163 L 1168 163" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 1350 163 L 1393 163" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <text x="1457" y="224" font-size="10.5" fill="#C05A1B" text-anchor="middle">max +2.9 dBu (core)</text>
+  <rect x="565" y="262" width="440" height="140" rx="6" fill="#F6F1F8" stroke="#8A4A9E" stroke-width="1.5"/>
+  <text x="785" y="290.05" font-size="13" font-weight="700" fill="#8A4A9E" text-anchor="middle">RESONANCE dec. 153 (§5, todo 212)</text>
+  <text x="785" y="305.55" font-size="10" fill="#444" text-anchor="middle">gres = gpos − gneg: two OTAs, halves of one LM13700</text>
+  <text x="785" y="321.05" font-size="10" fill="#444" text-anchor="middle">linear RES pot wired reversed → diode shaper → damping OTA</text>
+  <text x="785" y="336.55" font-size="10" fill="#8A4A9E" text-anchor="middle">above 90 %: precision rectifier → OTA that drives oscillation</text>
+  <text x="785" y="352.05" font-size="10" fill="#444" text-anchor="middle">Q from 1× to 8× base up to 90 %, whistle from 93.4 %</text>
+  <text x="785" y="367.55" font-size="10" fill="#444" text-anchor="middle">whistle with the real chip: +0.2…+0.5 dBu, −2.1…−2.4 semitones</text>
+  <text x="785" y="383.05" font-size="10" fill="#444" text-anchor="middle">limiter: 4.7k + 2+2 1N4148 into the summer</text>
+  <path d="M 700 262 L 700 228" stroke="#8A4A9E" stroke-width="2.2" fill="none" marker-end="url(#arb)"/>
+  <rect x="1035" y="262" width="485" height="126" rx="6" fill="#F3F2EE" stroke="#AAA" stroke-width="1"/>
+  <text x="1053" y="289.2" font-size="12" font-weight="700" fill="#141414">CHANNEL SUM (todo 215, RISULTATI-D5 §7)</text>
+  <text x="1053" y="305.2" font-size="10.5" fill="#444">Receiver gain 1 per channel: 2 correlated +6, 4 correlated +12 dBu.</text>
+  <text x="1053" y="321.2" font-size="10.5" fill="#444">In-band, the sum passes without loss up to +12 dBu.</text>
+  <text x="1053" y="337.2" font-size="10.5" fill="#444">At cutoff the core has a ceiling of −1 to +1.2 dBu: with 2 correlated channels</text>
+  <text x="1053" y="353.2" font-size="10.5" fill="#8A4A9E">resonance on program disappears: to be heard (docs/02 A23).</text>
+  <text x="1053" y="369.2" font-size="10.5" fill="#444">DRIVE fully up: 19 / 29 / 34 % at 0 / +6 / +12 dBu (dec. 159d).</text>
+  <rect x="40" y="420" width="1480" height="304" rx="10" fill="#EEF3F6" stroke="#2F6D8E" stroke-width="1.2"/>
+  <text x="66" y="452" font-size="15" font-weight="700" fill="#2F6D8E">CONTROL SECTION — 6 knobs: FREQ, RES, DRIVE for the HPF section and the LPF section</text>
+  <rect x="66" y="476" width="225" height="90" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="178.5" y="501.95" font-size="12" font-weight="700" fill="#141414" text-anchor="middle">LAW SHAPER</text>
+  <text x="178.5" y="517.45" font-size="10" fill="#444" text-anchor="middle">law Xone:96 (dec. 102)</text>
+  <text x="178.5" y="532.95" font-size="10" fill="#444" text-anchor="middle">HPF 20 Hz · 1000^(θ/0.95) (137)</text>
+  <text x="178.5" y="548.45" font-size="10" fill="#444" text-anchor="middle">LPF 10 Hz–35 kHz</text>
+  <rect x="336" y="476" width="235" height="90" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="453.5" y="501.95" font-size="12" font-weight="700" fill="#141414" text-anchor="middle">CONVERTER EXPO</text>
+  <text x="453.5" y="517.45" font-size="10" fill="#444" text-anchor="middle">matched BJT pair, ΔVbe PTAT:</text>
+  <text x="453.5" y="532.95" font-size="10" fill="#444" text-anchor="middle">Iabc 114 nA…397 µA = 10.6 Hz…37 kHz</text>
+  <text x="453.5" y="548.45" font-size="10" fill="#444" text-anchor="middle">drift ≤ 2.4 % (0-50 °C)</text>
+  <rect x="616" y="476" width="235" height="90" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="733.5" y="501.95" font-size="12" font-weight="700" fill="#141414" text-anchor="middle">DISTRIBUTION</text>
+  <text x="733.5" y="517.45" font-size="10" fill="#444" text-anchor="middle">buffered mirrors + trim/core</text>
+  <text x="733.5" y="532.95" font-size="10" fill="#444" text-anchor="middle">2 branches per section (dec. 159)</text>
+  <text x="733.5" y="548.45" font-size="10" fill="#444" text-anchor="middle">tracking ≤ 1.6 % PASS</text>
+  <rect x="906" y="476" width="270" height="90" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="1041" y="501.95" font-size="12" font-weight="700" fill="#141414" text-anchor="middle">RES: SHAPER + RECTIFIER</text>
+  <text x="1041" y="517.45" font-size="10" fill="#444" text-anchor="middle">reversed linear pot, +5 V reference</text>
+  <text x="1041" y="532.95" font-size="10" fill="#444" text-anchor="middle">whistle threshold = resistor ratio</text>
+  <text x="1041" y="548.45" font-size="10" fill="#444" text-anchor="middle">from 20 to 50 °C: ≤ 1.6 %</text>
+  <rect x="1221" y="476" width="273" height="90" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="1357.5" y="501.95" font-size="12" font-weight="700" fill="#141414" text-anchor="middle">DUAL-POT DRIVE</text>
+  <text x="1357.5" y="517.45" font-size="10" fill="#444" text-anchor="middle">one knob = one pair of cells</text>
+  <text x="1357.5" y="532.95" font-size="10" fill="#444" text-anchor="middle">m = θ exact, no shaper</text>
+  <text x="1357.5" y="548.45" font-size="10" fill="#444" text-anchor="middle">22 µF: no DC on the pot</text>
+  <path d="M 291 521 L 334 521" stroke="#2F6D8E" stroke-width="1.5" fill="none" stroke-dasharray="6 4" marker-end="url(#arw)"/>
+  <path d="M 571 521 L 614 521" stroke="#2F6D8E" stroke-width="1.5" fill="none" stroke-dasharray="6 4" marker-end="url(#arw)"/>
+  <path d="M 733.5 476 L 733.5 412 L 530 412 L 530 228" stroke="#2F6D8E" stroke-width="1.5" fill="none" stroke-dasharray="6 4" marker-end="url(#arw)"/>
+  <text x="520" y="300" font-size="10" fill="#2F6D8E" text-anchor="end">Iabc →</text>
+  <text x="520" y="314" font-size="10" fill="#2F6D8E" text-anchor="end">integrators</text>
+  <rect x="66" y="586" width="1428" height="118" rx="6" fill="#F1F7F3" stroke="#1F7A4D" stroke-width="1.5"/>
+  <text x="84" y="617.2" font-size="12" font-weight="700" fill="#1F7A4D">VERIFIED WITH THE REAL LM13700 MODEL</text>
+  <text x="84" y="633.2" font-size="10.5" fill="#444">Bare core (a) REJECTED: resonance peak below −12 dBu, 0 dBu program −23 dB at cutoff, oscillation 3.5 octaves below FREQ.</text>
+  <text x="84" y="649.2" font-size="10.5" fill="#444">Core (a′) 1/30: exact at small signal · full resonance at −30 dBu · core THD 1.5-2 % at 0 dBu · ×30 offset within the servo range.</text>
+  <text x="84" y="665.2" font-size="10.5" fill="#444">System noise with DRIVE closed: −78.0 dBu A with HPF and LPF in use, −79.2 HPF only, −80.6 LPF only (docs/06 §16): within −78.</text>
+  <text x="84" y="681.2" font-size="10.5" fill="#444">DRIVE open: −72.0 with both sections, within the accepted use condition (dec. 100). The 4-cores-in-series FAIL (A18) is gone.</text>
+  <rect x="40" y="744" width="900" height="66" rx="6" fill="#F3F2EE" stroke="#AAA" stroke-width="1"/>
+  <text x="58" y="769.925" font-size="10.5" fill="#444">RAILS: all OTAs on ±15.0 V ultra-low-noise from the ±19 V LN (pre-reg ±16.5 → LT3045/94) — LM13700 absolute max ±18</text>
+  <text x="58" y="785.925" font-size="10.5" fill="#444">BOM: 12 LM13700 (8 core + 4 RES) · ~12 quads · matched 1.1 nF C0G/PP · 0 VCAs (pot DRIVE) · ~450 parts [ESTIMATE]</text>
+  <rect x="980" y="744" width="540" height="66" rx="6" fill="#FDF4EA" stroke="#D97706" stroke-width="1.2"/>
+  <text x="998" y="769.925" font-size="10.5" fill="#444">PROTOTYPE: MC-FILTRO-HPF and -LPF on the BUS tracks (todo 216)</text>
+  <text x="998" y="785.925" font-size="10.5" fill="#444">component values [PROVISIONAL] until bench test</text>
+  <path d="M 40 850 L 90 850" stroke="#C05A1B" stroke-width="2.5"/>
+  <text x="98" y="854" font-size="11.5" fill="#333">audio (bus → DJ bus)</text>
+  <path d="M 262 850 L 312 850" stroke="#2F6D8E" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="320" y="854" font-size="11.5" fill="#333">CV control / Iabc</text>
+  <path d="M 465 850 L 515 850" stroke="#8A4A9E" stroke-width="2.2"/>
+  <text x="523" y="854" font-size="11.5" fill="#333">resonance / highlighted note</text>
+  <text x="40" y="918" font-size="10.5" fill="#999">Source: docs/fase2/filter-module.md (§2bis, §4, §5 RES dec. 153, §5ter pot DRIVE, §5quater) + sim/filtro/RISULTATI-D5.md §7 + docs/06 §16 + decisions 102/109/137/148/153/155/159 · 2026-11-04</text>
+</svg>

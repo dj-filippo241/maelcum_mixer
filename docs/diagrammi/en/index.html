@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>maelcum mixer — overall and module diagrams</title>
+<style>
+  body { margin: 0; background: #E8E5DE; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: #141414; }
+  header { padding: 28px 40px 12px; }
+  h1 { font-size: 22px; margin: 0 0 6px; }
+  p.sub { margin: 0; font-size: 13px; color: #555; }
+  nav { padding: 10px 40px 20px; }
+  nav a { display: inline-block; margin-right: 10px; padding: 7px 14px; background: #141414; color: #fff; text-decoration: none; border-radius: 16px; font-size: 12.5px; }
+  nav a:hover { background: #C05A1B; }
+  figure { margin: 0 40px 36px; background: #FBFAF7; border: 1px solid #C9C5BA; border-radius: 10px; padding: 10px; }
+  figure img { width: 100%; height: auto; display: block; }
+  a.lang { color: #C05A1B; }
+  figcaption { font-size: 12px; color: #666; padding: 8px 6px 2px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>maelcum mixer — overall diagram and module diagrams</h1>
+  <p class="sub">Generated from the current design documents (2026-11-04, decisions 1-168) by <code>genera_diagrammi.py</code>. Vector SVGs: open and edit in Illustrator / Figma / Inkscape. Overall diagram: red = inputs, blue = outputs, green = modules with controls, grey = passive blocks. Module diagrams: red = audio, dashed blue = control, purple = feedback and highlighted notes, amber = open or provisional items. <a class="lang" href="../index.html">Versione italiana</a></p>
+</header>
+<nav>
+  <a href="#schema">Overall</a>
+  <a href="#canale">CDJ/Line channel</a>
+  <a href="#fxsend">FX-Send</a>
+  <a href="#fx">FX-Ret</a>
+  <a href="#fiveway">5-Way</a>
+  <a href="#filtro">Filter</a>
+  <a href="#master">Master Out</a>
+  <a href="#cue">Cue / Headphones</a>
+  <a href="#micmono">Mic / Mono</a>
+  <a href="#psu">PSU</a>
+  <a href="#metering">Metering</a>
+</nav>
+
+<figure id="schema"><img src="schema-totale.svg" alt="Overall"><figcaption>Overall functional diagram — every input, module and output; one DJ channel and one FX bus drawn, the others identical (decisions 1-168)</figcaption></figure>
+<figure id="canale"><img src="canale-cdj.svg" alt="CDJ/Line channel"><figcaption>CDJ/Line channel v0.4 — docs/fase1/cdj-line-channel.md (isolator v0.5 with crossovers C and linear pots, dec. 152/168; dual-pot GAIN, dec. 162; filter toggle with fader dip, dec. 163; 18 Hz phono subsonic, dec. 138)</figcaption></figure>
+<figure id="fxsend"><img src="fx-send.svg" alt="FX-Send"><figcaption>FX-SEND micro-module v0.1-WIP + PCB v0.2 — docs/fase1/fx-send-module.md (assign after the injection R, zero-cross switching, todo 224; LEVEL = sole level to the pedal, dec. 108)</figcaption></figure>
+<figure id="fx"><img src="fx.svg" alt="FX-Ret"><figcaption>FX-RET ×4 v0.3-WIP — docs/fase1/fx-module.md (one module per bus, dec. 130; reroute 3 cross + SELF, dec. 91; dual-pot return GAIN, dec. 162; ~54 VCAs in the mixer)</figcaption></figure>
+<figure id="fiveway"><img src="five-way.svg" alt="5-Way"><figcaption>5-Way dub preamp v0.3 — docs/fase2/five-way-module.md (zero-cross kill, dec. 164; band-split GROWL and TAPE, PROVISIONAL, dec. 165-166; continuous WIDTH, dec. 117; crossovers E, dec. 150)</figcaption></figure>
+<figure id="filtro"><img src="filtro.svg" alt="Filter"><figcaption>Global filter v0.2 + D5 — docs/fase2/filter-module.md (post-fader on the HPF and LPF buses, 4 cores, dec. 159; core (a′) Butterworth, dec. 148; RES dec. 153; dual-pot DRIVE; HPF from 20 Hz, dec. 137)</figcaption></figure>
+<figure id="master"><img src="master-out.svg" alt="Master Out"><figcaption>Master Out v0.2 + output stage v0.3 — docs/fase1/master-out.md (M/S MONO, insert and VIE_TAP, dec. 111; MASTER centre detent, dec. 139; signal + output L/R boards, dec. 142-143)</figcaption></figure>
+<figure id="cue"><img src="cue.svg" alt="Cue / Headphones"><figcaption>Cue / Headphones S5 v0.2 — docs/fase3/sistema-cue.md (inverting MON buffer, todo 227; 2 × 6.3 mm jacks, dec. 128)</figcaption></figure>
+<figure id="micmono"><img src="mic-mono.svg" alt="Mic / Mono"><figcaption>Mic and Mono v0.1 + REV 2026-11-04 — docs/fase4/mic-mono-moduli.md (latching MUTE, dec. 167; fixed limiter in the MUTE VCA, dec. 145)</figcaption></figure>
+<figure id="psu"><img src="psu.svg" alt="PSU"><figcaption>PSU system — docs/fase3/sistema-psu-esterno.md (external box, dec. 113; headroom: ~420 VA toroidal, W1 7.0 A, W2 1.5 A, dec. 131)</figcaption></figure>
+<figure id="metering"><img src="metering.svg" alt="Metering"><figcaption>Metering system S4 v0.1 — docs/fase3/sistema-metering.md (11 bars, dec. 116; ballistics dec. 81, thresholds dec. 90, mic/mono LED dec. 97)</figcaption></figure>
+</body>
+</html>

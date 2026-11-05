@@ -1,13 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 880" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 900" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
   <defs>
     <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C05A1B"/></marker>
     <marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8A4A9E"/></marker>
     <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2F6D8E"/></marker>
     <marker id="ark" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker>
   </defs>
-  <rect width="1560" height="880" fill="#FBFAF7"/>
+  <rect width="1560" height="900" fill="#FBFAF7"/>
   <text x="40" y="52" font-size="24" font-weight="700" fill="#141414">MODULO CANALE CDJ / LINE</text>
-  <text x="40" y="76" font-size="13" fill="#666">maelcum mixer — design v0.4 · send FX nel micro-modulo (dec. 91a), rail dec. 93, rumore dec. 89 — metà canale L; R identica e linked</text>
+  <text x="40" y="76" font-size="13" fill="#666">maelcum mixer — design v0.4 + isolator v0.5 (incroci C) · GAIN a pot doppio (dec. 162) · levetta del filtro col dip del fader (dec. 163) — metà L; R identica</text>
   <rect x="1311" y="34" width="209" height="24" rx="12" fill="#1F7A4D"/>
   <text x="1415.5" y="50" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">phono MM incluso (dec. 79)</text>
   <rect x="40" y="170" width="130" height="72" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
@@ -17,97 +17,120 @@
   <rect x="215" y="170" width="165" height="72" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
   <text x="297.5" y="194.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[A] PROT + BUFFER</text>
   <text x="297.5" y="210.55" font-size="10.5" fill="#444" text-anchor="middle">R 100 Ω + TVS low-cap + bead</text>
-  <text x="297.5" y="226.55" font-size="10.5" fill="#444" text-anchor="middle">OPA1612 unity, Zin ≥ 47k</text>
-  <rect x="425" y="170" width="175" height="72" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="512.5" y="194.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[B] GAIN</text>
-  <text x="512.5" y="210.55" font-size="10.5" fill="#444" text-anchor="middle">VCA THAT 218x stereo link</text>
-  <text x="512.5" y="226.55" font-size="10.5" fill="#444" text-anchor="middle">−∞ → 0 (detent) → +10 dB</text>
-  <text x="520" y="258" font-size="10" fill="#C05A1B" text-anchor="middle">post: 0 / +10 dBu worst</text>
-  <rect x="650" y="150" width="240" height="112" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="770" y="178.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[C] EQ ISOLATOR 4 BANDE</text>
-  <text x="770" y="194.55" font-size="10.5" fill="#444" text-anchor="middle">bande in parallelo LR4 (dec. 105)</text>
-  <text x="770" y="210.55" font-size="10.5" fill="#444" text-anchor="middle">LOW / LOW-MID / MID-HIGH / HIGH</text>
-  <text x="770" y="226.55" font-size="10.5" fill="#444" text-anchor="middle">silenzio … 0 (detent) … +6 dB</text>
-  <text x="770" y="242.55" font-size="10.5" fill="#444" text-anchor="middle">somma non invertente + servo DC</text>
-  <text x="770" y="278" font-size="10" fill="#C05A1B" text-anchor="middle">post: 0 / +16 dBu worst</text>
+  <text x="297.5" y="226.55" font-size="10.5" fill="#444" text-anchor="middle">OPA1612 unity, Zin 100k</text>
+  <rect x="425" y="162" width="185" height="88" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="517.5" y="186.2" font-size="12" font-weight="700" fill="#141414" text-anchor="middle">[B] GAIN (dec. 162)</text>
+  <text x="517.5" y="202.2" font-size="10.5" fill="#444" text-anchor="middle">pot doppio lineare selezionato</text>
+  <text x="517.5" y="218.2" font-size="10.5" fill="#444" text-anchor="middle">Rl 4,30k + non invertente ×3,15</text>
+  <text x="517.5" y="234.2" font-size="10.5" fill="#444" text-anchor="middle">−∞ … 0 (detent) … +10 dB</text>
+  <text x="517" y="266" font-size="10" fill="#C05A1B" text-anchor="middle">post: 0 / +10 dBu worst</text>
+  <rect x="650" y="150" width="250" height="112" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="775" y="178.2" font-size="12" font-weight="700" fill="#141414" text-anchor="middle">[C] EQ ISOLATOR 4 BANDE (v0.5)</text>
+  <text x="775" y="194.2" font-size="10.5" fill="#444" text-anchor="middle">bande in parallelo (dec. 105)</text>
+  <text x="775" y="210.2" font-size="10.5" fill="#444" text-anchor="middle">incroci C: 150 LR2 / 350 / 3150 Hz (152)</text>
+  <text x="775" y="226.2" font-size="10.5" fill="#444" text-anchor="middle">fondo corsa −48 dB … 0 (detent) … +6 dB</text>
+  <text x="775" y="242.2" font-size="10.5" fill="#444" text-anchor="middle">somma non invertente + servo DC</text>
+  <text x="775" y="278" font-size="10" fill="#C05A1B" text-anchor="middle">post: 0 / +16 dBu worst</text>
   <path d="M 170 206 L 213 206" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
   <path d="M 380 206 L 423 206" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
-  <path d="M 600 206 L 648 206" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
-  <rect x="425" y="100" width="175" height="32" rx="6" fill="#EEF3F6" stroke="#2F6D8E" stroke-width="1.2"/>
-  <text x="512.5" y="117.1" font-size="11" fill="#444" text-anchor="middle">CV gain (1 per coppia L/R)</text>
-  <path d="M 512.5 132 L 512.5 168" stroke="#2F6D8E" stroke-width="1.5" fill="none" stroke-dasharray="6 4" marker-end="url(#arw)"/>
-  <rect x="650" y="84" width="240" height="32" rx="6" fill="#EEF3F6" stroke="#2F6D8E" stroke-width="1.2"/>
-  <text x="770" y="101.1" font-size="11" fill="#444" text-anchor="middle">4 pot doppi lin., senza contatto (127)</text>
-  <path d="M 770 116 L 770 148" stroke="#2F6D8E" stroke-width="1.5" fill="none" stroke-dasharray="6 4" marker-end="url(#arw)"/>
-  <path d="M 890 206 L 935 206" stroke="#C05A1B" stroke-width="2.5" fill="none"/>
-  <text x="927" y="352" font-size="11" font-weight="700" fill="#141414" text-anchor="end">nodo split post-EQ</text>
-  <rect x="985" y="110" width="220" height="66" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="1095" y="131.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[D] CUE SEND</text>
-  <text x="1095" y="147.55" font-size="10.5" fill="#444" text-anchor="middle">buffer → switch cue → CUE bus</text>
-  <text x="1095" y="163.55" font-size="10.5" fill="#444" text-anchor="middle">post-EQ, pre-filter, pre-fader</text>
-  <rect x="985" y="196" width="220" height="86" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="1095" y="219.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[E] SEND TAP (dec. 91a)</text>
-  <text x="1095" y="235.55" font-size="10.5" fill="#444" text-anchor="middle">buffer ≤ 50 Ω → backplane slot 3</text>
-  <text x="1095" y="251.55" font-size="10.5" fill="#8A4A9E" text-anchor="middle">EQ2 + level + assign: non più qui</text>
-  <text x="1095" y="267.55" font-size="10.5" fill="#444" text-anchor="middle">vivono nel micro-modulo FX-SEND</text>
-  <rect x="985" y="302" width="220" height="66" rx="6" fill="#F3F2EE" stroke="#AAA" stroke-width="1"/>
-  <text x="1095" y="323.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[F] FILTRO (dec. 159)</text>
-  <text x="1095" y="339.55" font-size="10.5" fill="#8A4A9E" text-anchor="middle">non più qui: il filtro sta</text>
-  <text x="1095" y="355.55" font-size="10.5" fill="#444" text-anchor="middle">dopo il fader, vedi [I]</text>
-  <path d="M 935 206 L 935 143 L 983 143" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
-  <path d="M 935 206 L 935 239 L 983 239" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
-  <circle cx="935" cy="206" r="5" fill="#C05A1B"/>
-  <text x="1220" y="147" font-size="10.5" fill="#777">→ modulo CUE (slot 2)</text>
-  <text x="1220" y="243" font-size="10.5" fill="#777">→ FX-SEND del canale</text>
-  <rect x="985" y="420" width="220" height="70" rx="6" fill="#EEF3F6" stroke="#2F6D8E" stroke-width="1.2"/>
-  <text x="1095" y="443.2" font-size="12" font-weight="700" fill="#2F6D8E" text-anchor="middle">BOTTONI ASSIGN S1-S4</text>
-  <text x="1095" y="459.2" font-size="10.5" fill="#444" text-anchor="middle">restano sul pannello del canale</text>
-  <text x="1095" y="475.2" font-size="10.5" fill="#444" text-anchor="middle">linee logiche +5 V → FX-SEND</text>
-  <path d="M 1205 455 L 1295 455" stroke="#2F6D8E" stroke-width="1.5" fill="none" stroke-dasharray="6 4" marker-end="url(#arw)"/>
-  <text x="1213" y="447" font-size="10" fill="#2F6D8E">→ FX-SEND</text>
-  <rect x="1330" y="440" width="190" height="66" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="1425" y="461.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[G] METER DJ</text>
-  <text x="1425" y="477.55" font-size="10.5" fill="#444" text-anchor="middle">LM3915 10 seg × 3 dB [PROVV]</text>
-  <text x="1425" y="493.55" font-size="10.5" fill="#444" text-anchor="middle">release ~0,3 s (dec. 81) + latch</text>
-  <rect x="1330" y="536" width="190" height="66" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="1425" y="557.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[H] FADER → VCA</text>
-  <text x="1425" y="573.55" font-size="10.5" fill="#444" text-anchor="middle">fader mono 100 mm (dec. 126)</text>
-  <text x="1425" y="589.55" font-size="10.5" fill="#444" text-anchor="middle">2 VCA trimmati ≤ 0,5 dB + I/V</text>
-  <rect x="1330" y="632" width="190" height="60" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="1425" y="650.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[I] OUT + LEVETTA FILTRO</text>
-  <text x="1425" y="666.55" font-size="10.5" fill="#444" text-anchor="middle">HPF/OFF/LPF dopo il fader (159)</text>
-  <text x="1425" y="682.55" font-size="10.5" fill="#444" text-anchor="middle">→ DJ bus / bus HPF / bus LPF</text>
+  <path d="M 610 206 L 648 206" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <rect x="425" y="96" width="185" height="44" rx="6" fill="#EEF3F6" stroke="#2F6D8E" stroke-width="1.2"/>
+  <text x="517.5" y="111" font-size="10" fill="#444" text-anchor="middle">metà sinistra = trim:</text>
+  <text x="517.5" y="126.5" font-size="10" fill="#444" text-anchor="middle">−2/−3 dB a ore 11 (dec. 162)</text>
+  <path d="M 517.5 140 L 517.5 160" stroke="#2F6D8E" stroke-width="1.5" fill="none" stroke-dasharray="6 4" marker-end="url(#arw)"/>
+  <rect x="650" y="84" width="250" height="44" rx="6" fill="#EEF3F6" stroke="#2F6D8E" stroke-width="1.2"/>
+  <text x="775" y="99" font-size="10" fill="#444" text-anchor="middle">4 pot doppi lineari B a catalogo (168)</text>
+  <text x="775" y="114.5" font-size="10" fill="#444" text-anchor="middle">senza contatto di fondo corsa (127)</text>
+  <path d="M 775 128 L 775 148" stroke="#2F6D8E" stroke-width="1.5" fill="none" stroke-dasharray="6 4" marker-end="url(#arw)"/>
+  <path d="M 900 206 L 945 206" stroke="#C05A1B" stroke-width="2.5" fill="none"/>
+  <text x="937" y="352" font-size="11" font-weight="700" fill="#141414" text-anchor="end">nodo split post-EQ</text>
+  <rect x="995" y="110" width="220" height="66" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="1105" y="131.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[D] CUE SEND</text>
+  <text x="1105" y="147.55" font-size="10.5" fill="#444" text-anchor="middle">buffer → switch cue → CUE bus</text>
+  <text x="1105" y="163.55" font-size="10.5" fill="#444" text-anchor="middle">post-EQ, pre-filtro, pre-fader</text>
+  <rect x="995" y="196" width="220" height="86" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="1105" y="219.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[E] SEND TAP (dec. 91a)</text>
+  <text x="1105" y="235.55" font-size="10.5" fill="#444" text-anchor="middle">buffer ≤ 50 Ω → backplane slot 3</text>
+  <text x="1105" y="251.55" font-size="10.5" fill="#444" text-anchor="middle">EQ2 + level + assign vivono</text>
+  <text x="1105" y="267.55" font-size="10.5" fill="#444" text-anchor="middle">nel micro-modulo FX-SEND</text>
+  <path d="M 945 206 L 945 143 L 993 143" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 945 206 L 945 239 L 993 239" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <circle cx="945" cy="206" r="5" fill="#C05A1B"/>
+  <text x="1228" y="147" font-size="10.5" fill="#777">→ modulo CUE</text>
+  <text x="1228" y="243" font-size="10.5" fill="#777">→ FX-SEND del canale</text>
+  <rect x="995" y="302" width="220" height="70" rx="6" fill="#EEF3F6" stroke="#2F6D8E" stroke-width="1.2"/>
+  <text x="1105" y="325.2" font-size="12" font-weight="700" fill="#2F6D8E" text-anchor="middle">BOTTONI CUE + ASSIGN S1-S4</text>
+  <text x="1105" y="341.2" font-size="10.5" fill="#444" text-anchor="middle">con luce, a ritenuta (dec. 123)</text>
+  <text x="1105" y="357.2" font-size="10.5" fill="#444" text-anchor="middle">linee logiche +5 V → FX-SEND</text>
+  <path d="M 1215 337 L 1300 337" stroke="#2F6D8E" stroke-width="1.5" fill="none" stroke-dasharray="6 4" marker-end="url(#arw)"/>
+  <text x="1222" y="329" font-size="10" fill="#2F6D8E">→ FX-SEND</text>
+  <rect x="1330" y="420" width="190" height="66" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="1425" y="441.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[G] METER DJ</text>
+  <text x="1425" y="457.55" font-size="10.5" fill="#444" text-anchor="middle">10 seg × 3 dB (LM3915)</text>
+  <text x="1425" y="473.55" font-size="10.5" fill="#444" text-anchor="middle">pre-fader, senza filtro (161b)</text>
+  <rect x="1330" y="516" width="190" height="76" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="1425" y="534.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[H] FADER → 2 VCA</text>
+  <text x="1425" y="550.55" font-size="10.5" fill="#444" text-anchor="middle">fader mono 100 mm (dec. 126)</text>
+  <text x="1425" y="566.55" font-size="10.5" fill="#444" text-anchor="middle">VCA trimmati + I/V</text>
+  <text x="1425" y="582.55" font-size="10.5" fill="#444" text-anchor="middle">curva «sale piano» (129 G)</text>
+  <rect x="1330" y="622" width="190" height="70" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="1425" y="637.55" font-size="13" font-weight="700" fill="#141414" text-anchor="middle">[I] OUT + LEVETTA</text>
+  <text x="1425" y="653.55" font-size="10.5" fill="#444" text-anchor="middle">HPF / OFF / LPF (ADG)</text>
+  <text x="1425" y="669.55" font-size="10.5" fill="#444" text-anchor="middle">→ DJ bus / bus HPF / bus LPF</text>
+  <text x="1425" y="685.55" font-size="10.5" fill="#444" text-anchor="middle">R 10k sui net (dec. 159)</text>
   <text x="1425" y="708" font-size="10" fill="#C05A1B" text-anchor="middle">0 dBu nom / +16 worst</text>
-  <path d="M 935 206 L 935 394 L 1425 394 L 1425 438" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
-  <text x="1260" y="388" font-size="10.5" fill="#777">pre-fader, senza filtro (159e)</text>
-  <path d="M 1425 506 L 1425 534" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
-  <path d="M 1425 602 L 1425 630" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
-  <rect x="1330" y="100" width="190" height="32" rx="6" fill="#EEF3F6" stroke="#2F6D8E" stroke-width="1.2"/>
-  <text x="1425" y="117.1" font-size="11" fill="#444" text-anchor="middle">slider doppio nel segnale</text>
-  <path d="M 1520 116 L 1542 116 L 1542 569 L 1522 569" stroke="#2F6D8E" stroke-width="1.5" fill="none" stroke-dasharray="6 4" marker-end="url(#arw)"/>
-  <rect x="40" y="330" width="205" height="104" rx="6" fill="#F1F7F3" stroke="#1F7A4D" stroke-width="1.5"/>
-  <text x="142.5" y="354.375" font-size="12.5" font-weight="700" fill="#1F7A4D" text-anchor="middle">[A0] PHONO MM v0.1</text>
-  <text x="142.5" y="370.375" font-size="10.5" fill="#444" text-anchor="middle">RIAA passiva 42 dB · EIN 1,79 µV</text>
-  <text x="142.5" y="386.375" font-size="10.5" fill="#444" text-anchor="middle">curva ≤ ±0,05 dB 100 Hz–20 kHz</text>
-  <text x="142.5" y="402.375" font-size="10.5" fill="#444" text-anchor="middle">overload +18 dBu · −0,24 dB a 30 Hz</text>
-  <text x="142.5" y="418.375" font-size="10.5" fill="#444" text-anchor="middle">phono-stage.md (dec. 79)</text>
-  <rect x="40" y="464" width="205" height="54" rx="6" fill="#EEF3F6" stroke="#2F6D8E" stroke-width="1.2"/>
-  <text x="142.5" y="487.2" font-size="12" font-weight="700" fill="#2F6D8E" text-anchor="middle">SELETTORE LINE/PHONO</text>
-  <text x="142.5" y="503.2" font-size="10.5" fill="#444" text-anchor="middle">switch precisione + mute breve</text>
-  <path d="M 142.5 434 L 142.5 462" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
-  <path d="M 245 491 L 440 491 L 440 244" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
-  <text x="258" y="483" font-size="10" fill="#777">→ [B] GAIN (stesso nodo del buffer line)</text>
-  <rect x="40" y="730" width="960" height="66" rx="6" fill="#F3F2EE" stroke="#AAA" stroke-width="1"/>
-  <text x="58" y="759.55" font-size="13" font-weight="700" fill="#141414">[H2] PSU LOCALE</text>
-  <text x="58" y="775.55" font-size="10.5" fill="#444">raw ±27 V audio e ±22 V LN in (dec. 93) → ±18 V audio (LM317/337) · ±15,0 V LN (pre-reg ±16,5 → LT3045/94: CV, meter, phono) · +5 V control</text>
-  <rect x="1040" y="730" width="480" height="66" rx="6" fill="#F3F2EE" stroke="#AAA" stroke-width="1"/>
-  <text x="1058" y="759.55" font-size="13" font-weight="700" fill="#141414">RUMORE DEL CANALE</text>
-  <text x="1058" y="775.55" font-size="10.5" fill="#444">target ≤ −80 dBu A-wtd (dec. 89) · misurato −94,6 con l'EQ isolator (docs/06 §10)</text>
-  <path d="M 40 826 L 90 826" stroke="#C05A1B" stroke-width="2.5"/>
-  <text x="98" y="830" font-size="11.5" fill="#333">percorso audio (livelli annotati in rosso)</text>
-  <path d="M 398 826 L 448 826" stroke="#2F6D8E" stroke-width="1.5" stroke-dasharray="6 4"/>
-  <text x="456" y="830" font-size="11.5" fill="#333">controllo CV / logiche</text>
-  <rect x="632" y="818" width="46" height="16" rx="8" fill="#8A4A9E"/>
-  <text x="690" y="830" font-size="11.5" fill="#333">nota evidenziata</text>
-  <text x="40" y="858" font-size="10.5" fill="#999">Fonte: docs/fase1/cdj-line-channel.md v0.4 (§3.5 REV dec. 91a) + eq-isolator-v0.4.md (dec. 105, §9) + phono-stage.md + gain-staging-sheet.md §2 · 0 dBu = 0,775 Vrms · K4: level_in × gain ≤ +23 dBu · 2026-10-14</text>
+  <path d="M 945 206 L 945 394 L 1425 394 L 1425 418" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <text x="1180" y="388" font-size="10.5" fill="#777">pre-fader, dopo l'EQ, senza filtro</text>
+  <path d="M 1425 486 L 1425 514" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 1425 592 L 1425 620" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <rect x="1330" y="100" width="190" height="44" rx="6" fill="#EEF3F6" stroke="#2F6D8E" stroke-width="1.2"/>
+  <text x="1425" y="115" font-size="10" fill="#444" text-anchor="middle">slider mono 100 mm</text>
+  <text x="1425" y="130.5" font-size="10" fill="#444" text-anchor="middle">→ shaper → CV dei 2 VCA</text>
+  <path d="M 1520 122 L 1542 122 L 1542 554 L 1522 554" stroke="#2F6D8E" stroke-width="1.5" fill="none" stroke-dasharray="6 4" marker-end="url(#arw)"/>
+  <rect x="985" y="520" width="300" height="150" rx="6" fill="#EEF3F6" stroke="#2F6D8E" stroke-width="1.2"/>
+  <text x="1135" y="552.7" font-size="12" font-weight="700" fill="#2F6D8E" text-anchor="middle">LOGICA DEL DIP (dec. 163)</text>
+  <text x="1135" y="568.2" font-size="10" fill="#444" text-anchor="middle">74HC86 + 74HC14 + 74HC74, antirimbalzo RC</text>
+  <text x="1135" y="583.7" font-size="10" fill="#444" text-anchor="middle">2 celle RC 10k/50n + buffer → EC− dei VCA</text>
+  <text x="1135" y="599.2" font-size="10" fill="#444" text-anchor="middle">VCA giù a −100 dB in ~1 ms,</text>
+  <text x="1135" y="614.7" font-size="10" fill="#444" text-anchor="middle">ADG commuta a ~1,6 ms, su in ~3 ms</text>
+  <text x="1135" y="630.2" font-size="10" fill="#8A4A9E" text-anchor="middle">all'orecchio: respiro di 3-4 ms, niente click</text>
+  <text x="1135" y="645.7" font-size="10" fill="#444" text-anchor="middle">CUE, send e meter non lo vedono</text>
+  <path d="M 1285 554 L 1328 554" stroke="#2F6D8E" stroke-width="1.5" fill="none" stroke-dasharray="6 4" marker-end="url(#arw)"/>
+  <path d="M 1285 650 L 1328 650" stroke="#2F6D8E" stroke-width="1.5" fill="none" stroke-dasharray="6 4" marker-end="url(#arw)"/>
+  <text x="1292" y="548" font-size="10" fill="#2F6D8E">dip</text>
+  <text x="1292" y="644" font-size="10" fill="#2F6D8E">ADG</text>
+  <rect x="40" y="330" width="215" height="104" rx="6" fill="#F1F7F3" stroke="#1F7A4D" stroke-width="1.5"/>
+  <text x="147.5" y="354.375" font-size="12.5" font-weight="700" fill="#1F7A4D" text-anchor="middle">[A0] PHONO MM v0.1</text>
+  <text x="147.5" y="370.375" font-size="10.5" fill="#444" text-anchor="middle">RIAA passiva 42 dB · EIN 1,79 µV</text>
+  <text x="147.5" y="386.375" font-size="10.5" fill="#444" text-anchor="middle">curva ≤ ±0,05 dB 100 Hz–20 kHz</text>
+  <text x="147.5" y="402.375" font-size="10.5" fill="#444" text-anchor="middle">subsonica fissa 18 Hz (dec. 138)</text>
+  <text x="147.5" y="418.375" font-size="10.5" fill="#444" text-anchor="middle">overload +18 dBu · phono-stage.md</text>
+  <rect x="40" y="464" width="215" height="54" rx="6" fill="#EEF3F6" stroke="#2F6D8E" stroke-width="1.2"/>
+  <text x="147.5" y="487.2" font-size="12" font-weight="700" fill="#2F6D8E" text-anchor="middle">SELETTORE LINE/PHONO</text>
+  <text x="147.5" y="503.2" font-size="10.5" fill="#444" text-anchor="middle">levetta (dec. 123) + mute breve</text>
+  <path d="M 147.5 434 L 147.5 462" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M 255 491 L 440 491 L 440 252" stroke="#C05A1B" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <text x="268" y="483" font-size="10" fill="#777">→ [B] GAIN, nodo del buffer line</text>
+  <rect x="40" y="730" width="600" height="84" rx="6" fill="#F3F2EE" stroke="#AAA" stroke-width="1"/>
+  <text x="58" y="752.2" font-size="12" font-weight="700" fill="#141414">[H2] PSU LOCALE</text>
+  <text x="58" y="768.2" font-size="10.5" fill="#444">±22,0 V audio e ±19 V LN dal box esterno (dec. 113)</text>
+  <text x="58" y="784.2" font-size="10.5" fill="#444">→ ±18 V audio (LM317/337) · ±15,0 V LN (pre-reg ±16,5 → LT3045/94)</text>
+  <text x="58" y="800.2" font-size="10.5" fill="#444">· +5 V control dal bus</text>
+  <rect x="670" y="730" width="420" height="84" rx="6" fill="#F3F2EE" stroke="#AAA" stroke-width="1"/>
+  <text x="688" y="752.2" font-size="12" font-weight="700" fill="#141414">RUMORE DEL CANALE</text>
+  <text x="688" y="768.2" font-size="10.5" fill="#444">−94,5 dBu A-wtd con GAIN a pot (dec. 162)</text>
+  <text x="688" y="784.2" font-size="10.5" fill="#444">target ≤ −80 (dec. 89) · era −92,9 col GAIN a VCA</text>
+  <text x="688" y="800.2" font-size="10.5" fill="#444">isolator v0.5: −97,4 al centro (= v0.4)</text>
+  <rect x="1120" y="730" width="400" height="84" rx="6" fill="#F3F2EE" stroke="#AAA" stroke-width="1"/>
+  <text x="1138" y="752.2" font-size="12" font-weight="700" fill="#141414">SCHEDE [PROVVISORIO, todo 249]</text>
+  <text x="1138" y="768.2" font-size="10.5" fill="#444">segnale col C96 + isolator senza C96</text>
+  <text x="1138" y="784.2" font-size="10.5" fill="#444">ponte 2×18 · PCB: tutte e due PASSA</text>
+  <text x="1138" y="800.2" font-size="10.5" fill="#444">logica 74HC in TSSOP-14</text>
+  <path d="M 40 846 L 90 846" stroke="#C05A1B" stroke-width="2.5"/>
+  <text x="98" y="850" font-size="11.5" fill="#333">percorso audio (livelli annotati in rosso)</text>
+  <path d="M 398 846 L 448 846" stroke="#2F6D8E" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="456" y="850" font-size="11.5" fill="#333">comando / CV / logiche</text>
+  <rect x="632" y="838" width="46" height="16" rx="8" fill="#8A4A9E"/>
+  <text x="690" y="850" font-size="11.5" fill="#333">nota evidenziata</text>
+  <text x="40" y="878" font-size="10.5" fill="#999">Fonte: docs/fase1/cdj-line-channel.md v0.4 (§3.2 dec. 162, §3.6 dec. 163, §3.8) + eq-isolator-v0.4.md §10 (v0.5, dec. 152/168) + phono-stage.md + sim/gain-pot/ + sim/cdj/RISULTATI-filtsel-dip.md · 2026-11-04</text>
 </svg>

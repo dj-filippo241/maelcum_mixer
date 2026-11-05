@@ -1,14 +1,14 @@
-  <!-- ZOOM CELLA v0.2.1 -->
+  <!-- ZOOM CELLA v0.2.1 + WIDTH continuo v0.2.2 (dec. 117), aggiornato 2026-11-04 -->
   <rect x="420" y="110" width="1100" height="560" rx="10" fill="#fff" stroke="#1F7A4D" stroke-width="1.5"/>
-  <text x="450" y="146" font-size="16" font-weight="700" fill="#1F7A4D">ZOOM — CELLA PARAMETRICA v0.2.1 (JFET VCR, questione 70)</text>
-  <text x="450" y="168" font-size="11.5" fill="#666">7 sezioni op-amp + 1 dual JFET matched · core a −12 dBu locale (Rvin 40,2k) · make-up ×4 assorbito nell'iniezione · verificata: THD 0,005% nom / 0,125% worst, law ±0,03%</text>
+  <text x="450" y="146" font-size="16" font-weight="700" fill="#1F7A4D">ZOOM — CELLA PARAMETRICA v0.2.1 + WIDTH continuo v0.2.2 (JFET VCR, dec. 117)</text>
+  <text x="450" y="168" font-size="11.5" fill="#666">1 dual JFET matched per cella · core a −12 dBu locale (Rvin 40,2k) · make-up ×4 assorbito nell'iniezione · verificata: THD 0,005% nom / 0,125% worst, law ±0,03%</text>
 
   <!-- summer -->
   <rect x="450" y="230" width="150" height="86" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
   <text x="525" y="256" font-size="12" font-weight="700" text-anchor="middle">SUMMER</text>
   <text x="525" y="274" font-size="10" fill="#444" text-anchor="middle">in: vin (40,2k = pad −12 dB)</text>
-  <text x="525" y="290" font-size="10" fill="#444" text-anchor="middle">+ lp (10k) + damping da −bp_b</text>
-  <text x="525" y="306" font-size="10" fill="#444" text-anchor="middle">(Rq = Q·10k, switch width)</text>
+  <text x="525" y="290" font-size="10" fill="#444" text-anchor="middle">+ lp (10k) + damping da −dq</text>
+  <text x="525" y="306" font-size="10" fill="#444" text-anchor="middle">(R0 30k: Q = 0,3/alpha)</text>
 
   <!-- VCR int 1 -->
   <rect x="650" y="200" width="200" height="116" rx="6" fill="#F2F8F4" stroke="#1F7A4D" stroke-width="1.5"/>
@@ -37,16 +37,16 @@
 
   <!-- invertitore -->
   <rect x="900" y="360" width="140" height="96" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-  <text x="970" y="386" font-size="12" font-weight="700" text-anchor="middle">INVERTITORE</text>
-  <text x="970" y="404" font-size="10" fill="#444" text-anchor="middle">−bp_b (già a BOM v0.2</text>
-  <text x="970" y="420" font-size="10" fill="#444" text-anchor="middle">per il pot ±bp_b):</text>
-  <text x="970" y="436" font-size="10" fill="#444" text-anchor="middle">ora serve ANCHE al</text>
-  <text x="970" y="452" font-size="10" fill="#444" text-anchor="middle">damping (segno loop)</text>
+  <text x="970" y="386" font-size="12" font-weight="700" text-anchor="middle">WIDTH → ±dq</text>
+  <text x="970" y="404" font-size="10" fill="#444" text-anchor="middle">pot 1k: alpha 0,1…1</text>
+  <text x="970" y="420" font-size="10" fill="#444" text-anchor="middle">→ buffer ×10 (OPA1612)</text>
+  <text x="970" y="436" font-size="10" fill="#444" text-anchor="middle">dq = 10·alpha·bp_b</text>
+  <text x="970" y="452" font-size="10" fill="#444" text-anchor="middle">→ invertitore: −dq</text>
 
   <!-- pot gain -->
   <rect x="1100" y="260" width="170" height="120" rx="6" fill="#FFF7ED" stroke="#C05A1B" stroke-width="1.5"/>
   <text x="1185" y="286" font-size="12" font-weight="700" fill="#C05A1B" text-anchor="middle">POT GAIN (b)</text>
-  <text x="1185" y="304" font-size="10" fill="#444" text-anchor="middle">tra +bp_b e −bp_b — NEL</text>
+  <text x="1185" y="304" font-size="10" fill="#444" text-anchor="middle">tra +dq e −dq — NEL</text>
   <text x="1185" y="320" font-size="10" fill="#444" text-anchor="middle">dominio segnale (niente CV)</text>
   <text x="1185" y="336" font-size="10" fill="#444" text-anchor="middle">v0.2.1: cablato sul terminale</text>
   <text x="1185" y="352" font-size="10" fill="#444" text-anchor="middle">opposto (H = |1+b|, notch a b=−1)</text>
@@ -56,8 +56,8 @@
   <rect x="1330" y="260" width="160" height="120" rx="6" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
   <text x="1410" y="286" font-size="12" font-weight="700" text-anchor="middle">SUMMER OUT</text>
   <text x="1410" y="304" font-size="10" fill="#444" text-anchor="middle">dry: 10k/10k (unity)</text>
-  <text x="1410" y="320" font-size="10" fill="#444" text-anchor="middle">iniezione: Rbw 2,5k·Q/4,62</text>
-  <text x="1410" y="336" font-size="10" fill="#444" text-anchor="middle">(= make-up ×4 del core)</text>
+  <text x="1410" y="320" font-size="10" fill="#444" text-anchor="middle">iniezione: Rbw 1,62k fissa</text>
+  <text x="1410" y="336" font-size="10" fill="#444" text-anchor="middle">boost uguale per ogni Q</text>
   <text x="1410" y="352" font-size="10" fill="#444" text-anchor="middle">H = −(1 − b·BP_norm)</text>
   <text x="1410" y="368" font-size="10" fill="#444" text-anchor="middle">→ cella successiva</text>
 
@@ -72,10 +72,10 @@
   <!-- width switch -->
   <rect x="1110" y="520" width="380" height="110" rx="6" fill="#EEF3F6" stroke="#2F6D8E" stroke-width="1.2"/>
   <text x="1130" y="546" font-size="12" font-weight="700" fill="#2F6D8E">WIDTH + GAIN (pannello)</text>
-  <text x="1130" y="566" font-size="10.5" fill="#444">switch 3 vie (deck doppio gangato): Q 3 / 1 / 0,5</text>
-  <text x="1130" y="584" font-size="10.5" fill="#444">commuta Rq (damping) E Rbw (iniezione) — 0,1%</text>
-  <text x="1130" y="602" font-size="10.5" fill="#444">pot gain: taper custom (eq-serie §10) — boost lineare</text>
-  <text x="1130" y="620" font-size="10.5" fill="#444">in dB su mezza corsa, cut accelerato, notch a fine corsa</text>
+  <text x="1130" y="566" font-size="10.5" fill="#444">WIDTH: manopola continua Q3…Q0,3, pot doppio 1k</text>
+  <text x="1130" y="584" font-size="10.5" fill="#444">taper log ~20 % (dec. 129 C2) [PROVV]</text>
+  <text x="1130" y="602" font-size="10.5" fill="#444">GAIN: pot lineare + resistenze (dec. 129 B2): boost</text>
+  <text x="1130" y="620" font-size="10.5" fill="#444">uniforme fino a +15, buco completo negli ultimi gradi</text>
 
   <!-- frecce zoom -->
   <g stroke="#C05A1B" stroke-width="2.5" fill="none">
@@ -94,15 +94,15 @@
     <path d="M 1040 240 L 1185 240 L 1185 255" marker-end="url(#ar)"/>
     <path d="M 1040 408 L 1075 408 L 1075 470 L 1185 470 L 1185 386" marker-end="url(#ar)"/>
   </g>
-  <text x="1080" y="232" font-size="10" fill="#666">+bp_b</text>
-  <text x="1082" y="464" font-size="10" fill="#666">−bp_b (dall'invertitore)</text>
+  <text x="1080" y="232" font-size="10" fill="#666">+dq</text>
+  <text x="1082" y="464" font-size="10" fill="#666">−dq (dall'invertitore)</text>
   <!-- damping -->
   <path d="M 970 456 L 970 480 L 525 480 L 525 320" stroke="#C05A1B" stroke-width="2" fill="none" marker-end="url(#ar)"/>
-  <text x="560" y="474" font-size="10" fill="#666">−bp_b → damping (Rq)</text>
+  <text x="700" y="474" font-size="10" fill="#666">−dq → damping (R0 30k)</text>
   <!-- CV -->
   <g stroke="#2F6D8E" stroke-width="1.5" stroke-dasharray="6 3" fill="none">
     <path d="M 700 515 L 700 320 L 695 320" marker-end="url(#arw)" opacity="0"/>
-    <path d="M 720 515 L 720 320" marker-end="url(#arw)"/>
+    <path d="M 668 515 L 668 320" marker-end="url(#arw)"/>
     <path d="M 780 515 L 780 460" marker-end="url(#arw)"/>
   </g>
   <text x="800" y="512" font-size="10" fill="#2F6D8E">Vcm2 (bootstrap) ai gate</text>
