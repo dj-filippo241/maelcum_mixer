@@ -26,6 +26,7 @@
 | 16 | BADDRIDDIM Workshop (Limoges) | FR | analogico su misura | preamp e FX dub (spring reverb, eco, **filtro a sweep ottico**); trattamento **tropicalizzato** (caldo e umidità) | n.p. |
 | 17 | JBK Audio (software) | FR | **preamp in software** (PC + scheda ASIO, MIDI) + emulazione web | 2 ingressi musica, aux con gain + EQ2 + send, n vie, grafico 10 bande, 2 semiparametrici; sirena digitale DSG | — |
 | 18 | «Niente preamp»: mixer + crossover + EQ esterni (sound-system.fr) | — | architettura alternativa | tesi: un preamp ha ~2 mandate, incroci fissi, è mono, colora sempre, usa solo jack; un mixer + crossover DSP è più versatile e spesso costa meno | — |
+| 19 | **Deep Field Preamp V1** (Nélo Breuiller, Rennes; open source, aggiunto il 2026-11-05) | FR | analogico mono, 4 vie, fai da te | phono + line con MUTE, 2 aux, 1 mic (SSM2017), 2 loop FX; **due crossover in parallelo** (musica e aux/mic) sommati via per via: i kill toccano solo la musica, sirena e mic passano; kill a levetta per via + **SUB SOLO**; volume e VU a 10 LED per via; grafico 12 bande (31 Hz-16 kHz), parametrico 3 bande (38-140 Hz, 438 Hz-4,82 kHz, shelf 2,5/5 kHz); **uscite per via** (BASS, KICK, MID, HIGH) + FULL RANGE | incroci **91 / 239 / 4168 Hz**, LR4 24 dB/ott. (verificato dai componenti); dettagli in §6 |
 
 Note: Sage Sound (già #2 in docs/05) ha riaperto a fine 2024. **3u**
 (analogico mono, £1.275): line + phono, grafico 11 bande, 1 semiparametrico
@@ -128,3 +129,48 @@ del 2026-10-27 (sessione «impianto e A20»).
 Lettura: una banda a −3 dB sotto 10 Hz sta nella fascia alta dei mixer
 analogici, non fuori scala. La maggior parte dei mixer DJ si ferma a 20 Hz.
 I preamp dub non dichiarano il limite basso.
+
+## 6. Deep Field Preamp V1, letto dai sorgenti (2026-11-05)
+
+Repository: github.com/DeepFieldAudio/Deep-field-preamp-V1 (KiCad 9: schema, PCB,
+gerber v1.2, distinta, schema in PDF rev2). Letto da Claude: netlist esportata con
+kicad-cli, PCB analizzata con uno script. Unico preamp dub del benchmark con
+sorgenti completi.
+
+**Crossover.** Sallen-Key a guadagno unitario, componenti uguali (R, R; C a massa,
+2C in retroazione fatto con due C uguali in parallelo; nel passa-alto R e 2R),
+Linkwitz-Riley 24 dB/ott. Valori: 56 k / 22 nF = 91 Hz, 10 k / 47 nF = 239 Hz,
+1 k / 27 nF = 4168 Hz. Filtri in cascata (prima il 4168, poi 239, poi 91), senza
+allineamento di fase: le vie non si risommano, ognuna va al suo finale. Op-amp
+RC4558. Via del kick 91-239 Hz = 1,4 ottave (maelcum: 80-170 = 1,1).
+
+**Kill.** Levetta SPDT che mette a massa il nodo tra il condensatore d'uscita della
+via (10 uF) e la resistenza da 10 k del sommatore a massa virtuale. Dopo il
+sommatore la via esce dal suo XLR verso il finale: **il kill spegne la cassa**.
+Niente taglio sullo zero [deduzione: il click dipende dall'istante].
+
+**Alimentazione e segnale.** ±15 V sulla scheda (ponte GBU4A, 2 × 4700 uF,
+7815 / 7915) da trasformatore esterno in alternata. NE5532 nel segnale, RC4558 nei
+crossover, TL072. 86 condensatori da 100 nF di disaccoppiamento [deduzione:
+uscita massima ~+21 dBu, contro il nostro requisito di +24].
+
+**PCB.** Una scheda 350 × 200 mm (più l'EQ grafico staccabile lungo una fila di
+fori), **2 strati** con piano di massa sui due lati, 544 componenti a foro
+passante e nessun SMD, piste da 1 mm (3006 su 3014), 90 vie. I pot del pannello
+arrivano ciascuno con un **cavetto Molex KK** a 3 poli (i 12 del grafico stanno
+sulla scheda); ingressi e uscite su piazzole a filo.
+
+**Avvertenze del progetto.** Il README dichiara sorgente V1, PDF rev2 e gerber v1.2
+non allineati. Licenza: README CERN-OHL-S-2.0 (si può vendere, con le modifiche
+pubblicate), pagina 2 del PDF «uso commerciale vietato»: contraddittorie; da
+chiarire con l'autore prima di pubblicare un circuito derivato. SSM2017 del mic
+fuori produzione [ricordo di Claude, non verificato].
+
+**Cosa vale per maelcum.**
+- Uscite per via (dec. 111): è il precedente open source del modulo. Il kill
+  sull'uscita spegne la cassa; il kill del 5-way prima del DSP no (cassa KICK
+  −6 dB su programma, calcolo del 2026-11-05 in `docs/09` §4).
+- Todo 252 (fili dei pot del canale): precedente del cavo diretto, un cavetto per pot.
+- EQ grafico (modulo opzionale della dec. 111): schema di partenza a 12 bande.
+- Due crossover in parallelo con kill solo sulla musica = il nostro principio (ritorni
+  FX, mic e mono entrano dopo il 5-way).

@@ -46,12 +46,30 @@ non pubblica i numeri [M, senza valori].
 | Jah Tubby's EN4 (un esemplare) | ~100 / ~300 / ~3,5-4k Hz | [R] docs/07 |
 | JB Audio Units (5 vie) | 75 / 190 / 2,2k / 8k Hz | docs/05 |
 | Mostec, Leviel 5W4U | n.t. (Mostec: incroci fissati sul sistema; Leviel: parametrico) | docs/05, 07 |
+| Deep Field Preamp V1 (4 vie, open source) | 91 / 239 / 4168 Hz, LR4 24 dB/ott. | docs/07 §6 (sorgenti) |
+| Mostec 3 vie | 130 Hz / 4,5 kHz | mostec.co.uk (2026-11-05) |
+| Proposta DIY, forum Dubsounds (5 vie) | 90 / 180 / 1,2k / 5k Hz («dipende dalle casse») | forum.dubsounds.fr (2026-11-05) |
+| Dubsonic (4 vie) | n.t., 24 dB/ott., incroci su richiesta | dub-sonic.com (2026-11-05) |
+
+**Larghezza della via del kick e kill (2026-11-05, B3).** Via fra il primo e il
+secondo incrocio: proposta Dubsounds 1,0 ottave, maelcum E 1,1, JB Audio 1,3, Deep
+Field 1,4, Jah Tubby's 1,6, Condesa (isolator 4 vie) 1,8. Con 24 dB/ott. LR4 il kill
+di quella via, se le vie si risommano, lascia al centro −9 / −10 / −12 / −13 / −14 /
+−17 dB [calcolo di Claude, LR4 per tutti]. L'accavallamento LR4: la via vicina è a
+−6 dB sull'incrocio, −12 a un'ottava, −24 a due. Nell'impianto di Filippo (VENU360
+LR4 80/170) il kill KICK del 5-way abbassa la cassa KICK di ~6 dB su programma
+(−10 al centro); incroci più larghi nel 5-way approfondiscono il kill KICK e
+indeboliscono i kill di SUB e MID (60/250: KICK −13, SUB −6, MID −9 dB). Solo un kill
+sull'uscita per via spegne la cassa (Deep Field, docs/07 §6). Calcoli in Python, non
+LTspice, non ascoltati.
 
 ## 5. Isolator a 3 bande (riferimento per i confini estremi)
 
 | Mixer | Confini | Pendenza | Fonte |
 |---|---|---|---|
 | Condesa Carmen V (3 vie) | 280 Hz / 4 kHz | 24 dB/ott. | [U] |
+| Resør (100 LE e mixer) | 310 Hz / 3,1 kHz | Linkwitz-Riley, full-cut < −85 dB | [U] resorelectronics.com (2026-11-05) |
+| TEILE TEIL3 B& | 250 Hz / 3,14 kHz | 24 dB/ott. (4 poli) | [V] schneidersladen.de (2026-11-05) |
 | MasterSounds Radius 4 MK1 | 350 Hz / 3,5 kHz | 12 dB/ott. | [U] manuale |
 | MasterSounds Radius MK2 (3 vie) | 650 / 1,5k / 3k (bande) | n.t. | [U] |
 | E&S DJR400 | 300 Hz / 3 kHz | n.t. | docs/07 |
