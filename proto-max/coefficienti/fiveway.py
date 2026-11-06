@@ -54,6 +54,11 @@ VARIANTI_XO = {
     # E: gli incroci dell'impianto di Filippo (DSP 37-80-170-1,2k-20k,
     # 2026-10-15) + HIGH/SUPER a 6 kHz come nel benchmark
     "E 80/170/1.2k/6k": (80.0, 170.0, 1200.0, 6000.0),
+    # F e H (Filippo, 2026-11-06): via KICK piu larga per un kill KICK piu
+    # profondo nel mix (-15 e -20 dB al centro contro -10 di E), SUPER a
+    # 8 kHz verso la quinta via dell'impianto (8-12 kHz, docs/10)
+    "F 70/220/1.2k/8k": (70.0, 220.0, 1200.0, 8000.0),
+    "H 60/250/1.2k/8k": (60.0, 250.0, 1200.0, 8000.0),
 }
 VIE = ("SUB", "KICK", "MID", "HIGH", "SUPER")
 Q_BW = 1.0 / math.sqrt(2.0)

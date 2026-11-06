@@ -17,7 +17,7 @@ contro LTspice), `prova_5way.py` (codice gen~ contro modello).
   taper A × 0,85; selettori GROWL VER (DEC.99 / LIBERO / BANDE) e NASTRO
   VER (OGGI / COMPLETO / EXCITER / CLASSE A / LIBERO / COMPL. MEDI /
   BANDE; §11-13).
-- **CROSSOVER** A-E, solo prototipo, per B3 (§1; E aggiunta in §6).
+- **CROSSOVER** A-H, solo prototipo, per B3 (§1; E aggiunta in §6, F e H in §20).
 - Riferimento interno −6 dB (dec. 73): conta solo per i saturatori.
 - Livelli: 0 dBu = −12 dBFS di picco [PROVVISORIO, come P1]. Tutto a 4×.
 - Non modellati: rumore, clipping dei rail (+21 dBu circa nel dominio
@@ -893,3 +893,35 @@ Il ritardo dipende dalla fase al momento del gesto: al massimo mezzo periodo del
 
 Verificato in: Python sì (prova_5way PASS, prova_semplice PASS) / LTspice sì per il circuito
 (`kill-zc.cir`, §8.11) / Live no (da sentire sul KICK con musica vera).
+
+## 20. Varianti F e H del CROSSOVER (2026-11-06, B3, richiesta di Filippo)
+
+Filippo vuole una via KICK più larga, per un kill KICK più profondo. Il
+pannello del 5-way non cambia: kill a levetta per via, 5 GAIN sulle celle EQ.
+Nel selettore CROSSOVER di MC-5WAY, dopo E:
+
+| Variante | SUB/KICK | KICK/MID | MID/HIGH | HIGH/SUPER | Via KICK |
+|---|---|---|---|---|---|
+| E | 80 | 170 | 1200 | 6000 | 1,1 ottave |
+| F | 70 | 220 | 1200 | 8000 | 1,7 ottave |
+| H | 60 | 250 | 1200 | 8000 | 2,1 ottave |
+
+SUPER a 8 kHz in F e H: verso la quinta via dell'impianto (8-12 kHz, docs/10).
+MC-5WAY-S resta su E.
+
+**Kill a confronto** (`sim/five-way/kill_casse.py` e `kill_larghezza.py`, Python puro, LR4, banca risommata; cassa
+= VENU360 LR4 37/80/170/1100, rumore rosa; non LTspice, non ascoltato):
+
+| Variante | KICK al centro (mix) | cassa SUB (kill SUB) | cassa KICK (kill KICK) | cassa MID (kill MID) | cassa HIGH (kill HIGH) |
+|---|---|---|---|---|---|
+| E | −9,6 dB | −10,2 | −6,4 | −12,6 | −4,2 |
+| F | −15,1 | −8,1 | −9,9 | −10,0 | −5,6 |
+| H | −19,5 | −6,1 | −12,9 | −8,7 | −5,5 |
+
+Lettura: allargare la via KICK scava il kill KICK e indebolisce i kill di SUB
+e MID. Con la banca risommata nessuna larghezza dà −∞ (40-400 Hz: −34 al
+centro, −23 sulla cassa). Il −∞ sulla cassa viene solo da un'uscita per via
+(Deep Field, docs/07 §6; dec. 111). La cassa HIGH riceve HIGH e SUPER: il kill
+HIGH da solo la abbassa di 4-6 dB.
+
+Da sentire in Live: kill KICK, SUB e MID con musica vera in E, F e H.

@@ -273,7 +273,7 @@ Param w_4(50, min=0, max=100);
 Param w_5(50, min=0, max=100);
 Param growl(0, min=0, max=100);
 Param nastro(0, min=0, max=100);
-Param xo(0, min=0, max=4);
+Param xo(0, min=0, max=6);
 Param gv(0, min=0, max=1);
 Param nver(0, min=0, max=6);
 Data sv(128);
@@ -327,16 +327,18 @@ s_gv = gv + t20 * (s_gv - gv);
 s_nver = nver + t20 * (s_nver - nver);
 sr4 = samplerate * 4;
 
-// CROSSOVER: le 5 varianti di B3, frequenze che scivolano in 20 ms
+// CROSSOVER: le 7 varianti di B3, frequenze che scivolano in 20 ms
 wx0 = max(0, 1 - abs(s_xo - 0));
 wx1 = max(0, 1 - abs(s_xo - 1));
 wx2 = max(0, 1 - abs(s_xo - 2));
 wx3 = max(0, 1 - abs(s_xo - 3));
 wx4 = max(0, 1 - abs(s_xo - 4));
-gx0 = tan(pi * (wx0 * 90.0 + wx1 * 80.0 + wx2 * 75.0 + wx3 * 80.0 + wx4 * 80.0) / sr4);
-gx1 = tan(pi * (wx0 * 350.0 + wx1 * 200.0 + wx2 * 190.0 + wx3 * 220.0 + wx4 * 170.0) / sr4);
-gx2 = tan(pi * (wx0 * 1200.0 + wx1 * 1200.0 + wx2 * 2200.0 + wx3 * 1500.0 + wx4 * 1200.0) / sr4);
-gx3 = tan(pi * (wx0 * 3500.0 + wx1 * 6000.0 + wx2 * 8000.0 + wx3 * 7000.0 + wx4 * 6000.0) / sr4);
+wx5 = max(0, 1 - abs(s_xo - 5));
+wx6 = max(0, 1 - abs(s_xo - 6));
+gx0 = tan(pi * (wx0 * 90.0 + wx1 * 80.0 + wx2 * 75.0 + wx3 * 80.0 + wx4 * 80.0 + wx5 * 70.0 + wx6 * 60.0) / sr4);
+gx1 = tan(pi * (wx0 * 350.0 + wx1 * 200.0 + wx2 * 190.0 + wx3 * 220.0 + wx4 * 170.0 + wx5 * 220.0 + wx6 * 250.0) / sr4);
+gx2 = tan(pi * (wx0 * 1200.0 + wx1 * 1200.0 + wx2 * 2200.0 + wx3 * 1500.0 + wx4 * 1200.0 + wx5 * 1200.0 + wx6 * 1200.0) / sr4);
+gx3 = tan(pi * (wx0 * 3500.0 + wx1 * 6000.0 + wx2 * 8000.0 + wx3 * 7000.0 + wx4 * 6000.0 + wx5 * 8000.0 + wx6 * 8000.0) / sr4);
 
 // KILL: 1 = via aperta (interruttore, dec. 88). La levetta scatta al
 // primo passaggio per lo zero della via, o dopo 20 ms (dec. 164)
