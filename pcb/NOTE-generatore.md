@@ -172,6 +172,12 @@ legge o monta la scheda. Lo schema che alimenta la PCB non cambia.
 Esce in `pcb/<scheda>/leggibile/`: `.kicad_sch`, PDF, `erc.json`, `riepilogo.json`. Esito
 LEGGIBILE PASSA solo se il confronto col netlist voluto passa nei due sensi e l'ERC non ha errori.
 
+Gli schemi sono in inglese (richiesta di Filippo, 2026-11-09): titoli dei blocchi, titoli e valori
+descrittivi stanno in `pcb/tools/leggibile_en.py`; i file delle schede restano in italiano. Un
+blocco o un valore senza traduzione ferma il giro. I nomi delle reti restano quelli della PCB.
+Con più schede in un lancio esce anche `pcb/schematics-readable.pdf`: copertina con indice e
+legenda, poi una pagina per scheda nell'ordine dei file dati (unione con `pdfunite` di poppler).
+
 Regole del disegno: alimentazioni e masse come simboli; passivi attaccati coi fili al pin che
 toccano (in serie lungo il pin, in derivazione verso il simbolo); etichetta solo dove il filo non
 arriva (riquadro = la rete va in un altro blocco); i lati con più di 3 pin (connettori, LM339,
