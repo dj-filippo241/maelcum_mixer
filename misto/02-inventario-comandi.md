@@ -102,17 +102,12 @@ Abbassa il lavoro di taratura e rende le curve esatte e modificabili. Il
 risparmio vero di costo e spazio sta nelle opzioni di `cheap/`, che
 restano a parte (M3).
 
-## 4. Domande per Filippo (dopo questo inventario)
+## 4. Domande per Filippo: chiuse il 2026-11-09
 
-1. **GROWL, NASTRO e DRIVE modificabili?** Oggi stanno sul segnale con un
-   pot doppio. Per cambiarli via USB servono VCA o OTA nel segnale: più
-   rumore e più chip, contro M1. Proposta: restano come sono; via USB si
-   cambiano solo le cose che sono già una CV.
-2. **Incroci del 5-way e dell'isolator modificabili?** Tre strade:
-   fissi (come oggi); 3-4 serie di valori scelte da switch analogici
-   comandati dal chip; frequenza continua con VCA o OTA (rumore e costo).
-3. **Il misto vale la pena con questo saldo?** Guadagno in taratura e
-   precisione, poco in costo. Prima di andare avanti serve la tua lettura.
+1. GROWL, NASTRO e DRIVE restano sul segnale, fuori dall'USB (M7).
+2. Incroci del 5-way e dell'isolator fissi (M8).
+3. Il misto va avanti per la taratura e la precisione, non per costo e
+   spazio (M6).
 
 ## 5. Punti tecnici da verificare (ingegneria, Claude)
 

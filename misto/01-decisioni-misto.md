@@ -34,3 +34,14 @@ taratura e la precisione, non per costo e spazio.** Dopo l'inventario
 in meno su tutto il mixer, nessuna scheda tolta, pannello uguale. Guadagno
 vero: ~60-80 trimmer in meno, curve esatte a ogni temperatura, valori
 modificabili via USB per ciò che è già una CV.
+
+M7. **[C — 2026-11-09, «1»] GROWL, NASTRO e DRIVE del filtro restano sul
+segnale, fuori dall'USB.** Pot doppi come nella versione analogica (dec.
+162, todo 212): rimetterli sotto VCA o OTA porta rumore e chip. Via USB si
+cambia solo ciò che è già una CV.
+
+M8. **[C — 2026-11-09, «1»] Incroci del 5-way e dell'isolator fissi.** Si
+scelgono a orecchio nel prototipo in Live (todo 60, dec. 152) e restano
+saldati. Scartati: serie di resistenze a switch (~60 resistenze per serie,
+switch dentro i filtri) e incroci continui con VCA/OTA (rumore, decine di
+chip).
