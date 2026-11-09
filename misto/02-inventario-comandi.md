@@ -111,6 +111,9 @@ restano a parte (M3).
 
 ## 5. Punti tecnici da verificare (ingegneria, Claude)
 
+Risposte di primo giro (gradini, ritardo, rumore digitale, guasto,
+ricambio) in `03-blocco-comando.md`, sul caso del FX-RET.
+
 - **Gradini (M2, condizione 3).** Con le CV progettate a livello di volt e
   divise per 10 al VCA (sistema-shaper §2), un DAC a 12 bit su ~12 V dà
   ~0,3 mV al pin: ~0,05 dB a 6,1 mV/dB. Il pot letto a 12 bit nel tratto

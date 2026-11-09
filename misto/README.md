@@ -51,4 +51,6 @@ analogica (`02-inventario-comandi.md` §3).
 misto/README.md                 questo file
 misto/01-decisioni-misto.md     le scelte di Filippo (M1, M2…)
 misto/02-inventario-comandi.md  ogni circuito di comando: com'è oggi, cosa fa il chip, cosa si risparmia
+misto/03-blocco-comando.md      requisiti e topologia del blocco del chip (primo caso: FX-RET)
+misto/script/                   calcoli (area delle impronte, passi di ADC e DAC)
 ```
