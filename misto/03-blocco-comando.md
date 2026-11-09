@@ -113,8 +113,9 @@ Dalla manopola al pin EC− del VCA (positivo taglia, 6,1 mV/dB a 25 °C):
 - **Raziometrico:** il riferimento dell'ADC è lo stesso +REF5 che alimenta
   i pot. Se il riferimento si sposta, si spostano insieme: la lettura non
   cambia.
-- **Firmware:** media di 4 letture per canale, a ~2 kHz per canale; banda
-  morta di ±1 passo a manopola ferma (R3). Con 12 bit il passo peggiore è
+- **Firmware:** media di 8 letture per canale, a ~2 kHz per canale (80 ksps
+  per 5 manopole; gli NTC letti piano); isteresi di 2 passi che segue la mano
+  (R3). Con 4 letture R2 e R3 non passano (`misto/sim/RISULTATI-cella-cv.md` §3). Con 12 bit il passo peggiore è
   0,07 dB in fondo alla corsa, 0,01 dB nella zona del feedback (§5): sotto
   R2 anche con un bit perso al rumore.
 - I cursori arrivano come oggi (cavo J2, poi ponte); l'RC di 100 Ω + 10 nF
@@ -148,13 +149,16 @@ Dalla manopola al pin EC− del VCA (positivo taglia, 6,1 mV/dB a 25 °C):
   Il verso è voluto: **codice zero = VCA chiuso** (R7). DAC appena acceso,
   DAC senza alimentazione o pin scollegato danno tutti la stessa cosa:
   reroute e fader chiusi.
-- **Partitore 1k/1k**: oggi serve al trimmer. Senza trimmer forse basta
-  una R in serie verso il pin: da decidere in simulazione (§8).
-- **Gradini da aggiornamento**: il DAC scrive a passi. Con 1 kHz e τ 1 ms
-  un gesto rapido lascia un'ondulazione della CV a 1 kHz [STIMA,
-  deduzione mia: ~0,16 dB con il fader aperto in 100 ms]. Rimedio: il
-  firmware interpola e scrive a ≥ 8 kHz, l'ADC resta a 2 kHz. Da misurare
-  in simulazione (§8).
+- **Partitore 15k/1k** (simulato, RISULTATI-cella-cv §2): né 1k/1k né R in
+  serie. Il rumore è uguale nei tre casi (~0,8 µV al pin, −97 dB sotto il
+  segnale); decide il pin: ΔEc massimo ±1 V. Con l'op-amp in saturazione il
+  1k/1k porta 6,75 V al pin, la R in serie 13,5 V, il 15k/1k 0,84 V. La cella
+  lavora ×16: Rin 1,84k, Ro 3,91k, Rf 10k, C 100n [PROVVISORIO].
+- **Gradini da aggiornamento** (simulato, RISULTATI-cella-cv §1): a 1 kHz
+  resta un'ondulazione in più di 0,015 dB nella zona del feedback e 0,05 dB
+  sotto −70 dB. A 8 kHz, con l'ADC a 2 kHz e l'interpolazione, la CV non si
+  distingue dalla catena continua; ritardo 1,44 ms (R4 ≤ 2 ms). Click della
+  chiusura di scatto uguale a oggi.
 
 ### 4.4 Temperatura
 
@@ -254,15 +258,15 @@ Fonte: backplane.py (pin liberi); il resto è deduzione mia.
 
 ## 8. Cosa resta (ingegneria, Claude)
 
-1. **Simulazione della cella CV** (`misto/sim/`, LTspice): gradini del DAC
-   a 1 e 8 kHz con τ 1 ms, misura del click col metodo di `reroute-ramp.cir`
-   (fx-module §8.3); partitore 1k/1k contro R in serie; rumore della CV.
-2. **Modello del firmware in Python:** law, correzioni, temperatura, banda
-   morta; prova che R2-R6 tornano coi numeri veri di ADC e DAC.
+1. ~~Simulazione della cella CV~~ fatta il 2026-11-09: `misto/sim/RISULTATI-cella-cv.md`.
+2. ~~Modello del firmware in Python~~ fatto il 2026-11-09 (`misto/script/firmware_fxret.py`):
+   R1-R7 passano con media di 8, isteresi 2 passi, NTC entro ±2 °C (R6 al limite)
+   e taratura REW entro 0,03 dB. Aperti: guasto del −REF5 e saturazione negativa
+   della cella (RISULTATI-cella-cv §4).
 3. **Conteggio delle impronte** col generatore, dopo 1 e 2.
 4. Gli altri moduli dopo il FX-RET: master (stato sicuro del MASTER: chiuso
    all'accensione va bene, chiuso al riavvio del chip no), canali (fader e
    dip della levetta, dec. 163), filtro (frequenza e RES), 5-way (POSITION,
    kill allo zero).
 
-Verificato in: Python sì (solo i passi di §5) / LTspice no / Live no.
+Verificato in: Python sì (§5 e firmware) / LTspice sì (cella CV) / Live no.
