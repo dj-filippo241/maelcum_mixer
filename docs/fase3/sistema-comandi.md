@@ -108,7 +108,7 @@ Scelte di Filippo del 2026-11-09 (todo 218). La tabella della dec. 125
 | grande | 14 mm (Alps RK14K) | 15 mm | 17 mm | come oggi |
 | media | 14 mm | ~12 mm | 15,5 mm | come oggi |
 | piccola | 9 mm (Alps RK09K/L, Alpha RD902F) | 11 mm | 14 mm | come oggi |
-| molto piccola | 9 mm | ~8 mm, zigrinato | ~11 mm | si gira con due dita; da verificare un cappuccio a catalogo per albero 6 mm a D |
+| molto piccola | 9 mm | 6 mm, zigrinato (Filippo, 2026-11-09) | ~10,5 mm | come sui moduli Eurorack: si gira con la punta delle dita, dado in vista. Il passo lo limita il corpo del pot (~9,5 mm), non il cappuccio. Pot più piccoli (6 mm, classe Piher PT-6) scartati: sono trimmer senza dado, fragili sul pannello |
 
 Levette: grande = levetta sigillata standard; piccola = levetta
 sub-miniatura. Bottoni: grande ~12-15 mm, piccolo ~8 mm. Fader: lungo
