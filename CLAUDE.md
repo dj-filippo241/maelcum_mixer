@@ -86,6 +86,7 @@ Regole di simulazione (ognuna nasce da un errore già pagato; il contesto sta ne
 - `.step param x list ...`: LTspice esegue i valori in ordine crescente, non in quello scritto. Leggere le misure con quell'ordine (MONO del master, todo 200).
 - Un `.param` scritto due volte in un netlist con `.step`: `.four` non stampa niente e il log non dà errore.
 - Non fermare LTspice con `pkill -f <nome netlist>`: uccide anche lo script. `drive2-chain` a 150 Hz non termina (causa ignota): usare 50 Hz o 1 kHz.
+- Nomi delle istanze senza maiuscole: `Vs1` e `VS1` sono la stessa («Instance already defined»). Un `PWL file=` con due punti allo stesso tempo ferma il giro (misto/sim, 2026-11-09).
 - Passo che collassa a t ~ns subito dopo il `.op` (migliaia di «tolerance relaxed»): `.options cshunt=1e-15`. 1 fF non sposta il polo della macro; `method=gear` e la macro senza anti-windup non bastano (NASTRO B9, todo 256).
 
 ## Stato corrente (2026-11-09, decisioni 1-174)
