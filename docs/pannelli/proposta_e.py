@@ -59,8 +59,9 @@ def meter_h(nome, n, passo=3.0):
 BR = dict(t="br", w=0, h=0)
 
 
-def modulo(nome, classe, w, voci, fader=None):
-    """Pannello largo w coi comandi in file, poi l'eventuale fader col meter."""
+def modulo(nome, classe, w, voci, fader=None, aria=0.0):
+    """Pannello largo w coi comandi in file, poi l'eventuale fader col meter.
+    aria = mm in più, divisi fra le file (proposta F: niente pannelli ciechi)."""
     p = g.Pannello(nome, classe, w)
     disp = w - 6
     righe, riga, somma = [], [], 0.0
@@ -75,7 +76,9 @@ def modulo(nome, classe, w, voci, fader=None):
         somma += v["w"]
     if riga:
         righe.append(riga)
+    passo_aria = aria / (len(righe) + 1)
     for riga in righe:
+        p.y += passo_aria
         tot = sum(v["w"] for v in riga)
         x = (w - tot) / 2
         rh = max(v["h"] for v in riga)
@@ -96,6 +99,7 @@ def modulo(nome, classe, w, voci, fader=None):
                 p.meter(x + 2, y + 4, v["n"], passo=v["passo"], orizz=True, nome=v["nome"])
             x += v["w"]
         p.y += rh + 1
+    p.y += passo_aria
     if fader:
         c = w / 2
         p.meter(c - 12, p.y + 2, 10, passo=fader / 10, nome="METER")
@@ -121,9 +125,9 @@ def canale(n, w):
     return p.chiudi()
 
 
-def send(n, w):
+def send(n, w, aria=0.0):
     return modulo(f"FX-SEND {n}", "send", w, [
-        k("EQ HIGH", "k_eq_9mm", MP), k("EQ LOW", "k_eq_9mm", MP), k("LEVEL", "k_level_send", ME)])
+        k("EQ HIGH", "k_eq_9mm", MP), k("EQ LOW", "k_eq_9mm", MP), k("LEVEL", "k_level_send", ME)], aria=aria)
 
 
 def filtro(w):
@@ -142,9 +146,9 @@ def filtro(w):
     return p.chiudi()
 
 
-def cue(w):
+def cue(w, aria=0.0):
     return modulo("CUE", "cue", w, [k("BLEND", "k_cue", GR, True), k("LEVEL", "k_cue", ME),
-                                   jack("PHONES 1"), jack("PHONES 2")])
+                                   jack("PHONES 1"), jack("PHONES 2")], aria=aria)
 
 
 def master(w):
@@ -153,7 +157,7 @@ def master(w):
         meter_h("L", 20), meter_h("R", 20)])
 
 
-def micmono(tipo, w):
+def micmono(tipo, w, aria=0.0):
     if tipo == "MIC":
         v = [k("GAIN", "k_gain", PI), k("EQ HIGH", "k_eq_9mm", MP), k("EQ LOW", "k_eq_9mm", MP)]
     else:
@@ -163,15 +167,15 @@ def micmono(tipo, w):
           k("SEND 3", "k_send_mic", ME), k("SEND 4", "k_send_mic", ME), BR, led()]
     if tipo == "MIC":
         v.append(bot("MUTE", "mute", (14.0, 9.0)))
-    return modulo(tipo, "mic", w, v)
+    return modulo(tipo, "mic", w, v, aria=aria)
 
 
-def fx_ret(r, w):
+def fx_ret(r, w, aria=0.0):
     return modulo(f"FX RET {r + 1}", "fx", w, [
         k("GAIN", "k_gain", PI), k("EQ HIGH", "k_eq_9mm", PI), k("EQ LOW", "k_eq_9mm", PI), BR] +
         # reroute a due a due (Filippo, 9/11)
         [k("SELF" if b == r else f"> FX{b + 1}", "k_reroute", ME, True) for b in (0, 1)] + [BR] +
-        [k("SELF" if b == r else f"> FX{b + 1}", "k_reroute", ME, True) for b in (2, 3)], fader=45.0)
+        [k("SELF" if b == r else f"> FX{b + 1}", "k_reroute", ME, True) for b in (2, 3)], fader=45.0, aria=aria)
 
 
 def five(w):
