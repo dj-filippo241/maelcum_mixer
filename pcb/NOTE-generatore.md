@@ -158,6 +158,36 @@ Due opzioni nuove, spente di default (FX-SEND rigenerato con le opzioni spente: 
 Regola per i connettori: due pin vicini della stessa rete su un header fanno fallire Freerouting
 su tutta la rete. Pin alternati (+5V, CTRL_GND, +5V, CTRL_GND) o `link_pairs`.
 
+## Schema leggibile (2026-11-09)
+
+Lo schema del generatore mette un'etichetta su ogni pin: giusto per la macchina, illeggibile per
+una persona. `pcb/tools/leggibile.py` disegna un secondo schema dallo stesso netlist, per chi
+legge o monta la scheda. Lo schema che alimenta la PCB non cambia.
+
+```bash
+/Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/3.9/bin/python3 pcb/tools/leggibile.py pcb/mono/mono.py [altri ...]
+# il master d'uscita vuole il lato: pcb/master/master-uscita.py:L
+```
+
+Esce in `pcb/<scheda>/leggibile/`: `.kicad_sch`, PDF, `erc.json`, `riepilogo.json`. Esito
+LEGGIBILE PASSA solo se il confronto col netlist voluto passa nei due sensi e l'ERC non ha errori.
+
+Gli schemi sono in inglese (richiesta di Filippo, 2026-11-09): titoli dei blocchi, titoli e valori
+descrittivi stanno in `pcb/tools/leggibile_en.py`; i file delle schede restano in italiano. Un
+blocco o un valore senza traduzione ferma il giro. I nomi delle reti restano quelli della PCB.
+Con più schede in un lancio esce anche `pcb/schematics-readable.pdf`: copertina con indice e
+legenda, poi una pagina per scheda nell'ordine dei file dati (unione con `pdfunite` di poppler).
+
+Regole del disegno: alimentazioni e masse come simboli; passivi attaccati coi fili al pin che
+toccano (in serie lungo il pin, in derivazione verso il simbolo); etichetta solo dove il filo non
+arriva (riquadro = la rete va in un altro blocco); i lati con più di 3 pin (connettori, LM339,
+ADG1434) portano solo etichette, e i loro passivi stanno in gruppi a catena sotto.
+
+Trappole pagate: nello stesso processo tre moduli caricano il proprio `cavo.py` col nome uguale e
+Python riusa il primo (un processo per modulo); un confronto `== 0` su una differenza di float
+faceva scalinate sui pin del C96 (tolleranza 0,01 mm). Un ritocco a un modulo `.py` vuole un
+nuovo giro anche di `leggibile.py`: lo schema leggibile non si aggiorna da solo.
+
 ## Cosa resta (in ordine)
 
 1. **Retro vicino ai connettori.** Il retro si piazza ancora nel primo posto libero.
