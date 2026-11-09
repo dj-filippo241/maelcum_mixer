@@ -67,7 +67,7 @@ quindicina di moduli.
 - **taratura**: dei ~253 trimmer del mixer (docs/09) il chip ne toglie
   ~60-80 (shaper, law, meter). I 54 di simmetria restano. Sono giorni di
   banco in meno, non molti euro;
-- **meter**: 13 LM3915, il comparatore del viola e i loro trimmer;
+- **meter**: il comparatore del viola e i trimmer di calibrazione e di release (gli LM3915 diventano driver di LED, stessi pezzi);
 - **precisione**: curve esatte su tutta la corsa e ferme con la
   temperatura (40 °C all'aperto, dec. 111);
 - **valori cambiabili via USB** quasi gratis per tutto ciò che è già una CV.
@@ -75,6 +75,27 @@ quindicina di moduli.
 **Spazio:** gli shaper sono piccoli (SMD). Il guadagno di spazio sta nei
 trimmer tolti e nei meter. Il chip, i DAC e la presa USB ne occupano una
 parte. Saldo atteso: poco, da contare scheda per scheda col generatore.
+
+**Spazio, contato il 2026-11-09** (script nello scratchpad, `pcbnew` sulle
+PCB generate di al commit e4f6f29). Impronte di shaper e trim di law
+(resistenze, diodi, trimmer, condensatori sulle reti SN, SJ, SH, NP, LT,
+OF, POT), senza gli op-amp:
+
+| Scheda | Impronte totali | Di shaper e trim | Col chip [STIMA] | Saldo |
+|---|---|---|---|---|
+| FX-RET reroute (4 CV) | 225 | 76 | 20 celle DAC + 12 blocco chip | −44 |
+| FX-RET segnale (fader) | 199 | 19 | 5 | −14 |
+| MASTER segnale (MASTER, BOOTH) | 283 | 40 | 10 + 12 | −18 |
+| Canale (fader) | 193 | 18 | 5 + 12 | −1 |
+| Filtro (4 CV, non generato) | — | ~64 | 20 + 12 | ~−32 |
+| 5-way POSITION (5 CV, non generato) | — | ~75 | 25 + 12 | ~−38 |
+
+Totale: **~150 impronte in meno su tutto il mixer**, circa mezza scheda
+(una 100 × 220 ne porta ~280 sui due lati). Nessuna scheda sparisce: il
+ritorno FX resta su due schede (199 + 225 − 58 = 366 > 280), il canale resta
+su una. Il pannello non cambia: lo dimensionano le manopole, che restano
+le stesse (M3). I meter non danno spazio: i driver di LED del chip (16
+uscite) sono tanti quanti gli LM3915 (10 segmenti).
 
 **Prima conclusione.** Il misto non abbassa molto il costo dei pezzi.
 Abbassa il lavoro di taratura e rende le curve esatte e modificabili. Il
