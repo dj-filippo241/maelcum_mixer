@@ -187,6 +187,16 @@ class Part:
 class Design:
     def __init__(self, name, outdir, title, board=(160, 100), rev="0.1-bozza"):
         self.name, self.outdir, self.title, self.rev = name, outdir, title, rev
+        # board=(L, H) rettangolo; board=(L, H_x0, H_xL) trapezio della dec. 158 (proposta P3 del
+        # todo 170): il lato in basso (C96, backplane) resta dritto, quello in alto scende in
+        # diagonale sotto il pannello inclinato. x = 0 e' il lato con H_x0 (dietro, piu' alto).
+        # self.board resta (L, H massima); self.cut = di quanto il bordo in alto scende ai due capi.
+        if len(board) == 3:
+            L, h0, h1 = board
+            hm = max(h0, h1)
+            board, self.cut = (L, hm), (hm - h0, hm - h1)
+        else:
+            self.cut = (0.0, 0.0)
         self.parts, self.board, self.power = [], board, set()
         self.netclass = {}       # net -> (larghezza pista mm, nome classe)
         self.counters = {}
@@ -194,6 +204,36 @@ class Design:
         self.side = "F"          # il modulo scrive d.side = "B" prima dei blocchi da mettere sul retro
         self.notes = []
         self.gnd = "AGND"        # rete delle colate; il modulo la può cambiare
+
+    def ytop(self, x):
+        """y del bordo in alto alla distanza x dal lato sinistro (0 per un rettangolo).
+        I pezzi fissi vicino al bordo in alto si mettono a d.ytop(x) + margine."""
+        W = self.board[0]
+        c0, c1 = self.cut
+        return c0 + (c1 - c0) * min(max(x, 0.0), W) / W
+
+    def _outline(self, X0, Y0, m=0.0):
+        """Contorno della scheda (rettangolo o trapezio), rientrato di m mm su tutti i lati."""
+        W, H = self.board
+        c0, c1 = self.cut
+        k = math.hypot(1.0, (c1 - c0) / W)       # il bordo in diagonale rientra di m in perpendicolare
+        ya = lambda x: Y0 + c0 + (c1 - c0) * (x - X0) / W + m * k
+        return [(X0 + m, ya(X0 + m)), (X0 + W - m, ya(X0 + W - m)), (X0 + W - m, Y0 + H - m), (X0 + m, Y0 + H - m)]
+
+    def _cut_boxes(self, X0, Y0, step=4.0, pad=1.5):
+        """Il triangolo tagliato via dal trapezio, come scalini di rettangoli: ostacoli per il
+        piazzamento (che conosce solo rettangoli). pad = distanza minima dei pezzi dal bordo."""
+        W, H = self.board
+        if not any(self.cut):
+            return []
+        out, x = [], 0.0
+        while x < W - 1e-9:
+            x2 = min(W, x + step)
+            y = max(self.ytop(x), self.ytop(x2))
+            if y > 0:
+                out.append((X0 + x, Y0 - 1, X0 + x2, Y0 + y + pad))
+            x = x2
+        return out
 
     @property
     def masse(self):
@@ -533,7 +573,7 @@ class Design:
             fps[p.ref] = fp
         self._place(b, fps, X0, Y0, W, H, mm)
         # contorno
-        pts = [(X0, Y0), (X0 + W, Y0), (X0 + W, Y0 + H), (X0, Y0 + H)]
+        pts = self._outline(X0, Y0)
         for i in range(4):
             s = pcbnew.PCB_SHAPE(b)
             s.SetShape(pcbnew.SHAPE_T_SEGMENT)
@@ -550,17 +590,26 @@ class Design:
         zl = ([pcbnew.In1_Cu] if sig2 else [pcbnew.In1_Cu, pcbnew.In2_Cu]) if layers == 4 else []
         for layer in zl:
             self._zone(b, nets[gnd], layer, X0, Y0, W, H, mm, pcbnew)
-        self._edge_keepout(b, X0, Y0, W, H, mm, pcbnew)
+        self._edge_keepout(b, X0, Y0, W, H, mm, pcbnew, cut=self.cut)
         path = os.path.join(self.outdir, self.name + ".kicad_pcb")
         b.Save(path)
         return path
 
     @staticmethod
-    def _edge_keepout(b, X0, Y0, W, H, mm, pcbnew, m=0.8):
+    def _edge_keepout(b, X0, Y0, W, H, mm, pcbnew, m=0.8, cut=(0.0, 0.0)):
         """Fascia di 0,8 mm lungo il bordo senza piste né via: Freerouting non conosce la
-        distanza dal bordo (0,3 mm) e ci passava a 0,28 (master segnale, 2026-10-28)."""
-        for x1, y1, x2, y2 in ((X0, Y0, X0 + W, Y0 + m), (X0, Y0 + H - m, X0 + W, Y0 + H),
-                               (X0, Y0, X0 + m, Y0 + H), (X0 + W - m, Y0, X0 + W, Y0 + H)):
+        distanza dal bordo (0,3 mm) e ci passava a 0,28 (master segnale, 2026-10-28).
+        Col trapezio la fascia in alto copre il triangolo tagliato a gradini da 4 mm, solo
+        rettangoli: con un poligono in diagonale Freerouting non finiva in un'ora (canale, 9/11)."""
+        c0, c1 = cut
+        k = m * math.hypot(1.0, (c1 - c0) / W)
+        tops, x = [], 0.0
+        while x < W - 1e-9:
+            x2 = min(W, x + 4.0)
+            tops.append((X0 + x, Y0, X0 + x2, Y0 + max(c0 + (c1 - c0) * x / W, c0 + (c1 - c0) * x2 / W) + k))
+            x = x2
+        for x1, y1, x2, y2 in tops + [(X0, Y0 + H - m, X0 + W, Y0 + H),
+                                      (X0, Y0, X0 + m, Y0 + H), (X0 + W - m, Y0, X0 + W, Y0 + H)]:
             z = pcbnew.ZONE(b)
             z.SetIsRuleArea(True)
             z.SetLayerSet(pcbnew.LSET.AllCuMask())
@@ -691,8 +740,7 @@ class Design:
         z.SetAssignedPriority(prio)
         ol = z.Outline()
         ol.NewOutline()
-        m = 0.5
-        for x, y in ((X0 + m, Y0 + m), (X0 + W - m, Y0 + m), (X0 + W - m, Y0 + H - m), (X0 + m, Y0 + H - m)):
+        for x, y in self._outline(X0, Y0, 0.5):
             ol.Append(mm(x), mm(y))
         z.SetLocalClearance(mm(0.3))
         z.SetMinThickness(mm(0.25))
@@ -732,6 +780,8 @@ class Design:
                 fixed_boxes.append(self._bbox(fp))
             else:
                 free.append(p)
+        # trapezio: il triangolo tagliato e' un ostacolo come i pezzi fissi
+        fixed_boxes += self._cut_boxes(X0, Y0)
         # disaccoppiamento: i 100n legati a un chip escono dal piazzamento a blocchi e
         # viaggiano col loro chip, a ~2 mm dal pin di alimentazione
         groups = self._decaps()
@@ -955,7 +1005,7 @@ class Design:
         componenti (i loro pin escono sotto) e i gruppi già messi sul retro."""
         import pcbnew
         mine = {r for p in back for r in [p.ref] + [c for c, _ in groups.get(p.ref, [])]}
-        obst = []
+        obst = list(self._cut_boxes(X0, Y0))
         for p in self.parts:
             if p.ref not in mine and (not _smd(p.fp) or p.place):
                 x1, y1, x2, y2 = self._bbox(fps[p.ref])
@@ -1183,8 +1233,24 @@ class Design:
         b = pcbnew.LoadBoard(pcb)
         pcbnew.ZONE_FILLER(b).Fill(b.Zones())
         pcbnew.ExportSpecctraDSN(b, dsn)
-        r = subprocess.run([JAVA, "-jar", FREEROUTING, "-de", dsn, "-do", ses, "-mp", str(passes)],
-                           capture_output=True, text=True, timeout=3600)
+        if any(self.cut):
+            # trapezio: per Freerouting il contorno è il rettangolo che lo contiene; il triangolo
+            # tagliato lo chiudono le fasce a gradini di _edge_keepout. Col contorno in diagonale
+            # Freerouting era 3-13 volte più lento e non finiva (canale, 9/11)
+            W, H = self.board
+            txt = open(dsn).read()
+            rect = "(boundary\n      (path pcb 0  %d %d  %d %d  %d %d  %d %d  %d %d)\n    )" % (
+                50000, -50000, 50000 + W * 1000, -50000, 50000 + W * 1000, -(50000 + H * 1000),
+                50000, -(50000 + H * 1000), 50000, -50000)
+            txt, n = re.subn(r"\(boundary\s*\(path pcb 0[^)]*\)\s*\)", rect, txt, count=1)
+            if n != 1:
+                raise ValueError("contorno non trovato nel .dsn")
+            open(dsn, "w").write(txt)
+        try:
+            r = subprocess.run([JAVA, "-jar", FREEROUTING, "-de", dsn, "-do", ses, "-mp", str(passes)],
+                               capture_output=True, text=True, timeout=3600)
+        except subprocess.TimeoutExpired:
+            return {"ok": False, "aperti": {}, "errore": "Freerouting non ha finito in un'ora"}
         with open(log, "w") as f:
             f.write(r.stdout + r.stderr)
         if r.returncode != 0 or not os.path.exists(ses):

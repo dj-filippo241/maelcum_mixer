@@ -18,6 +18,10 @@ sim/cdj/RISULTATI-filtsel-dip.md (dip), sistema-metering.md (g = 0,288).
 Valori [PROVVISORIO]. Le R della banca: E192 0,1 % più vicine ai valori calcolati del
 RISULTATI §1. Le scelte non scritte nei documenti sono segnate NOTA (pcb/canale/NOTE.md).
 Il front-end PHONO (phono-stage.md) è una variante di Rev B: non è su questa scheda.
+
+Scheda sola (dec. 173): 287 mm da dietro a davanti, alta 162 mm dietro e 129 davanti (trapezio
+della dec. 158, pcb/PIANO-SCHEDE-F.md). x = 0 è il lato di dietro. La versione su due schede col
+ponte 2x18 sta in archivio/ (canale-segnale.py, canale-isolator.py).
 """
 import os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -27,9 +31,10 @@ from backplane import c96, SYM_C96, FP_C96
 import celle_vca as cv
 from celle_vca import opa2, opa4, vca, iv, shaper, law_trim, C12, SOIC14
 from celle_micmono import power_18_sw, power_ln, ADG
-from banca import ponte
+from banca import banca
 
-d = Design("canale", HERE, "maelcum CANALE CDJ/LINE (v0.4) - bozza v0.1", board=(100, 220), rev="0.1-bozza")
+L, H_DIETRO, H_DAVANTI = 287, 162, 129     # PIANO-SCHEDE-F, dec. 173
+d = Design("canale", HERE, "maelcum CANALE CDJ/LINE (v0.4) - bozza v0.1", board=(L, H_DIETRO, H_DAVANTI), rev="0.2-bozza")
 d.gnd = "AGND"
 d.inner_signal = True     # SMD sui due lati (dec. 142)
 C10 = "Capacitor_SMD:C_1210_3225Metric"
@@ -61,11 +66,14 @@ b = {"b1": "DJBUS_L", "b2": "DJBUS_R", "b4": "CUE_OUT_L", "b5": "CUE_OUT_R", "b7
      "b10": "BUS_HPF_L", "b11": "BUS_HPF_R", "b13": "BUS_LPF_L", "b14": "BUS_LPF_R"}
 for s in range(1, 11):
     b["b%d" % (3 * s)] = "AGND"
-d.part("J", SYM_C96, "C96 maschio", FP_C96, c96(b, c=["c1", "c2"]), ref="J1", place=(50, 213.5, 180),
+d.part("J", SYM_C96, "C96 maschio", FP_C96, c96(b, c=["c1", "c2"]), ref="J1", place=(50, H_DIETRO - 6.5, 180),
        note="DIN 41612 C 3x32, angolo retto")
-for ref, x in (("H1", 5), ("H2", 95)):
+# NOTA: C96 dietro (x 2,5-97,5), alla stessa profondità di quello del FX-SEND accanto; la posizione
+# vera la fissa il backplane della disposizione F (todo 269)
+for ref, x in (("H1", 5), ("H2", 95), ("H3", L - 5)):     # H2 lontano dal cavo J2 (x 120-166)
     d.part("H", "Mechanical:MountingHole_Pad", "CHASSIS", "MountingHole:MountingHole_3.2mm_M3_Pad",
-           {1: "CHASSIS"}, ref=ref, place=(x, 5, 0), note="foro di fissaggio al pannello, a CHASSIS")
+           {1: "CHASSIS"}, ref=ref, place=(x, d.ytop(x) + 5, 0),
+           note="foro di fissaggio al pannello, a CHASSIS (NOTA: tre fori sui 287 mm)")
 
 d.block = "ALIMENTAZIONE +-18 audio, +-15 switch, +5, +-15 LN, +-5 riferimento"
 power_18_sw(d)
@@ -90,11 +98,9 @@ opa2(d, "U1", ("INC_L", "BUF_L", "BUF_L"), ("INC_R", "BUF_R", "BUF_R"), note="bu
 opa2(d, "U2", ("GW_L", "NG_L", "GO_L"), ("GW_R", "NG_R", "GO_R"), note="GAIN T1, non invertente x3,15")
 
 
-# ------------------------------------------------------------ isolator (scheda a parte)
-# Divisione PROVVISORIA (NOTE.md): banca, somma x10 e servo stanno su canale-isolator.py
-# (funzioni in banca.py). Qui solo il ponte J4: GO verso la banca, EQ di ritorno, reti dei pot.
-d.block = "PONTE verso la scheda ISOLATOR (J4)"
-ponte(d, "J4", (94, 100, 0), "NOTA: cavo piatto 2x18 verso la scheda isolator (divisione PROVVISORIA, NOTE.md)")
+# ------------------------------------------------------------ isolator (dec. 173: sulla stessa scheda)
+# Banca dei due lati, somma x10 e servo (banca.py, riferimenti U3-U14)
+banca(d)
 
 # ------------------------------------------------------------ prese pre-fader
 d.side = "B"   # prese, meter e fader (solo SMD) sul retro: davanti l'alimentazione non trova posto (dec. 142)
@@ -186,14 +192,15 @@ FILI = ["AGND", "BUF_L", "GW_L", "AGND", "BUF_R", "GW_R", "AGND",
         "LOO_L", "K1W_L", "LMO_L", "K2W_L", "MHO_L", "K3W_L", "HIO_L", "K4W_L", "AGND",
         "LOO_R", "K1W_R", "LMO_R", "K2W_R", "MHO_R", "K3W_R", "HIO_R", "K4W_R", "AGND",
         "+REF5", "POT_F", "AGND", "MET", "FSW0", "FSW1", "BTNC", "+5VF", "CTRL_GND", "AGND", "AGND"]
-cv.cavo(d, FILI)
+# NOTA: cavo dei pot a metà scheda, sotto la striscia dei comandi (la scheda comandi è il todo 270)
+cv.cavo(d, FILI, x=143, y=d.ytop(143 + 25) + 5)
 d.part("J", "Connector_Generic:Conn_01x05", "1x5 ingressi", "Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical",
-       {1: "IN_L", 2: "AGND", 3: "IN_R", 4: "AGND", 5: "CHASSIS"}, ref="J3", place=(88, 12, 90),
+       {1: "IN_L", 2: "AGND", 3: "IN_R", 4: "AGND", 5: "CHASSIS"}, ref="J3", place=(22, d.ytop(22 + 7) + 6, 90),
        note="NOTA: cavo verso gli RCA sulla schedina dei connettori (dec. 141)")
 
 d.audio_rules = {
     "sensibili": r"^(INC_[LR]|NG_[LR]|GW_[LR]|NIF_[LR]|DJBUS_[LR]|BUS_[HL]PF_[LR]|CUE_OUT_[LR])$",
-    "cavo": r"^(BUF|GW|LOO|LMO|MHO|HIO|K\dW|GO|EQ)_[LR]$",
+    "cavo": r"^(BUF|GW|LOO|LMO|MHO|HIO|K\dW)_[LR]$",
     "rumorose": r"^(\+15SW|-15SW|\+5VF?|MET|FSW\d|FR\d|D\d|Q\d|X\d|XQ|DIFF|DLY|N?CLK|DJSEL|CUESEL|BTNC|DP.*|DIPCV|POT_F|CVP_F|SH_F|V27F[+-]|V22F[+-]|VREG[+-]|BASE[+-]|RAW.*|CTRL_GND)$",
     "regolatori": ["U40", "U41", "U42", "U43", "U44", "U45", "Q40", "Q41"],
 }

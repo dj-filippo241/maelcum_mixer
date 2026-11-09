@@ -1,5 +1,23 @@
 # CANALE CDJ/LINE: note della bozza v0.1 (todo 167, 2026-11-04)
 
+## Stato al 2026-11-09 sera (todo 272, dec. 173): scheda sola a trapezio, NON PASSA
+
+`canale.py` è riscritto su una scheda sola: 287 mm da dietro a davanti, alta 162 → 129 mm,
+383 impronte, isolator dentro (banca.py), niente ponte. Filippo tiene i 287 mm (tetto 70 %, dec. 156;
+opzione 1 del 9/11). La versione su due schede sta in `archivio/` (segnale e isolator, rigenerabili).
+I file KiCad in questa cartella restano quelli della scheda segnale del 4/11 finché il canale nuovo
+non PASSA (un NON PASSA non si committa).
+
+Giri del 9/11:
+1-3. Contorno in diagonale passato a Freerouting: fanout 13 volte più lento, un giro non finisce in un'ora,
+   uno si arena a 260 aperti. Più un errore mio: foro H2 sopra il cavo J2 (spostato a x 95).
+4. Contorno rettangolare per Freerouting e triangolo tagliato a gradini (pcbgen.py): finisce in ~10 min,
+   **35 aperti**: CTRL_GND 18, RAW±22 e RAW±27 2 ciascuna, +5V 2, ECF_R 2.
+
+Da provare: CTRL_GND più larga o in colata vicino alla logica (oggi 0,3 mm per i pin TSSOP, lunga dalla
+logica al C96); blocco ALIMENTAZIONE più vicino ai pin RAW del C96 (`d.power_first`); più giri (non deterministico).
+
+
 Schema da `canale.py` (generatore `pcb/tools/pcbgen.py`, celle in `pcb/tools/celle_vca.py`).
 Esito: **SCHEMA PASSA** (ERC 0 errori; 2 avvisi VSS dell'ADG, come il FX-SEND). PCB: vedi in fondo.
 

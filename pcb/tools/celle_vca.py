@@ -197,10 +197,10 @@ def eq2(d, ref, s, vin, vout):
          note="EQ2: LOW, HIGH follower, HIGH invertente, HIGH somma")
 
 
-def cavo(d, fili, ref="J2", x=50):
+def cavo(d, fili, ref="J2", x=50, y=5):
     """Cavo piatto verso la scheda comandi (pot, fader, meter): 2 file, passo 2,54."""
     n = len(fili) // 2
     d.part("J", "Connector_Generic:Conn_02x%02d_Odd_Even" % n, "2x%d cavo piatto" % n,
            "Connector_PinHeader_2.54mm:PinHeader_2x%02d_P2.54mm_Vertical" % n,
-           {i + 1: f for i, f in enumerate(fili)}, ref=ref, place=(x, 5, 90),
+           {i + 1: f for i, f in enumerate(fili)}, ref=ref, place=(x, y, 90),
            note="cavo piatto corto verso la scheda comandi dietro il pannello (dec. 133)")

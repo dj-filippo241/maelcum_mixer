@@ -1,0 +1,105 @@
+quantita;valore;impronta;riferimenti;nota
+2;220u 35V;CP_Radial_D8.0mm_P3.50mm;C1 C2;
+2;1u 50V;C_1206_3216Metric;C12 C13;
+2;1u 25V;C_1206_3216Metric;C14 C15;
+1;4u7 25V;C_1206_3216Metric;C16;rumore del riferimento (datasheet: 4,7 uF)
+3;4u7 25V;C_1206_3216Metric;C17 C19 C20;
+2;10u 25V;C_1206_3216Metric;C18 C21;
+1;1u;C_1206_3216Metric;C22;
+32;100n;C_0805_2012Metric;C23 C24 C27 C28 C29 C30 C31 C32 C33 C34 C37 C38 C39 C40 C42 C43 C45 C46 C47 C48 C51 C52 C53 C54 C55 C56 C57 C59 C60 C61 C62 C63;
+2;2u2 film;C_1812_4532Metric;C25 C26;blocco della continua (voce 58)
+1;47u 10V;CP_Radial_D5.0mm_P2.00mm;C3;
+1;47p C0G;C_0805_2012Metric;C35;
+1;100n C0G;C_1206_3216Metric;C36;hold: niente altro sul nodo (sim/meter)
+2;10u 35V;CP_Radial_D5.0mm_P2.00mm;C4 C8;
+2;22p C0G;C_0805_2012Metric;C41 C44;
+1;50n C0G;C_1206_3216Metric;C49;NOTA: 50n = 47n + 3n3 in parallelo; tau 0,5 ms
+2;47u 35V;CP_Radial_D6.3mm_P2.50mm;C5 C9;
+1;50n C0G;C_1206_3216Metric;C50;NOTA: 50n = 47n + 3n3 in parallelo
+1;47n;C_0805_2012Metric;C58;
+2;470u 25V;CP_Radial_D8.0mm_P3.50mm;C6 C10;
+2;100u 25V;CP_Radial_D6.3mm_P2.50mm;C7 C11;
+1;1N4148W;D_SOD-123;D1;scarica Cadj
+1;1N4148W;D_SOD-123;D12;NOTA: OR a diodi
+1;S1G;D_SMA;D2;protezione inversa
+6;1N4148W;D_SOD-123;D3 D8 D9 D10 D11 D13;
+1;S1G;D_SMA;D4;
+1;LM4040-5.0;SOT-23;D5;
+2;TVS bidir <=5 pF;D_SOD-323;D6 D7;NOTA: parte da scegliere (TVS low-cap)
+7;ferrite 600R;L_1206_3216Metric;FB1 FB2 FB3 FB4 FB5 FB6 FB7;
+1;C96 maschio;DIN41612_C_3x32_Male_Horizontal_THT;J1;DIN 41612 C 3x32, angolo retto
+1;2x18 cavo piatto;PinHeader_2x18_P2.54mm_Vertical;J2;cavo piatto corto verso la scheda comandi dietro il pannello (dec. 133)
+1;1x5 ingressi;PinHeader_1x05_P2.54mm_Vertical;J3;NOTA: cavo verso gli RCA sulla schedina dei connettori (dec. 141)
+1;2x18 ponte isolator;PinHeader_2x18_P2.54mm_Vertical;J4;NOTA: cavo piatto 2x18 verso la scheda isolator (divisione PROVVISORIA, NOTE.md)
+1;BD139;TO-126-3_Vertical;Q40;
+1;BD140;TO-126-3_Vertical;Q41;
+2;120 1%;R_0805_2012Metric;R1 R4;
+4;10k 0.1%;R_0805_2012Metric;R10 R11 R48 R49;
+2;100;R_0805_2012Metric;R12 R17;R serie (cdj §3.1)
+2;100k;R_0805_2012Metric;R13 R18;polo 0,72 Hz, Zin 100k
+2;4k30 0.1%;R_0805_2012Metric;R14 R19;Rl dal cursore a massa (T1)
+2;2k15 0.1%;R_0805_2012Metric;R15 R20;
+2;1k 0.1%;R_0805_2012Metric;R16 R21;x3,15
+1;1k74 1%;R_0805_2012Metric;R2;E96 1,74k = 19,4 V (fx-send NOTE punto 16)
+2;47;R_0805_2012Metric;R22 R24;driver <= 50 ohm verso il FX-SEND (slot 3)
+2;47;R_0805_2012Metric;R23 R25;NOTA: 47R dopo lo switch CUE (slot 2)
+1;20k 0.1%;R_0805_2012Metric;R26;NOTA: barra unica del canale, (L+R)/2 con due 20k
+5;20k 0.1%;R_0805_2012Metric;R27 R31 R35 R36 R40;
+1;4k02 0.1%;R_0805_2012Metric;R28;g = 0,287 (doc 0,288), come il master
+1;1k;R_0805_2012Metric;R3;NOTA: cap-moltiplicatore come il FX-SEND (~50 mA)
+1;3M;R_0805_2012Metric;R30;release 0,3 s (dec. 81)
+2;6k19;R_0805_2012Metric;R32 R37;5,1k del datasheet a -15 V riscalato a -18 V (come il master)
+2;150k;R_0805_2012Metric;R33 R38;
+2;51;R_0805_2012Metric;R34 R39;
+1;43.2k 0.1%;R_0805_2012Metric;R41;
+1;68.1k 0.1%;R_0805_2012Metric;R42;
+1;357k 0.1%;R_0805_2012Metric;R43;
+1;20.0k 0.1%;R_0805_2012Metric;R44;
+1;38.3k 0.1%;R_0805_2012Metric;R45;
+1;976 0.1%;R_0805_2012Metric;R46;
+1;1.33k 0.1%;R_0805_2012Metric;R47;
+1;1k74 1%;R_0805_2012Metric;R5;
+1;2k 0.1%;R_0805_2012Metric;R50;stadio del partitore x(-1/5): CV al pin = out/10
+1;100k;R_0805_2012Metric;R51;pot staccato = shaper a 0 V (come il master)
+1;1k 0.1%;R_0805_2012Metric;R52;
+2;1k5 0.1%;R_0805_2012Metric;R53 R55;NOTA: 1k5 // 3,01k del dip = 1,00k: il partitore resta 1/2 a riposo
+1;909 0.1%;R_0805_2012Metric;R54;E96: 909 (doc: 900)
+1;1M5;R_0805_2012Metric;R56;
+2;10k;R_0805_2012Metric;R57 R58;
+1;3k01 0.1%;R_0805_2012Metric;R59;NOTA: 4,4 V x 600/3610 = 0,73 V al pin
+3;1k;R_0805_2012Metric;R6 R29 R68;
+1;3k01 0.1%;R_0805_2012Metric;R60;
+2;10k;R_0805_2012Metric;R61 R63;levetta verso CTRL_GND sulla scheda comandi
+2;10k;R_0805_2012Metric;R62 R64;NOTA: antirimbalzo 1 ms
+2;100k;R_0805_2012Metric;R65 R70;
+1;33k;R_0805_2012Metric;R66;NOTA: 33k x 47n, soglia dello Schmitt a ~1,5 ms (doc: ADG a 1,6 ms)
+1;1k;R_0805_2012Metric;R67;NOTA: bit di modo sulla riga c; il backplane li porta per posizione
+1;10k;R_0805_2012Metric;R69;NOTA: tasto CUE a ritenuta verso +5VF
+2;150k 0.1%;R_0805_2012Metric;R7 R8;
+2;10k 0.1%;R_0805_2012Metric;R71 R74;R lato sorgente sul DJ bus
+2;10k 0.1%;R_0805_2012Metric;R72 R75;R lato sorgente sul bus HPF
+2;10k 0.1%;R_0805_2012Metric;R73 R76;R lato sorgente sul bus LPF
+1;1k5;R_0805_2012Metric;R9;NOTA: ~6,7 mA nel riferimento (come il master)
+2;50k;Potentiometer_Bourns_3266W_Vertical;RV1 RV2;trim di simmetria (THD minima)
+1;200;Potentiometer_Bourns_3266W_Vertical;RV3;trim di law, 25 giri (vca-trim §3.2): montato solo se la coppia esce da 0,5 dB
+1;50k;Potentiometer_Bourns_3266W_Vertical;RV4;trim d'offset di coppia
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U1;buffer d'ingresso
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U15;buffer CUE e SEND TAP, L
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U16;buffer CUE e SEND TAP, R
+1;OPA1654AIDR;SOIC-14_3.9x8.7mm_P1.27mm;U17;inseguitore di scala, superdiodo, buffer dell'hold (LM3915 sulla scheda comandi)
+2;V2181L;SOIC-8_3.9x4.9mm_P1.27mm;U18 U19;
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U2;GAIN T1, non invertente x3,15
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U20;I/V del fader, pilota i 10k dei bus
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U21;shaper F
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U22;due celle RC del dip con buffer (RISULTATI-filtsel-dip caso 3)
+1;74HC14PW;TSSOP-14_4.4x5mm_P0.65mm;U23;NOTA: antirimbalzo, ritardo Schmitt e DJSEL = NOT(Q0 xor Q1)
+1;74HC86PW;TSSOP-14_4.4x5mm_P0.65mm;U24;NOTA: confronto levetta / stato
+1;74HC74PW;TSSOP-14_4.4x5mm_P0.65mm;U25;NOTA: stato dell'ADG
+2;ADG1434YRUZ;TSSOP-20_4.4x6.5mm_P0.65mm;U26 U27;SPDT: A = IN alto, B = shunt a massa (datasheet Rev. E tabella 9)
+1;LM317;TO-220-3_Vertical;U40;
+1;LM337;TO-220-3_Vertical;U41;
+1;78L15;SOT-89-3;U42;
+1;79L15;SOT-89-3;U43;
+1;LT3045EMSE;MSOP-12-1EP_3x4.039mm_P0.65mm_EP1.651x2.845mm;U44;EN/UV a IN; ILIM a massa; PG libero; PGFB a IN (come master-segnale.py)
+1;LT3094EMSE;MSOP-12-1EP_3x4.039mm_P0.65mm_EP1.651x2.845mm;U45;EN/UV a IN; PG libero; PGFB a IN; ILIM a massa; VIOC libero
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U46;+5 e -5 V di riferimento

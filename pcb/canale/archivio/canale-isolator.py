@@ -1,4 +1,7 @@
-"""CANALE CDJ/LINE, scheda ISOLATOR: banca incroci C dei due lati, somma x10 e servo DC. Bozza v0.1.
+"""ARCHIVIATO il 2026-11-09 (dec. 173): canale su due schede col ponte 2x18, superato dalla
+scheda sola di ../canale.py. Resta come prova (regola 10 del CLAUDE.md); si rigenera ancora.
+
+CANALE CDJ/LINE, scheda ISOLATOR: banca incroci C dei due lati, somma x10 e servo DC. Bozza v0.1.
 
 Divisione PROVVISORIA della scheda del canale (todo 167, NOTE.md): 380 impronte non stanno su
 una 100 x 220. Questa scheda sta affiancata alla scheda segnale (canale.py) sotto lo stesso
@@ -9,7 +12,8 @@ Valori [PROVVISORIO]. Le scelte non scritte nei documenti sono segnate NOTA (pcb
 """
 import os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(HERE, "..", "tools"))
+sys.path.insert(0, os.path.join(HERE, "..", "..", "tools"))
+sys.path.insert(0, os.path.join(HERE, ".."))     # banca.py
 from pcbgen import Design
 from celle_vca import C12
 from banca import banca, ponte

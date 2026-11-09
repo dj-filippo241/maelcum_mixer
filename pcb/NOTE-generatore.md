@@ -188,6 +188,22 @@ Python riusa il primo (un processo per modulo); un confronto `== 0` su una diffe
 faceva scalinate sui pin del C96 (tolleranza 0,01 mm). Un ritocco a un modulo `.py` vuole un
 nuovo giro anche di `leggibile.py`: lo schema leggibile non si aggiorna da solo.
 
+## Scheda a trapezio (dec. 158, 2026-11-09, todo 272)
+
+Il telaio è inclinato: sotto il pannello le schede scendono da dietro a davanti. Nel file del
+modulo: `board=(L, H_dietro, H_davanti)` al posto di `board=(L, H)`. Il lato in basso (C96,
+backplane) resta dritto; il lato in alto scende in diagonale. x = 0 è il lato di dietro.
+
+- Contorno, colate di massa e fascia senza piste lungo il bordo seguono la diagonale.
+- Il triangolo tagliato via entra nel piazzamento come scalini di rettangoli da 4 mm
+  (`_cut_boxes`), con 1,5 mm di margine: lato componenti e retro.
+- `d.ytop(x)` dà la y del bordo in alto: i pezzi fissi vicino al pannello (fori, cavo dei pot)
+  si mettono a `d.ytop(x) + margine`. `celle_vca.cavo` prende anche `y`.
+- Un rettangolo dà gli stessi file di prima: le schede già generate non cambiano.
+- Le misure di ogni scheda vengono da `pcb/PIANO-SCHEDE-F.md`. Prima scheda a trapezio: il canale
+  (287 × 162-129 mm, dec. 173). Le altre (MIC, MONO, FX-SEND, FX-RET) restano a 100 × 220 finché
+  non si rigenerano sulle misure del piano.
+
 ## Cosa resta (in ordine)
 
 1. **Retro vicino ai connettori.** Il retro si piazza ancora nel primo posto libero.
