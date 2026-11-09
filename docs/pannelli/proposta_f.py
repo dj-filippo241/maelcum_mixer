@@ -7,6 +7,7 @@ NON tocca coordinate.json né i render dei moduli (dec. 135).
 Richiesta di Filippo del 2026-11-09, dopo la proposta E:
 - MASTER largo 19" in fondo, poi 5-WAY largo 19";
 - sotto, le due colonne della E (filtro, canali, mandate, CUE | MIC e MONO, ritorni);
+- canale e mandata su un pannello unico, schede separate (dec. 171);
 - nessun pannello cieco: lo spazio che avanza va ai moduli più fitti (mandate, CUE,
   MIC e MONO, ritorni), che diventano più alti; il mixer può diventare più profondo.
 Ordine dei comandi invariato (canale in colonna sfalsata, dec. 118); taglie della dec. 169.
@@ -22,11 +23,40 @@ QUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, QUI)
 import genera_pannelli as g  # noqa: E402
 import proposta_e as e  # noqa: E402
-from proposta_d import N  # noqa: E402
+from proposta_d import N, P, PI, GR, ME, MP, BOT_G, BOT_P  # noqa: E402
 
 U = e.U
 GAP = e.GAP
 PASSO = e.ps.PASSO
+
+
+def canale_send(n, w, aria=0.0):
+    """Striscia unica canale + mandata (dec. 171): sopra il canale com'è oggi (dec. 118),
+    sotto la sezione FX SEND (EQ HIGH, EQ LOW, LEVEL). Schede separate come nella dec. 91.
+    aria = mm in più nella sezione della mandata."""
+    p = P(f"CDJ {n}", "canale", w)
+    c = w / 2
+    p.levetta(c, p.y + 5, "l_linea", "LINE", "PHONO", piccola=True); p.y += 14
+    p.colonna(c, [("GAIN", "k_gain", True, PI)] +
+              [(b, "k_eq_canale", True, GR) for b in ("HIGH", "MID-HIGH", "LOW-MID", "LOW")])
+    p.levetta(c + 4, p.y + 6, "l_filtro", "HPF", "LPF", "OFF", "FILTRO"); p.y += 18
+    for i, (dx, dy) in enumerate(((-7, 0), (7, 0), (-7, 10), (7, 10))):
+        p.bottone(c + dx, p.y + 5 + dy, f"FX{i + 1}", "fx", *BOT_G)
+    p.y += 22
+    p.bottone(c, p.y + 4, "CUE", "cue", *BOT_P); p.y += 11
+    p.meter(c - 13.5, p.y + 2, 10, passo=6.0, nome="METER")
+    p.fader(c + 4, p.y + 2, 60.0); p.y += 72
+    # sezione FX SEND, separata da una linea
+    p.y += aria / 3
+    p.el.append(f"<line x1='4' y1='{p.y:.2f}' x2='{w - 4:.2f}' y2='{p.y:.2f}' stroke='{g.C['s_pannello']}' "
+                f"stroke-width='0.5'/>")
+    p.testo(c, p.y + 5, "FX SEND", 2.8, "bold"); p.y += 9 + aria / 3
+    p.manopola(c - 10, p.y + MP + 2, "EQ HIGH", "k_eq_9mm", MP)
+    p.manopola(c + 10, p.y + MP + 2, "EQ LOW", "k_eq_9mm", MP)
+    p.y += 2 * MP + 12 + aria / 3
+    p.manopola(c, p.y + ME + 2, "LEVEL", "k_level_send", ME)
+    p.y += 2 * ME + 11
+    return p.chiudi()
 
 
 def disponi(ws):
@@ -34,12 +64,11 @@ def disponi(ws):
     wc, wl = 4 * ws, W - 4 * ws - GAP
     mas, fv = e.master(W), e.five(W)
     fil = e.filtro(wc)
-    can = [e.canale(i + 1, ws) for i in range(4)]
-    hc = max(p.h for p in can)
-    nat = dict(snd=e.send(1, ws).h, cue=e.cue(wc).h, mm=max(e.micmono(t, wl / 4).h for t in ("MIC", "MONO")),
+    h0 = canale_send(1, ws).h
+    nat = dict(snd=h0 - e.canale(1, ws).h, cue=e.cue(wc).h, mm=max(e.micmono(t, wl / 4).h for t in ("MIC", "MONO")),
                ret=e.fx_ret(0, wl / 4).h)
     top = mas.h + fv.h
-    col_a = fil.h + hc + nat["snd"] + nat["cue"]
+    col_a = fil.h + h0 + nat["cue"]
     col_b = nat["mm"] + nat["ret"]
     n_u = math.ceil((top + max(col_a, col_b) + 8) / U)
     L = n_u * U - 8
@@ -49,15 +78,16 @@ def disponi(ws):
     aria = dict(snd=xa * nat["snd"] / (nat["snd"] + nat["cue"]),
                 cue=xa * nat["cue"] / (nat["snd"] + nat["cue"]),
                 mm=xb * nat["mm"] / col_b, ret=xb * nat["ret"] / col_b)
+    can = [canale_send(i + 1, ws, aria["snd"]) for i in range(4)]
+    hc = can[0].h
     m = dict(mas=mas, five=fv, fil=fil, can=can,
-             snd=[e.send(i + 1, ws, aria["snd"]) for i in range(4)], cue=e.cue(wc, aria["cue"]),
+             cue=e.cue(wc, aria["cue"]),
              mm=[e.micmono("MIC", wl / 4, aria["mm"])] + [e.micmono("MONO", wl / 4, aria["mm"]) for _ in range(3)],
              ret=[e.fx_ret(r, wl / 4, aria["ret"]) for r in range(4)])
     y = dict(mas=0.0, five=mas.h)
     y["fil"] = y["mm"] = top
     y["can"] = top + fil.h
-    y["snd"] = y["can"] + hc
-    y["cue"] = y["snd"] + m["snd"][0].h
+    y["cue"] = y["can"] + hc
     y["ret"] = top + m["mm"][0].h
     P = []
 
@@ -72,7 +102,7 @@ def disponi(ws):
     liberi = P[1]["kmax"] - P[1]["k"]
     riga("REROUTE", N["REROUTE"][0], y["five"], top, None, 4, "posti liberi sotto il 5-way", kmax=liberi)
     riga("FILTRO", N["FILTRO"][0], top, y["can"], wc)
-    riga("CANALE+SEND", N["CANALE"][0] + N["FX-SEND"][0], y["can"], y["cue"], ws, 4, "sotto canale e mandata")
+    riga("CANALE+SEND", N["CANALE"][0] + N["FX-SEND"][0], y["can"], y["cue"], ws, 4, "sotto la striscia (schede separate)")
     riga("CUE", N["CUE"][0], y["cue"], L, wc)
     riga("MIC", N["MIC"][0], top, y["ret"], wl / 4)
     riga("MONO", N["MONO"][0], top, y["ret"], wl / 4, 3)
@@ -129,7 +159,6 @@ def disegna(d):
     metti(m["fil"], xa, y["fil"], m["fil"].h, by["FILTRO"])
     for i in range(4):
         metti(m["can"][i], xa + i * ws, y["can"], d["hc"], by["CANALE+SEND"])
-        metti(m["snd"][i], xa + i * ws, y["snd"], m["snd"][i].h)
     metti(m["cue"], xa, y["cue"], L - y["cue"], by["CUE"])
     for i, p in enumerate(m["mm"]):
         metti(p, xb + i * wl / 4, y["mm"], p.h, by["MIC"] if i == 0 else by["MONO"])
@@ -155,7 +184,7 @@ def disegna(d):
     a = d["aria"]
     note = [
         f"Pannello {n_u}U ({n_u * U:.0f} mm). Proposta E: 10U. Nessun pannello cieco. Schede di modulo: {tot}.",
-        f"Aria in più: mandate +{a['snd']:.0f} mm, CUE +{a['cue']:.0f} mm, MIC e MONO +{a['mm']:.0f} mm, "
+        f"Aria in più: sezione FX SEND delle strisce +{a['snd']:.0f} mm, CUE +{a['cue']:.0f} mm, MIC e MONO +{a['mm']:.0f} mm, "
         f"ritorni +{a['ret']:.0f} mm.",
         "MASTER e 5-WAY larghi 19\". Reroute dei ritorni (pot -> CV) nei posti liberi sotto il 5-way.",
         "Canali con la colonna sfalsata (dec. 118); SEND e reroute a due a due; HPF e LPF affiancati; cuffie davanti.",
