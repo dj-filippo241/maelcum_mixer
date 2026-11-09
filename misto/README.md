@@ -17,12 +17,14 @@ manopole e scrive le tensioni di comando (CV) dei VCA, dei filtri e delle
 celle: fa il lavoro che oggi fanno gli shaper a diodi e molti trimmer di
 taratura.
 
-Obiettivi, in quest'ordine (M1):
+Obiettivi (M6, rivede l'ordine di M1 dopo l'inventario):
 
-1. costare meno;
-2. occupare meno spazio;
-3. cambiare alcuni valori senza saldare (curve, incroci, saturazioni),
-   solo dove costa poco.
+1. meno taratura a banco (meno trimmer);
+2. curve esatte a ogni temperatura;
+3. cambiare via USB i valori che sono già una CV.
+
+Costo e spazio, i primi obiettivi di M1, restano circa pari alla versione
+analogica (`02-inventario-comandi.md` §3).
 
 ## Regole
 

@@ -27,3 +27,10 @@ Nessun display sul mixer; i valori restano salvati nel chip.
 M5. **[C — 2026-11-09, «1»] Un chip per modulo.** Un guasto ferma solo quel
 modulo; un ricambio solo, uguale per tutti; CV corte (dec. 92: il ronzio
 raccolto dalle linee CV lunghe).
+
+M6. **[F — 2026-11-09, «2»; precisa M1] Il misto va avanti per la
+taratura e la precisione, non per costo e spazio.** Dopo l'inventario
+(`02-inventario-comandi.md` §3): costo pari (−190…+165 €), ~150 impronte
+in meno su tutto il mixer, nessuna scheda tolta, pannello uguale. Guadagno
+vero: ~60-80 trimmer in meno, curve esatte a ogni temperatura, valori
+modificabili via USB per ciò che è già una CV.
