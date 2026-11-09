@@ -1,6 +1,6 @@
 """Proposta F di disposizione (todo 203, 2026-11-09). BOZZA.
 
-Uso:  python3 docs/pannelli/proposta_f.py
+Uso:  python3 docs/pannelli/proposta_f.py [--cue-destra]
 Scrive docs/pannelli/proposta-F.svg e stampa la ricerca e il piano delle schede.
 NON tocca coordinate.json né i render dei moduli (dec. 135).
 
@@ -50,13 +50,61 @@ def canale_send(n, w, aria=0.0):
     p.y += aria / 3
     p.el.append(f"<line x1='4' y1='{p.y:.2f}' x2='{w - 4:.2f}' y2='{p.y:.2f}' stroke='{g.C['s_pannello']}' "
                 f"stroke-width='0.5'/>")
-    p.testo(c, p.y + 5, "FX SEND", 2.8, "bold"); p.y += 9 + aria / 3
-    p.manopola(c - 10, p.y + MP + 2, "EQ HIGH", "k_eq_9mm", MP)
-    p.manopola(c + 10, p.y + MP + 2, "EQ LOW", "k_eq_9mm", MP)
-    p.y += 2 * MP + 12 + aria / 3
-    p.manopola(c, p.y + ME + 2, "LEVEL", "k_level_send", ME)
-    p.y += 2 * ME + 11
+    p.testo(c, p.y + 5, "FX SEND", 2.8, "bold"); p.y += 7 + aria / 3
+    p.colonna(c, [("EQ HIGH", "k_eq_9mm", False, MP), ("EQ LOW", "k_eq_9mm", False, MP),
+                  ("LEVEL", "k_level_send", False, ME)])
+    p.y += aria / 3
     return p.chiudi()
+
+
+def due_a_due(p, c, voci, r, tipo, det=False):
+    """SEND o reroute a due a due (Filippo, 9/11)."""
+    for j in range(0, len(voci), 2):
+        for dx, nome in zip((-10, 10), voci[j:j + 2]):
+            p.manopola(c + dx, p.y + r + 2, nome, tipo, r, det)
+        p.y += 2 * r + 12
+
+
+def micmono(tipo, w, aria=0.0):
+    """Colonna sfalsata come nelle prime versioni: GAIN, EQ HIGH, EQ LOW; SEND a due a due."""
+    p = P(tipo, "mic", w)
+    c = w / 2
+    a = aria / 4
+    p.y += a
+    if tipo == "MIC":
+        p.colonna(c, [("GAIN", "k_gain", False, PI), ("EQ HIGH", "k_eq_9mm", False, MP),
+                      ("EQ LOW", "k_eq_9mm", False, MP)])
+    else:
+        p.colonna(c, [("GAIN", "k_gain", False, GR), ("EQ HIGH", "k_eq_9mm", False, PI),
+                      ("EQ LOW", "k_eq_9mm", False, PI)])
+    p.y += a
+    due_a_due(p, c, [f"SEND {i + 1}" for i in range(4)], ME, "k_send_mic")
+    p.y += a
+    p.led3(c, p.y + 3); p.y += 11
+    if tipo == "MIC":
+        p.bottone(c, p.y + 5, "MUTE", "mute", 14.0, 9.0); p.y += 13
+    p.y += a + 2
+    return p.chiudi()
+
+
+def fx_ret(r, w, aria=0.0):
+    """Colonna sfalsata: GAIN, EQ HIGH, EQ LOW; reroute a due a due; fader 45 mm col meter."""
+    p = P(f"FX RET {r + 1}", "fx", w)
+    c = w / 2
+    a = aria / 3
+    p.y += a
+    p.colonna(c, [("GAIN", "k_gain", False, PI), ("EQ HIGH", "k_eq_9mm", False, PI),
+                  ("EQ LOW", "k_eq_9mm", False, PI)])
+    p.y += a
+    due_a_due(p, c, ["SELF" if b == r else f"> FX{b + 1}" for b in range(4)], ME, "k_reroute", True)
+    p.y += a
+    p.meter(c - 13.5, p.y + 2, 10, passo=4.5, nome="METER")
+    p.fader(c + 4, p.y + 2, 45.0)
+    p.y += 57
+    return p.chiudi()
+
+
+CUE_DX = "--cue-destra" in sys.argv     # variante: CUE nell'angolo davanti a destra
 
 
 def disponi(ws):
@@ -65,29 +113,33 @@ def disponi(ws):
     mas, fv = e.master(W), e.five(W)
     fil = e.filtro(wc)
     h0 = canale_send(1, ws).h
-    nat = dict(snd=h0 - e.canale(1, ws).h, cue=e.cue(wc).h, mm=max(e.micmono(t, wl / 4).h for t in ("MIC", "MONO")),
-               ret=e.fx_ret(0, wl / 4).h)
+    nat = dict(snd=h0 - e.canale(1, ws).h, cue=e.cue(wc).h, mm=max(micmono(t, wl / 4).h for t in ("MIC", "MONO")),
+               ret=fx_ret(0, wl / 4).h)
     top = mas.h + fv.h
-    col_a = fil.h + h0 + nat["cue"]
-    col_b = nat["mm"] + nat["ret"]
+    col_a = fil.h + h0 + (0 if CUE_DX else nat["cue"])
+    col_b = nat["mm"] + nat["ret"] + (nat["cue"] if CUE_DX else 0)
     n_u = math.ceil((top + max(col_a, col_b) + 8) / U)
     L = n_u * U - 8
     # aria: colonna dei canali -> mandate e CUE; colonna destra -> MIC/MONO e ritorni,
     # in proporzione all'altezza naturale
     xa, xb = L - top - col_a, L - top - col_b
-    aria = dict(snd=xa * nat["snd"] / (nat["snd"] + nat["cue"]),
-                cue=xa * nat["cue"] / (nat["snd"] + nat["cue"]),
-                mm=xb * nat["mm"] / col_b, ret=xb * nat["ret"] / col_b)
+    if CUE_DX:
+        aria = dict(snd=xa, cue=0.0, mm=xb * nat["mm"] / (col_b - nat["cue"]),
+                    ret=xb * nat["ret"] / (col_b - nat["cue"]))
+    else:
+        aria = dict(snd=xa * nat["snd"] / (nat["snd"] + nat["cue"]),
+                    cue=xa * nat["cue"] / (nat["snd"] + nat["cue"]),
+                    mm=xb * nat["mm"] / col_b, ret=xb * nat["ret"] / col_b)
     can = [canale_send(i + 1, ws, aria["snd"]) for i in range(4)]
     hc = can[0].h
     m = dict(mas=mas, five=fv, fil=fil, can=can,
-             cue=e.cue(wc, aria["cue"]),
-             mm=[e.micmono("MIC", wl / 4, aria["mm"])] + [e.micmono("MONO", wl / 4, aria["mm"]) for _ in range(3)],
-             ret=[e.fx_ret(r, wl / 4, aria["ret"]) for r in range(4)])
+             cue=e.cue(wl if CUE_DX else wc, aria["cue"]),
+             mm=[micmono("MIC", wl / 4, aria["mm"])] + [micmono("MONO", wl / 4, aria["mm"]) for _ in range(3)],
+             ret=[fx_ret(r, wl / 4, aria["ret"]) for r in range(4)])
     y = dict(mas=0.0, five=mas.h)
     y["fil"] = y["mm"] = top
     y["can"] = top + fil.h
-    y["cue"] = y["can"] + hc
+    y["cue"] = L - m["cue"].h if CUE_DX else y["can"] + hc
     y["ret"] = top + m["mm"][0].h
     P = []
 
@@ -102,11 +154,11 @@ def disponi(ws):
     liberi = P[1]["kmax"] - P[1]["k"]
     riga("REROUTE", N["REROUTE"][0], y["five"], top, None, 4, "posti liberi sotto il 5-way", kmax=liberi)
     riga("FILTRO", N["FILTRO"][0], top, y["can"], wc)
-    riga("CANALE+SEND", N["CANALE"][0] + N["FX-SEND"][0], y["can"], y["cue"], ws, 4, "sotto la striscia (schede separate)")
-    riga("CUE", N["CUE"][0], y["cue"], L, wc)
+    riga("CANALE+SEND", N["CANALE"][0] + N["FX-SEND"][0], y["can"], L if CUE_DX else y["cue"], ws, 4, "sotto la striscia (schede separate)")
+    riga("CUE", N["CUE"][0], y["cue"], L, wl if CUE_DX else wc)
     riga("MIC", N["MIC"][0], top, y["ret"], wl / 4)
     riga("MONO", N["MONO"][0], top, y["ret"], wl / 4, 3)
-    riga("FX-RET", N["FX-RET"][0], y["ret"], L, wl / 4, 4)
+    riga("FX-RET", N["FX-RET"][0], y["ret"], y["cue"] if CUE_DX else L, wl / 4, 4)
     return dict(ws=ws, wc=wc, wl=wl, m=m, y=y, hc=hc, n_u=n_u, L=L, P=P, aria=aria,
                 ok=all(r["ok"] for r in P))
 
@@ -159,11 +211,11 @@ def disegna(d):
     metti(m["fil"], xa, y["fil"], m["fil"].h, by["FILTRO"])
     for i in range(4):
         metti(m["can"][i], xa + i * ws, y["can"], d["hc"], by["CANALE+SEND"])
-    metti(m["cue"], xa, y["cue"], L - y["cue"], by["CUE"])
+    metti(m["cue"], xb if CUE_DX else xa, y["cue"], L - y["cue"], by["CUE"])
     for i, p in enumerate(m["mm"]):
         metti(p, xb + i * wl / 4, y["mm"], p.h, by["MIC"] if i == 0 else by["MONO"])
     for i, p in enumerate(m["ret"]):
-        metti(p, xb + i * wl / 4, y["ret"], L - y["ret"], by["FX-RET"])
+        metti(p, xb + i * wl / 4, y["ret"], (y["cue"] if CUE_DX else L) - y["ret"], by["FX-RET"])
     corpo.append(g.cieco(GAP, L - y["fil"], "").svg(xa + d["wc"], oy + y["fil"]))
 
     tel = [f"<rect x='{ox:.2f}' y='{oy - 4:.2f}' width='{g.RACK:.2f}' height='{L + 8:.2f}' rx='2' "
@@ -199,7 +251,8 @@ def disegna(d):
                    "richiesta di Filippo del 9/11 · comandi e taglie della dec. 169 · telaio inclinato "
                    "(dec. 158) · tetto 70 % (dec. 156)",
                    ox + g.RACK + 16, yn + 5 * len(note) + 10, "\n".join(corpo))
-    open(os.path.join(QUI, "proposta-F.svg"), "w", encoding="utf-8").write(svg)
+    nome = "proposta-F-cue-destra.svg" if CUE_DX else "proposta-F.svg"
+    open(os.path.join(QUI, nome), "w", encoding="utf-8").write(svg)
 
 
 if __name__ == "__main__":
