@@ -19,13 +19,13 @@
 | | Filtro HPF / OFF / LPF | 1 | levetta 3 posizioni fisse ON-OFF-ON, logica (dec. 122) | su HPF, centro OFF, giù LPF |
 | | CUE | 1 | bottone con luce a ritenuta, logico (dec. 123) | |
 | | Assign FX 1-4 | 4 | bottoni con luce a ritenuta, logici (dec. 123) | pilotano il micro-modulo FX-SEND |
-| | Fader | 1 | slider MONO 100 mm → CV → VCA per lato (dec. 120, 126) | tracking ≤ 0,5 dB dai VCA |
+| | Fader | 1 | slider MONO 60 mm → CV → VCA per lato (dec. 126, 169; era 100 mm) | tracking ≤ 0,5 dB dai VCA |
 | | Meter | 1 | barra 10 LED | |
 | **FX-SEND** (×4) | EQ LOW / HIGH | 2 | doppio 10k, taper custom | |
 | | LEVEL | 1 | doppio 10k log | |
 | **FX-RET** (×4, un modulo per bus, dec. 130) | GAIN ritorno | 1 | doppio 10k lin selezionato, nel percorso del segnale (dec. 162; era singolo → CV) | |
 | | EQ LOW / HIGH ritorno | 2 | doppio 10k, taper custom | |
-| | Fader ritorno | 1 | slider MONO corto → CV → VCA per lato (dec. 126; corto dalla dec. 169, era 100 mm) | |
+| | Fader ritorno | 1 | slider MONO 45 mm → CV → VCA per lato (dec. 126, 169; era 100 mm) | |
 | | Reroute e self-feedback | 4 | singolo lin → CV | cablati rovesci (shaper) |
 | | Meter | 1 | barra 10 LED | dec. 116 (2026-10-21) |
 | **Filtro** | HPF freq / res / drive | 3 | singolo lin → CV | |
@@ -62,7 +62,7 @@ mandata ai pedali, trimmer di taratura.
 |---|---|
 | Pot singoli | 66 (38 → CV lineari, 28 sui moduli MIC/MONO) |
 | Pot doppi | 43 (di cui 21 con taper custom e 16 lineari SENZA contatto di fondo corsa per l'EQ dei canali, dec. 105 e 127; detent dove indicato) |
-| Slider mono → VCA (dec. 126) | 8: 4 lunghi (canali), 4 corti (ritorni, dec. 169) |
+| Slider mono → VCA (dec. 126) | 8: 4 da 60 mm (canali), 4 da 45 mm (ritorni, dec. 169) |
 | Selettori 3 posizioni | 9 |
 | Selettori 2 posizioni | 4 |
 | Bottoni / levette logici | 27 (+ MUTE del MIC e MONO del master) |
@@ -83,7 +83,7 @@ cambia; ogni modulo MIC/MONO in meno toglie 7 pot singoli.
 - Polvere (dec. 119, 2026-10-22): pot a corpo chiuso, protezione dal
   pannello (guarnizioni, coperchio del flight case), pot sostituibili
   senza rifare la scheda.
-- Fader (dec. 120, 2026-10-22): corsa 100 mm per canali e ritorni FX.
+- Fader (dec. 120, 2026-10-22): corsa 100 mm per canali e ritorni FX. [SUPERATO dalla dec. 169: 60 mm i canali, 45 mm i ritorni]
   Tracking stereo ≤ 0,5 dB da risolvere (fader selezionati o fader → VCA).
 - Kill del 5-way (dec. 121, 2026-10-22): levette sigillate ON-OFF-(ON).
 - Selettore del filtro di canale (dec. 122): levetta sigillata a tre
@@ -112,7 +112,7 @@ Scelte di Filippo del 2026-11-09 (todo 218). La tabella della dec. 125
 
 Levette: grande = levetta sigillata standard; piccola = levetta
 sub-miniatura. Bottoni: grande ~12-15 mm, piccolo ~8 mm. Fader: lungo
-100 mm, corto 45 o 60 mm (da scegliere, todo 203). Il fader è mono → CV
+60 mm (canali), corto 45 mm (ritorni). Il fader è mono → CV
 → VCA (dec. 126): la lunghezza non tocca il tracking. Fonte: deduzione
 mia, pezzi da confermare a catalogo.
 
@@ -126,13 +126,13 @@ mia, pezzi da confermare a catalogo.
 | | FILTRO HPF/OFF/LPF | 4 | levetta grande | — | |
 | | Assign FX 1-4 | 16 | bottone grande | — | |
 | | CUE | 4 | bottone piccolo | — | |
-| | Fader | 4 | lungo 100 mm | — | come oggi |
+| | Fader | 4 | lungo 60 mm | — | era 100 mm |
 | FX-SEND | LEVEL | 4 | media | no | doppio 14 mm log A |
 | | EQ LOW/HIGH | 8 | molto piccola | no | doppio 9 mm (todo 217) |
 | FX-RET | GAIN | 4 | piccola | no | doppio 9 mm lineare senza scatto (Alpha RD902F): tracking del lotto selezionato |
 | | EQ LOW/HIGH | 8 | piccola | no | come oggi |
 | | Reroute e SELF | 16 | media | centro | singolo 14 mm lineare con scatto al centro |
-| | Fader | 4 | corto | — | 45 o 60 mm |
+| | Fader | 4 | corto 45 mm | — | era 100 mm |
 | Filtro | FREQ | 2 | grande | no | |
 | | RES | 2 | media | no | |
 | | DRIVE | 2 | media | no | doppio lineare sul segnale (todo 212) |
