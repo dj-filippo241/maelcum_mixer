@@ -11,7 +11,8 @@ Richiesta di Filippo del 2026-11-09, dopo la proposta D:
 - regole della dec. 170 (19", connettori dietro, CUE in un angolo in basso).
 
 Ingegneria [C, PROVVISORIA]: i comandi di ogni modulo si dispongono a file, nell'ordine
-dei moduli di oggi, quante ne stanno nella larghezza; la ricerca prova le larghezze della
+dei moduli di oggi, quante ne stanno nella larghezza; il canale resta com'è (colonna
+sfalsata, dec. 118) e i SEND di MIC e MONO stanno a due a due (Filippo, 9/11); la ricerca prova le larghezze della
 striscia dei canali e tiene quella col pannello più corto in unità rack intere; a pari U,
 quella che lascia due posti scheda al canale (oggi canale e isolator sono due schede).
 Schede come in proposta_d.py (passo 25 mm, 185 -> 120 mm, tetto 70 %).
@@ -25,7 +26,7 @@ sys.path.insert(0, QUI)
 sys.path.insert(0, os.path.join(QUI, "..", "..", "pcb", "tools"))
 import genera_pannelli as g  # noqa: E402
 import piano_schede as ps  # noqa: E402
-from proposta_d import MG, GR, ME, PI, MP, BOT_G, BOT_P, N  # noqa: E402
+from proposta_d import MG, GR, ME, PI, MP, BOT_G, BOT_P, N, P  # noqa: E402
 
 U = 44.45
 GAP = 6.0            # fra le due colonne
@@ -104,13 +105,20 @@ def modulo(nome, classe, w, voci, fader=None):
 
 
 def canale(n, w):
-    return modulo(f"CDJ {n}", "canale", w, [
-        lev("l_linea", "LINE", "PHONO", piccola=True), k("GAIN", "k_gain", PI, True), BR,
-        k("HIGH", "k_eq_canale", GR, True), k("MID-HIGH", "k_eq_canale", GR, True),
-        k("LOW-MID", "k_eq_canale", GR, True), k("LOW", "k_eq_canale", GR, True), BR,
-        lev("l_filtro", "HPF", "LPF", "OFF"), BR,
-        bot("FX1", "fx", BOT_G), bot("FX2", "fx", BOT_G), bot("FX3", "fx", BOT_G), bot("FX4", "fx", BOT_G), BR,
-        bot("CUE", "cue", BOT_P)], fader=60.0)
+    """Ordine e colonna sfalsata di oggi (dec. 118, come il Xone:DB4): cambia solo la larghezza."""
+    p = P(f"CDJ {n}", "canale", w)
+    c = w / 2
+    p.levetta(c, p.y + 5, "l_linea", "LINE", "PHONO", piccola=True); p.y += 14
+    p.colonna(c, [("GAIN", "k_gain", True, PI)] +
+              [(b, "k_eq_canale", True, GR) for b in ("HIGH", "MID-HIGH", "LOW-MID", "LOW")])
+    p.levetta(c + 4, p.y + 6, "l_filtro", "HPF", "LPF", "OFF", "FILTRO"); p.y += 18
+    for i, (dx, dy) in enumerate(((-7, 0), (7, 0), (-7, 10), (7, 10))):
+        p.bottone(c + dx, p.y + 5 + dy, f"FX{i + 1}", "fx", *BOT_G)
+    p.y += 22
+    p.bottone(c, p.y + 4, "CUE", "cue", *BOT_P); p.y += 11
+    p.meter(c - 13.5, p.y + 2, 10, passo=6.0, nome="METER")
+    p.fader(c + 4, p.y + 2, 60.0); p.y += 72
+    return p.chiudi()
 
 
 def send(n, w):
@@ -140,7 +148,9 @@ def micmono(tipo, w):
         v = [k("GAIN", "k_gain", PI), k("EQ HIGH", "k_eq_9mm", MP), k("EQ LOW", "k_eq_9mm", MP)]
     else:
         v = [k("GAIN", "k_gain", GR), k("EQ HIGH", "k_eq_9mm", PI), k("EQ LOW", "k_eq_9mm", PI)]
-    v += [BR] + [k(f"SEND {i + 1}", "k_send_mic", ME) for i in range(4)] + [BR, led()]
+    # SEND 1-4 su due file, a due a due (Filippo, 2026-11-09)
+    v += [BR, k("SEND 1", "k_send_mic", ME), k("SEND 2", "k_send_mic", ME), BR,
+          k("SEND 3", "k_send_mic", ME), k("SEND 4", "k_send_mic", ME), BR, led()]
     if tipo == "MIC":
         v.append(bot("MUTE", "mute", (14.0, 9.0)))
     return modulo(tipo, "mic", w, v)
@@ -323,7 +333,7 @@ def disegna(d):
         f"Pannello {n_u}U ({n_u * U:.0f} mm). Proposta D: 11U. Schede di modulo: {tot}.",
         f"Strisce dei canali larghe {ws:.0f} mm: sotto ogni striscia la scheda del canale e quella della sua mandata.",
         "Master in cima. Reroute (pot -> CV): sotto ogni MONO un posto libero, la scheda scende fino al ritorno; quello del bus 1 sotto il 5-way.",
-        "Le misure sono il risultato della ricerca: i comandi si dispongono a file nell'ordine di oggi.",
+        "Canali con la colonna sfalsata di oggi (dec. 118). SEND di MIC e MONO a due a due. Gli altri moduli: comandi a file, nell'ordine di oggi.",
     ]
     yn = oy + L + 20
     corpo.append(f"<text x='14' y='{yn:.2f}' font-size='3' font-weight='bold' fill='{g.C['t_foglio']}' "
