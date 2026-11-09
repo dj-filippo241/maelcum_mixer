@@ -129,3 +129,7 @@ Tutto [PROVVISORIO].
     assign sotto J3, iniezione e buffer sul bordo del C96, alimentazione al centro (x 30-67,
     y 102-186), lontana dal cavo. PASSA: DRC 0 errori, 0 collegamenti mancanti. Controllo audio
     A1-A5: 9/14/12/2/0 (prima 10/24/12/5/6).
+
+## 2026-11-09: scheda comandi sulla disposizione F (dec. 172)
+
+Rigenerata da `coordinate.json` nuovo: 48.0 × 63.8 mm (pannello 50 × 67.8 meno i margini). PASSA in due giri. La scheda principale non cambia: stesso cavo, stessi fili. La sezione FX SEND ora sta dentro la striscia del canale (dec. 171): in `coordinate.json` la voce «fx-send» ha le coordinate della sezione e l'origine in «dentro».

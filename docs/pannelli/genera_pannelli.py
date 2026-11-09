@@ -1,19 +1,16 @@
 """Render dei pannelli del mixer (BOZZA): moduli singoli e due setup.
 
 Uso:  python3 docs/pannelli/genera_pannelli.py
-Scrive in docs/pannelli/: moduli.svg, setup-ridotto.svg, setup-completo.svg,
-pannelli.html e (con Chrome) pannelli.pdf.
+Scrive in docs/pannelli/: coordinate.json, moduli.svg, setup-ridotto.svg, setup-completo.svg,
+proposta-F.svg, pannelli.html e (con Chrome) pannelli.pdf.
 
-Comandi: docs/fase3/sistema-comandi.md + dec. 108 (FX-SEND), 111 (MONO del
-master, MUTE del mic), 117 (WIDTH continuo), 118-124 (sessione manopole:
-14 mm disassate come sul Xone:DB4, EQ secondari 9 mm senza scatto, fader
-100 mm, levette per kill/filtro/LINE-PHONO, bottoni con luce, cappucci).
-Colori standard: un colore per tipo di oggetto (tabella C, chiave nel foglio
-dei moduli), da ridisegnare da Filippo. Disposizione e misure: BOZZA
-(scelte di Filippo del 2026-10-21: larghezza 19", in alto 5-way, master e
-CUE; sotto MIC/MONO a sinistra, i 4 ritorni FX al centro (un modulo per bus,
-dec. 130), canali a destra con
-sotto mandate e filtro). Unita: millimetri.
+Disposizione: proposta F (dec. 172, docs/pannelli/proposta_f.py): MASTER e 5-WAY larghi 19" in
+fondo; colonna FILTRO -> strisce CDJ con la sezione FX SEND (dec. 171) -> CUE; a destra MIC e
+MONO, poi i ritorni FX. Taglie dei comandi: dec. 169. Colonne sfalsate come sul Xone:DB4
+(dec. 118); SEND e reroute a due a due. Le funzioni dei moduli di questo file (canale, send,
+fx_ret, ...) sono quelle del 21/10: servono alle proposte A-C, tenute come confronto.
+Colori standard: un colore per tipo di oggetto (tabella C), da ridisegnare da Filippo
+(dec. 94c). Unità: millimetri.
 """
 
 import json
@@ -558,19 +555,85 @@ def coordinate():
     return path
 
 
+def moduli_f(d):
+    """Foglio dei moduli singoli della disposizione F (dec. 172), con le misure vere."""
+    m = d["m"]
+    righe = [[m["can"][0], m["mm"][0], m["mm"][1], m["ret"][0], m["fil"]], [m["cue"], m["mas"]], [m["five"]]]
+    corpo, y = [], 34.0
+    larg = 0.0
+    for riga in righe:
+        x, hmax = 14.0, 0.0
+        for p in riga:
+            corpo.append(p.svg(x, y))
+            corpo.append(quota(x, x + p.w, y - 3, f"{p.w:.0f}"))
+            corpo.append(f"<text x='{x + p.w / 2:.2f}' y='{y + p.h + 5:.2f}' font-size='2.8' fill='{C['t_quote']}' "
+                         f"text-anchor='middle' {FONT}>{p.w:.0f} × {p.h:.0f} mm</text>")
+            x += p.w + 12
+            hmax = max(hmax, p.h)
+        larg = max(larg, x + 2)
+        y += hmax + 22
+    alt = y
+    corpo.append(legenda(14, alt - 6))
+    chiave, h_chiave = chiave_colori(14, alt + 6, larg)
+    corpo.append(chiave)
+    alt += h_chiave + 12
+    return foglio("Moduli singoli", "Disposizione F (dec. 172): strisce CDJ con la sezione FX SEND (dec. 171), "
+                  "taglie della dec. 169, colonne sfalsate (dec. 118), SEND e reroute a due a due, fader 60 e 45 mm.",
+                  larg, alt, "\n".join(corpo))
+
+
+def coordinate_f(d):
+    """Posizione di ogni comando per modulo, in mm dall'angolo in alto a sinistra del pannello
+    (x a destra, y verso chi suona). Le schede comandi la leggono (dec. 133, 135).
+    Base: disposizione F (dec. 172). La sezione FX SEND sta dentro la striscia del canale
+    (dec. 171): la voce «fx-send» ha le coordinate della sezione, con l'origine in «dentro»."""
+    m = d["m"]
+    can = m["can"][0]
+    out = {"nota": "Generato da docs/pannelli/genera_pannelli.py (disposizione F, dec. 172): non modificare "
+                   "a mano. Millimetri dall'angolo in alto a sinistra del pannello; meter = primo segmento; "
+                   "fader = centro della fessura. [PROVVISORIO]",
+           "moduli": {}}
+    out["moduli"]["canale"] = {"titolo": can.nome, "larghezza": can.w, "altezza": round(can.y_send, 2),
+                               "altezza_striscia": round(can.h, 2), "comandi": can.comandi[:can.i_send]}
+    send = []
+    for c in can.comandi[can.i_send:]:
+        c = dict(c)
+        c["y"] = round(c["y"] - can.y_send, 2)
+        send.append(c)
+    out["moduli"]["fx-send"] = {"titolo": "FX SEND", "larghezza": can.w, "altezza": round(can.h - can.y_send, 2),
+                                "dentro": {"modulo": "canale", "y": round(can.y_send, 2)}, "comandi": send}
+    for nome, p in (("mic", m["mm"][0]), ("mono", m["mm"][1]), ("fx-ret", m["ret"][0]), ("filtro", m["fil"]),
+                    ("five-way", m["five"]), ("master", m["mas"]), ("cue", m["cue"])):
+        out["moduli"][nome] = {"titolo": p.nome, "larghezza": round(p.w, 2), "altezza": round(p.h, 2),
+                               "comandi": p.comandi}
+    path = os.path.join(QUI, "coordinate.json")
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(out, f, indent=1, ensure_ascii=False)
+        f.write("\n")
+    return path
+
+
 def main():
-    print("coordinate:", coordinate())
-    open(os.path.join(QUI, "moduli.svg"), "w", encoding="utf-8").write(moduli_singoli())
-    h1 = setup("Setup ridotto", "2 canali CDJ con 2 FX-SEND · 1 MIC · 1 MONO · 4 FX RET · filtro · 5-way · "
-               "master · CUE", 2, 1, "setup-ridotto.svg")
-    h2 = setup("Setup completo", "4 canali CDJ con 4 FX-SEND · 1 MIC · 3 MONO · 4 FX RET · filtro · 5-way · "
-               "master · CUE", 4, 3, "setup-completo.svg")
-    print(f"altezza del pannello: ridotto {h1:.0f} mm, completo {h2:.0f} mm")
+    import proposta_f as pf                 # disposizione scelta (dec. 172)
+    d = pf.scelta()
+    print("coordinate:", coordinate_f(d))
+    open(os.path.join(QUI, "moduli.svg"), "w", encoding="utf-8").write(moduli_f(d))
+    sotto = "telaio inclinato (dec. 158) · tetto 70 % (dec. 156) · disposizione F (dec. 172)"
+    pf.disegna(d, "setup-ridotto.svg", "Setup ridotto",
+               "2 canali CDJ con FX SEND · 1 MIC · 1 MONO · 4 FX RET · filtro · 5-way · master · CUE · " + sotto,
+               n_can=2, n_mono=1, stampa=False)
+    pf.disegna(d, "setup-completo.svg", "Setup completo",
+               "4 canali CDJ con FX SEND · 1 MIC · 3 MONO · 4 FX RET · filtro · 5-way · master · CUE · " + sotto,
+               stampa=False)
+    pf.disegna(d, stampa=False)
+    print(f"pannello: {d['n_u']}U = {d['n_u'] * 44.45:.0f} mm, strisce CDJ da {d['ws']:.0f} mm")
     html = ["<meta charset='utf-8'><title>Pannelli maelcum mixer</title>",
             "<style>@page{size:A3 portrait;margin:10mm} body{margin:0} "
             "img{display:block;width:100%;max-height:400mm;object-fit:contain;break-after:page}</style>"]
-    import proposte_disposizione   # proposte di disposizione con le schede (todo 203, 2026-10-31)
-    proposte = [f for f, _, _ in proposte_disposizione.tutte()]
+    # proposte superate, tenute come confronto (regola 10): D, E, F col CUE a destra, A-C del 31/10
+    import proposte_disposizione
+    proposte = ["proposta-F-cue-destra.svg", "proposta-E.svg", "proposta-D.svg"] + \
+        [f for f, _, _ in proposte_disposizione.tutte()]
     for f in ["moduli.svg", "setup-ridotto.svg", "setup-completo.svg"] + proposte:
         html.append(f"<img src='{f}'>")
     open(os.path.join(QUI, "pannelli.html"), "w", encoding="utf-8").write("\n".join(html))

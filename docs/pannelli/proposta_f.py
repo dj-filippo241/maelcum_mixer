@@ -46,8 +46,9 @@ def canale_send(n, w, aria=0.0):
     p.bottone(c, p.y + 4, "CUE", "cue", *BOT_P); p.y += 11
     p.meter(c - 13.5, p.y + 2, 10, passo=6.0, nome="METER")
     p.fader(c + 4, p.y + 2, 60.0); p.y += 72
-    # sezione FX SEND, separata da una linea
+    # sezione FX SEND, separata da una linea; y_send e i_send servono a coordinate.json
     p.y += aria / 3
+    p.y_send, p.i_send = p.y, len(p.comandi)
     p.el.append(f"<line x1='4' y1='{p.y:.2f}' x2='{w - 4:.2f}' y2='{p.y:.2f}' stroke='{g.C['s_pannello']}' "
                 f"stroke-width='0.5'/>")
     p.testo(c, p.y + 5, "FX SEND", 2.8, "bold"); p.y += 7 + aria / 3
@@ -170,18 +171,26 @@ def main():
         a = d["aria"]
         print(f"{d['ws']:6.0f} mm {d['n_u']:3d}   {str(d['ok']):5}       {a['snd']:5.0f} {a['cue']:5.0f} "
               f"{a['mm']:7.0f} {a['ret']:8.0f}")
+    disegna(scelta(prove))
+
+
+def scelta(prove=None):
+    """La disposizione scelta dalla ricerca: meno U, poi due posti scheda per il canale."""
+    prove = prove or [disponi(ws) for ws in [36 + 2 * i for i in range(13)]]
     buone = [d for d in prove if d["ok"]]
-    d = min(buone, key=lambda d: (d["n_u"], -(d["P"][4]["kmax"] - d["P"][4]["k"]), d["ws"]))
-    disegna(d)
+    return min(buone, key=lambda d: (d["n_u"], -(d["P"][4]["kmax"] - d["P"][4]["k"]), d["ws"]))
 
 
-def disegna(d):
-    m, L, n_u, y = d["m"], d["L"], d["n_u"], d["y"]
-    ox, oy = 14.0, 34.0
-    x0 = ox + g.ORECCHIA
-    xa, xb = x0, x0 + d["wc"] + GAP
-    ws, wl = d["ws"], d["wl"]
-    by = {r["nome"]: r for r in d["P"]}
+def disegna(d, file=None, titolo=None, sotto=None, n_can=4, n_mono=3, stampa=True):
+    """Disegna la disposizione; n_can e n_mono < 4 e 3 lasciano posti liberi (setup ridotto)."""
+    if stampa:
+        _stampa(d)
+    corpo, eti = [], []
+    _disegna(d, corpo, eti, n_can, n_mono, file, titolo, sotto)
+
+
+def _stampa(d):
+    ws, wl, n_u, L = d["ws"], d["wl"], d["n_u"], d["L"]
     print(f"\nscelta: striscia {ws:.0f} mm, canali {d['wc']:.0f} mm, colonna destra {wl:.0f} mm, "
           f"{n_u}U = {n_u * U:.0f} mm (utile {L:.0f})")
     print(f"{'modulo':12} {'copie':>5} {'comp.':>5} {'y':>11} {'schede':>6} {'max':>4} {'pieno':>6}  dove")
@@ -191,7 +200,16 @@ def disegna(d):
         print(f"{r['nome']:12} {r['copie']:5d} {r['n']:5d} {r['y0']:5.0f}-{r['y1']:4.0f} {r['k']:6d} "
               f"{r['kmax']:4d} {r['pieno']:5.0f}%  {r['dove']}")
     print(f"schede di modulo: {tot}")
-    corpo, eti = [], []
+
+
+def _disegna(d, corpo, eti, n_can, n_mono, file, titolo, sotto):
+    m, L, n_u, y = d["m"], d["L"], d["n_u"], d["y"]
+    ox, oy = 14.0, 34.0
+    x0 = ox + g.ORECCHIA
+    xa, xb = x0, x0 + d["wc"] + GAP
+    ws, wl = d["ws"], d["wl"]
+    by = {r["nome"]: r for r in d["P"]}
+    tot = sum(r["k"] * r["copie"] for r in d["P"])
 
     def metti(p, x, yy, h, r=None, testo=None):
         corpo.append(p.svg(x, oy + yy, h))
@@ -210,10 +228,16 @@ def disegna(d):
     metti(m["five"], x0, y["five"], m["five"].h, by["5-WAY"])
     metti(m["fil"], xa, y["fil"], m["fil"].h, by["FILTRO"])
     for i in range(4):
-        metti(m["can"][i], xa + i * ws, y["can"], d["hc"], by["CANALE+SEND"])
+        if i < n_can:
+            metti(m["can"][i], xa + i * ws, y["can"], d["hc"], by["CANALE+SEND"])
+        else:
+            corpo.append(g.cieco(ws, d["hc"], f"posto CDJ {i + 1}").svg(xa + i * ws, oy + y["can"]))
     metti(m["cue"], xb if CUE_DX else xa, y["cue"], L - y["cue"], by["CUE"])
     for i, p in enumerate(m["mm"]):
-        metti(p, xb + i * wl / 4, y["mm"], p.h, by["MIC"] if i == 0 else by["MONO"])
+        if i <= n_mono:
+            metti(p, xb + i * wl / 4, y["mm"], p.h, by["MIC"] if i == 0 else by["MONO"])
+        else:
+            corpo.append(g.cieco(wl / 4, p.h, "posto MONO").svg(xb + i * wl / 4, oy + y["mm"]))
     for i, p in enumerate(m["ret"]):
         metti(p, xb + i * wl / 4, y["ret"], (y["cue"] if CUE_DX else L) - y["ret"], by["FX-RET"])
     corpo.append(g.cieco(GAP, L - y["fil"], "").svg(xa + d["wc"], oy + y["fil"]))
@@ -247,11 +271,11 @@ def disegna(d):
     for i, t in enumerate(note):
         corpo.append(f"<text x='14' y='{yn + 5 * (i + 1):.2f}' font-size='2.9' fill='{g.C['t_foglio']}' "
                      f"{g.FONT}>{t}</text>")
-    svg = g.foglio("Proposta F: master e 5-way larghi 19\", niente ciechi",
-                   "richiesta di Filippo del 9/11 · comandi e taglie della dec. 169 · telaio inclinato "
-                   "(dec. 158) · tetto 70 % (dec. 156)",
+    svg = g.foglio(titolo or "Proposta F: master e 5-way larghi 19\", niente ciechi",
+                   sotto or ("richiesta di Filippo del 9/11 · comandi e taglie della dec. 169 · telaio inclinato "
+                             "(dec. 158) · tetto 70 % (dec. 156)"),
                    ox + g.RACK + 16, yn + 5 * len(note) + 10, "\n".join(corpo))
-    nome = "proposta-F-cue-destra.svg" if CUE_DX else "proposta-F.svg"
+    nome = file or ("proposta-F-cue-destra.svg" if CUE_DX else "proposta-F.svg")
     open(os.path.join(QUI, nome), "w", encoding="utf-8").write(svg)
 
 

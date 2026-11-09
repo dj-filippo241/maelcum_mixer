@@ -69,3 +69,7 @@ Polarità: POST +1, driver MSUM −1, [A2] −1 → +1 (todo 227, F2).
 
 1. Scheda comandi: fatta (sopra). Restano la scelta del LED e del pot 14 mm.
 2. Simulare la logica del LED coi componenti; banco per le soglie.
+
+## 2026-11-09: scheda comandi sulla disposizione F (dec. 172)
+
+Rigenerata da `coordinate.json` nuovo: 59.0 × 175.8 mm (pannello 61 × 179.8 meno i margini). PASSA in due giri. La scheda principale non cambia: stesso cavo, stessi fili.

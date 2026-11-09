@@ -171,3 +171,7 @@ del differenziale (REV dec. 145) non c'è**: il differenziale resta quello di `s
    logica del LED, offset del rilevatore (1 mV al pin = 0,16 dB).
 4. Correnti dei rail col silicio contato qui (§7 del design doc: ±15 LN ~20 mA è basso: con INA,
    VCA e limiter si stimano ~45 mA).
+
+## 2026-11-09: scheda comandi sulla disposizione F (dec. 172)
+
+Rigenerata da `coordinate.json` nuovo: 59.0 × 185.8 mm (pannello 61 × 189.8 meno i margini). PASSA in due giri. La scheda principale non cambia: stesso cavo, stessi fili.

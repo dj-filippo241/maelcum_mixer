@@ -42,7 +42,10 @@ S = g.STRISCIA
 
 # taglie della dec. 169: raggio del cappuccio disegnato e passo verticale in colonna
 MG, GR, ME, PI, MP = 12.0, 7.5, 6.0, 5.5, 3.0
-PASSO_T = {MG: 26.0, GR: 17.0, ME: 15.5, PI: 14.0, MP: 10.5}
+# MP: 14 come PI. Con 10,5 le impronte dei pot RK09L doppi si sovrappongono nella colonna
+# sfalsata (DRC delle schede comandi FX-SEND e MIC, 2026-11-09): il passo lo decide il corpo del
+# pot da 9 mm, non il cappuccio da 6 mm.
+PASSO_T = {MG: 26.0, GR: 17.0, ME: 15.5, PI: 14.0, MP: 14.0}
 BOT_G, BOT_P = (12.0, 8.0), (8.0, 6.0)        # bottone grande / piccolo (w, h)
 
 # componenti per modulo
@@ -67,9 +70,11 @@ class P(g.Pannello):
             rr = voce[3] if len(voce) > 3 else r
             sx = i % 2 == 0
             x = c - g.DX if sx else c + g.DX
-            self.manopola(x, self.y + rr + 3, nome, tipo, rr, det, "dx" if sx else "sx")
+            # centro allineato come per un pot da 9 mm anche col cappuccio molto piccolo: la distanza
+            # fra due alberi resta il passo (il corpo del pot non si rimpicciolisce col cappuccio)
+            self.manopola(x, self.y + max(rr, PI) + 3, nome, tipo, rr, det, "dx" if sx else "sx")
             self.y += PASSO_T[rr]
-        self.y += rr + 4
+        self.y += max(rr, PI) + 4
 
 
 def canale(n):
