@@ -127,9 +127,19 @@ def send(n, w):
 
 
 def filtro(w):
-    return modulo("FILTRO (bus HPF e LPF)", "filtro", w, [
-        k("HPF FREQ", "k_filtro", GR), k("HPF RES", "k_filtro", ME), k("HPF DRIVE", "k_filtro", ME),
-        k("LPF FREQ", "k_filtro", GR), k("LPF RES", "k_filtro", ME), k("LPF DRIVE", "k_filtro", ME)])
+    """HPF a sinistra, LPF a destra, separati da una linea al centro (Filippo, 9/11).
+    Una fila sola: due file allungano la colonna dei canali di ~37 mm e il mixer va a 11U."""
+    p = g.Pannello("FILTRO (bus HPF e LPF)", "filtro", w)
+    y = p.y + GR + 6
+    p.el.append(f"<line x1='{w / 2:.2f}' y1='{p.y:.2f}' x2='{w / 2:.2f}' y2='{y + GR + 8:.2f}' "
+                f"stroke='{g.C['s_pannello']}' stroke-width='0.6'/>")
+    for meta, sez in enumerate(("HPF", "LPF")):
+        x0 = meta * w / 2
+        p.testo(x0 + 6, p.y + 3, sez, 3.4, "bold", anchor="start")
+        for i, (nm, r) in enumerate((("FREQ", GR), ("RES", ME), ("DRIVE", ME))):
+            p.manopola(x0 + w / 2 * (0.26 + 0.26 * i), y, nm, "k_filtro", r)
+    p.y = y + GR + 9
+    return p.chiudi()
 
 
 def cue(w):
@@ -159,7 +169,9 @@ def micmono(tipo, w):
 def fx_ret(r, w):
     return modulo(f"FX RET {r + 1}", "fx", w, [
         k("GAIN", "k_gain", PI), k("EQ HIGH", "k_eq_9mm", PI), k("EQ LOW", "k_eq_9mm", PI), BR] +
-        [k("SELF" if b == r else f"> FX{b + 1}", "k_reroute", ME, True) for b in range(4)], fader=45.0)
+        # reroute a due a due (Filippo, 9/11)
+        [k("SELF" if b == r else f"> FX{b + 1}", "k_reroute", ME, True) for b in (0, 1)] + [BR] +
+        [k("SELF" if b == r else f"> FX{b + 1}", "k_reroute", ME, True) for b in (2, 3)], fader=45.0)
 
 
 def five(w):
@@ -333,7 +345,7 @@ def disegna(d):
         f"Pannello {n_u}U ({n_u * U:.0f} mm). Proposta D: 11U. Schede di modulo: {tot}.",
         f"Strisce dei canali larghe {ws:.0f} mm: sotto ogni striscia la scheda del canale e quella della sua mandata.",
         "Master in cima. Reroute (pot -> CV): sotto ogni MONO un posto libero, la scheda scende fino al ritorno; quello del bus 1 sotto il 5-way.",
-        "Canali con la colonna sfalsata di oggi (dec. 118). SEND di MIC e MONO a due a due. Gli altri moduli: comandi a file, nell'ordine di oggi.",
+        "Canali con la colonna sfalsata di oggi (dec. 118). SEND di MIC e MONO e reroute dei ritorni a due a due. Filtro: HPF a sinistra, LPF a destra. Cuffie davanti.",
     ]
     yn = oy + L + 20
     corpo.append(f"<text x='14' y='{yn:.2f}' font-size='3' font-weight='bold' fill='{g.C['t_foglio']}' "
