@@ -1,0 +1,50 @@
+* MISTO cella CV del FX-RET: rumore al pin EC- (misto/03 §8 punto 1; todo 278)
+* Tre uscite della cella, stesso trasferimento al pin (V_pin = 0,80 - 0,34 V_dac, tau 1 ms):
+*   v=1  partitore 1k/1k (come oggi)          D = 2
+*   v=2  R in serie 100 ohm, niente partitore  D = 1
+*   v=3  partitore 15k/1k                      D = 16
+* La cella scala il guadagno di D: Rin = 10k/(0,34 D), Ro = 50k/(0,8 D).
+* Rumore del DAC: 100 nV/rtHz piatti [PROVVISORIO: ordine di grandezza della
+* classe DAC8568, da verificare sul datasheet del pezzo], come termica di una R
+* (en^2/4kT = 604k) letta da una E lineare a 4 nodi (regola del progetto).
+* -REF5 ideale (stesso percorso dello shaper di oggi). Op-amp OP1654 (FET):
+* Rin e Ro sono > 500 ohm (regola d'uso della libreria).
+* Metodo: densita' a 16 punti + sim/mic/noise_total.py (mai .meas INTEG).
+.include ../../sim/lib/opamp-audio.inc
+.param v=1
+.param Rt={if(v==1, 1k, if(v==2, 100, 15k))}
+.param Rb={if(v==2, 1e9, 1k)}
+.param D={(Rt+Rb)/Rb}
+V1 x 0 DC 1.25 AC 1
+Rnz nz 0 604k
+Edac dac x nz 0 1
+Vcc vp 0 DC 15
+Vee vm 0 DC -15
+Vref nref 0 DC -5
+Rin dac sj {10k/(0.34*D)}
+Ro nref sj {50k/(0.8*D)}
+Rf sj co 10k
+Cf sj co 100n
+Xop 0 sj co vp vm OP1654
+Rt co pin {Rt}
+Rb pin 0 {Rb}
+.step param v list 1 2 3
+.noise V(pin) V1 dec 20 10 100k
+.meas noise on1 FIND V(onoise) AT 20
+.meas noise on2 FIND V(onoise) AT 31.5
+.meas noise on3 FIND V(onoise) AT 50
+.meas noise on4 FIND V(onoise) AT 80
+.meas noise on5 FIND V(onoise) AT 125
+.meas noise on6 FIND V(onoise) AT 200
+.meas noise on7 FIND V(onoise) AT 315
+.meas noise on8 FIND V(onoise) AT 500
+.meas noise on9 FIND V(onoise) AT 800
+.meas noise on10 FIND V(onoise) AT 1250
+.meas noise on11 FIND V(onoise) AT 2000
+.meas noise on12 FIND V(onoise) AT 3150
+.meas noise on13 FIND V(onoise) AT 5000
+.meas noise on14 FIND V(onoise) AT 8000
+.meas noise on15 FIND V(onoise) AT 12500
+.meas noise on16 FIND V(onoise) AT 20000
+.meas noise g1k FIND gain AT 1000
+.end

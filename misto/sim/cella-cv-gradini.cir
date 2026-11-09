@@ -1,0 +1,94 @@
+* MISTO cella CV del FX-RET (misto/03 §4.3, §8 punto 1; todo 278)
+* DAC 16 bit (PWL dal modello del firmware, misto/script/firmware_fxret.py --pwl)
+* -> cella invertente con offset da -REF5, C su Rf: tau = 10k x 100n = 1 ms
+* -> partitore 1k/1k -> pin EC- del VCA (sim/lib/that2181.inc).
+* V_pin = 0,80 - 0,34 V_dac: codice zero = +0,80 V = VCA chiuso.
+* Modi: ideale (law continua), zoh1k (ADC e DAC a 1 kHz), zoh8k (a 8 kHz),
+* int8k (ADC 2 kHz, DAC 8 kHz con interpolazione lineare).
+* Gesti: apre100 (0 -> 1 in 100 ms), feedback50 (-15 -> 0 dB in 50 ms),
+* scatto (1 -> 0 di colpo a 12,25 ms, come sim/fx/reroute-ramp.cir).
+* Misure: rip = CV al pin dopo un passa-alto 2 poli a 300 Hz (ondulazione dei
+* gradini; 6,1 mV = 1 dB); h = sonda del click (HP 2 poli ~1,6 kHz)
+* sull'uscita del VCA; tono 0 dBu a 100 Hz (apre, feedback), a 1 kHz (scatto).
+.include ../../sim/lib/opamp-audio.inc
+.include ../../sim/lib/that2181.inc
+.subckt CELLA dac sig pin rip hp vp vm nref
+Rin dac sj 14.706k
+Ro nref sj 31.25k
+Rf sj co 10k
+Cf sj co 100n
+Xop 0 sj co vp vm OP1654
+Rt co pin 1k
+Rb pin 0 1k
+Eb1 b1 0 pin 0 1
+Cr1 b1 r1 53n
+Rr1 r1 0 10k
+Eb2 b2 0 r1 0 1
+Cr2 b2 rip 53n
+Rr2 rip 0 10k
+Xv sig vout 0 pin vp vm THAT2181
+Ch1 vout h1 10n
+Rh1 h1 0 10k
+Ch2 h1 hp 10n
+Rh2 hp 0 10k
+.ends CELLA
+Vcc vp 0 DC 15
+Vee vm 0 DC -15
+Vref nref 0 DC -5
+Vt100 s100 0 SINE(0 1.095 100)
+Vt1k s1k 0 SINE(0 1.095 1k)
+VAi dAi 0 PWL file=pwl/apre100-ideale.txt
+VA1 dA1 0 PWL file=pwl/apre100-zoh1k.txt
+VA8 dA8 0 PWL file=pwl/apre100-zoh8k.txt
+VAn dAn 0 PWL file=pwl/apre100-int8k.txt
+VFi dFi 0 PWL file=pwl/feedback50-ideale.txt
+VF1 dF1 0 PWL file=pwl/feedback50-zoh1k.txt
+VF8 dF8 0 PWL file=pwl/feedback50-zoh8k.txt
+VFn dFn 0 PWL file=pwl/feedback50-int8k.txt
+VSi dSi 0 PWL file=pwl/scatto-ideale.txt
+VS1 dS1 0 PWL file=pwl/scatto-zoh1k.txt
+VS8 dS8 0 PWL file=pwl/scatto-zoh8k.txt
+VSn dSn 0 PWL file=pwl/scatto-int8k.txt
+XAi dAi s100 pAi rAi hAi vp vm nref CELLA
+XA1 dA1 s100 pA1 rA1 hA1 vp vm nref CELLA
+XA8 dA8 s100 pA8 rA8 hA8 vp vm nref CELLA
+XAn dAn s100 pAn rAn hAn vp vm nref CELLA
+XFi dFi s100 pFi rFi hFi vp vm nref CELLA
+XF1 dF1 s100 pF1 rF1 hF1 vp vm nref CELLA
+XF8 dF8 s100 pF8 rF8 hF8 vp vm nref CELLA
+XFn dFn s100 pFn rFn hFn vp vm nref CELLA
+XSi dSi s1k pSi rSi hSi vp vm nref CELLA
+XS1 dS1 s1k pS1 rS1 hS1 vp vm nref CELLA
+XS8 dS8 s1k pS8 rS8 hS8 vp vm nref CELLA
+XSn dSn s1k pSn rSn hSn vp vm nref CELLA
+.nodeset V(pAi)=0.61 V(pA1)=0.61 V(pA8)=0.61 V(pAn)=0.61 V(pFi)=0.0915 V(pF1)=0.0915 V(pF8)=0.0915 V(pFn)=0.0915 V(pSi)=0 V(pS1)=0 V(pS8)=0 V(pSn)=0
+.tran 0 125m 0 2u
+* ondulazione della CV durante il gesto (V; /6,1 mV = dB)
+.meas tran ripAi MAX ABS(V(rAi)) FROM 10m TO 105m
+.meas tran ripA1 MAX ABS(V(rA1)) FROM 10m TO 105m
+.meas tran ripA8 MAX ABS(V(rA8)) FROM 10m TO 105m
+.meas tran ripAn MAX ABS(V(rAn)) FROM 10m TO 105m
+.meas tran ripFi MAX ABS(V(rFi)) FROM 10m TO 55m
+.meas tran ripF1 MAX ABS(V(rF1)) FROM 10m TO 55m
+.meas tran ripF8 MAX ABS(V(rF8)) FROM 10m TO 55m
+.meas tran ripFn MAX ABS(V(rFn)) FROM 10m TO 55m
+* sonda del click sull'audio
+.meas tran hAi MAX ABS(V(hAi)) FROM 10m TO 110m
+.meas tran hA1 MAX ABS(V(hA1)) FROM 10m TO 110m
+.meas tran hA8 MAX ABS(V(hA8)) FROM 10m TO 110m
+.meas tran hAn MAX ABS(V(hAn)) FROM 10m TO 110m
+.meas tran hFi MAX ABS(V(hFi)) FROM 10m TO 60m
+.meas tran hF1 MAX ABS(V(hF1)) FROM 10m TO 60m
+.meas tran hF8 MAX ABS(V(hF8)) FROM 10m TO 60m
+.meas tran hFn MAX ABS(V(hFn)) FROM 10m TO 60m
+.meas tran hSbase MAX ABS(V(hSi)) FROM 8m TO 12.25m
+.meas tran hSi MAX ABS(V(hSi)) FROM 12.25m TO 20m
+.meas tran hS1 MAX ABS(V(hS1)) FROM 12.25m TO 20m
+.meas tran hS8 MAX ABS(V(hS8)) FROM 12.25m TO 20m
+.meas tran hSn MAX ABS(V(hSn)) FROM 12.25m TO 20m
+* ritardo: istante in cui la CV di chiusura passa il 63 % (0,384 V al pin); gesto a 12,25 ms
+.meas tran tSi WHEN V(pSi)=0.384 RISE=1
+.meas tran tS1 WHEN V(pS1)=0.384 RISE=1
+.meas tran tS8 WHEN V(pS8)=0.384 RISE=1
+.meas tran tSn WHEN V(pSn)=0.384 RISE=1
+.end
