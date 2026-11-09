@@ -76,7 +76,7 @@ quindicina di moduli.
 trimmer tolti e nei meter. Il chip, i DAC e la presa USB ne occupano una
 parte. Saldo atteso: poco, da contare scheda per scheda col generatore.
 
-**Spazio, contato il 2026-11-09** (script nello scratchpad, `pcbnew` sulle
+**Spazio, contato il 2026-11-09** (`misto/script/area_impronte.py` col Python di KiCad, `pcbnew` sulle
 PCB generate di al commit e4f6f29). Impronte di shaper e trim di law
 (resistenze, diodi, trimmer, condensatori sulle reti SN, SJ, SH, NP, LT,
 OF, POT), senza gli op-amp:
