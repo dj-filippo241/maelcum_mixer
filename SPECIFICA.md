@@ -188,7 +188,7 @@ Design circuitale: `docs/fase1/master-out.md` **v0.3 (2026-09-29: stadio finale 
 - [DEC. 122, 2026-10-22] Modo del filtro di canale = levetta sigillata a tre posizioni fisse: su HPF, centro OFF, giù LPF.
 - [DEC. 123, 2026-10-22] Canale: CUE e assign FX 1-4 = bottoni con luce a ritenuta; LINE/PHONO = levetta piccola.
 - [DEC. 124, 2026-10-22, PROVVISORIO] Cappucci gommati (probabile stampa 3D di Filippo); rotativi tutti con albero 6 mm a D.
-- [DEC. 125, 2026-10-22] Taglia e scatto di ogni manopola: tabella in `docs/fase3/sistema-comandi.md` §Taglia e scatto (115 manopole: 64 grandi 14 mm, 10 medie = 14 mm con cappuccio ~12 mm, 41 piccole 9 mm).
+- [DEC. 169, 2026-11-09; era dec. 125] Taglia e scatto di ogni comando: tabella in `docs/fase3/sistema-comandi.md` §Taglia e scatto (115 manopole su cinque taglie: 5 molto grandi, 35 grandi, 42 medie, 23 piccole, 10 molto piccole; levette e bottoni grandi o piccoli; fader dei canali 100 mm, dei ritorni corti). Scala delle taglie PROVVISORIA fino al piano schede (todo 203).
 - [DEC. 126, 2026-10-22, precisa la dec. 59] Fader di canali e ritorni = fader mono → CV → VCA per lato (come il Xone:92); tracking ≤ 0,5 dB dai VCA trimmati; +16 VCA (~78 nel mixer).
 - [DEC. 127, 2026-10-22, precisa la dec. 105] EQ isolator del canale senza contatto di fondo corsa: banda chiusa a circa −54 dB (residuo del pot ≤ 20 Ω); il muto vero del canale è il fader. [REV 2026-11-04: con 20 Ω il caso peggiore è −48 dB; −54 vale con 10 Ω, eq-isolator §10.2.]
 - [DEC. 128, 2026-10-22] Uscite cuffia: due jack stereo 6,3 mm.
