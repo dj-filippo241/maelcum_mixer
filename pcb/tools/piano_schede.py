@@ -69,5 +69,123 @@ def main():
               f"{maxs} schede -> {cap * maxs:.0f} componenti")
 
 
-if __name__ == "__main__":
+if __name__ == "__main__" and "--f" not in __import__("sys").argv:
     main()
+
+
+# ---------------------------------------------------------------------------------------------
+# Piano sulla disposizione F (dec. 172), 2026-11-09. Uso: python3 pcb/tools/piano_schede.py --f
+# Scrive pcb/PIANO-SCHEDE.md. Misure da docs/pannelli/proposta_f.py (unica fonte).
+C96_LUNGO = 95.0        # courtyard dell'impronta KiCad DIN41612_C_3x32_Male_Horizontal_THT
+LATO_MIN = 100.0        # lato minimo della scheda dove sta il C96 (95 + margini)
+
+# schede vere (pcb/*/NOTE.md) e stime; una riga = una scheda fisica
+SCHEDE_F = {
+    "canale": [("canale.py (segnale, C96)", 193, "vero"), ("canale-isolator.py", 197, "vero")],
+    "fx-send": [("fx-send.py", 120, "vero")],
+    "mic": [("mic.py", 206, "vero")],
+    "mono": [("mono.py", 127, "vero")],
+    "fx-ret": [("fx-ret.py (segnale, C96)", 199, "vero")],
+    "reroute": [("fx-ret-reroute.py", 225, "vero")],
+    "master": [("master-segnale.py", 283, "vero"), ("master-uscita.py L", 155, "vero"),
+               ("master-uscita.py R", 144, "vero")],
+    "5-way": [("5-way (da scrivere)", 970, "stima +-30 %")],
+    "filtro": [("filtro (da scrivere)", 450, "stima +-30 %")],
+    "cue": [("CUE (da scrivere)", 200, "stima +-30 %")],
+}
+
+
+def piano_f():
+    import os
+    import sys
+    qui = os.path.dirname(os.path.abspath(__file__))
+    sys.path.insert(0, os.path.join(qui, "..", "..", "docs", "pannelli"))
+    import proposta_f as pf
+    d = pf.scelta()
+    L, y, m = d["L"], d["y"], d["m"]
+    W = 450.0
+
+    def hh(yy):
+        return H_DIETRO - (H_DIETRO - H_DAVANTI) * yy / L
+
+    righe, avvisi = [], []
+
+    def lungo_y(modulo, copie, y0, y1, larg, schede):
+        """Schede da dietro a davanti, affiancate ogni 25 mm; in un posto più schede una dietro
+        l'altra, ognuna lunga quanto le serve al 70 % ma almeno LATO_MIN."""
+        posti = max(1, int(larg // PASSO))
+        usate = [0.0] * posti
+        hm = (hh(y0) + hh(y1)) / 2
+        for nome, n, fonte in schede:
+            for q in range(posti):
+                a = y0 + usate[q]
+                lun = max(LATO_MIN, n / (hm * DENS))
+                for _ in range(5):          # lunghezza al 70 % con l'altezza vera del tratto
+                    lun = max(LATO_MIN, n / ((hh(a) + hh(a + lun)) / 2 * DENS))
+                if usate[q] + lun <= y1 - y0:
+                    usate[q] += lun
+                    righe.append((modulo, copie, nome, n, fonte, "dietro-davanti", f"{lun:.0f}",
+                                  f"{hh(a):.0f}-{hh(a + lun):.0f}", f"posto {q + 1} di {posti}, y {a:.0f}-{a + lun:.0f}",
+                                  n / (lun * (hh(a) + hh(a + lun)) / 2 * DENS) * 70))
+                    break
+            else:
+                avvisi.append(f"{modulo}: {nome} non trova posto ({posti} posti lunghi {y1 - y0:.0f} mm)")
+
+    def lungo_x(modulo, y0, y1, larg, schede):
+        """Schede da sinistra a destra, una fila ogni 25 mm in profondità; in una fila più schede
+        in fila, ognuna lunga quanto le serve al 70 % ma almeno LATO_MIN."""
+        file = max(1, int((y1 - y0) // PASSO))
+        usate = [0.0] * file
+        for nome, n, fonte in schede:
+            for f in range(file):
+                yf = y0 + (f + 0.5) * (y1 - y0) / file
+                lun = max(LATO_MIN, n / (hh(yf) * DENS))
+                if usate[f] + lun <= larg:
+                    usate[f] += lun
+                    righe.append((modulo, 1, nome, n, fonte, "sinistra-destra", f"{lun:.0f}", f"{hh(yf):.0f}",
+                                  f"fila {f + 1} di {file}, y {yf:.0f}", n / (lun * hh(yf) * DENS) * 70))
+                    break
+            else:
+                avvisi.append(f"{modulo}: {nome} non trova posto in {file} file da {larg:.0f} mm")
+
+    wc, wl = d["wc"], d["wl"]
+    lungo_x("MASTER", y["mas"], y["five"], W, SCHEDE_F["master"])
+    lungo_x("5-WAY + REROUTE", y["five"], y["five"] + m["five"].h, W,
+            SCHEDE_F["5-way"][:0] + [("5-way, parte %d (da scrivere)" % (i + 1), 485, "stima +-30 %") for i in range(2)]
+            + SCHEDE_F["reroute"] * 4)
+    lungo_x("FILTRO", y["fil"], y["can"], wc, [("filtro, parte %d (da scrivere)" % (i + 1), 225, "stima +-30 %")
+                                               for i in range(2)])
+    lungo_y("CANALE + FX SEND", 4, y["can"], y["cue"], d["ws"], SCHEDE_F["canale"] + SCHEDE_F["fx-send"])
+    lungo_x("CUE", y["cue"], L, wc, SCHEDE_F["cue"])
+    lungo_y("MIC", 1, y["mm"], y["ret"], wl / 4, SCHEDE_F["mic"])
+    lungo_y("MONO", 3, y["mm"], y["ret"], wl / 4, SCHEDE_F["mono"])
+    lungo_y("FX-RET", 4, y["ret"], L, wl / 4, SCHEDE_F["fx-ret"])
+
+    tot = sum(r[1] for r in righe)
+    out = ["# Piano delle schede sulla disposizione F (dec. 172)", "",
+           "Generato da `pcb/tools/piano_schede.py --f` il 2026-11-09: non modificare a mano. Misure da",
+           "`docs/pannelli/proposta_f.py`. Telaio inclinato: schede alte %.0f mm dietro e %.0f davanti (dec. 158);"
+           % (H_DIETRO, H_DAVANTI),
+           "tetto 70 %% (dec. 156); passo 25 mm; pannello %dU, profondità utile %.0f mm." % (d["n_u"], L), "",
+           "Regola nuova: il C96 è lungo %.0f mm (impronta KiCad), quindi il lato della scheda col connettore"
+           % C96_LUNGO,
+           "è lungo almeno %.0f mm. Sotto i moduli bassi e larghi (MASTER, 5-WAY, FILTRO, CUE) le schede vanno"
+           % LATO_MIN,
+           "da sinistra a destra; sotto le strisce (canali, MIC, MONO, ritorni) da dietro a davanti. [C, PROVVISORIO]",
+           "", "| Modulo | Copie | Scheda | Comp. | Fonte | Verso | Lunga (mm) | Alta (mm) | Dove | Pieno |",
+           "|---|---|---|---|---|---|---|---|---|---|"]
+    for r in righe:
+        out.append("| %s | %d | %s | %d | %s | %s | %s | %s | %s | %.0f %% |" % r)
+    out += ["", "Schede in tutto: %d." % tot, ""]
+    out += ["## Avvisi", ""] + (["- " + a for a in avvisi] or ["- Nessuno: ogni scheda ha il suo posto entro il 70 %."])
+    out += ["", "## Aperto", "",
+            "- Backplane: con schede in due versi servono più tratti di backplane (uno per zona). Da disegnare.",
+            "- 5-way, filtro e CUE: stime +-30 %; il 5-way è diviso in due schede da ~485 componenti l'una.",
+            "- Schede comandi da disegnare: canale, ritorni, 5-way, filtro, master, CUE."]
+    path = os.path.join(qui, "..", "PIANO-SCHEDE.md")
+    open(path, "w", encoding="utf-8").write("\n".join(out) + "\n")
+    print("\n".join(out))
+
+
+if __name__ == "__main__" and "--f" in __import__("sys").argv:
+    piano_f()
