@@ -142,6 +142,7 @@ docs/02-questioni-aperte.md   cosa manca: liste A/B/C in testa, storico delle vo
 docs/03 … 08                  revisione critica, architettura filtro, benchmark, rumore, review
 docs/09-budget.md             costi per modulo e totale (generato da docs/budget/genera_budget.py)
 cheap/                        progetto parallelo CHEAP (versione economica): non tocca docs/ e sim/
+misto/                        progetto parallelo MISTO (chip che muove solo le CV, dec. 174): non tocca docs/, sim/, pcb/
 docs/storico-sessioni.md      cronaca delle sessioni fino al 2026-10-13
 docs/fase1 … fase4/           design doc per modulo (tabella sopra)
 docs/diagrammi/               SVG generati da genera_diagrammi.py
