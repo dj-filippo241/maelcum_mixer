@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # Genera lo schema funzionale totale e i diagrammi a blocchi SVG dei moduli
 # del maelcum mixer, in italiano e in inglese.
-# Uso:  python3 genera_diagrammi.py         (scrive i .svg italiani qui e quelli
-#                                            inglesi in en/, stessi nomi file)
-#       python3 genera_diagrammi.py --it    (solo italiano)
-#       python3 genera_diagrammi.py --en    (solo inglese)
+# Uso:  python3 genera_diagrammi.py         (solo inglese, in en/)
+#       python3 genera_diagrammi.py --it    (italiano, qui: FERMO dal 2026-11-09,
+#                                            richiesta di Filippo; non si aggiorna)
+# Dal 2026-11-09 si mantengono solo i diagrammi inglesi in en/.
 # I contenuti vengono dai design doc: quando un doc cambia, si aggiorna
 # la funzione del modulo qui sotto e si rilancia lo script.
 # Le etichette inglesi stanno in traduzione_en.py (dizionario italiano ->
@@ -906,7 +906,7 @@ def psu():
     rows = [
         ("W1 2×21 V 7,0 A", ["ponte 25 A + bulk 2 × 22 mF", "T8 A"],
          "LDO MOSFET ±22,0 V", ["Rsense 0,15 Ω: limite ~3,3-4 A", "soft-start 0,3 s · ripple ≤ 3,7 mV"],
-         ["PSU-IN: TVS · T2,5 A · 2,2 mF", "modulo: LM317/337 → 19,2 V + cap mult. → ±18"],
+         ["PSU-IN: TVS · T4 A · 2,2 mF", "modulo: LM317/337 → 19,2 V + cap mult. → ±18"],
          ["canali · 5-way · FX-RET · filtro · FX-SEND", "CUE · mic/mono · moduli opzionali",
           "!2,12 A base · 2,44 opzionali · 2,70 progetto"]),
         ("W2 2×18 V 1,5 A", ["ponte + bulk 2 × 10 mF", "T2 A"],
@@ -1046,7 +1046,7 @@ def metering():
 DIAGRAMMI = (schema_totale, canale, fx, fx_send, master, five_way, filtro, cue, mic_mono, psu, metering)
 
 if __name__ == "__main__":
-    lingue = [lg for lg in ("it", "en") if f"--{lg}" in sys.argv] or ["it", "en"]
+    lingue = [lg for lg in ("it", "en") if f"--{lg}" in sys.argv] or ["en"]
     warn = []
     for LANG in lingue:
         for f in DIAGRAMMI:

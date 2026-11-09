@@ -734,7 +734,7 @@ EN.update({
     "ponte 25 A + bulk 2 × 22 mF": "25 A bridge + bulk 2 × 22 mF",
     "Rsense 0,15 Ω: limite ~3,3-4 A": "Rsense 0.15 Ω: limit ~3.3-4 A",
     "soft-start 0,3 s · ripple ≤ 3,7 mV": "soft-start 0.3 s · ripple ≤ 3.7 mV",
-    "PSU-IN: TVS · T2,5 A · 2,2 mF": "PSU-IN: TVS · T2.5 A · 2.2 mF",
+    "PSU-IN: TVS · T4 A · 2,2 mF": "PSU-IN: TVS · T4 A per rail · 2.2 mF",
     "modulo: LM317/337 → 19,2 V + cap mult. → ±18": "module: LM317/337 → 19.2 V + cap mult. → ±18",
     "canali · 5-way · FX-RET · filtro · FX-SEND": "channels · 5-way · FX-RET · filter · FX-SEND",
     "CUE · mic/mono · moduli opzionali": "CUE · mic/mono · optional modules",
