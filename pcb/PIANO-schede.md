@@ -1,5 +1,7 @@
 # Piano delle schede (todo 203) — bozza del 2026-10-31
 
+> **SUPERATO il 2026-11-09 dalla dec. 172 (disposizione F):** il piano vigente è `pcb/PIANO-SCHEDE-F.md`, generato da `pcb/tools/piano_schede.py --f`. Questo resta come storia (regola 10).
+
 Calcolo: `python3 pcb/tools/piano_schede.py`. **REV 2026-10-31, dec. 159**: filtro dopo il fader, 4 core: ~800 → ~450 componenti; canale +1 switch (~362).
 Ipotesi nel file: dec. 156-158, setup completo,
 schede verticali sotto il proprio modulo, passo minimo 25 mm fra schede affiancate.

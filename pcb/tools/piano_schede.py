@@ -75,7 +75,7 @@ if __name__ == "__main__" and "--f" not in __import__("sys").argv:
 
 # ---------------------------------------------------------------------------------------------
 # Piano sulla disposizione F (dec. 172), 2026-11-09. Uso: python3 pcb/tools/piano_schede.py --f
-# Scrive pcb/PIANO-SCHEDE.md. Misure da docs/pannelli/proposta_f.py (unica fonte).
+# Scrive pcb/PIANO-SCHEDE-F.md. Misure da docs/pannelli/proposta_f.py (unica fonte).
 C96_LUNGO = 95.0        # courtyard dell'impronta KiCad DIN41612_C_3x32_Male_Horizontal_THT
 LATO_MIN = 100.0        # lato minimo della scheda dove sta il C96 (95 + margini)
 
@@ -182,7 +182,7 @@ def piano_f():
             "- Backplane: con schede in due versi servono più tratti di backplane (uno per zona). Da disegnare.",
             "- 5-way, filtro e CUE: stime +-30 %; il 5-way è diviso in due schede da ~485 componenti l'una.",
             "- Schede comandi da disegnare: canale, ritorni, 5-way, filtro, master, CUE."]
-    path = os.path.join(qui, "..", "PIANO-SCHEDE.md")
+    path = os.path.join(qui, "..", "PIANO-SCHEDE-F.md")   # PIANO-schede.md è il piano del 31/10 (macOS: maiuscole = minuscole)
     open(path, "w", encoding="utf-8").write("\n".join(out) + "\n")
     print("\n".join(out))
 
