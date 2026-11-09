@@ -81,7 +81,7 @@ LATO_MIN = 100.0        # lato minimo della scheda dove sta il C96 (95 + margini
 
 # schede vere (pcb/*/NOTE.md) e stime; una riga = una scheda fisica
 SCHEDE_F = {
-    "canale": [("canale.py (segnale, C96)", 193, "vero"), ("canale-isolator.py", 197, "vero")],
+    "canale": [("canale.py (una scheda, C96, dec. 173)", 380, "vero")],
     "fx-send": [("fx-send.py", 120, "vero")],
     "mic": [("mic.py", 206, "vero")],
     "mono": [("mono.py", 127, "vero")],

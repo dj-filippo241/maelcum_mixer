@@ -23,7 +23,10 @@ La stima del PIANO (~300 impronte) era bassa del 37 %: i 5 shaper (15 pezzi l'un
 trimmer e i 10 VCA col loro trim (7 pezzi l'uno) pesano più di «12 per chip». Una 100 × 220
 porta ~280 impronte coi due lati: **il FX-RET non sta su una scheda.**
 
-## Divisione in due schede (PROVVISORIA, 2026-11-04)
+## Divisione in due schede (CONFERMATA dalla dec. 173, 2026-11-09)
+
+Sotto la striscia non c'è posto per una scheda sola: il reroute sta sotto il 5-way (piano F).
+
 
 Fatta come scelta di ingegneria: pannello, comandi e backplane non cambiano (dec. 142: più
 schede affiancate sotto un pannello; dec. 144: cambia la scheda, non il circuito). Resta

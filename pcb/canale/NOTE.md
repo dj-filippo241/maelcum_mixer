@@ -22,7 +22,11 @@ La stima del PIANO (~362) era vicina. Ma una 100 × 220 porta ~280 impronte coi 
 **il canale non sta su una scheda.** L'isolator da solo vale ~190 impronte (C di precisione
 in 1206/1210, 27 per lato).
 
-## Divisione in due schede (PROVVISORIA, 2026-11-04)
+## Divisione in due schede (SUPERATA dalla dec. 173, 2026-11-09)
+
+Filippo sceglie una scheda sola, lunga ~287 mm (piano F). La divisione sotto resta come prova
+finché `canale.py` non è rigenerato su una scheda col trapezio della dec. 158.
+
 
 Fatta come scelta di ingegneria: pannello, comandi e backplane non cambiano (dec. 142, 144).
 Resta PROVVISORIA fino alla scelta di Filippo (todo 249, `pcb/PROPOSTA-todo170.md` P4).

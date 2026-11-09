@@ -1,5 +1,7 @@
 # Todo 170: C96 più lungo del pannello e altezza delle schede — proposta (2026-11-04)
 
+**CHIUSA il 2026-11-09 dalla dec. 173**: decisione 1 superata dalla dec. 172 (disposizione F); decisione 2: canale su una scheda sola, ritorno FX su due. Resta da fare P3 (generatore col trapezio).
+
 Proposta di Claude, nessuna scheda cambiata. Fonti: `pcb/fx-send/NOTE.md` punti 8-9,
 `pcb/PIANO-schede.md`, dec. 142, 144, 158, `pcb/tools/backplane.py`.
 

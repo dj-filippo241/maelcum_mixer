@@ -21,15 +21,14 @@ da sinistra a destra; sotto le strisce (canali, MIC, MONO, ritorni) da dietro a 
 | 5-WAY + REROUTE | 1 | fx-ret-reroute.py | 225 | vero | sinistra-destra | 144 | 172 | fila 3 di 4, y 112 | 70 % |
 | FILTRO | 1 | filtro, parte 1 (da scrivere) | 225 | stima +-30 % | sinistra-destra | 149 | 166 | fila 1 di 2, y 163 | 70 % |
 | FILTRO | 1 | filtro, parte 2 (da scrivere) | 225 | stima +-30 % | sinistra-destra | 151 | 164 | fila 2 di 2, y 188 | 70 % |
-| CANALE + FX SEND | 4 | canale.py (segnale, C96) | 193 | vero | dietro-davanti | 138 | 162-146 | posto 1 di 2, y 201-339 | 70 % |
-| CANALE + FX SEND | 4 | canale-isolator.py | 197 | vero | dietro-davanti | 158 | 146-128 | posto 1 di 2, y 339-496 | 70 % |
+| CANALE + FX SEND | 4 | canale.py (una scheda, C96, dec. 173) | 380 | vero | dietro-davanti | 287 | 162-129 | posto 1 di 2, y 201-488 | 70 % |
 | CANALE + FX SEND | 4 | fx-send.py | 120 | vero | dietro-davanti | 100 | 162-151 | posto 2 di 2, y 201-301 | 59 % |
 | CUE | 1 | CUE (da scrivere) | 200 | stima +-30 % | sinistra-destra | 177 | 124 | fila 1 di 2, y 531 | 70 % |
 | MIC | 1 | mic.py | 206 | vero | dietro-davanti | 142 | 168-152 | posto 1 di 2, y 150-292 | 70 % |
 | MONO | 3 | mono.py | 127 | vero | dietro-davanti | 100 | 168-156 | posto 1 di 2, y 150-250 | 60 % |
 | FX-RET | 4 | fx-ret.py (segnale, C96) | 199 | vero | dietro-davanti | 160 | 146-128 | posto 1 di 2, y 340-499 | 70 % |
 
-Schede in tutto: 32.
+Schede in tutto: 28.
 
 ## Avvisi
 
