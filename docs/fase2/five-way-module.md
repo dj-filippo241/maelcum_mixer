@@ -130,7 +130,7 @@ cannot be restored" — corpus §16; "boost non ripristina materiale killato"
 
 ## 3. Kill bank — matematica complementare (questione 8: RISPOSTA v0.2)
 
-**REV 2026-11-10 (dec. 175): incroci H, 60 / 250 / 1,2k / 8k Hz. I valori e le simulazioni sotto sono ancora agli incroci E: banca da riallineare (todo nuovo).**
+**REV 2026-11-10 (dec. 175, todo 290): incroci H, 60 / 250 / 1,2k / 8k Hz. Banca riallineata: valori e numeri in §3.2bis, simulazione in §8.2ter (`bank-aligned-h.cir`), ritardi del kill allo zero in §8.11. Le §3.2 e §8.2bis (incroci E) restano come storia.**
 
 **REV 2026-11-05 (todo 259): incroci E, 80 / 170 / 1,2k / 6k Hz (dec. 150).**
 Il testo sotto è scritto coi valori di partenza 90/350/1,2k/3,5k: la
@@ -240,6 +240,46 @@ kick cala di ~10 dB ma non sparisce, perché le code di SUB e MID ci si
 sovrappongono. MID e HIGH, più larghe, si tolgono molto meglio di prima.
 È lo stesso comportamento del prototipo MC-5WAY con CROSSOVER E, che
 usa la stessa banca.
+
+### 3.2bis Incroci H (dec. 175, REV 2026-11-10, todo 290) — valori e numeri
+
+Stessa banca, stesse sezioni, frequenze 60 / 250 / 1,2k / 8k Hz. Valori di
+partenza [PROVVISORIO — regola 3], formule del §3.1 (`align_math.py --h`;
+fra parentesi il valore E96 più vicino):
+
+| Edge | Sallen-Key (C, R; HP: R a massa = 2R) | AP2 (C, R1 / R2 / Rf) |
+|---|---|---|
+| 60 Hz | 100 nF, 18,76 k (18,7 k); HP 37,5 k (37,4 k) | — (nessuna banda lo compensa) |
+| 250 Hz | 100 nF, 4,50 k (4,53 k); HP 9,00 k (9,09 k) | 47 nF, 9,58 k / 19,2 k / 14,4 k (9,53 / 19,1 / 14,3) |
+| 1,2 kHz | 10 nF, 9,38 k (9,31 k); HP 18,8 k (18,7 k) | 10 nF, 9,38 k / 18,8 k / 14,1 k (invariato) |
+| 8 kHz | 4,7 nF, 2,99 k (3,01 k); HP 5,99 k (6,04 k) | 1,5 nF, 9,38 k / 18,8 k / 14,1 k (9,31 / 18,7 / 14,0) |
+
+Rispetto agli incroci E cambiano solo resistenze: i condensatori restano
+gli stessi. Numero di sezioni e di chip invariato (16 SK + 6 AP2 per lato).
+L'AP2 a 8 kHz ha le stesse resistenze di quello a 1,2 kHz (cambia solo C).
+
+**Group delay della somma**: picco 11,3 ms a 39 Hz (incroci E: 10,1 ms a
+54 Hz). 9,9 ms a 10 Hz, 9,8 ms a 60 Hz, 1,8 ms a 350 Hz, 0,53 ms a 1,2k,
+0,12 ms a 3,5k. Il primo incrocio scende a 60 Hz: il ritardo dei bassi
+profondi sale di ~1 ms, sempre dentro la finestra di fusione (~20 ms).
+
+**Cosa si sente coi kill** (residuo minimo dentro la banda tolta, §8.2ter):
+
+| Kill | Incroci H | Incroci E |
+|---|---|---|
+| SUB | −86 dB a 5 Hz, −24,6 dB a 30 Hz | −96 a 5 Hz, −34 a 30 Hz |
+| KICK | **−19,5 dB a 122 Hz** | −9,6 a 117 Hz |
+| MID | −21,8 dB a 548 Hz | −28 a 450 Hz |
+| HIGH | −27,2 dB a 3,1 kHz | −22,4 a 2,7 kHz |
+| SUPER | −22,5 dB a 15 kHz, −39,7 a 25 kHz | −32 a 15 kHz, −50 a 25 kHz |
+
+La via KICK ora è larga due ottave (60-250 Hz): col kill il kick scende di
+quasi 20 dB al centro, il doppio di prima in dB. È il motivo della scelta
+di Filippo all'ascolto (dec. 175). In cambio il SUB è una via più stretta:
+a 30 Hz il kill SUB toglie 25 dB invece di 34, perché la coda del KICK
+arriva più in basso. La via SUPER parte da 8 kHz: il suo kill lascia più
+aria fra 8 e 15 kHz di prima. Sono le stesse curve del prototipo MC-5WAY
+con CROSSOVER H, che usa la stessa banca.
 
 **Gate di kill [REV 2026-09-30 pomeriggio → decisione 88, design CHIUSO
 §8.10]**: **switch analogico di precisione in configurazione π SPDT** per
@@ -1047,6 +1087,30 @@ Varianti lite agli incroci E: A (3 AP2/lato) −0,054 dB, B −0,009, C −0,002
 
 Verificato in: Python sì / LTspice sì / Live no (MC-5WAY usa già gli incroci E).
 
+### 8.2ter Banca agli incroci H (`bank-aligned-h.cir`, `align_math.py --h`, 2026-11-10, todo 290)
+
+LTspice (stessa macro e stessi 7 casi del §8.2, frequenze 60/250/1,2k/8k):
+nessun kill, scarto peggiore −0,013 dB su 5 Hz-60 kHz (requisito ±0,1 dB);
+−0,001 dB ai quattro incroci. Calcolo esatto (`align_math.py --h`): errore
+1,0e-15; kill e group delay uguali a LTspice al centesimo di dB.
+
+| Frequenza | Kill SUB | Kill KICK | Kill MID | Kill HIGH | Kill SUPER |
+|---|---|---|---|---|---|
+| 30 Hz | −24,6 | −0,5 | 0,0 | 0,0 | 0,0 |
+| 60 Hz | −6,0 | −6,0 | 0,0 | 0,0 | 0,0 |
+| 122 Hz | −0,5 | **−19,5** | −0,5 | 0,0 | 0,0 |
+| 250 Hz | 0,0 | −6,0 | −6,0 | 0,0 | 0,0 |
+| 548 Hz | 0,0 | −0,4 | **−21,8** | −0,4 | 0,0 |
+| 1,2 kHz | 0,0 | 0,0 | −6,0 | −6,0 | 0,0 |
+| 3,1 kHz | 0,0 | 0,0 | −0,2 | **−27,2** | −0,2 |
+| 8 kHz | 0,0 | 0,0 | 0,0 | −6,0 | −6,0 |
+| 15 kHz | 0,0 | 0,0 | 0,0 | −0,7 | −22,5 |
+
+(dB sulla somma; tutti i kill insieme: silenzio, come al §8.2.)
+Varianti lite agli incroci H: A (3 AP2/lato) −0,028 dB, B −0,011, C −0,001.
+
+Verificato in: Python sì / LTspice sì / Live sì per le curve (MC-5WAY con CROSSOVER H, ascolto di Filippo del 2026-11-10), no per l'hardware.
+
 ### 8.3 v0.2 — Celle parametriche + cascata (`param-cell.cir`, `param-cascade.cir`)
 
 Cella singola (griglia Q 0,5/1/3 × b 0/+1/−1,82/−3,0/−4,62, f0 = 700 Hz;
@@ -1298,7 +1362,11 @@ ciascuno al proprio zero.
   spigolo dell'onda che si ferma allo zero, 34 dB sotto lo scoppio.
 - Ritardo del gesto: al massimo mezzo periodo della frequenza più bassa
   della via (incroci E): SUB 13,5 ms, KICK 6,3, MID 2,9, HIGH 0,4,
-  SUPER 0,08 ms.
+  SUPER 0,08 ms. **Incroci H (dec. 175, todo 290)**: SUB 13,5 ms (sub
+  fino a ~37 Hz, invariato), KICK 8,3 (da 60 Hz), MID 2,0, HIGH 0,42,
+  SUPER 0,06 ms. Il tempo massimo di ~20 ms resta sopra il mezzo periodo
+  del SUB: non cambia. Il KICK aspetta 2 ms in più di prima; all'ascolto
+  in MC-5WAY con gli incroci H Filippo non sente ritardo (dec. 175 b).
 - Costo per modulo [PROVVISORIO]: 3 comparatori quad (classe
   LM339/TLV3404), 5 doppi 74HC74, ~40 passivi. Nessun VCA.
 - Non fatto: programma musicale vero (prototipo MC-5WAY), charge

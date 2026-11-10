@@ -15,7 +15,12 @@ import cmath
 import math
 
 import sys
-F1, F2, F3, F4 = (80.0, 170.0, 1200.0, 6000.0) if "--e" in sys.argv else (90.0, 350.0, 1200.0, 3500.0)
+if "--h" in sys.argv:      # incroci H, dec. 175
+    F1, F2, F3, F4 = 60.0, 250.0, 1200.0, 8000.0
+elif "--e" in sys.argv:    # incroci E, dec. 150
+    F1, F2, F3, F4 = 80.0, 170.0, 1200.0, 6000.0
+else:
+    F1, F2, F3, F4 = 90.0, 350.0, 1200.0, 3500.0
 N = 8000
 FMIN, FMAX = 5.0, 60e3
 
@@ -153,7 +158,7 @@ for i in range(N):
 
 i_pk = max(range(N), key=lambda i: tau[i])
 print(f"Group delay somma esatta: picco {tau[i_pk]*1e3:.2f} ms @{freqs[i_pk]:.0f} Hz")
-for probe in (10, 30, 90, 350, 1200, 3500, 10000, 20000):
+for probe in (10, 30, 60, 90, 250, 350, 1200, 3500, 8000, 10000, 20000):
     i = min(range(N), key=lambda k: abs(freqs[k] - probe))
     fase = math.degrees(phi[i]) % 360
     if fase > 180:
@@ -268,3 +273,26 @@ for probe in (100, 350, 600, 1200, 2400, 3500, 10000, 20000):
     worst_mag = max(worst_mag, abs(abs(Hsec) - 1))
     print(f"  {probe:6.0f} Hz: |H| {abs(Hsec):.6f}  fase {math.degrees(cmath.phase(Hsec/ideal)):+8.4f} deg vs -A2 ideale")
 print(f"  deviazione |H| da 1: max {worst_mag:.2e}")
+
+# --- Valori agli incroci scelti (--e, --h): Sallen-Key e AP2 ---
+if "--h" in sys.argv or "--e" in sys.argv:
+    CSK = {60.0: 100e-9, 80.0: 100e-9, 170.0: 100e-9, 250.0: 100e-9,
+           1200.0: 10e-9, 6000.0: 4.7e-9, 8000.0: 4.7e-9}
+    CAP = {170.0: 47e-9, 250.0: 47e-9, 1200.0: 10e-9, 6000.0: 1.5e-9, 8000.0: 1.5e-9}
+    print()
+    print("Valori agli incroci (R esatta, E96 fra parentesi):")
+    for f0 in (F1, F2, F3, F4):
+        C = CSK[f0]
+        R = 1 / (2 * math.pi * f0 * math.sqrt(2) * C)
+        riga = (f"  {f0:6.0f} Hz  SK C {C*1e9:5.1f} nF  R {R:7.0f} ({e96(R):.0f})  "
+                f"HP R a massa {2*R:7.0f} ({e96(2*R):.0f})")
+        if f0 in CAP and f0 != F1:
+            Ca = CAP[f0]
+            R1 = 1 / (math.sqrt(2) * 2 * math.pi * f0 * Ca)
+            riga += (f"  |  AP2 C {Ca*1e9:4.1f} nF  R1 {R1:6.0f} ({e96(R1):.0f})  "
+                     f"R2 {2*R1:6.0f} ({e96(2*R1):.0f})  Rf {1.5*R1:6.0f} ({e96(1.5*R1):.0f})")
+        print(riga)
+    print()
+    print("Kill allo zero (dec. 164): ritardo massimo = mezzo periodo dell'estremo basso della via")
+    for nome, f in (("SUB", 37.0), ("KICK", F1), ("MID", F2), ("HIGH", F3), ("SUPER", F4)):
+        print(f"  {nome:5s} {f:6.0f} Hz -> {500.0/f:6.2f} ms")

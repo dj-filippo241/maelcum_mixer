@@ -58,6 +58,12 @@ periodo della frequenza più bassa della via. Con gli incroci E
 ≤ 6,3 ms, MID ≤ 2,9 ms, HIGH ≤ 0,4 ms, SUPER ≤ 0,08 ms. In media la
 metà. Il taglio resta secco: niente dissolvenza.
 
+**Incroci H (dec. 175, todo 290, 2026-11-10)**: 60 / 250 / 1,2k / 8k Hz,
+sub fino a ~37 Hz come prima: SUB ≤ 13,5 ms (invariato), KICK ≤ 8,3 ms
+(era 6,3), MID ≤ 2,0 ms (era 2,9), HIGH ≤ 0,42 ms, SUPER ≤ 0,06 ms
+(`align_math.py --h`). Il tempo massimo di ~20 ms non cambia. Ascolto in
+MC-5WAY con gli incroci H: nessun ritardo udibile (dec. 175 b).
+
 ## Circuito [PROVVISORIO]
 
 Per ogni via e per ogni lato (10 in tutto): comparatore con isteresi di
