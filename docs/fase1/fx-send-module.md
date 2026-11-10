@@ -148,7 +148,7 @@ audio). Scheda: `pcb/fx-send/` v0.2, `pcb/fx-send/NOTE.md`.
 | ADG1434 quad SPDT (TSSOP-20 YRUZ, senza EN) | 2 | assign π (famiglia kill/dec. 90c); datasheet Rev. E VERIFICATO 2026-10-01 → `docs/fase1/adg1434-datasheet-verify.md` |
 | LDO ±15 V switch (78L15/79L15 o LDO low-noise) | 2 | da raw ±22 V LN locale (dec. 93) |
 | LM317/LM337 + passivi cap-moltiplicatore | 2 | ±18 V audio |
-| Pot doppi 10k su scheda comandi (dec. 136) | 3 | LOW e HIGH: modello aperto (todo 217); LEVEL: curva A logaritmica, −20 dB a metà corsa, 0 dB a fine corsa (dec. 108, §2); diametro 9 o 14 mm secondo il todo 218 [REV 2026-11-03, todo 169/186: prima «custom taper»] |
+| Pot doppi 10k su scheda comandi (dec. 136) | 3 | LOW e HIGH: Alpha RD902F doppio 9 mm lineare senza scatto (dec. 176, todo 217); LEVEL: curva A logaritmica, −20 dB a metà corsa, 0 dB a fine corsa (dec. 108, §2); diametro 9 o 14 mm secondo il todo 218 [REV 2026-11-03, todo 169/186: prima «custom taper»] |
 | Reti RC celle (0,1% shelf, C0G/PP), R iniezione 10k | — | (l'RC soft-switch sul pin IN è superato, todo 224) |
 | Connettore C96 + cavo piatto 2×12 verso la scheda comandi | 2 | backplane §7; dec. 136 |
 

@@ -175,3 +175,7 @@ del differenziale (REV dec. 145) non c'è**: il differenziale resta quello di `s
 ## 2026-11-09: scheda comandi sulla disposizione F (dec. 172)
 
 Rigenerata da `coordinate.json` nuovo: 59.0 × 185.8 mm (pannello 61 × 189.8 meno i margini). PASSA in due giri. La scheda principale non cambia: stesso cavo, stessi fili.
+
+## 2026-11-10: moduli di Filippo (dec. 176)
+
+Scheda comandi rigenerata da `coordinate.json` nuovo (MIC e MONO 61 × 190, SEND in colonna sfalsata, GAIN in alto a sinistra): PASSA. La nota del pot in distinta ora dice 9 mm per le manopole piccole e molto piccole (prima le molto piccole risultavano 14 mm). La scheda principale non cambia.

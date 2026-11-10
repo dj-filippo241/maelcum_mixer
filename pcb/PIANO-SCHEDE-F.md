@@ -26,7 +26,7 @@ da sinistra a destra; sotto le strisce (canali, MIC, MONO, ritorni) da dietro a 
 | CUE | 1 | CUE (da scrivere) | 200 | stima +-30 % | sinistra-destra | 177 | 124 | fila 1 di 2, y 531 | 70 % |
 | MIC | 1 | mic.py | 206 | vero | dietro-davanti | 142 | 168-152 | posto 1 di 2, y 150-292 | 70 % |
 | MONO | 3 | mono.py | 127 | vero | dietro-davanti | 100 | 168-156 | posto 1 di 2, y 150-250 | 60 % |
-| FX-RET | 4 | fx-ret.py (segnale, C96) | 199 | vero | dietro-davanti | 160 | 146-128 | posto 1 di 2, y 340-499 | 70 % |
+| FX-RET | 4 | fx-ret.py (segnale, C96) | 199 | vero | dietro-davanti | 160 | 146-128 | posto 1 di 2, y 340-500 | 70 % |
 
 Schede in tutto: 28.
 

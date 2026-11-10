@@ -133,3 +133,7 @@ Tutto [PROVVISORIO].
 ## 2026-11-09: scheda comandi sulla disposizione F (dec. 172)
 
 Rigenerata da `coordinate.json` nuovo: 48.0 × 63.8 mm (pannello 50 × 67.8 meno i margini). PASSA in due giri. La scheda principale non cambia: stesso cavo, stessi fili. La sezione FX SEND ora sta dentro la striscia del canale (dec. 171): in `coordinate.json` la voce «fx-send» ha le coordinate della sezione e l'origine in «dentro».
+
+## 2026-11-10: moduli di Filippo (dec. 176)
+
+Rigenerata da `coordinate.json` nuovo: LEVEL sopra, HIGH e LOW affiancati sotto. I due pot affiancati hanno i pin verso l'alto (rotazione 270), sotto il LEVEL: con la regola di prima i loro pin cadevano nello stesso punto (NON PASSA, 12 reti aperte). PASSA. La scheda principale non cambia.

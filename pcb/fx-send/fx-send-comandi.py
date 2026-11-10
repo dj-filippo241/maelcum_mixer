@@ -54,8 +54,12 @@ for c in PANNELLO["comandi"]:
     pins = {"1": a[0], "2": a[1], "3": a[2], "4": b[0], "5": b[1], "6": b[2]}
     x, y = c["x"] - MARGINE[0], c["y"] - MARGINE[1]
     # i pin stanno 10 mm a sinistra dell'albero: nella colonna di sinistra il pot si gira,
-    # così i pin vanno verso il centro e non sul bordo
-    d.part("RV", POT, "10k doppio", FP, pins, anchor=ALBERO, place=(x, y, 180 if x < W / 2 else 0),
+    # così i pin vanno verso il centro e non sul bordo. Due pot sulla stessa riga (HIGH e LOW
+    # affiancati, dec. 176): pin verso l'alto, nello spazio sotto il LEVEL.
+    affiancato = any(o is not c and o["tipo"] == "manopola" and abs(o["y"] - c["y"]) < 1
+                     for o in PANNELLO["comandi"])
+    rot = 270 if affiancato else (180 if x < W / 2 else 0)
+    d.part("RV", POT, "10k doppio", FP, pins, anchor=ALBERO, place=(x, y, rot),
            note="%s; manopola %s, cappuccio %s mm" % (nota, c["nome"], c["cappuccio"]))
 
 d.block = "CAVO VERSO LA SCHEDA PRINCIPALE"

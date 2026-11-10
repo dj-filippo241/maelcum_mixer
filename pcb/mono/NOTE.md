@@ -73,3 +73,7 @@ Polarità: POST +1, driver MSUM −1, [A2] −1 → +1 (todo 227, F2).
 ## 2026-11-09: scheda comandi sulla disposizione F (dec. 172)
 
 Rigenerata da `coordinate.json` nuovo: 59.0 × 175.8 mm (pannello 61 × 179.8 meno i margini). PASSA in due giri. La scheda principale non cambia: stesso cavo, stessi fili.
+
+## 2026-11-10: moduli di Filippo (dec. 176)
+
+Scheda comandi rigenerata da `coordinate.json` nuovo (MIC e MONO 61 × 190, SEND in colonna sfalsata, GAIN in alto a sinistra): PASSA. La nota del pot in distinta ora dice 9 mm per le manopole piccole e molto piccole (prima le molto piccole risultavano 14 mm). La scheda principale non cambia.

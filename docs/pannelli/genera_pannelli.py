@@ -101,10 +101,11 @@ class Pannello:
         self.el.append(f"<text x='{x:.2f}' y='{y:.2f}' font-size='{size}' font-weight='{peso}' "
                        f"fill='{colore}' text-anchor='{anchor}' {FONT}>{t}</text>")
 
-    def manopola(self, x, y, nome, tipo, r=R14, detent=False, lato=None):
+    def manopola(self, x, y, nome, tipo, r=R14, detent=False, lato=None, etichetta=None):
         """lato None: etichetta sotto; "dx"/"sx": etichetta a fianco
-        (colonne disassate)."""
-        self.segna("manopola", nome, x, y, pot=9 if r == R9 else 14,
+        (colonne disassate). etichetta: testo sul pannello se diverso dal nome
+        (il nome resta la chiave delle schede comandi)."""
+        self.segna("manopola", nome, x, y, pot=9 if r <= R9 else 14,
                    cappuccio=round(2 * r, 1), funzione=tipo, scatto=detent)
         self.el.append(f"<circle cx='{x:.2f}' cy='{y:.2f}' r='{r + 1.6:.2f}' fill='none' "
                        f"stroke='{C['s_anello']}' stroke-width='0.25' stroke-dasharray='0.6 1.2'/>")
@@ -114,12 +115,13 @@ class Pannello:
         self.el.append(f"<circle cx='{x:.2f}' cy='{y:.2f}' r='{r:.2f}' fill='{C[tipo]}'/>")
         self.el.append(f"<line x1='{x:.2f}' y1='{y:.2f}' x2='{x:.2f}' y2='{y - r + 1:.2f}' "
                        f"stroke='{C['k_indice']}' stroke-width='0.8' stroke-linecap='round'/>")
+        t = etichetta or nome
         if lato == "dx":
-            self.testo(x + r + 2.0, y + 1.0, nome, 2.5, anchor="start")
+            self.testo(x + r + 2.0, y + 1.0, t, 2.5, anchor="start")
         elif lato == "sx":
-            self.testo(x - r - 2.0, y + 1.0, nome, 2.5, anchor="end")
+            self.testo(x - r - 2.0, y + 1.0, t, 2.5, anchor="end")
         else:
-            self.testo(x, y + r + 4.0, nome, 2.7)
+            self.testo(x, y + r + 4.0, t, 2.7)
 
     def colonna(self, c, voci, r=R14, passo=PASSO):
         """Manopole disassate a zig-zag (dec. 118, come il Xone:DB4): la
@@ -578,7 +580,7 @@ def moduli_f(d):
     corpo.append(chiave)
     alt += h_chiave + 12
     return foglio("Moduli singoli", "Disposizione F (dec. 172): strisce CDJ con la sezione FX SEND (dec. 171), "
-                  "taglie della dec. 169, colonne sfalsate (dec. 118), SEND e reroute a due a due, fader 60 e 45 mm.",
+                  "moduli disegnati da Filippo il 2026-11-10 (dec. 176), colonne sfalsate (dec. 118), fader 60 e 45 mm.",
                   larg, alt, "\n".join(corpo))
 
 

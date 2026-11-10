@@ -128,8 +128,8 @@ mia, pezzi da confermare a catalogo.
 | | CUE | 4 | bottone piccolo | — | |
 | | Fader | 4 | lungo 60 mm | — | era 100 mm |
 | FX-SEND | LEVEL | 4 | media | no | doppio 14 mm log A |
-| | EQ LOW/HIGH | 8 | molto piccola | no | doppio 9 mm (todo 217) |
-| FX-RET | GAIN | 4 | piccola | no | doppio 9 mm lineare senza scatto (Alpha RD902F): tracking del lotto selezionato |
+| | EQ LOW/HIGH | 8 | molto piccola | no | doppio 9 mm lineare senza scatto, Alpha RD902F (dec. 176) |
+| FX-RET | GAIN | 4 | grande (dec. 176, era piccola) | no | doppio lineare senza scatto, tracking del lotto selezionato: 14 mm o 9 mm col cappuccio grande (da decidere con la scheda comandi) |
 | | EQ LOW/HIGH | 8 | piccola | no | come oggi |
 | | Reroute e SELF | 16 | media | centro | singolo 14 mm lineare con scatto al centro |
 | | Fader | 4 | corto 45 mm | — | era 100 mm |
@@ -139,23 +139,23 @@ mia, pezzi da confermare a catalogo.
 | 5-way | GAIN delle vie | 5 | molto grande | centro | doppio lineare con scatto; cappuccio largo |
 | | POSITION | 5 | grande | no | era media |
 | | WIDTH | 5 | grande | no | era media; doppio 1k ancora da trovare (§curve) |
-| | GROWL e NASTRO | 2 | grande | no | come oggi |
+| | GROWL e NASTRO | 2 | molto grande (dec. 176) | no | come oggi |
 | | KILL | 5 | levetta grande | — | ON-OFF-(ON) (dec. 121) |
 | Master | MASTER | 1 | grande | 0 dB al centro | come oggi |
 | | BOOTH | 1 | media | no | |
 | | MONO | 1 | bottone grande | — | |
 | CUE | BLEND | 1 | grande | centro | come oggi |
 | | LEVEL cuffie | 1 | media | no | doppio 14 mm log A (era 9 mm) |
-| MIC (1) | GAIN | 1 | piccola | no | singolo 9 mm 5k curva C: da trovare |
-| | EQ LOW/HIGH | 2 | molto piccola | no | |
+| MIC (1) | GAIN | 1 | grande (dec. 176) | no | singolo 5k curva C: da trovare |
+| | EQ LOW/HIGH | 2 | piccola (dec. 176) | no | |
 | | SEND 1-4 | 4 | media | no | |
 | | MUTE | 1 | bottone grande | — | a ritenuta (dec. 167) |
 | MONO (3) | GAIN (livello) | 3 | grande | no | |
 | | EQ LOW/HIGH | 6 | piccola | no | |
 | | SEND 1-4 | 12 | media | no | |
 
-Totale 115 manopole: 5 molto grandi, 35 grandi, 42 medie, 23 piccole,
-10 molto piccole. Nessun comando aggiunto né tolto.
+Totale 115 manopole: 7 molto grandi, 38 grandi, 42 medie, 20 piccole (dec. 176),
+8 molto piccole. Nessun comando aggiunto né tolto.
 
 ## Ingegneria dei comandi (2026-10-22, dopo le dec. 117-125) [PROPOSTA di Claude]
 
