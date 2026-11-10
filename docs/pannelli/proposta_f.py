@@ -162,8 +162,8 @@ def five(w, h=102.0):
     return p.chiudi(h)
 
 
-# LED tricolore per via (PDF del 2026-11-10: su quattro vie, SUPER senza) [APERTO]
-LED_5WAY = ("SUB", "KICK", "MID", "HIGH")
+# LED tricolore di livello su ogni via (dec. 176 g: «1 anche super»)
+LED_5WAY = ("SUB", "KICK", "MID", "HIGH", "SUPER")
 WS = 50.0               # striscia CDJ
 
 

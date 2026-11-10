@@ -67,7 +67,7 @@ mandata ai pedali, trimmer di taratura.
 | Selettori 2 posizioni | 4 |
 | Bottoni / levette logici | 27 (+ MUTE del MIC e MONO del master) |
 | Barre LED | 9 da 10 + 2 da 20 (dec. 116: +3 ritorni FX) |
-| LED tricolore | 4 |
+| LED tricolore | 9 (4 MIC/MONO + 5 vie del 5-way, dec. 176) |
 
 Manopole in tutto: 115 (dec. 99: +1 sul 5-way; dec. 117: +5 WIDTH continui). Con 4 moduli MIC/MONO al posto di 4 il conto non
 cambia; ogni modulo MIC/MONO in meno toglie 7 pot singoli.
@@ -141,6 +141,7 @@ mia, pezzi da confermare a catalogo.
 | | WIDTH | 5 | grande | no | era media; doppio 1k ancora da trovare (§curve) |
 | | GROWL e NASTRO | 2 | molto grande (dec. 176) | no | come oggi |
 | | KILL | 5 | levetta grande | — | ON-OFF-(ON) (dec. 121) |
+| | LED di livello | 5 | LED tricolore | — | verde / giallo / rosso per via (dec. 176); punto di lettura e soglie da progettare |
 | Master | MASTER | 1 | grande | 0 dB al centro | come oggi |
 | | BOOTH | 1 | media | no | |
 | | MONO | 1 | bottone grande | — | |
