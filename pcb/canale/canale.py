@@ -37,6 +37,7 @@ L, H_DIETRO, H_DAVANTI = 287, 162, 129     # PIANO-SCHEDE-F, dec. 173
 d = Design("canale", HERE, "maelcum CANALE CDJ/LINE (v0.4) - bozza v0.1", board=(L, H_DIETRO, H_DAVANTI), rev="0.2-bozza")
 d.gnd = "AGND"
 d.inner_signal = True     # SMD sui due lati (dec. 142)
+d.link_pairs = True       # pin gemelli del C96 (+5V, CTRL_GND, RAW) e cursore-capo dei trimmer: come il MIC (todo 248, 272)
 C10 = "Capacitor_SMD:C_1210_3225Metric"
 # NOTA: logica in TSSOP-14 (stesso pinout del SOIC): in SOIC-14 il pin VCC (14) sta nell'angolo e il
 # 100n legato al pin cadeva sul corpo del chip (DRC courtyards_overlap, 2026-11-04)
@@ -128,17 +129,17 @@ for k, s in enumerate(SIDES):
     iv(d, "NIF_" + s, "FAD_" + s)
 opa2(d, "U20", ("AGND", "NIF_L", "FAD_L"), ("AGND", "NIF_R", "FAD_R"), note="I/V del fader, pilota i 10k dei bus")
 shaper(d, "U21", "F", *cv.FADER)
-law_trim(d, "F", "ECF_L", "ECF_R", rbot="1k5 0.1%",
-         nota="NOTA: 1k5 // 3,01k del dip = 1,00k: il partitore resta 1/2 a riposo")
-# dip: DIFF (logica) -> due RC 10k/50n bufferizzati -> 3,01k su ciascun EC- (al pin 0,73 V >= 0,61)
+law_trim(d, "F", "ECF_L", "ECF_R")
+# dip: DIFF (logica) -> due RC 10k/50n bufferizzati -> 4,99k nel nodo di somma dello shaper del fader.
+# Il dip satura lo stadio del partitore: al pin 0,70-0,80 V (>= 0,61), mai oltre 1 V anche a fader
+# chiuso (todo 281; prima 3,01k sui due EC-: 1,38 V col fader chiuso, sim/system/ec-pin-limite.cir)
 d.R("DIFF", "DP1", "10k")
 d.C("DP1", "AGND", "50n C0G", C12, note="NOTA: 50n = 47n + 3n3 in parallelo; tau 0,5 ms")
 d.R("DPB1", "DP2", "10k")
 d.C("DP2", "AGND", "50n C0G", C12, note="NOTA: 50n = 47n + 3n3 in parallelo")
 opa2(d, "U22", ("DP1", "DPB1", "DPB1"), ("DP2", "DIPCV", "DIPCV"), "+15LN", "-15LN",
      note="due celle RC del dip con buffer (RISULTATI-filtsel-dip caso 3)")
-d.R("DIPCV", "ECF_L", "3k01 0.1%", note="NOTA: 4,4 V x 600/3610 = 0,73 V al pin")
-d.R("DIPCV", "ECF_R", "3k01 0.1%")
+d.R("DIPCV", "SJ_F", "4k99 0.1%", note="NOTA: 4,4 V -> shaper -8,8 V -> stadio al rail -> 0,70-0,80 V al pin")
 
 d.side = "F"
 d.block = "LEVETTA HPF/OFF/LPF: logica autotemporizzata (74HC14, 74HC86, 74HC74) e ADG1434"

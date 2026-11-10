@@ -258,23 +258,23 @@ def shaper(tag, rm, rami, roff=None):
         d.R(n, "-REF5", rb + " 0.1%")
         d.part("D", "Diode:1N4148W", "1N4148W", "Diode_SMD:D_SOD-123", {"A": n, "K": sj})
     d.R(sj, out, "10k 0.1%")
-    d.R(out, "NP_" + tag, "10k 0.1%")
-    d.R("NP_" + tag, "CVP_" + tag, "2k 0.1%", note="NOTA: stadio del partitore x(-1/5): CV al pin = out/10")
+    d.R(out, "NP_" + tag, "9k76 0.1%")
+    d.R("NP_" + tag, "CVP_" + tag, "18k7 0.1%", note="NOTA: stadio del partitore x(-1,916) e partitore 18,2k/1k: CV al pin = out/10,02; op-amp al rail = 0,8 V al pin (todo 281)")
     opa("U%d" % {"M": 15, "B": 16}[tag], ("AGND", sj, out), ("AGND", "NP_" + tag, "CVP_" + tag), note="shaper " + tag)
     d.R(x, "AGND", "100k", note="NOTA: pot staccato = shaper a 0 V = taglio massimo")
 
 
 def law_trim(tag, cvp, ecl, ecr):
     """Partitori di coppia (vca-trim §3.2): L 1,00k/1,00k; R 900 + trimmer 200 ohm / 1,00k + offset."""
-    d.R(cvp, ecl, "1k 0.1%")
+    d.R(cvp, ecl, "18k2 0.1%")
     d.R(ecl, "AGND", "1k 0.1%")
-    d.R(cvp, "LT_" + tag, "909 0.1%", note="E96: 909 (doc: 900)")
-    d.part("RV", "Device:R_Potentiometer_Trim", "200", TRIM, {1: "LT_" + tag, 2: ecr, 3: ecr},
+    d.R(cvp, "LT_" + tag, "17k4 0.1%")
+    d.part("RV", "Device:R_Potentiometer_Trim", "2k", TRIM, {1: "LT_" + tag, 2: ecr, 3: ecr},
            note="trim di law, 25 giri (vca-trim §3.2)")
     d.R(ecr, "AGND", "1k 0.1%")
     d.part("RV", "Device:R_Potentiometer_Trim", "50k", TRIM, {1: "+15LN", 2: "OF_" + tag, 3: "-15LN"},
            note="trim d'offset di coppia")
-    d.R("OF_" + tag, ecr, "1M5")
+    d.R("OF_" + tag, ecr, "2M7")
 
 
 shaper("M", "68.1k", [("1.91k", "2.43k"), ("16.9k", "38.3k"), ("1.82k", "2.43k"), ("1.96k", "2.61k")], roff="137k")

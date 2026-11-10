@@ -1,0 +1,59 @@
+* EC- PIN: tensione massima al pin 3 del VCA (THAT 2181 / V2181), todo 281
+* Limite del datasheet (THAT 2181 Rev 02, Absolute Maximum Ratings): Delta Ec = Ec+ - Ec- = +-1 V.
+* Catena del fader del canale (pcb/tools/celle_vca.py + pcb/canale/canale.py):
+*   pot 0-5 V -> shaper a diodi (FADER) -> stadio del partitore -> partitore -> pin EC-
+*   + dip della levetta (dec. 163): DIPCV 4,4 V.
+* v=0 OGGI : stadio x(-1/5) 10k/2k, partitore 1k / 1k5 (+ 3,01k dal DIPCV al pin).
+* v=1 NUOVO: stadio x(-1,916) 9,76k/18,7k, partitore 18,2k / 1k (D = 19,2), dip nel nodo di somma
+*            dello shaper con 4,99k: la saturazione degli op-amp diventa il limite del pin.
+* rot=1: stadio del partitore guasto (Rf aperta): l'op-amp va al rail.
+* x oltre 5 V: guasto del +REF5 (LM4040 aperto: +REF5 sale verso +15LN), pot a fine corsa.
+* Op-amp: clamp a rail - 0,2 V (OPA1612 a carico leggero, caso peggiore), rail +-15,5 V
+* (+-15 LN con tolleranza +3 %). Solo .dc: nessun polo.
+.model D1N4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p Tt=4n)
+.subckt OPW inp inn out vp vm
+E1 out 0 value={limit(1e6*(V(inp)-V(inn)),V(vm)+0.2,V(vp)-0.2)}
+.ends OPW
+.param v=0 rot=0 dip=0
+.param rfst={if(v,18.7k,2k)} rinst={if(v,9.76k,10k)} rtop={if(v,18.2k,1k)} rbot={if(v,1k,1.5k)}
+.param rdpin={if(v,1e12,3.01k)} rdsj={if(v,4.99k,1e12)}
+.param rfeff={if(rot,1e12,rfst)}
+Vcc vcc 0 15.5
+Vee vee 0 -15.5
+Vref nref 0 -5
+Vdip dipcv 0 {dip}
+Vx x 0 0
+* shaper del fader (FADER di celle_vca.py)
+Rm x sj 43.2k
+Ra1 x n1 68.1k
+Rb1 n1 nref 357k
+D1 n1 sj D1N4148
+Ra2 x n2 20.0k
+Rb2 n2 nref 38.3k
+D2 n2 sj D1N4148
+Ra3 x n3 976
+Rb3 n3 nref 1.33k
+D3 n3 sj D1N4148
+Rf sj sh 10k
+Rdsj dipcv sj {rdsj}
+Xsh 0 sj sh vcc vee OPW
+* stadio del partitore
+Rin sh np {rinst}
+Rfs np cvp {rfeff}
+Xst 0 np cvp vcc vee OPW
+* partitore lato L (il lato R ha la stessa scala +-5 %)
+Rt cvp ec {rtop}
+Rb ec 0 {rbot}
+Rdp dipcv ec {rdpin}
+.dc Vx 0 15 0.01
+.step param v list 0 1
+.step param dip list 0 4.4
+.step param rot list 0 1
+.meas dc p0 FIND V(ec) AT 0
+.meas dc p1 FIND V(ec) AT 1
+.meas dc p2 FIND V(ec) AT 2.5
+.meas dc p4 FIND V(ec) AT 4
+.meas dc p5 FIND V(ec) AT 5
+.meas dc pmax MAX V(ec)
+.meas dc pmin MIN V(ec)
+.end

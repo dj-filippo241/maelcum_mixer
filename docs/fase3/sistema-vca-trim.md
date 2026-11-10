@@ -59,6 +59,14 @@ La CV entra solo dal pin 3 (EC−), **bipolare**: positiva taglia, negativa
 alza. Un porto solo per tutta la corsa, così il trim vale anche per il
 boost (§5.3).
 
+**REV 2026-11-10 (todo 281): partitore alto.** Il pin regge ±1 V (datasheet,
+Absolute Maximum Ratings). Col partitore 1k/1k uno stadio al rail portava
+7,7 V al pin, e il dip del canale col fader chiuso 1,38 V in uso normale.
+Ora: stadio del partitore x(−1,916) (9,76k/18,7k), partitore L 18,2k/1,00k,
+lato R 17,4k + trimmer 2k / 1,00k, offset 2,7 MΩ. Con un op-amp al rail il
+pin resta a ±0,80 V. Lo schema sotto mostra i valori di prima: il principio
+non cambia. Numeri: `sim/system/RISULTATI-ec-pin.md`.
+
 ```
             lato L (riferimento)            lato R (trimmato)
 CV ──┬── 1,00k ──┬── pin 3 L      CV ── 900 ── trimmer 200 Ω ──┬── pin 3 R

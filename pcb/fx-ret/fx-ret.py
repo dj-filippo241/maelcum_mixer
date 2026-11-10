@@ -121,7 +121,7 @@ for k, s in enumerate(SIDES):
     iv(d, "NIF_" + s, "FAD_" + s)
     d.R("FAD_" + s, "RET_OUT_" + s, "47", note="NOTA: l'I/V fa da buffer d'uscita (<= 50 ohm), 47R verso il backplane")
 opa2(d, "U30", ("AGND", "NIF_L", "FAD_L"), ("AGND", "NIF_R", "FAD_R"), note="I/V del fader")
-shaper(d, "U31", "F", *cv.FADER, tau="470n C0G")
+shaper(d, "U31", "F", *cv.FADER, tau="56n C0G")
 law_trim(d, "F", "ECF_L", "ECF_R")
 
 d.side = "F"

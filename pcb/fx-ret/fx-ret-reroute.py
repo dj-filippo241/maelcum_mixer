@@ -7,7 +7,7 @@ pannello (dec. 142) e non ha C96: alimentazioni, RRN e cursori POT_R arrivano da
 quello di fx-ret.py v0.1 (dec. 144: cambia la scheda, non il circuito), riferimenti invariati.
 
 Per ogni reroute: 2 VCA (L, R) + I/V, driver d'iniezione INVERTENTE 20k/20k (F3), shaper del
-reroute (sim/shaper/shaper-reroute.cir) con smoothing 470n, trim di law e d'offset di coppia.
+reroute (sim/shaper/shaper-reroute.cir) con smoothing 56n (1 ms sulla Rf 18,7k, todo 281), trim di law e d'offset di coppia.
 Valori [PROVVISORIO]. Le scelte non scritte nei documenti sono segnate NOTA (pcb/fx-ret/NOTE.md).
 """
 import os, sys
@@ -56,7 +56,7 @@ for j in range(1, 5):
         iv(d, "NI%s_%s" % (t, s), "IV%s_%s" % (t, s))
     opa2(d, "U%d" % (base + 2), ("AGND", "NI%s_L" % t, "IV%s_L" % t), ("AGND", "NI%s_R" % t, "IV%s_R" % t),
          note="I/V dei VCA del reroute %d" % j)
-    shaper(d, "U%d" % (base + 3), t, *cv.REROUTE, tau="470n C0G")
+    shaper(d, "U%d" % (base + 3), t, *cv.REROUTE, tau="56n C0G")
     law_trim(d, t, "EC%s_L" % t, "EC%s_R" % t)
 d.side = "F"
 d.block = "DRIVER D'INIEZIONE dei reroute (2 OPA1654, invertenti unity)"

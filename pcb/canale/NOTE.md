@@ -80,9 +80,10 @@ Divisione di partenza (proposta originale):
 2. **Dip (dec. 163)**: la logica è descritta, non disegnata, in RISULTATI-filtsel-dip.
    Circuito scelto: antirimbalzo 10k/100n + 74HC14; 74HC86 confronta levetta e stato; OR a
    diodi = DIFF; ritardo 33k/47n + due Schmitt = clock dei 74HC74 a ~1,5 ms; DJSEL =
-   NOT(Q0 xor Q1). Dip: DIFF → due RC 10k/50n bufferizzati → 3,01k su ogni EC−.
-   Al pin 0,73 V (serve ≥ 0,61). Le R verso massa dei partitori del fader passano da 1k a
-   1,5k: 1,5k // 3,01k = 1,00k, così la law del fader resta quella simulata.
+   NOT(Q0 xor Q1). Dip: DIFF → due RC 10k/50n bufferizzati → 4,99k nel nodo di somma dello
+   shaper del fader (REV 2026-11-10, todo 281: prima 3,01k su ogni EC−, 1,38 V al pin col
+   fader chiuso, oltre il ±1 V del 2181). Il dip satura lo stadio del partitore: 0,70-0,80 V
+   al pin (serve ≥ 0,61). `sim/system/RISULTATI-ec-pin.md`.
    **Da simulare** (filtsel-dip.cir con la logica vera) e da provare al banco.
 3. **CUE**: tasto a ritenuta verso +5VF (come gli assign del FX-SEND), switch sulla quarta
    sezione dell'ADG di ogni lato, 47 Ω verso lo slot 2. Il documento dice solo «switch CUE

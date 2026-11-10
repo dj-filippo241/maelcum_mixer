@@ -16,7 +16,7 @@ quantita;valore;impronta;riferimenti;nota
 1;100n C0G;C_1206_3216Metric;C50;hold: niente altro sul nodo (sim/meter)
 2;22p C0G;C_0805_2012Metric;C55 C58;
 2;470u 25V;CP_Radial_D8.0mm_P3.50mm;C6 C10;
-1;470n C0G;C_1210_3225Metric;C61;NOTA: smoothing 1 ms (dec. 80) come C sul 2k: 2k x 470n = 0,94 ms
+1;56n C0G;C_1210_3225Metric;C61;NOTA: smoothing 1 ms (dec. 80) come C sulla Rf: 18,7k x 56n = 1,05 ms
 2;100u 25V;CP_Radial_D6.3mm_P2.50mm;C7 C11;
 1;1N4148W;D_SOD-123;D1;scarica Cadj
 1;S1G;D_SMA;D2;protezione inversa
@@ -33,7 +33,7 @@ quantita;valore;impronta;riferimenti;nota
 1;BD139;TO-126-3_Vertical;Q40;
 1;BD140;TO-126-3_Vertical;Q41;
 2;120 1%;R_0805_2012Metric;R1 R4;
-10;10k 0.1%;R_0805_2012Metric;R10 R11 R12 R14 R33 R34 R45 R46 R82 R83;
+9;10k 0.1%;R_0805_2012Metric;R10 R11 R12 R14 R33 R34 R45 R46 R82;
 2;100;R_0805_2012Metric;R13 R15;R serie verso il jack (fx-module §4)
 2;100;R_0805_2012Metric;R16 R21;Rprot
 2;1M;R_0805_2012Metric;R17 R22;Rbias 1 Mohm (fx-module §4)
@@ -68,14 +68,16 @@ quantita;valore;impronta;riferimenti;nota
 1;38.3k 0.1%;R_0805_2012Metric;R79;
 1;976 0.1%;R_0805_2012Metric;R80;
 1;1.33k 0.1%;R_0805_2012Metric;R81;
-1;2k 0.1%;R_0805_2012Metric;R84;stadio del partitore x(-1/5): CV al pin = out/10
+1;9k76 0.1%;R_0805_2012Metric;R83;
+1;18k7 0.1%;R_0805_2012Metric;R84;stadio del partitore x(-1,916): CV al pin = out/10,02 (todo 281)
 1;100k;R_0805_2012Metric;R85;pot staccato = shaper a 0 V (come il master)
-3;1k 0.1%;R_0805_2012Metric;R86 R87 R89;
-1;909 0.1%;R_0805_2012Metric;R88;E96: 909 (doc: 900)
+1;18k2 0.1%;R_0805_2012Metric;R86;
+2;1k 0.1%;R_0805_2012Metric;R87 R89;
+1;17k4 0.1%;R_0805_2012Metric;R88;
 1;1k5;R_0805_2012Metric;R9;NOTA: ~6,7 mA nel riferimento (come il master)
-1;1M5;R_0805_2012Metric;R90;
+1;2M7;R_0805_2012Metric;R90;partitore da ~950 ohm: 2,7M = +-5,3 mV come prima
 2;50k;Potentiometer_Bourns_3266W_Vertical;RV1 RV2;trim di simmetria (THD minima)
-1;200;Potentiometer_Bourns_3266W_Vertical;RV3;trim di law, 25 giri (vca-trim §3.2): montato solo se la coppia esce da 0,5 dB
+1;2k;Potentiometer_Bourns_3266W_Vertical;RV3;trim di law, 25 giri (vca-trim §3.2): montato solo se la coppia esce da 0,5 dB
 1;50k;Potentiometer_Bourns_3266W_Vertical;RV4;trim d'offset di coppia
 1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U1;somma del bus, invertente
 1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U2;driver del pedale, inseguitore (pad fisso 0 dB, dec. 108)

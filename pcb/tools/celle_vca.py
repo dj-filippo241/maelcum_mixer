@@ -78,8 +78,10 @@ def iv(d, node, out, cf="22p C0G"):
 # ------------------------------------------------------------ shaper e trim di law
 def shaper(d, ref, tag, rm, rami, roff=None, tau=None):
     """Shaper a diodi (sistema-shaper §2): pot 0-5 V su POT_tag, rami verso -5 V, Rf 10k.
-    Poi lo stadio del partitore x(-1/5) (come master-segnale.py): con 1k/1k la CV al pin = out/10.
-    tau: condensatore sul 2k dello stadio del partitore per lo smoothing (fx-module §8.3, 1 ms)."""
+    Poi lo stadio del partitore x(-1,916) e il partitore 18,2k/1k (D = 19,2): CV al pin = out/10,02.
+    Con un op-amp al rail il pin resta sotto 0,8 V (limite del 2181: +-1 V, todo 281,
+    sim/system/ec-pin-limite.cir). Prima: x(-1/5) e 1k/1k, fino a 7,7 V al pin.
+    tau: condensatore sulla Rf dello stadio del partitore per lo smoothing (fx-module §8.3, 1 ms)."""
     x, sj, out = "POT_" + tag, "SJ_" + tag, "SH_" + tag
     d.R(x, sj, rm + " 0.1%")
     if roff:
@@ -90,29 +92,30 @@ def shaper(d, ref, tag, rm, rami, roff=None, tau=None):
         d.R(n, "-REF5", rb + " 0.1%")
         diode(d, n, sj)
     d.R(sj, out, "10k 0.1%")
-    d.R(out, "NP_" + tag, "10k 0.1%")
-    d.R("NP_" + tag, "CVP_" + tag, "2k 0.1%", note="stadio del partitore x(-1/5): CV al pin = out/10")
+    d.R(out, "NP_" + tag, "9k76 0.1%")
+    d.R("NP_" + tag, "CVP_" + tag, "18k7 0.1%", note="stadio del partitore x(-1,916): CV al pin = out/10,02 (todo 281)")
     if tau:
         d.C("NP_" + tag, "CVP_" + tag, tau, "Capacitor_SMD:C_1210_3225Metric",
-            note="NOTA: smoothing 1 ms (dec. 80) come C sul 2k: 2k x 470n = 0,94 ms")
+            note="NOTA: smoothing 1 ms (dec. 80) come C sulla Rf: 18,7k x 56n = 1,05 ms")
     opa2(d, ref, ("AGND", sj, out), ("AGND", "NP_" + tag, "CVP_" + tag), "+15LN", "-15LN",
          note="shaper " + tag)
     d.R(x, "AGND", "100k", note="pot staccato = shaper a 0 V (come il master)")
 
 
 def law_trim(d, tag, ecl, ecr, rbot="1k 0.1%", nota=""):
-    """Partitori di coppia (vca-trim §3.2): L 1,00k/1,00k; R 909 + trimmer 200 ohm / 1,00k + offset.
-    rbot: resistenza verso massa (il canale la cambia per la R del dip, vedi canale.py)."""
+    """Partitori di coppia (vca-trim §3.2, rivisto dal todo 281): L 18,2k/1,00k (D = 19,2);
+    R 17,4k + trimmer 2k / 1,00k (scala -6…+4 %) + offset 2,7M (+-5,3 mV). Col partitore alto un
+    op-amp al rail porta al pin al massimo ~0,8 V (limite +-1 V del 2181)."""
     cvp = "CVP_" + tag
-    d.R(cvp, ecl, "1k 0.1%")
+    d.R(cvp, ecl, "18k2 0.1%")
     d.R(ecl, "AGND", rbot, note=nota)
-    d.R(cvp, "LT_" + tag, "909 0.1%", note="E96: 909 (doc: 900)")
-    d.part("RV", "Device:R_Potentiometer_Trim", "200", TRIM, {1: "LT_" + tag, 2: ecr, 3: ecr},
+    d.R(cvp, "LT_" + tag, "17k4 0.1%")
+    d.part("RV", "Device:R_Potentiometer_Trim", "2k", TRIM, {1: "LT_" + tag, 2: ecr, 3: ecr},
            note="trim di law, 25 giri (vca-trim §3.2): montato solo se la coppia esce da 0,5 dB")
     d.R(ecr, "AGND", rbot, note=nota)
     d.part("RV", "Device:R_Potentiometer_Trim", "50k", TRIM, {1: "+15LN", 2: "OF_" + tag, 3: "-15LN"},
            note="trim d'offset di coppia")
-    d.R("OF_" + tag, ecr, "1M5")
+    d.R("OF_" + tag, ecr, "2M7", note="partitore da ~950 ohm: 2,7M = +-5,3 mV come prima")
 
 
 # shaper del fader (sim/shaper/shaper-fader.cir, dec. 126) e del reroute (shaper-reroute.cir)
