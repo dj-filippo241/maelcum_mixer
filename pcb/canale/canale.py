@@ -81,7 +81,7 @@ power_18_sw(d)
 power_ln(d)
 cv.ref5(d, "U46")
 d.power_nets("+18V", "-18V", width=0.4)   # NOTA: a 0,6 mm Freerouting lascia -18V aperta (come il MIC, todo 237)
-d.netclass["CTRL_GND"] = 0.3   # NOTA: pin TSSOP della logica (passo 0,65): pista <= 0,3 mm
+d.netclass["CTRL_GND"] = 0.3   # NOTA: pin TSSOP della logica (passo 0,65): pista <= 0,3 mm. Con 0,25 e 0,4 resta aperta uguale (giri 6-7)
 
 # ------------------------------------------------------------ ingresso e GAIN
 d.block = "INGRESSO LINE [A] e GAIN T1 [B] (dec. 162)"

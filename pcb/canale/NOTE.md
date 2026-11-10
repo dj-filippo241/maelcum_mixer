@@ -14,7 +14,15 @@ Giri del 9/11:
 4. Contorno rettangolare per Freerouting e triangolo tagliato a gradini (pcbgen.py): finisce in ~10 min,
    **35 aperti**: CTRL_GND 18, RAW±22 e RAW±27 2 ciascuna, +5V 2, ECF_R 2.
 
-Da provare: CTRL_GND più larga o in colata vicino alla logica (oggi 0,3 mm per i pin TSSOP, lunga dalla
+Giri del 10/11:
+5. `d.link_pairs = True` (come il MIC): chiusi RAW±22, RAW±27, +5V ed ECF_R. Restano **19 aperti, tutti
+   CTRL_GND**: Freerouting non traccia quasi niente di quella rete, nemmeno fra due condensatori vicini.
+6. CTRL_GND a 0,25 mm: 15 aperti. 7. A 0,4 mm (come il master, dove passa): 18 aperti. La larghezza non è
+   la causa. Nel master e nel MIC la stessa rete passa. Da guardare: i pin vicini dello stesso chip sulla
+   rete (U24 pin 12-13, ingressi liberi del 74HC86; U23 pin 13 del 74HC14) e `link_pairs`, che salta le
+   reti di massa (`masse`); oppure una colata CTRL_GND attorno alla logica.
+
+Da provare (9/11): CTRL_GND più larga o in colata vicino alla logica (oggi 0,3 mm per i pin TSSOP, lunga dalla
 logica al C96); blocco ALIMENTAZIONE più vicino ai pin RAW del C96 (`d.power_first`); più giri (non deterministico).
 
 
