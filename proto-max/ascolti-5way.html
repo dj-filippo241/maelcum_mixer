@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Ascolti del 5-way</title>
+<style>
+  @page { size: A4; margin: 16mm 16mm 18mm 16mm; }
+  :root { --ink:#1b1b1b; --soft:#5a5a5a; --line:#cfcfcf; --acc:#b4421e; --bg:#ffffff; --box:#f4f1ec; }
+  body { background:var(--bg); color:var(--ink); font:10.5pt/1.45 "Helvetica Neue", Helvetica, Arial, sans-serif; margin:0; }
+  h1 { font-size:20pt; margin:0 0 2mm; letter-spacing:-0.3px; }
+  .sub { color:var(--soft); margin:0 0 6mm; }
+  h2 { font-size:13pt; margin:7mm 0 2mm; padding-top:2mm; border-top:2px solid var(--ink); break-after:avoid; }
+  h2 .n { color:var(--acc); margin-right:2mm; }
+  h2 .todo { float:right; font-size:9pt; color:var(--soft); font-weight:normal; padding-top:1mm; }
+  h3 { font-size:10.5pt; margin:4mm 0 1mm; break-after:avoid; }
+  p { margin:1mm 0 2mm; }
+  ol, ul { margin:1mm 0 2mm; padding-left:6mm; }
+  li { margin:0.6mm 0; }
+  table { border-collapse:collapse; width:100%; margin:2mm 0 3mm; font-size:9.5pt; break-inside:avoid; }
+  th, td { border:1px solid var(--line); padding:1.2mm 2mm; text-align:left; vertical-align:top; }
+  th { background:var(--box); }
+  .box { background:var(--box); padding:2.5mm 3.5mm; margin:2mm 0 3mm; break-inside:avoid; }
+  .ear { border-left:3px solid var(--acc); padding:1mm 0 1mm 3mm; margin:2mm 0 3mm; }
+  .src { color:var(--soft); font-size:8.5pt; }
+  .write td { height:9mm; }
+  .k { font-family:Menlo, monospace; font-size:9pt; }
+  section { break-inside:auto; }
+  .pb { break-before:page; }
+</style>
+</head>
+<body>
+
+<h1>Ascolti del 5-way in Live</h1>
+<p class="sub">Guida passo per passo, 10/11/2026. Una sessione da circa un'ora, con MC-5WAY sul gruppo dei canali.
+Alla fine riempi la scheda delle risposte (pagina finale) e mandami le righe.</p>
+
+<div class="box">
+<b>In breve, cosa decidi oggi.</b>
+<ol>
+<li>Gli incroci delle vie: E, F oppure H (todo 60, B3).</li>
+<li>Se il kill allo zero suona pulito sul KICK (todo 260).</li>
+<li>Quale GROWL tieni, e come lo sporchi di più su KICK e MID (todo 60 B6, todo 246).</li>
+<li>Quale NASTRO tieni: soprattutto la voce BANDE con la curva nuova (todo 255, 213, 60 B6).</li>
+</ol>
+Il todo 247 (super del NASTRO a 14 o 7 dB) non chiede ascolto: vedi il passo 5.
+</div>
+
+<h2><span class="n">0</span>Preparazione <span class="todo">10 minuti</span></h2>
+<ol>
+<li>Apri Live con il progetto del prototipo. I canali hanno MC-CHANNEL (e MC-FILTRO, se lo usi).</li>
+<li>Seleziona le tracce dei canali e premi <b>Cmd+G</b>: nasce il gruppo.</li>
+<li>Trascina <span class="k">proto-max/MC-5WAY.amxd</span> sulla traccia del gruppo.
+   Usa MC-5WAY, non MC-5WAY-S: la versione S ha solo E, LIBERO ed EXCITER.</li>
+<li>Parti dallo stato trasparente: cinque KILL su ON, GAIN e POS al centro, GROWL e NASTRO a zero.</li>
+<li>Livello: 0 dBu = −12 dBFS di picco. Se l'uscita satura, abbassa il fader del gruppo.
+   Non abbassare l'ingresso: GROWL e NASTRO cambiano carattere col livello.</li>
+<li>Scegli tre brani che conosci bene:
+  <ul>
+  <li><b>A</b>, steppers o dub con kick secco e sub lungo e separato;</li>
+  <li><b>B</b>, un brano col basso che sale nel medio basso (linea di basso melodica);</li>
+  <li><b>C</b>, un brano pieno, con voce, fiati o skank in primo piano.</li>
+  </ul></li>
+<li>Ascolta sull'impianto, se puoi, o in cuffia chiusa. Sui monitor piccoli il SUB non si giudica.</li>
+</ol>
+
+<h2><span class="n">1</span>Incroci delle vie: E, F oppure H <span class="todo">todo 60 (B3)</span></h2>
+<p>Il selettore <b>CROSSOVER</b> sposta i confini dei KILL. L'EQ resta uguale.</p>
+<table>
+<tr><th>Voce</th><th>SUB / KICK</th><th>KICK / MID</th><th>MID / HIGH</th><th>HIGH / SUPER</th><th>Via KICK</th></tr>
+<tr><td><b>E</b> (oggi, il tuo impianto)</td><td>80 Hz</td><td>170 Hz</td><td>1,2 kHz</td><td>6 kHz</td><td>1,1 ottave</td></tr>
+<tr><td><b>F</b></td><td>70 Hz</td><td>220 Hz</td><td>1,2 kHz</td><td>8 kHz</td><td>1,7 ottave</td></tr>
+<tr><td><b>H</b></td><td>60 Hz</td><td>250 Hz</td><td>1,2 kHz</td><td>8 kHz</td><td>2,1 ottave</td></tr>
+</table>
+<ol>
+<li>Metti CROSSOVER su <b>E</b>. Suona il brano A.</li>
+<li>Kill <b>KICK</b>: giù e su, a tempo, per 8 battute. Poi kill <b>SUB</b>, poi kill <b>MID</b>.</li>
+<li>Passa a <b>F</b> e rifai gli stessi gesti. Poi passa a <b>H</b>.</li>
+<li>Rifai tutto col brano B.</li>
+</ol>
+<div class="ear">
+<b>Cosa ascoltare.</b> Col kill KICK su E il colpo cala ma resta: la cassa del KICK scende di circa 6 dB.
+Su H il colpo sparisce quasi del tutto (circa −13 dB sulla cassa), ma la via si mangia la parte alta del sub
+e il basso del medio. Ascolta allora il kill SUB: su H lascia più coda di sub in sala (−6 dB contro −10 di E).
+Ascolta il kill MID: su H il medio basso resta, perché ora sta nella via KICK.
+Sul brano B senti se la linea di basso salta da una via all'altra mentre sale: su F e H le note fra 170 e 250 Hz
+passano nella via KICK.
+</div>
+<table>
+<tr><th>Variante</th><th>cassa KICK (kill KICK)</th><th>cassa SUB (kill SUB)</th><th>cassa MID (kill MID)</th></tr>
+<tr><td>E</td><td>−6,4 dB</td><td>−10,2 dB</td><td>−12,6 dB</td></tr>
+<tr><td>F</td><td>−9,9 dB</td><td>−8,1 dB</td><td>−10,0 dB</td></tr>
+<tr><td>H</td><td>−12,9 dB</td><td>−6,1 dB</td><td>−8,7 dB</td></tr>
+</table>
+<p class="src">Fonte: RISULTATI-P2 §20, sim/five-way/kill_casse.py (Python, rumore rosa sulle casse VENU360; non ascoltato).
+Nessuna variante spegne del tutto la cassa: lo fa solo un'uscita per via (docs/07 §6).</p>
+<p><b>Rispondi:</b> E, F oppure H.</p>
+
+<h2><span class="n">2</span>Kill allo zero sul KICK <span class="todo">todo 260</span></h2>
+<p>Il kill non taglia nel momento del gesto: aspetta il primo passaggio per lo zero della via, come lo switch del mixer vero (dec. 164).</p>
+<ol>
+<li>Tieni la variante scelta al passo 1. Brano A, volume da serata.</li>
+<li>Kill <b>KICK</b> giù e su, veloce, a tempo sul colpo. Poi fuori tempo, nel mezzo della coda della cassa.</li>
+<li>Rifai sul <b>SUB</b> e sul <b>MID</b>.</li>
+</ol>
+<div class="ear">
+<b>Cosa ascoltare.</b> Due cose sole. (1) Il <b>tic</b>: al taglio non devi sentire un clic, nemmeno a volume alto.
+(2) Il <b>ritardo</b>: sul KICK il taglio arriva al massimo 4 ms dopo il gesto, sul SUB fino a 12 ms
+(mezzo periodo della via). Sul SUB senti se il kill a tempo resta a tempo, o se sembra in ritardo sul colpo.
+</div>
+<p class="src">Fonte: RISULTATI-P2 §19 (Python: salto al taglio 1,00 contro 106 del taglio secco sul KICK; ritardo misurato 0,8 ms).</p>
+<p><b>Rispondi:</b> «kill ok», oppure cosa senti (tic, ritardo, su quale via).</p>
+
+<h2 class="pb"><span class="n">3</span>GROWL: quale versione <span class="todo">todo 60 (B6)</span></h2>
+<p>Il GROWL sporca il basso in parallelo al pulito. Il selettore <b>GROWL VER</b> ha tre voci.
+La manopola ora sale più piano: a metà corsa vale il 35 % (curva t<sup>1,5</sup>, tua richiesta del 5/11).</p>
+<table>
+<tr><th>Voce</th><th>Cosa fa</th></tr>
+<tr><td>DEC.99</td><td>Il GROWL del primo design. Riferimento.</td></tr>
+<tr><td>LIBERO</td><td>Confermato il 31/10 (dec. 155 b). Spinta e miscela insieme: il basso cresce. Sui picchi forti si pulisce (7,5 % a +10 dBu).</td></tr>
+<tr><td>BANDE</td><td>Dec. 165. Sub e kick sporchi anche sui colpi forti, medi un po', alti puliti. A fine corsa sul mix: SUB 28 %, KICK 42 %, medio basso 23 %.</td></tr>
+</table>
+<ol>
+<li>Brano A. GROWL VER su <b>LIBERO</b>. Porta GROWL a ore 12, poi a fine corsa.</li>
+<li>Passa a <b>BANDE</b> e rifai. Poi brano B e brano C.</li>
+<li>Prova il gesto da serata: GROWL che sale in 4 battute sul drop.</li>
+</ol>
+<div class="ear">
+<b>Cosa ascoltare.</b> Su LIBERO, nei colpi forti di basso il ringhio si apre e torna quasi pulito.
+Su BANDE resta ruvido anche sul colpo, e il medio basso prende un po' di grana. Sul brano C senti se la voce
+resta pulita: con BANDE gli alti non passano dal clipper. A fine corsa il volume sale di qualche dB:
+è normale, la miscela aggiunge.
+</div>
+<p><b>Rispondi:</b> DEC.99, LIBERO oppure BANDE.</p>
+
+<h2><span class="n">4</span>GROWL: più sporco su KICK e MID <span class="todo">todo 246</span></h2>
+<p>Dopo il primo ascolto di BANDE hai chiesto «un poco in più di distorsione» su KICK e MID, col SUB com'è.
+Il problema: KICK e SUB passano dallo stesso clipper. Le leve semplici alzano anche il SUB.
+Queste opzioni non sono ancora nel prototipo: scegli quale costruisco, poi la senti in MC-5WAY.</p>
+<table>
+<tr><th>#</th><th>Opzione</th><th>Effetto atteso</th><th>Fonte</th></tr>
+<tr><td>1</td><td><b>Enfasi 50 → 120 Hz nel ramo del basso.</b> Una cella alza il kick prima del clipper e lo riabbassa dopo. Il sub entra al clipper come oggi.</td><td>KICK più sporco, SUB fermo. Stessa strada che ha funzionato sul NASTRO B9. Numeri ancora da calcolare.</td><td>RISULTATI-P2 §15; numeri: deduzione mia</td></tr>
+<tr><td>2</td><td><b>Il kick in parte nel ramo dei medi.</b> Il ramo dei medi parte più in basso e prende la parte alta del colpo.</td><td>KICK e MID più sporchi, SUB fermo. Rischio: il 31/10 il confine a 200 Hz spaccava il kick (51 %, −5,9 dB sul colpo).</td><td>dec. 165 (c); RISULTATI-P2 §15</td></tr>
+<tr><td>3</td><td><b>Ritocco piccolo:</b> 1k al posto di 4,7k in serie ai diodi dei medi.</td><td>KICK 42 → 44 %, MID 23 → 25 %. Poco: forse non si sente.</td><td>RISULTATI-P2 §15 (modello Python)</td></tr>
+</table>
+<p><b>Consiglio: 1.</b> È l'unica che tiene fermo il SUB senza spostare i confini. Se piace, la 3 si aggiunge sopra.</p>
+<p><b>Rispondi:</b> 1, 2 oppure 3 (anche «1+3»).</p>
+
+<h2 class="pb"><span class="n">5</span>NASTRO: quale versione, e la voce BANDE <span class="todo">todo 255, 213, 60 (B6)</span></h2>
+<p>Il NASTRO sporca medi e alti. Il selettore <b>NASTRO VER</b> ha sette voci: OGGI, COMPLETO, EXCITER, CLASSE A, LIBERO, COMPL. MEDI, BANDE.
+La voce da sentire è <b>BANDE</b>: è la versione B9, costruita sulla tua richiesta del 4/11
+(«lo sento bene solo oltre il 50 %»). Ha la manopola a curva inversa: sale in fretta all'inizio.
+Le altre sei voci hanno la manopola lineare (la «terza prova» del todo 213).</p>
+<table>
+<tr><th>Manopola BANDE</th><th>SUB</th><th>KICK</th><th>MID</th><th>HIGH</th><th>SUPER</th></tr>
+<tr><td>circa 40 %</td><td>0,5 %</td><td>5 %</td><td>32 %</td><td>20 %</td><td>9 %</td></tr>
+<tr><td>fine corsa</td><td>0,8 %</td><td>12 %</td><td>46 %</td><td>37 %</td><td>22 %</td></tr>
+<tr><td><i>la tua richiesta</i></td><td><i>0 %</i></td><td><i>11 %</i></td><td><i>45 %</i></td><td><i>34 %</i></td><td><i>22 %</i></td></tr>
+</table>
+<p class="src">Fonte: RISULTATI-P2 §16-18 (modello Python e LTspice a 50 Hz-12 kHz, scarto 0,09 punti). Mix a 0 dBu interni.</p>
+<ol>
+<li>Brano C. NASTRO VER su <b>BANDE</b>. Porta NASTRO a ore 9, ore 12, ore 3, fine corsa.</li>
+<li>Passa a <b>LIBERO</b> e a <b>COMPL. MEDI</b> e rifai: sono le due rivali più vicine.</li>
+<li>Brano A con BANDE a fine corsa: il sub deve restare pulito.</li>
+<li>GROWL (voce scelta al passo 3) a ore 12 più NASTRO BANDE a ore 12: le due manopole insieme.</li>
+</ol>
+<div class="ear">
+<b>Cosa ascoltare.</b> Con BANDE già a ore 9 i medi prendono grana: voci, skank e fiati si scaldano.
+A ore 12 sei vicino al massimo, gli ultimi gradi aggiungono poco. Il sub resta pulito anche a fine corsa;
+il kick si sporca appena (12 %). A fine corsa il volume sale di 1-4 dB. Sui picchi forti i medi si
+schiacciano di quasi 6 dB: è il prezzo del 45 % sui medi. Ascolta se ti piace o se pompa troppo.
+</div>
+<p><b>Todo 247, senza ascolto.</b> La domanda «super a −14 o −7 dB» riguardava la versione B8.
+La BANDE di oggi è la B9: ha una cella sola sui super, a −5 dB. Se tieni la B9, il 247 si chiude da solo.
+<span class="src">Fonte: coefficienti/nastro_bande.py (parametri B8 e B9); conclusione: deduzione mia.</span></p>
+<p><b>Rispondi:</b> la voce che tieni (BANDE o un'altra). Poi «curva ok» oppure «più lenta / più veloce».</p>
+
+<h2 class="pb"><span class="n">6</span>Scheda delle risposte</h2>
+<p>Copia le righe in chat, anche a parole tue. Una parola basta.</p>
+<table class="write">
+<tr><th style="width:8%">Passo</th><th style="width:38%">Domanda</th><th>Risposta</th></tr>
+<tr><td>1</td><td>Incroci: E, F oppure H?</td><td></td></tr>
+<tr><td>2</td><td>Kill allo zero: ok, tic o ritardo? Su quale via?</td><td></td></tr>
+<tr><td>3</td><td>GROWL: DEC.99, LIBERO oppure BANDE?</td><td></td></tr>
+<tr><td>4</td><td>GROWL più sporco: opzione 1, 2 o 3?</td><td></td></tr>
+<tr><td>5</td><td>NASTRO: quale voce? Curva ok?</td><td></td></tr>
+<tr><td>5</td><td>NASTRO BANDE: i medi che si schiacciano sui picchi vanno bene?</td><td></td></tr>
+<tr><td>—</td><td>Altro che hai sentito</td><td style="height:24mm"></td></tr>
+</table>
+<p class="src">Cosa faccio io dopo le risposte: registro le scelte in docs/01, aggiorno il 5-way (design doc e LTspice),
+costruisco l'opzione del GROWL scelta in MC-5WAY, chiudo i todo 60, 213, 246, 247, 255, 260.
+Verificato in: Python sì / LTspice sì (NASTRO B9, kill allo zero) / Live no: è questo l'ascolto.</p>
+
+</body>
+</html>
