@@ -925,3 +925,13 @@ centro, −23 sulla cassa). Il −∞ sulla cassa viene solo da un'uscita per vi
 HIGH da solo la abbassa di 4-6 dB.
 
 Da sentire in Live: kill KICK, SUB e MID con musica vera in E, F e H.
+
+## 21. Ascolto con la guida (2026-11-10, dec. 175)
+
+Guida: `proto-max/ascolti-5way.pdf`. Risposte di Filippo: incroci **H**; kill allo zero
+pulito; GROWL **BANDE** senza ritocchi, curva più lenta con metà corsa al 30 %
+(`fiveway.GROWL_ESP` 1,5 → 1,74, vale per tutte le voci di GROWL VER e per MC-5WAY-S);
+NASTRO **BANDE** B9 con la curva di oggi; medi schiacciati sui picchi: ok.
+
+MC-5WAY e MC-5WAY-S rigenerati col nuovo esponente. MC-5WAY-S resta su E, LIBERO, EXCITER.
+

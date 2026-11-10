@@ -130,6 +130,8 @@ cannot be restored" — corpus §16; "boost non ripristina materiale killato"
 
 ## 3. Kill bank — matematica complementare (questione 8: RISPOSTA v0.2)
 
+**REV 2026-11-10 (dec. 175): incroci H, 60 / 250 / 1,2k / 8k Hz. I valori e le simulazioni sotto sono ancora agli incroci E: banca da riallineare (todo nuovo).**
+
 **REV 2026-11-05 (todo 259): incroci E, 80 / 170 / 1,2k / 6k Hz (dec. 150).**
 Il testo sotto è scritto coi valori di partenza 90/350/1,2k/3,5k: la
 matematica non cambia, cambiano frequenze, valori e numeri misurati.

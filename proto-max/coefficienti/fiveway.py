@@ -272,7 +272,7 @@ NASTRO_MAX = 0.85               # 30 % poco, 70 % «un po piu aggressivo» (Fili
 # Curva della manopola GROWL (tutte le voci di GROWL VER): mg = t^GROWL_ESP.
 # Lineare fino al 2026-11-05; poi 1,5 (Filippo: «sale un po piu lenta»;
 # a meta corsa 0,35). Hardware: pot a curva logaritmica.
-GROWL_ESP = 1.5
+GROWL_ESP = 1.74   # dec. 175: a metà corsa 30 % (prima 1,5: 35 %)
 
 
 def growl_law(theta):

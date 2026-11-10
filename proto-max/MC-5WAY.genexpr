@@ -386,8 +386,8 @@ ge5 = tan(pi * 3000.0 * pow(6.666666666666667, s_p_5 / 100) / sr4);
 tw = s_w_5 / 100;
 aw = (tw <= 0.5) * 0.4 * tw + (tw > 0.5) * (0.2 + 1.6 * (tw - 0.5));
 ke5 = (0.1 + 0.9 * aw) / 0.3;
-// GROWL: curva lenta, mg = t^1.5
-mg = pow(s_growl / 100, 1.5);
+// GROWL: curva lenta, mg = t^1.74
+mg = pow(s_growl / 100, 1.74);
 tn = s_nastro / 100;
 mt = 0.85 * ((tn <= 0.5) * 0.5 * tn / 0.5 + (tn > 0.5) * (0.5 + 0.5 * (tn - 0.5) / 0.5));
 // NASTRO LIBERO: spinta 0 -> +12 dB con la manopola
