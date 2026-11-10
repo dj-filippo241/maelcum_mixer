@@ -45,3 +45,9 @@ scelgono a orecchio nel prototipo in Live (todo 60, dec. 152) e restano
 saldati. Scartati: serie di resistenze a switch (~60 resistenze per serie,
 switch dentro i filtri) e incroci continui con VCA/OTA (rumore, decine di
 chip).
+
+M9. **[C — 2026-11-10, «1 usb sul master»; todo 279] Una presa USB sul
+retro, sul master.** I chip dei moduli parlano fra loro su due fili del
+backplane (pin liberi della riga c). Un cavo e un programma per tutti i
+moduli. La presa del Pico resta per caricare il firmware a banco. Costo: due
+fili di backplane e un transceiver per modulo (`03-blocco-comando.md` §7).

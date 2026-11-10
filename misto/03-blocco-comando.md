@@ -241,9 +241,10 @@ una moltiplicazione. È il guadagno più concreto dell'obiettivo 2 (M6).
   scheda segnale. Il ponte passa da 2x16 a 2x20 [STIMA]. Nessun clock sul
   cavo vicino alle uscite DIR.
 
-## 7. Domanda per Filippo
+## 7. Dove si attacca il computer [BLOCCATO, M9, 2026-11-10]
 
-**Dove si attacca il computer.** M4 dice «via USB», non dove. Due strade:
+Scelta di Filippo: **1**, la presa sul master (`01-decisioni-misto.md` M9).
+M4 dice «via USB», non dove. Le due strade valutate:
 
 1. **Una presa USB sul retro, sul master.** I chip dei moduli parlano fra
    loro su due fili del backplane (pin liberi della riga c: c18, c19,
