@@ -84,7 +84,7 @@ Rin = 1,84k, Ro = 3,91k, Rf 10k, C 100n. A codice zero l'uscita dell'op-amp sta 
 
 Trovato per il mixer analogico (deduzione mia, non simulato): lo stadio del partitore
 di oggi (`pcb/tools/celle_vca.py`, ×−1/5 poi 1k/1k) porta fino a ±6,75 V al pin se
-il suo op-amp satura. Da guardare nel design del canale e del FX-RET.
+il suo op-amp satura. Verificato e corretto il 2026-11-10 (todo 281): `sim/system/RISULTATI-ec-pin.md`.
 
 ## 3. Modello del firmware (`firmware_fxret.py`)
 
@@ -123,3 +123,40 @@ negativa dell'op-amp (−0,84 V al pin = VCA al massimo). Oggi lo shaper ha lo s
 legame col −REF5. Da guardare quando si fa la scheda.
 
 Verificato in: Python sì / LTspice sì (gradini, click, ritardo, rumore) / Live no.
+
+## 5. Guasti e saturazione negativa (`cella-cv-guasti.cir`, todo 280, 2026-11-10)
+
+Prima: offset da −REF5 (Ro 3,91k), nessun clamp. Se il −REF5 muore (o Ro si apre) la cella
+scende in negativo: −0,84 V al pin = VCA aperto al massimo (+138 dB nominali), reroute in
+autooscillazione.
+
+Correzione [PROVVISORIO]:
+
+1. **Offset dal −15LN**, il rail dell'op-amp della cella: Ro 11,8k (Rf/Ro × 15 V = 12,71 V,
+   0,795 V al pin a codice zero). Se il −15LN manca, l'op-amp della cella è spento con lui:
+   non esiste più un guasto «riferimento perso, cella viva» fuori da Ro aperta.
+2. **Clamp in retroazione**: un diodo a bassa perdita (classe BAS416) fra nodo di somma
+   (anodo) e uscita (catodo). L'uscita non scende sotto ~−0,6…−0,95 V: il pin sotto −0,06 V.
+   A uscita alta (+12,7 V) il diodo è in inversa: perdita di pA, errore trascurabile.
+
+| Caso (DAC 0 → 2,5 V) | Prima: pin a codice 0 / fondo scala | Dopo |
+|---|---|---|
+| Nominale | +0,799 / −0,050 V | +0,794 / −0,046 V |
+| Offset perso (Ro aperta, riferimento a 0 V) | 0 / **−0,844 V** (+138 dB) | 0 / −0,060 V (+9,8 dB al massimo) |
+| DAC ad alta impedenza | +0,799 V: chiuso | +0,794 V: chiuso |
+| Riferimento del DAC morto (uscite a 0 V) | +0,799 V: chiuso | +0,794 V: chiuso |
+
+Il clamp toglie il campo sotto −0,046 V al pin (+7,5 dB). Serve solo −5 mV (correzione d'offset,
+03 §4.3): resta margine.
+
+Resta un guasto che apre: Ro aperta o −15LN a 0 V con l'op-amp ancora vivo, fino a +9,8 dB.
+Sul reroute un +9,8 dB col SELF alto può innescare: è un guasto di saldatura, si trova a banco.
+
+Da verificare:
+- deriva del −15LN (regolatore LT3094: corrente di SET ±1 % su tutto il campo, datasheet da
+  leggere). Se serve, il chip legge il −15LN con l'ADC e corregge l'offset (un canale ADC);
+- rumore: l'offset passa con Rf/Ro = 0,85 invece di 2,56, e il −15LN è un rail a basso rumore:
+  rumore al pin uguale o più basso (deduzione mia, non simulato).
+
+Verificato in: LTspice sì (.dc, 8 casi) / Python no / Live no.
+

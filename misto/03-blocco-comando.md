@@ -140,7 +140,7 @@ Dalla manopola al pin EC− del VCA (positivo taglia, 6,1 mV/dB a 25 °C):
   ```
   DAC ── Rin ──┬── Rf ──┬── (partitore 1k/1k, o R serie) ── pin EC−
                │   C    │
-  −REF5 ── Ro ─┤        │      V_out = −(Rf/Rin)·V_dac + (Rf/Ro)·5 V
+  −15LN ── Ro ─┤        │      V_out = −(Rf/Rin)·V_dac + (Rf/Ro)·15 V
                └─ −\    │      DAC a 0 V → V_out massimo → VCA chiuso
                  +/ ────┘      C su Rf: τ 1 ms (dec. 80)
                AGND
@@ -149,11 +149,15 @@ Dalla manopola al pin EC− del VCA (positivo taglia, 6,1 mV/dB a 25 °C):
   Il verso è voluto: **codice zero = VCA chiuso** (R7). DAC appena acceso,
   DAC senza alimentazione o pin scollegato danno tutti la stessa cosa:
   reroute e fader chiusi.
+- **Offset dal −15LN e clamp** (todo 280, RISULTATI-cella-cv §5): Ro 11,8k dal −15LN, il rail
+  dell'op-amp (prima 3,91k dal −REF5); un diodo a bassa perdita in retroazione tiene l'uscita
+  sopra ~−0,6 V. Offset perso: +9,8 dB al massimo invece di +138; DAC o suo riferimento
+  morti: VCA chiuso.
 - **Partitore 15k/1k** (simulato, RISULTATI-cella-cv §2): né 1k/1k né R in
   serie. Il rumore è uguale nei tre casi (~0,8 µV al pin, −97 dB sotto il
   segnale); decide il pin: ΔEc massimo ±1 V. Con l'op-amp in saturazione il
   1k/1k porta 6,75 V al pin, la R in serie 13,5 V, il 15k/1k 0,84 V. La cella
-  lavora ×16: Rin 1,84k, Ro 3,91k, Rf 10k, C 100n [PROVVISORIO].
+  lavora ×16: Rin 1,84k, Ro 11,8k dal −15LN, Rf 10k, C 100n [PROVVISORIO].
 - **Gradini da aggiornamento** (simulato, RISULTATI-cella-cv §1): a 1 kHz
   resta un'ondulazione in più di 0,015 dB nella zona del feedback e 0,05 dB
   sotto −70 dB. A 8 kHz, con l'ADC a 2 kHz e l'interpolazione, la CV non si
@@ -262,8 +266,8 @@ Fonte: backplane.py (pin liberi); il resto è deduzione mia.
 1. ~~Simulazione della cella CV~~ fatta il 2026-11-09: `misto/sim/RISULTATI-cella-cv.md`.
 2. ~~Modello del firmware in Python~~ fatto il 2026-11-09 (`misto/script/firmware_fxret.py`):
    R1-R7 passano con media di 8, isteresi 2 passi, NTC entro ±2 °C (R6 al limite)
-   e taratura REW entro 0,03 dB. Aperti: guasto del −REF5 e saturazione negativa
-   della cella (RISULTATI-cella-cv §4).
+   e taratura REW entro 0,03 dB. Guasto del riferimento e saturazione negativa: fatto
+   il 2026-11-10 (RISULTATI-cella-cv §5, offset dal −15LN e clamp).
 3. **Conteggio delle impronte** col generatore, dopo 1 e 2.
 4. Gli altri moduli dopo il FX-RET: master (stato sicuro del MASTER: chiuso
    all'accensione va bene, chiuso al riavvio del chip no), canali (fader e

@@ -1,0 +1,37 @@
+* MISTO cella CV: guasti e saturazione negativa (todo 280; misto/03 §4.3, RISULTATI-cella-cv §4)
+* Cella: DAC 0…2,5 V -> Rin 1,84k -> nodo di somma; offset da Ro; Rf 10k // Cf 100n;
+* uscita -> partitore 15k/1k -> pin EC- (limite +-1 V del 2181).
+* c=0 PRIMA : offset da -REF5 (-5 V) con Ro 3,91k, nessun clamp.
+* c=1 DOPO  : offset da -15LN (-15 V, il rail dell'op-amp) con Ro 11,8k, clamp BAS416 in
+*             retroazione (catodo sull'uscita, anodo sul nodo di somma): uscita >= ~-0,6 V.
+* g=0 nominale; g=1 offset perso (rif. a 0 V: -REF5 morto, o Ro aperta); g=2 DAC ad alta
+*   impedenza (Rin staccata); g=3 riferimento del DAC morto (uscita DAC = 0, come codice zero).
+* Pin positivo = taglio (6,1 mV/dB); pin negativo = guadagno. Pin 0 = 0 dB.
+.include ../../sim/lib/opamp-audio.inc
+* diodo a bassa perdita classe BAS416 (Is ~ pA) [modello approssimato, da datasheet]
+.model DLL D(Is=5e-12 N=1.9 Rs=2 Cjo=2p)
+.param c=1 g=0
+.param vofs={if(c,-15,-5)} ro={if(c,11.8k,3.91k)}
+.param vofsg={if(g==1,0,vofs)} rin={if(g==2,1e12,1.84k)} kdac={if(g==3,0,1)}
+Vcc vp 0 15
+Vee vm 0 -15
+Vo nofs 0 {vofsg}
+Vd d0 0 0
+Ed dac 0 d0 0 {kdac}
+Rin dac sj {rin}
+Ro nofs sj {ro}
+Rf sj co 10k
+Cf sj co 100n
+Dcl sj ncl DLL
+Rcl ncl co {if(c,1m,1e12)}
+Xop 0 sj co vp vm OP1654
+Rt co pin 15k
+Rb pin 0 1k
+.dc Vd 0 2.5 0.0025
+.step param c list 0 1
+.step param g list 0 1 2 3
+.meas dc pz FIND V(pin) AT 0
+.meas dc pf FIND V(pin) AT 2.5
+.meas dc pmin MIN V(pin)
+.meas dc pmax MAX V(pin)
+.end
