@@ -688,8 +688,12 @@ class Design:
         """d.link_pairs = True (default spento): unisce con una pista dritta due pad vicini della
         stessa impronta e della stessa rete, a foro passante (pin doppi del C96, cursore e capo di un trimmer).
         Freerouting li lascia spesso aperti (master, 2026-11-04: RV4-2/RV4-3, J1-a3/a4, J4).
-        La pista si salta se passa a meno di 0,3 mm da un pad di un'altra rete. Masse escluse."""
+        La pista si salta se passa a meno di 0,3 mm da un pad di un'altra rete. Masse escluse.
+        d.link_pairs_masse = True (default spento): anche le masse senza colata (CTRL_GND, CHASSIS;
+        mai d.gnd). Un pin gemello rimasto aperto fa disfare a Freerouting 2.5 tutta la rete nelle
+        passate dopo (canale, 2026-11-10: CTRL_GND 1 aperto alla passata 1, 21 alla 2)."""
         n = 0
+        escluse = {self.gnd} if getattr(self, "link_pairs_masse", False) else self.masse
         tutti = [pd for f in b.GetFootprints() for pd in f.Pads()]
         for fp in b.GetFootprints():
             per = {}
@@ -699,7 +703,7 @@ class Design:
                 # che non ha tracciato lui (giro 11 del master: 11 falsi aperti), il DRC no
                 if pad.GetAttribute() != pcbnew.PAD_ATTRIB_PTH:
                     continue
-                if net and net not in self.masse and not net.startswith("unconnected-"):
+                if net and net not in escluse and not net.startswith("unconnected-"):
                     per.setdefault(net, []).append(pad)
             for net, pads in per.items():
                 for a, c in zip(pads, pads[1:]):
