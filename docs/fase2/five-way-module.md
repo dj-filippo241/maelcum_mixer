@@ -729,6 +729,11 @@ A banco: trim bilanciamento pair solo se il servo esce dall'autorità (±14,5 V)
   stile Pioneer DJM (dec. 81 che revisiona dec. 65: release ~0,3 s «leggibile
   a zone con ballistica viva»), clip latch 300-500 ms, segmenti = design modulo
   metering (questione 19/54).
+- **LED di livello delle 5 vie (dec. 176 g, 2026-11-11)**: alla stessa
+  presa del meter, dopo il drive, con un banco d'analisi agli incroci H e
+  un rivelatore + LED3 per via. Design in `five-way-led-livello.md`,
+  simulazione in `sim/five-way/RISULTATI-led-livello.md`; soglie -18 / +12 /
+  +18 dBu all'uscita [PROVVISORIO, A24].
 
 ## 5bis. Drive v0.4 — GROWL + NASTRO (DECISIONE 99, 2026-10-13) [SIMULATO, valori PROVVISORI — griglia da confermare da Filippo]
 

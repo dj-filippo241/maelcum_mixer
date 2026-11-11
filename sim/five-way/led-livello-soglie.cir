@@ -1,0 +1,123 @@
+* =====================================================================
+* LED DI LIVELLO DELLE 5 VIE (dec. 176 g, todo 291) — SOGLIE DI ACCENSIONE
+* Design: docs/fase2/five-way-led-livello.md  Risultati: RISULTATI-led-livello.md
+* Catena per via (variante raccomandata): presa L e R (nodo a -6 dBu interni,
+* driver + 33 ohm) -> sommatore invertente (L+R)/2 x 0,576 -> banco d'analisi
+* Sallen-Key Butterworth agli incroci H (60 / 250 / 1,2k / 8k) -> rivelatore
+* di picco del MIC -> LED3 (LM339 + LED bicolore).
+* Quattro catene, ognuna col suo generatore:
+*   a = SUB    40 Hz   (LP 60)
+*   b = MID    550 Hz  (HP 250 + LP 1200)
+*   c = SUPER  10 kHz  (HP 8000)
+*   d = MID    550 Hz, superdiodo SENZA clamp (cella del MIC com'e' disegnata)
+* Il livello sale a tratti lenti attorno alle tre soglie (5 dB/s):
+* V(lvl) = livello in dBu INTERNI di un seno (0 dBu = 1,0954 Vp).
+* Soglie attese [PROVVISORIO]: verde -24, giallo +6, rosso +12 dBu interni
+* (= -18 / +12 / +18 dBu riferiti all'uscita del modulo, make-up +6 dB).
+* Misure: livello a cui la corrente del LED passa 1 mA.
+*   thg = verde acceso; thy = rosso acceso col verde (giallo);
+*   thr = verde spento dal latch (rosso).
+* =====================================================================
+.include ../lib/opamp-audio.inc
+.include led-livello.inc
+Vp18 vp18 0 DC 18
+Vm18 vm18 0 DC -18
+Vp15 vp 0 DC 15
+Vm15 vm 0 DC -15
+V5 v5 0 DC 5
+* Soglie: partitore sul +15 LN, comune alle 5 vie (E96)
+Rt1 vp vr 127k
+Rt2 vr vy 12.7k
+Rt3 vy vg 12.4k
+Rt4 vg 0 402
+Ct1 vr 0 100n
+Ct2 vy 0 100n
+Ct3 vg 0 100n
+Rl1 v5 vtl 10k
+Rl2 vtl 0 10k
+Cl1 vtl 0 100n
+Vlvl lvl 0 PWL(0 -27 1.2 -21 1.4 3 2.2 7 2.3 10 3.1 14)
+* --- catena a: SUB 40 Hz
+Bs_a src_a 0 V=1.0954*pow(10,V(lvl)/20)*sin(6.283185307*40*time)
+Xdr_a src_a dr_a dr_a vp18 vm18 OP1612
+Rs_a dr_a tap_a 33
+Rinl_a tap_a sn_a 20k
+Rinr_a tap_a sn_a 20k
+Rf_a sn_a so_a 5.76k
+Cf_a sn_a so_a 100p
+Xsum_a 0 sn_a so_a vp vm OP1654
+Xlp_a so_a af_a vp vm LP2 R=17.8k C1=220n C2=100n
+Xdet_a af_a met_a hold_a vp vm DET
+Xled_a met_a vr vy vg vtl v5 kr_a gfd_a lt_a LED3
+Dr_a v5 lkr_a LEDR
+Rlr_a lkr_a kr_a 1k
+Dg_a v5 lkg_a LEDG
+Rlg_a lkg_a gfd_a 1k
+* --- catena b: MID 550 Hz
+Bs_b src_b 0 V=1.0954*pow(10,V(lvl)/20)*sin(6.283185307*550*time)
+Xdr_b src_b dr_b dr_b vp18 vm18 OP1612
+Rs_b dr_b tap_b 33
+Rinl_b tap_b sn_b 20k
+Rinr_b tap_b sn_b 20k
+Rf_b sn_b so_b 5.76k
+Cf_b sn_b so_b 100p
+Xsum_b 0 sn_b so_b vp vm OP1654
+Xhp_b so_b hp_b vp vm HP2 C=22n Rfb=20.5k Rgnd=41.2k
+Xlp_b hp_b af_b vp vm LP2 R=19.6k C1=10n C2=4.7n
+Xdet_b af_b met_b hold_b vp vm DET
+Xled_b met_b vr vy vg vtl v5 kr_b gfd_b lt_b LED3
+Dr_b v5 lkr_b LEDR
+Rlr_b lkr_b kr_b 1k
+Dg_b v5 lkg_b LEDG
+Rlg_b lkg_b gfd_b 1k
+* --- catena c: SUPER 10 kHz
+Bs_c src_c 0 V=1.0954*pow(10,V(lvl)/20)*sin(6.283185307*10k*time)
+Xdr_c src_c dr_c dr_c vp18 vm18 OP1612
+Rs_c dr_c tap_c 33
+Rinl_c tap_c sn_c 20k
+Rinr_c tap_c sn_c 20k
+Rf_c sn_c so_c 5.76k
+Cf_c sn_c so_c 100p
+Xsum_c 0 sn_c so_c vp vm OP1654
+Xhp_c so_c af_c vp vm HP2 C=1n Rfb=14k Rgnd=28k
+Xdet_c af_c met_c hold_c vp vm DET
+Xled_c met_c vr vy vg vtl v5 kr_c gfd_c lt_c LED3
+Dr_c v5 lkr_c LEDR
+Rlr_c lkr_c kr_c 1k
+Dg_c v5 lkg_c LEDG
+Rlg_c lkg_c gfd_c 1k
+* --- catena d: MID 550 Hz, superdiodo senza clamp
+Bs_d src_d 0 V=1.0954*pow(10,V(lvl)/20)*sin(6.283185307*550*time)
+Xdr_d src_d dr_d dr_d vp18 vm18 OP1612
+Rs_d dr_d tap_d 33
+Rinl_d tap_d sn_d 20k
+Rinr_d tap_d sn_d 20k
+Rf_d sn_d so_d 5.76k
+Cf_d sn_d so_d 100p
+Xsum_d 0 sn_d so_d vp vm OP1654
+Xhp_d so_d hp_d vp vm HP2 C=22n Rfb=20.5k Rgnd=41.2k
+Xlp_d hp_d af_d vp vm LP2 R=19.6k C1=10n C2=4.7n
+Xdet_d af_d met_d hold_d vp vm DETN
+Xled_d met_d vr vy vg vtl v5 kr_d gfd_d lt_d LED3
+Dr_d v5 lkr_d LEDR
+Rlr_d lkr_d kr_d 1k
+Dg_d v5 lkg_d LEDG
+Rlg_d lkg_d gfd_d 1k
+.ic V(lt_a)=5 V(hold_a)=0 V(lt_b)=5 V(hold_b)=0 V(lt_c)=5 V(hold_c)=0 V(lt_d)=5 V(hold_d)=0
+.nodeset V(met_a)=0 V(so_a)=0 V(af_a)=0 V(met_b)=0 V(so_b)=0 V(af_b)=0 V(met_c)=0 V(so_c)=0 V(af_c)=0 V(met_d)=0 V(so_d)=0 V(af_d)=0
+.options cshunt=1e-15
+.save V(lvl) V(met_a) I(Rlg_a) I(Rlr_a) V(met_b) I(Rlg_b) I(Rlr_b) V(met_c) I(Rlg_c) I(Rlr_c) V(met_d) I(Rlg_d) I(Rlr_d)
+.tran 0 3.1 0 2u
+.meas tran thg_a FIND V(lvl) WHEN I(Rlg_a)=1m TD=0.3 RISE=1
+.meas tran thy_a FIND V(lvl) WHEN I(Rlr_a)=1m TD=0.3 RISE=1
+.meas tran thr_a FIND V(lvl) WHEN I(Rlg_a)=1m FALL=LAST
+.meas tran thg_b FIND V(lvl) WHEN I(Rlg_b)=1m TD=0.3 RISE=1
+.meas tran thy_b FIND V(lvl) WHEN I(Rlr_b)=1m TD=0.3 RISE=1
+.meas tran thr_b FIND V(lvl) WHEN I(Rlg_b)=1m FALL=LAST
+.meas tran thg_c FIND V(lvl) WHEN I(Rlg_c)=1m TD=0.3 RISE=1
+.meas tran thy_c FIND V(lvl) WHEN I(Rlr_c)=1m TD=0.3 RISE=1
+.meas tran thr_c FIND V(lvl) WHEN I(Rlg_c)=1m FALL=LAST
+.meas tran thg_d FIND V(lvl) WHEN I(Rlg_d)=1m TD=0.3 RISE=1
+.meas tran thy_d FIND V(lvl) WHEN I(Rlr_d)=1m TD=0.3 RISE=1
+.meas tran thr_d FIND V(lvl) WHEN I(Rlg_d)=1m FALL=LAST
+.end

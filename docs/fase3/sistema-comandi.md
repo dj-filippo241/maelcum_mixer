@@ -141,7 +141,7 @@ mia, pezzi da confermare a catalogo.
 | | WIDTH | 5 | grande | no | era media; doppio 1k ancora da trovare (§curve) |
 | | GROWL e NASTRO | 2 | molto grande (dec. 176) | no | come oggi |
 | | KILL | 5 | levetta grande | — | ON-OFF-(ON) (dec. 121) |
-| | LED di livello | 5 | LED tricolore | — | verde / giallo / rosso per via (dec. 176); punto di lettura e soglie da progettare |
+| | LED di livello | 5 | LED tricolore | — | verde / giallo / rosso per via (dec. 176); lettura dopo il drive, soglie -18 / +12 / +18 dBu [PROVVISORIO] (`docs/fase2/five-way-led-livello.md`) |
 | Master | MASTER | 1 | grande | 0 dB al centro | come oggi |
 | | BOOTH | 1 | media | no | |
 | | MONO | 1 | bottone grande | — | |
