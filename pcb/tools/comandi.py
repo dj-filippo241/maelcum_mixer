@@ -277,7 +277,19 @@ class Comandi:
                 self.usate.update(v for v in pins.values() if v)
             d.R("MREF" + t, meno, rprog, note="NOTA: corrente dei LED ~2 mA (metering §1): I = 12,5 V / R, "
                                               "formula del datasheet LM3915 da verificare")
-            d.C(piu, meno, "100n")
+            if chip:
+                # 100n fuori dalla fila dei pin 1-9, all'altezza dei pin 2 (V-) e 3 (V+); se lì c'è
+                # un altro pezzo, oltre la testa del DIP. Piazzato dal generatore cadeva a ~30 mm
+                # (controllo audio A1, canale-comandi 2026-11-11)
+                for px, py in ((-7.0, -6.35), (0.0, -13.5)):
+                    ox, oy = _ruota(px, py, rot)
+                    box = self._riquadro(C0805, (0.0, 0.0), cx + ox, cy + oy, rot + 90)
+                    if self._libero(box):
+                        break
+                self.metti("C", "Device:C", "100n", C0805, {1: piu, 2: meno}, (0.0, 0.0), cx + ox, cy + oy,
+                           (rot + 90, rot), note="disaccoppiamento dell'LM3915 %s" % t)
+            else:
+                d.C(piu, meno, "100n")
             for s in range(1, 11):
                 i = (len(rhi) - 1 - k) * 10 + (s - 1)       # 0 = soglia più bassa di tutta la barra
                 if orizz:

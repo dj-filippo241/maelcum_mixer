@@ -181,9 +181,9 @@ Posizioni da `docs/pannelli/coordinate.json`, modulo «master» (dec. 176 f).
 
 NOTA della scheda comandi (da verificare):
 
-1. **A1: i 100n dei quattro LM3915 stanno fino a 77 mm dal chip** (pista fino a 113 mm). La cella
-   `meter` piazza i chip a mano ma lascia i condensatori al generatore, che non li mette vicino.
-   C'è una riserva da 2u2 per barra. Da sistemare nella cella prima del prototipo.
+1. ~~A1: i 100n dei quattro LM3915 fino a 77 mm dal chip~~ **Corretto il 2026-11-11**: la cella
+   `meter` mette il 100n accanto ai pin 2-3 del chip fissato. V+ (pin 3) a 3,2 mm dal 100n; restano
+   in A1 i pin 9 (MODE, a +5V: non è un'alimentazione) a ~15 mm. Rigenerata: **PASSA**.
 2. CLIP_L e CLIP_R arrivano sul cavo ma il pannello non ha un LED di clip: restano liberi.
 3. Pinout dell'LM3915 dal simbolo KiCad LM3914N (stesso DIP-18): da verificare sul datasheet TI.
 4. Corrente dei LED con 6,2k: formula del datasheet da verificare (~2 mA, metering §1).

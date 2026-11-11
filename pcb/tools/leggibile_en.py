@@ -154,6 +154,13 @@ BLOCKS = {
     "METER L e R: 2 LM3915 in cascata per lato, 20 LED": "METERS L and R: 2 cascaded LM3915 per side, 20 LEDs",
     "CAVI: J1 verso la scheda di segnale (J3), J2 verso la scheda d'uscita L (J4)":
         "CABLES: J1 to the signal board (J3), J2 to the L output board (J4)",
+    # canale, scheda comandi
+    "POT: GAIN e ISOLATOR (pot doppi, sezione A = L, B = R)": "POTS: GAIN and ISOLATOR (dual pots, section A = L, B = R)",
+    "LEVETTE: FILTRO (HPF/OFF/LPF) e LINE/PHONO": "TOGGLES: FILTER (HPF/OFF/LPF) and LINE/PHONO",
+    "BOTTONI: FX1-4 (assign verso il FX-SEND) e CUE": "BUTTONS: FX1-4 (assign to the FX-SEND) and CUE",
+    "METER: un LM3915, 10 LED (+24...-3 dBu)": "METER: one LM3915, 10 LEDs (+24...-3 dBu)",
+    "FADER (PTA6043, corsa 60 mm, dec. 169)": "FADER (PTA6043, 60 mm travel, dec. 169)",
+    "CAVI: J2 verso canale.py (J2), J3 verso fx-send.py (J3)": "CABLES: J2 to canale.py (J2), J3 to fx-send.py (J3)",
 }
 
 VALUES = {
@@ -170,6 +177,8 @@ VALUES = {
     "1x6 bottoni": "1x6 buttons",
     "2x12 cavo piatto": "2x12 ribbon cable",
     "10k doppio": "10k dual",
+    "10k lin doppio selezionato": "10k lin dual, matched",
+    "10k lin B doppio": "10k lin B dual",
     "2x10 cavo piatto": "2x10 ribbon cable",
     "2x7 cavo piatto": "2x7 ribbon cable",
     "2x2 cavo": "2x2 cable",

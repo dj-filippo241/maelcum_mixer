@@ -130,8 +130,7 @@ Divisione di partenza (proposta originale):
 ## Da fare
 
 - Divisione in due schede, poi PCB.
-- Cavo J2 (36 fili) e scheda comandi: GAIN doppio, 4 pot doppi B dell'isolator, fader,
-  levetta, tasto CUE, LM3915.
+- ~~Cavo J2 (36 fili) e scheda comandi~~: scheda comandi fatta il 2026-11-11 (sezione in fondo).
 
 ## Esito della PCB (2026-11-04)
 
@@ -145,3 +144,31 @@ Divise in due schede (sopra), ±18 a 0,4 mm (a 0,6 Freerouting lasciava -18V ape
 Un PASSA singolo non è una prova (Freerouting cambia a ogni giro). A2 alto: le reti dei pot e
 del ponte fanno strada lunga (cavo). Polo RC d'ingresso, TVS e C in parallelo della banca
 restano come le NOTE sopra.
+
+## Scheda comandi (todo 270, 2026-11-11)
+
+`canale-comandi.py`, file in `comandi/`, celle in `pcb/tools/comandi.py`. 48 × 262,4 mm, parallela
+al pannello (50 × 266,4), retta dai dadi dei pot. Posizioni da `coordinate.json`, modulo «canale».
+
+- Pezzi: GAIN pot doppio 10k lin selezionato (AGND - GW - BUF, dec. 162); HIGH, MID-HIGH,
+  LOW-MID, LOW pot doppi lineari B 10k (AGND - KnW - banda: antiorario = kill, dec. 168);
+  levetta FILTRO (comune CTRL_GND, HPF = FSW0, LPF = FSW1); levetta LINE/PHONO senza reti;
+  bottoni FX1-4 e CUE con luce; barra da 10 LED con un LM3915 (RHI = +REF5, +24...-3 dBu);
+  fader PTA6043 (+REF5 in cima, POT_F, AGND).
+- Cavi: J2 2×18 verso J2 di `canale.py` (ordine letto dal file); J3 1×6 verso J3 di `fx-send.py`
+  (+5VF, BTN1-4, CTRL_GND).
+- **PASSA** al 1o giro, e di nuovo al 2o e al 3o (2026-11-11): 34 componenti, 56 reti, 0 aperti,
+  ERC pulito, DRC 0 errori. A1: resta il pin 9 (MODE) dell'LM3915 a ~16 mm dal 100n.
+
+NOTA della scheda comandi (da verificare):
+
+1. **Bottoni FX con reti proprie** (+5VF_FXS, GND_FXS): il +5VF del canale e quello del FX-SEND
+   non si toccano, e i due cavi non chiudono un anello di masse sulla scheda comandi.
+2. **RHI del meter = +REF5 dei pot**: il partitore interno dell'LM3915 carica il riferimento dei
+   pot e del fader. Il master usa un follower dedicato (VREFA). Da misurare a banco; se serve, un
+   follower sulla scheda di segnale e un filo in più sul cavo.
+3. **LINE/PHONO**: la levetta si monta ma non ha fili; arrivano col front-end PHONO di Rev B.
+4. Levette e bottoni: impronte segnaposto (NKK G1xJP, GW12LJP), pinout da rifare col pezzo scelto.
+   Verso della levetta FILTRO (HPF in alto) dal render: da verificare sul pezzo.
+5. Pot di classe 14 mm dell'isolator su impronta RK09L (KiCad non ha l'RK14): ingombro da 14 mm
+   tenuto nel controllo del piazzamento, come FX-SEND e MIC.

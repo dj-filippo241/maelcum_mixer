@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "filename": "canale-comandi.kicad_pro",
+    "version": 3
+  },
+  "board": {
+    "design_settings": {
+      "defaults": {},
+      "rules": {
+        "min_clearance": 0.2,
+        "min_track_width": 0.12,
+        "min_copper_edge_clearance": 0.3
+      }
+    }
+  },
+  "net_settings": {
+    "classes": [
+      {
+        "name": "Default",
+        "clearance": 0.2,
+        "track_width": 0.25,
+        "via_diameter": 0.8,
+        "via_drill": 0.4
+      },
+      {
+        "name": "P040",
+        "track_width": 0.4,
+        "clearance": 0.2,
+        "via_diameter": 0.8,
+        "via_drill": 0.4
+      },
+      {
+        "name": "P050",
+        "track_width": 0.5,
+        "clearance": 0.2,
+        "via_diameter": 0.8,
+        "via_drill": 0.4
+      }
+    ],
+    "netclass_patterns": [
+      {
+        "netclass": "P040",
+        "pattern": "+5VF"
+      },
+      {
+        "netclass": "P050",
+        "pattern": "AGND"
+      },
+      {
+        "netclass": "P040",
+        "pattern": "CTRL_GND"
+      }
+    ],
+    "meta": {
+      "version": 4
+    }
+  }
+}
