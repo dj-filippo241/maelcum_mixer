@@ -26,7 +26,7 @@ ponte 2x18 sta in archivio/ (canale-segnale.py, canale-isolator.py).
 import os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "tools"))
-from pcbgen import Design, boxsym
+from pcbgen import DesignRiprova, boxsym
 from backplane import c96, SYM_C96, FP_C96
 import celle_vca as cv
 from celle_vca import opa2, opa4, vca, iv, shaper, law_trim, C12, SOIC14
@@ -34,10 +34,11 @@ from celle_micmono import power_18_sw, power_ln, ADG
 from banca import banca
 
 L, H_DIETRO, H_DAVANTI = 287, 162, 129     # PIANO-SCHEDE-F, dec. 173
-d = Design("canale", HERE, "maelcum CANALE CDJ/LINE (v0.4) - bozza v0.1", board=(L, H_DIETRO, H_DAVANTI), rev="0.2-bozza")
+d = DesignRiprova("canale", HERE, "maelcum CANALE CDJ/LINE (v0.4) - bozza v0.1", board=(L, H_DIETRO, H_DAVANTI), rev="0.2-bozza")
 d.gnd = "AGND"
 d.inner_signal = True     # SMD sui due lati (dec. 142)
 d.link_pairs = True       # pin gemelli del C96 (+5V, CTRL_GND, RAW) e cursore-capo dei trimmer: come il MIC (todo 248, 272)
+d.link_pairs_masse = True   # anche CTRL_GND (a23-a24) e CHASSIS (a25-a26): un gemello aperto fa disfare la rete a Freerouting (giro 8)
 C10 = "Capacitor_SMD:C_1210_3225Metric"
 # NOTA: logica in TSSOP-14 (stesso pinout del SOIC): in SOIC-14 il pin VCC (14) sta nell'angolo e il
 # 100n legato al pin cadeva sul corpo del chip (DRC courtyards_overlap, 2026-11-04)

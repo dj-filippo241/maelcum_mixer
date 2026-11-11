@@ -202,7 +202,10 @@ backplane) resta dritto; il lato in alto scende in diagonale. x = 0 è il lato d
 - Un rettangolo dà gli stessi file di prima: le schede già generate non cambiano.
 - Le misure di ogni scheda vengono da `pcb/PIANO-SCHEDE-F.md`. Prima scheda a trapezio: il canale
   (287 × 162-129 mm, dec. 173). Le altre (MIC, MONO, FX-SEND, FX-RET) restano a 100 × 220 finché
-  non si rigenerano sulle misure del piano.
+  non si rigenerano sulle misure del piano. Il canale PASSA il 2026-11-11 (giro 10, todo 272).
+- `DesignRiprova` (2026-11-11): Freerouting fino a `d.route_tries` volte (4), finché il DRC non
+  trova aperti né errori di distanza. Nato nel MIC (todo 248), ora nel generatore: lo usano
+  `mic.py` e `canale.py`. Le schede grandi lo vogliono: ogni giro sbaglia in un punto diverso.
 
 ## Cosa resta (in ordine)
 

@@ -1,12 +1,16 @@
 # CANALE CDJ/LINE: note della bozza v0.1 (todo 167, 2026-11-04)
 
-## Stato al 2026-11-09 sera (todo 272, dec. 173): scheda sola a trapezio, NON PASSA
+## Stato al 2026-11-11 (todo 272, dec. 173): scheda sola a trapezio, PASSA
 
 `canale.py` è riscritto su una scheda sola: 287 mm da dietro a davanti, alta 162 → 129 mm,
-383 impronte, isolator dentro (banca.py), niente ponte. Filippo tiene i 287 mm (tetto 70 %, dec. 156;
-opzione 1 del 9/11). La versione su due schede sta in `archivio/` (segnale e isolator, rigenerabili).
-I file KiCad in questa cartella restano quelli della scheda segnale del 4/11 finché il canale nuovo
-non PASSA (un NON PASSA non si committa).
+382 impronte, 242 reti, isolator dentro (banca.py), niente ponte. Filippo tiene i 287 mm (tetto 70 %,
+dec. 156; opzione 1 del 9/11). La versione su due schede sta in `archivio/` (segnale e isolator,
+rigenerabili). I file KiCad di questa cartella sono ora quelli della scheda sola.
+
+Esito del giro 10 (2026-11-11): **PASSA** al primo dei 4 tentativi. DRC 0 errori; avvisi 52
+silk_overlap, 63 silk_over_copper, 4 via_dangling, 58 attesi. ERC 2 avvisi VSS dell'ADG. Controllo
+audio A1/A2/A3/A4/A5 = 32 / 35 / 4 / 6 / 2 (A1: C dei regolatori lontani, come le altre schede).
+Un PASSA singolo non è una prova: per questo `canale.py` usa `pcbgen.DesignRiprova` (sotto).
 
 Giri del 9/11:
 1-3. Contorno in diagonale passato a Freerouting: fanout 13 volte più lento, un giro non finisce in un'ora,
@@ -22,7 +26,16 @@ Giri del 10/11:
    rete (U24 pin 12-13, ingressi liberi del 74HC86; U23 pin 13 del 74HC14) e `link_pairs`, che salta le
    reti di massa (`masse`); oppure una colata CTRL_GND attorno alla logica.
 
-Da provare (9/11): CTRL_GND più larga o in colata vicino alla logica (oggi 0,3 mm per i pin TSSOP, lunga dalla
+Giri dell'11/11:
+8. `d.link_pairs_masse = True` (pcbgen, todo 272): lega anche i pin gemelli di CTRL_GND (a23-a24) e
+   CHASSIS (a25-a26) del C96. Un gemello aperto faceva disfare a Freerouting 2.5 tutta la rete.
+   CTRL_GND chiusa: resta **1 aperto, SKAB2_R** (pista di 0,29 mm staccata dal pad di C88).
+9. Stesso file, giro nuovo: Freerouting chiude tutto, ma il DRC trova SN2_F aperta (R142) e una
+   distanza di 0,247 mm su 0,25 (via -15LN, pista +18V). Ogni giro sbaglia in un punto diverso.
+10. La ripetizione del MIC (fino a 4 tentativi, scheda ricostruita e passate -mp diverse) passa nel
+   generatore come `DesignRiprova`; `canale.py` e `mic.py` la usano. **PASSA** al primo tentativo.
+
+Prima (9/11) restava da provare: CTRL_GND più larga o in colata vicino alla logica (oggi 0,3 mm per i pin TSSOP, lunga dalla
 logica al C96); blocco ALIMENTAZIONE più vicino ai pin RAW del C96 (`d.power_first`); più giri (non deterministico).
 
 

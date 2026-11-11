@@ -1434,3 +1434,55 @@ class Design:
         if err:
             sys.exit(1)
         return res
+
+
+class DesignRiprova(Design):
+    """Design che ripete Freerouting fino a d.route_tries volte (4) finché non resta niente di
+    aperto (todo 248 sul MIC, poi 272 sul canale da 287 mm).
+
+    Perché cambia da un giro all'altro: il piazzamento è identico, ma la scheda scritta da
+    build_pcb tiene pezzi e pin in un ordine diverso a ogni costruzione, il .dsn lo eredita e
+    Freerouting dà un risultato diverso per ogni ordine. Rileggere lo stesso file dà lo stesso
+    ordine e lo stesso risultato (tre tentativi sulla stessa scheda: tre volte lo stesso
+    aperto; anche esportando il .dsn in un processo nuovo). Per questo ogni nuovo tentativo
+    ricostruisce la scheda con build_pcb e cambia il numero massimo di passate (-mp 40, poi
+    20, 30): Freerouting oscilla fra due stati dalla passata ~14 e si ferma in uno diverso.
+    Il controllo è il DRC di kicad-cli sugli errori (aperti e distanze), con le colate di
+    massa come nel giro vero e le classi del .kicad_pro. Resta il tentativo che passa (o
+    l'ultimo). Un PASSA al secondo o terzo tentativo è scritto nelle note del riepilogo."""
+
+    def route(self, pcb, passes=40):
+        import shutil
+        prova = os.path.join(self.outdir, "out", "prova-routing.kicad_pcb")
+        prova_pro, prova_drc = prova[:-len(".kicad_pcb")] + ".kicad_pro", prova + ".drc.json"
+        tries = getattr(self, "route_tries", 4)
+        esiti = []
+        for k in range(tries):
+            if k:
+                n = len(self.notes)
+                pcb = self.build_pcb()
+                del self.notes[n:]          # le note del piazzamento sono già scritte
+            mp = passes if k == 0 else (20, 30, 15)[(k - 1) % 3]
+            res = super().route(pcb, mp)
+            sig = {n: c for n, c in res.get("aperti", {}).items() if n not in (self.gnd, "CHASSIS")}
+            shutil.copy(pcb, prova)
+            shutil.copy(os.path.join(self.outdir, self.name + ".kicad_pro"), prova_pro)
+            self.pours(prova)
+            subprocess.run([CLI, "pcb", "drc", "--format", "json", "--severity-error",
+                            "-o", prova_drc, prova], capture_output=True)
+            rep = json.load(open(prova_drc)) if os.path.exists(prova_drc) else {}
+            unc = len(rep.get("unconnected_items", []))
+            tipi = {}
+            for v in rep.get("violations", []):
+                if v.get("severity") == "error":
+                    tipi[v.get("type")] = tipi.get(v.get("type"), 0) + 1
+            dist = sum(tipi.values())
+            esiti.append("giro %d (-mp %d): %s, DRC %d aperti, errori %s" % (k + 1, mp, sig or "Freerouting chiuso", unc, tipi or 0))
+            if res.get("ok") and not sig and unc == 0 and dist == 0 and rep:
+                break
+        for f in (prova, prova_pro, prova_drc, prova[:-len(".kicad_pcb")] + ".kicad_prl"):
+            if os.path.exists(f):
+                os.remove(f)
+        self.notes.append("Freerouting (%s, %d tentativi al più): %s" % (self.name, tries, "; ".join(esiti)))
+        res["tentativi"] = len(esiti)
+        return res
