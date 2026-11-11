@@ -1,0 +1,67 @@
+* MIC - rumore al pin EC- del VCA del MUTE e del limiter a riposo, prima e dopo il todo 288
+* A riposo (MUTE aperto, limiter sotto soglia) il VCA sta a 0 dB: il rumore del pin non esce come
+* rumore, diventa modulazione del guadagno (0,164 dB per mV). Qui la densita' al pin.
+* v=0: rete Ra 1k / Rb 2k / Rc 1k sul pin.
+* v=1: la rete sull'ingresso + di un OPA1612 x19,21 (4,99k / 274), poi partitore 4,99k / 274.
+* A riposo: MRC a massa con 10k // 10k // 220n; inseguitore OPA1654 (en 4,5 nV); LIM va con Rf 10k
+* alla massa virtuale della mezza onda (OPA1654 chiuso sul diodo: rd ~450 ohm a 0,1 mA; DSUB a massa).
+* VA e' solo la sorgente che .noise chiede. Op-amp lineari, E a 4 nodi.
+.subckt OPN12 inp inn out
+Rn inp inx 73
+E1 xx 0 inx inn 3.16e6
+R1 xx p1 3955
+C1 p1 0 1.59u
+E2 out 0 p1 0 1
+.ends OPN12
+.subckt OPN54 inp inn out
+Rn inp inx 1223
+E1 xx 0 inx inn 1e6
+R1 xx p1 5005
+C1 p1 0 1.59u
+E2 out 0 p1 0 1
+.ends OPN54
+.param v=0
+VA a 0 DC 0 AC 1
+* MUTE aperto
+Rm1 a mrc 10k
+Rm2 mrc 0 10k
+Cm mrc 0 220n
+Xd mrc mcv mcv OPN54
+* mezza onda a riposo
+Rh1 hn 0 10k
+Rd hn ho 450
+Xc 0 hn ho OPN54
+Rh2 hn lim 10k
+* rete
+Ra lim ecs 1k
+Rb mcv ecs 2k
+Rc ecs 0 1k
+* stadio nuovo
+Xn ecs nfb eco OPN12
+Rnf nfb eco 4.99k
+Rng nfb 0 274
+Rnt eco ecn 4.99k
+Rnb ecn 0 274
+* uscita scelta con E lineari
+Es1 xo 0 ecs 0 {1-v}
+Es2 osel xo ecn 0 {v}
+.step param v list 0 1
+.noise V(osel) VA dec 50 20 20k
+.meas noise on1 FIND V(onoise) AT 20
+.meas noise on2 FIND V(onoise) AT 31.5
+.meas noise on3 FIND V(onoise) AT 50
+.meas noise on4 FIND V(onoise) AT 80
+.meas noise on5 FIND V(onoise) AT 125
+.meas noise on6 FIND V(onoise) AT 200
+.meas noise on7 FIND V(onoise) AT 315
+.meas noise on8 FIND V(onoise) AT 500
+.meas noise on9 FIND V(onoise) AT 800
+.meas noise on10 FIND V(onoise) AT 1250
+.meas noise on11 FIND V(onoise) AT 2000
+.meas noise on12 FIND V(onoise) AT 3150
+.meas noise on13 FIND V(onoise) AT 5000
+.meas noise on14 FIND V(onoise) AT 8000
+.meas noise on15 FIND V(onoise) AT 12500
+.meas noise on16 FIND V(onoise) AT 20000
+.meas noise g1k FIND gain AT 1000
+.end

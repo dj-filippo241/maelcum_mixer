@@ -418,6 +418,9 @@ MUTE_CV ─Rb─┼── pin 3 EC−      Rc da pin 3 a massa
   MUTE_CV 2,5 V → +0,79 V al pin = −129 dB, sotto il ΔEc massimo assoluto di 1 V
   (vca-trim §2). Con 3,5 V si arrivava a 1,1 V: oltre il massimo. MUTE_CV: tasto →
   partitore dal +5 V → RC 1 ms (rampa della dec. 111).
+  [REV 2026-11-11, todo 288: un op-amp al rail portava il pin fino a 9 V. La rete Ra/Rb/Rc
+  ora entra in uno stadio x19,21 seguito da un partitore 1/19,21 (guadagno 1): al rail il pin
+  resta a 0,80 V. Limiter invariato; MUTE 0,77 V al pin = −126 dB. `sim/system/RISULTATI-ec-pin.md` §4.]
 - **Polarità**: l'I/V del VCA inverte. Si compensa scambiando gli ingressi del
   differenziale dopo l'INA (§3.1): costo zero, il modulo resta non invertente.
   [REV 2026-11-03, todo 227: SBAGLIATO. Datasheet THAT 2181 Rev 03 p. 7: «the

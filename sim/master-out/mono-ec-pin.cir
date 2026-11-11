@@ -1,0 +1,79 @@
+* MASTER - tasto MONO con la catena vera del pin EC-, prima e dopo il todo 288
+* Scopo: stessa rampa e stesso -100 dB col limite a 0,8 V sul pin.
+* Catena (pcb/master/master-segnale.py): tasto verso +5 REF -> MONO_SW (10k a massa) -> 10k ->
+* MRC (100n) -> op-amp U4B -> partitore -> pin 3 del VCA di S.
+* v=0 OGGI : U4B inseguitore, partitore 7,15k / 1k (5 V -> 0,6135 V).
+* v=1 NUOVO: U4B non invertente x2,36 (10,2k / 7,5k), partitore 18,2k / 1k (5 V -> 0,6146 V);
+*            op-amp al rail: rail / 19,2.
+* Segnale come mono-ms.cir: tutto su L, +18 dBu (8,70 Vp), 1 kHz; matrice M/S ideale; sonda HP
+* 2 poli 1,6 kHz per il click. Tasto premuto a 2,25 ms (al picco), rilasciato a 30 ms.
+* Op-amp: macro con polo (A0 1e5, 100 Hz, GBW 10 MHz) e clamp a rail - 0,2 V senza windup.
+.include ../lib/that2181.inc
+.model DCL D(Ron=1 Roff=1e12 Vfwd=0)
+.model SWM SW(Ron=1 Roff=1e12 Vt=0.5 Vh=0)
+.subckt OPT inp inn out vp vm
+G1 0 x inp inn 1e-5
+R1 x 0 1e10
+C1 x 0 0.1592p
+Eh hi 0 vp 0 1
+Vh hi hi2 0.2
+El lo 0 vm 0 1
+Vl lo2 lo 0.2
+Dh x hi2 DCL
+Dl lo2 x DCL
+Eo out 0 x 0 1
+.ends OPT
+.param v=0
+.param t0=2.25m t1=30m
+.param mrf={if(v,10.2k,1m)} mrg={if(v,7.5k,1e12)} mrt={if(v,18.2k,7.15k)}
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+V5 p5 0 5
+VL l 0 SINE(0 8.70 1000)
+VR r 0 0
+Em m 0 value={(V(l)+V(r))/2}
+Es s 0 value={(V(l)-V(r))/2}
+* ---- tasto e rampa
+Vctl ctl 0 PWL(0 0 {t0} 0 {t0+1u} 1 {t1} 1 {t1+1u} 0)
+S1 p5 msw ctl 0 SWM
+Rsw msw 0 10k
+Rrc msw mrc 10k
+Crc mrc 0 100n
+Xb mrc mn mbuf vcc vee OPT
+Rmf mn mbuf {mrf}
+Rmg mn 0 {mrg}
+Rmt mbuf ecs {mrt}
+Rmb ecs 0 1k
+* ---- VCA di S e matrice
+Xs s sw 0 ecs vcc vee THAT2181
+Elo lo 0 value={V(m)+V(sw)}
+Ero ro 0 value={V(m)-V(sw)}
+Ch1 lo h1 10n
+Rh1 h1 0 10k
+Ch2 h1 h2 10n
+Rh2 h2 0 10k
+.nodeset V(mrc)=0 V(mbuf)=0 V(ecs)=0
+.options cshunt=1e-15
+.step param v list 0 1
+.tran 0 55m 0 0.5u
+.meas tran lopre MAX ABS(V(lo)) FROM 1m TO {t0}
+.meas tran ropre MAX ABS(V(ro)) FROM 1m TO {t0}
+.meas tran hpbase MAX ABS(V(h2)) FROM 1m TO {t0}
+.meas tran hpmax MAX ABS(V(h2)) FROM {t0} TO {t0+12m}
+.meas tran lopost MAX ABS(V(lo)) FROM 15m TO 25m
+.meas tran ropost MAX ABS(V(ro)) FROM 15m TO 25m
+.meas tran ec03 FIND V(ecs) AT {t0+0.3m}
+.meas tran ec1 FIND V(ecs) AT {t0+1m}
+.meas tran ec2 FIND V(ecs) AT {t0+2m}
+.meas tran ec5 FIND V(ecs) AT {t0+5m}
+.meas tran ecfin FIND V(ecs) AT 29m
+.meas tran t_50 WHEN V(ecs)=0.305 TD={t0} RISE=1
+.meas tran t_95 WHEN V(ecs)=0.58 TD={t0} RISE=1
+.meas tran t_off50 WHEN V(ecs)=0.305 TD={t1} FALL=1
+.meas tran t_off6 WHEN V(ecs)=0.0366 TD={t1} FALL=1
+.meas tran hpoff MAX ABS(V(h2)) FROM {t1} TO {t1+20m}
+.meas tran lofin MAX ABS(V(lo)) FROM 53m TO 55m
+.meas tran rofin MAX ABS(V(ro)) FROM 53m TO 55m
+.meas tran ec_max MAX V(ecs)
+.meas tran ec_min MIN V(ecs)
+.end

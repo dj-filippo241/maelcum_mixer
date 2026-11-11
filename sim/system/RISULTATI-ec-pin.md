@@ -44,14 +44,44 @@ chip non si rompe. È un guasto, come oggi.
 Il dip ora arriva a −100 dB un po' prima (la rampa satura verso l'85 %) e riparte un po' dopo.
 **Da risimulare** con la logica vera (`filtsel-dip.cir`, pcb/canale/NOTE.md punto 2).
 
-## 3. Altri pin EC− da guardare (non corretti qui)
+## 3. Altri pin EC− da guardare
 
-- MONO del master (`master-segnale.py`): follower → 7,15k / 1k. Follower al rail: 1,8 V al pin.
-  Solo guasto.
-- MUTE del MIC (`mic.py`): LIM 1k, MUTE_CV 2k, 1k a massa. Inseguitore del MUTE al rail: ~3 V.
-  MUTE a 2,5 V col limiter che lavora: il pin si somma (stima mia: fino a ~0,9-1 V con 20-30 dB
-  di limitazione). Da simulare.
+- MONO del master e MUTE del MIC: corretti al §4 (todo 288).
 - Misto: la cella CV usa già il partitore 15k/1k (misto/sim/RISULTATI-cella-cv.md §2).
+
+## 4. MONO del master e MUTE del MIC (todo 288, 2026-11-10/11) [PROVVISORIO fino al prototipo]
+
+Stessa ricetta del §2: uno stadio con guadagno porta la CV su, un partitore alto la riporta al pin.
+Se l'op-amp va al rail, il pin resta a rail / D.
+
+- **MONO** (`master-segnale.py`, U4B): inseguitore + 7,15k / 1k diventa non invertente x2,36
+  (10,2k / 7,5k) + partitore 18,2k / 1k. Tasto chiuso: 5 V → 11,8 V → 0,615 V = −100 dB (prima 0,613).
+- **MUTE + limiter** (`mic.py`, U11 nuovo, OPA1612 doppio, seconda sezione a massa): la rete
+  Ra 1k / Rb 2k / Rc 1k resta uguale ma va sull'ingresso + di uno stadio x19,21 (4,99k / 274),
+  poi partitore 4,99k / 274 fino al pin: guadagno 1 dalla rete al pin.
+
+Netlist: `sim/system/ec-pin-mono-mute.cir` (.dc, guasti), `sim/master-out/mono-ec-pin.cir`
+(.tran del MONO), `sim/mic/mic-limiter-ecpin.cir` (.tran del limiter, 7 casi),
+`sim/master-out/mono-ec-noise.cir` e `sim/mic/mute-ec-noise.cir` (.noise, `noise_total.py`).
+
+| Caso | Prima | Ora |
+|---|---|---|
+| MONO: tasto chiuso | 0,613 V | 0,615 V |
+| MONO: op-amp al rail positivo | 1,88 V | 0,797 V |
+| MUTE premuto, limiter fermo | 0,786 V | 0,770 V (lo stadio satura: −126 dB invece di −129) |
+| MUTE premuto, limiter al rail positivo | 6,62 V | 0,796 V |
+| MUTE: inseguitore al rail, caso peggiore | 9,18 V | 0,796 V |
+| Stadio nuovo con Rf aperta | – | ±0,796 V |
+
+Limiter (`mic-limiter-ecpin.cir`): picchi, tempi di attacco e rilascio, curva statica da +10 a
++23 dBu identici entro 0,1 % nei 7 casi. MUTE: residuo d'uscita 1,1e-5 V in entrambi (−100 dB
+sullo 0 dBu), rampa 50 % a 0,5 ms come prima.
+
+Rumore al pin a tasto aperto (densità a 1 kHz): MONO 3,8 → 4,1 nV/√Hz (+0,6 dB), MUTE
+3,6 → 4,8 nV/√Hz (+2,5 dB). Al pin il rumore modula il guadagno (0,164 dB per mV): a −123 dBu non
+si sente.
+
+Verificato in: Python no / LTspice sì (.dc, .tran, .noise) / Live no (non serve: nessun effetto sonoro).
 
 File cambiati: `pcb/tools/celle_vca.py` (shaper, law_trim), `pcb/canale/canale.py` (dip),
 `pcb/master/master-segnale.py`, `pcb/fx-ret/fx-ret.py`, `pcb/fx-ret/fx-ret-reroute.py`.

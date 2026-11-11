@@ -1,0 +1,111 @@
+* MIC: MUTE + limiter (dec. 111, 145) con la rete vera del pin EC-, prima e dopo il todo 288
+* Scopo: dimostrare che lo stadio col limite a 0,8 V non cambia soglia, tempi e curva del limiter
+* ne' il MUTE. Catena del controllo come pcb/mic/mic.py (U7): inseguitore di SM, sottrattore,
+* mezza onda di precisione, inseguitore del MUTE, rete Ra 1k / Rb 2k / Rc 1k.
+* Raddrizzatore e picco restano blocchi ideali come in mic-limiter.cir (la correzione non li tocca).
+* v=0 OGGI : la rete sta sul pin.
+* v=1 NUOVO: la rete sta sull'ingresso + di un op-amp non invertente x19,21 (4,99k / 274) su +-15 LN;
+*            partitore 4,99k / 274 fino al pin (guadagno 1 dalla rete al pin). Con l'op-amp al rail il
+*            pin resta a rail / 19,21.
+* caso 1: prova di mic-limiter.cir (0 dBu, grido +20 dBu da 0,1 a 0,4 s, MUTE a 0,9 s).
+* caso 2: grido a +23 dBu (15,47 Vp, il VCA taglia), MUTE premuto a 0,2 s e rilasciato a 0,3 s:
+*         il caso d'uso peggiore per il pin.
+* casi 3-7: curva statica, ingresso +10 / +12 / +14 / +17 / +23 dBu tenuto fino alla fine.
+* Op-amp: macro con polo (A0 1e5, 100 Hz, GBW 10 MHz) e clamp a rail - 0,2 V senza windup.
+.include ../lib/that2181.inc
+.model D1N4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p Tt=4n)
+.model DCL D(Ron=1 Roff=1e12 Vfwd=0)
+.model SWM SW(Ron=1 Roff=1e12 Vt=0.5 Vh=0)
+.subckt OPT inp inn out vp vm
+G1 0 x inp inn 1e-5
+R1 x 0 1e10
+C1 x 0 0.1592p
+Eh hi 0 vp 0 1
+Vh hi hi2 0.2
+El lo 0 vm 0 1
+Vl lo2 lo 0.2
+Dh x hi2 DCL
+Dl lo2 x DCL
+Eo out 0 x 0 1
+.ends OPT
+.param v=0 caso=1
+.param f=1k
+.param a1=1.095
+.param a2={table(caso, 1,10.95, 2,15.47, 3,3.463, 4,4.359, 5,5.488, 6,7.752, 7,15.47)}
+.param t2={if(caso<1.5,0.4,9)}
+.param tm1={table(caso, 1,0.9, 2,0.2, 3,5, 7,5)}
+.param tm2={table(caso, 1,7, 2,0.3, 3,7, 7,7)}
+.param tend={table(caso, 1,1.0, 2,0.45, 3,0.42, 7,0.42)}
+Vcc vp 0 15
+Vee vm 0 -15
+V5 p5 0 5
+Bin in 0 V=if(time<0.1,a1,if(time<t2,a2,a1))*sin(2*pi*f*time)
+* ---- VCA (il porto ecm taglia con tensione positiva: pin 3 EC-)
+X1 in out 0 ecv vp vm THAT2181
+* ---- raddrizzatore e picco (ideali, come mic-limiter.cir)
+Brect rect 0 V=0.5*abs(V(out))
+Bch 0 pk I=max(V(rect)-V(pk),0)/1k
+Ch pk 0 1u
+Rrel pk 0 1Meg
+Rs pk sm 100
+Cs sm 0 1u
+* ---- U7A: inseguitore di SM
+Xa sm smb smb vp vm OPT
+* ---- U7B: sottrattore, DSUB = 0,625 (VTH - SM), VTH = 2,179 V
+Rsp1 vp subp 169k
+Rsp2 subp 0 10k
+Csp subp 0 100n
+Rsn smb subn 16k
+Rsf subn dsub 10k
+Xb subp subn dsub vp vm OPT
+* ---- U7C: mezza onda di precisione, LIM = max(-DSUB, 0)
+Rh1 dsub hn 10k
+Rh2 hn lim 10k
+Dh1 ho lim D1N4148
+Dh2 hn ho D1N4148
+Xc 0 hn ho vp vm OPT
+* ---- U7D: MUTE, tasto verso +5VF -> 10k / 10k -> 220n -> inseguitore
+Vctl ctl 0 PWL(0 0 {tm1} 0 {tm1+1u} 1 {tm2} 1 {tm2+1u} 0)
+S1 p5 msw ctl 0 SWM
+Rm1 msw mrc 10k
+Rm2 mrc 0 10k
+Cm mrc 0 220n
+Xd mrc mcv mcv vp vm OPT
+* ---- rete del pin
+Ra lim ecs 1k
+Rb mcv ecs 2k
+Rc ecs 0 1k
+* ---- stadio nuovo (todo 288): x19,21 e partitore 1/19,21
+Xn ecs nfb eco vp vm OPT
+Rnf nfb eco 4.99k
+Rng nfb 0 274
+Rnt eco ecn 4.99k
+Rnb ecn 0 274
+* ---- pin del VCA
+Bpin ecv 0 V=if(v>0.5,V(ecn),V(ecs))
+.nodeset V(pk)=0 V(sm)=0 V(ho)=-0.5 V(lim)=0 V(mrc)=0 V(eco)=0
+.options cshunt=1e-15
+.step param caso list 1 2 3 4 5 6 7
+.step param v list 0 1
+.tran 0 {tend} 0 10u
+.meas tran pk_pre MAX ABS(V(out)) FROM 0.05 TO 0.0999
+.meas tran pk_over MAX ABS(V(out)) FROM 0.1 TO 0.11
+.meas tran pk_2_5ms MAX ABS(V(out)) FROM 0.102 TO 0.105
+.meas tran pk_10ms MAX ABS(V(out)) FROM 0.11 TO 0.12
+.meas tran pk_190 MAX ABS(V(out)) FROM 0.19 TO 0.1999
+.meas tran pk_hold MAX ABS(V(out)) FROM 0.35 TO 0.4
+.meas tran gr_hold AVG V(ecv) FROM 0.35 TO 0.4
+.meas tran ec_grido MAX V(ecv) FROM 0.1 TO 0.1999
+.meas tran pk_rel50 MAX ABS(V(out)) FROM 0.45 TO 0.46
+.meas tran pk_rel300 MAX ABS(V(out)) FROM 0.7 TO 0.71
+.meas tran pk_rel480 MAX ABS(V(out)) FROM 0.88 TO 0.89
+.meas tran pk_mute MAX ABS(V(out)) FROM {tm1+0.01} TO {tm1+0.09}
+.meas tran ec_mute FIND V(ecv) AT {tm1+0.09}
+.meas tran t_50 WHEN V(ecv)=0.305 TD={tm1} RISE=1
+.meas tran t_100 WHEN V(ecv)=0.61 TD={tm1} RISE=1
+.meas tran t_on100 WHEN V(ecv)=0.61 TD={tm2} FALL=1
+.meas tran t_on50 WHEN V(ecv)=0.305 TD={tm2} FALL=1
+.meas tran ec_max MAX V(ecv)
+.meas tran ec_min MIN V(ecv)
+.meas tran eco_max MAX V(eco)
+.end

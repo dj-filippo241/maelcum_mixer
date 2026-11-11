@@ -1,0 +1,62 @@
+* EC- PIN del MONO (master) e del MUTE + limiter (MIC): tensione massima al pin 3 del VCA, todo 288
+* Limite del datasheet (THAT 2181 Rev 02, Absolute Maximum Ratings): Delta Ec = +-1 V. Obiettivo: <= 0,8 V.
+* Stesso metodo di ec-pin-limite.cir (todo 281): solo .dc, op-amp con clamp a rail - 0,2 V, rail +-15,5 V
+* (+-15 LN con tolleranza +3 %).
+* v=0 OGGI, v=1 NUOVO.
+* MONO (pcb/master/master-segnale.py): tasto -> RC -> op-amp -> partitore -> pin.
+*   v=0: inseguitore, partitore 7,15k / 1k.
+*   v=1: stesso op-amp non invertente x2,36 (10,2k / 7,5k), partitore 18,2k / 1k (D = 19,2).
+*   x = tensione sull'ingresso + dell'op-amp: 0 = stereo, 5 = MONO, oltre = op-amp al rail.
+* MUTE (pcb/mic/mic.py): rete Ra 1k (LIM), Rb 2k (MUTE_CV), Rc 1k.
+*   v=0: la rete sta sul pin.
+*   v=1: la rete sta sull'ingresso + di un op-amp non invertente x19,21 (4,99k / 274), poi partitore
+*        4,99k / 274: guadagno 1 dalla rete al pin, e la saturazione dell'op-amp fa da limite.
+*   y = tensione sull'ingresso + dell'inseguitore del MUTE: 0 = aperto, 2,5 = MUTE, oltre = rail.
+*   fl = stato dell'op-amp della mezza onda (LIM): 0 a riposo (LIM a massa virtuale con Rf 10k),
+*        1 = al rail positivo (LIM = 15,3 V, senza contare il diodo: caso peggiore),
+*        -1 = al rail negativo (HN a -14,7 V attraverso il diodo, LIM lo segue con Rf 10k).
+*   rot=1: Rf dello stadio nuovo aperta (lo stadio va al rail).
+.subckt OPW inp inn out vp vm
+E1 out 0 value={limit(1e6*(V(inp)-V(inn)),V(vm)+0.2,V(vp)-0.2)}
+.ends OPW
+.param v=0 fl=0 rot=0
+Vcc vcc 0 15.5
+Vee vee 0 -15.5
+Vx x 0 0
+* ---------------- MONO
+.param mrf={if(v,10.2k,1m)} mrg={if(v,7.5k,1e12)} mrt={if(v,18.2k,7.15k)}
+Xm x mn mbuf vcc vee OPW
+Rmf mn mbuf {mrf}
+Rmg mn 0 {mrg}
+Rmt mbuf ecmono {mrt}
+Rmb ecmono 0 1k
+* ---------------- MUTE + limiter
+Ey y 0 x 0 1
+Xf y mcv mcv vcc vee OPW
+.param vlim={if(fl>0.5,15.3,if(fl<-0.5,-14.7,0))} rlim={if(fl>0.5,1m,10k)}
+Vl liml 0 {vlim}
+Rl liml lim {rlim}
+Ra lim ecs 1k
+Rb mcv ecs 2k
+Rc ecs 0 1k
+.param rfn={if(rot,1e12,4.99k)}
+Xn ecs nfb eco vcc vee OPW
+Rnf nfb eco {rfn}
+Rng nfb 0 274
+Rnt eco ecn 4.99k
+Rnb ecn 0 274
+* pin del VCA: v=0 la rete, v=1 il partitore dopo lo stadio
+Bpin ecmute 0 V=if(v>0.5,V(ecn),V(ecs))
+.dc Vx -20 20 0.01
+.step param v list 0 1
+.step param fl list -1 0 1
+.step param rot list 0 1
+.meas dc mono0 FIND V(ecmono) AT 0
+.meas dc mono5 FIND V(ecmono) AT 5
+.meas dc monomax MAX V(ecmono)
+.meas dc monomin MIN V(ecmono)
+.meas dc mute0 FIND V(ecmute) AT 0
+.meas dc mute25 FIND V(ecmute) AT 2.5
+.meas dc mutemax MAX V(ecmute)
+.meas dc mutemin MIN V(ecmute)
+.end

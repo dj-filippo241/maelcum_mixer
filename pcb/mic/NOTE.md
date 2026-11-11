@@ -148,6 +148,9 @@ del differenziale (REV dec. 145) non c'è**: il differenziale resta quello di `s
 8. **MUTE**: tasto a ritenuta fra +5VF e MUTE_SW (come il MONO del master), partitore 10k/10k,
    220n (1,1 ms), inseguitore → 2,5 V → Rb 2k. Il tipo di tasto (ritenuta o momentaneo) è di
    Filippo (voce 40): con un tasto momentaneo serve un flip-flop.
+   Todo 288: la rete Ra/Rb/Rc va in U11 (OPA1612, x19,21 con 4,99k / 274) e poi nel partitore
+   4,99k / 274 fino al pin: al rail il pin resta a 0,80 V (prima fino a 9 V). Seconda sezione di
+   U11 libera, inseguitore a massa (`sim/system/RISULTATI-ec-pin.md` §4).
 9. **LED tricolore** (logica in `celle_micmono.led3`): LED bicolore ad anodo comune, giallo = verde
    + rosso. LM339 a +5VF / CTRL_GND; detector g = 0,199 (10k / 2k49), MET ≤ 3,3 V. Soglie da
    partitore sul +15 LN: 133k / 7,68k / 6,65k / 1,1k → −5,9 / +11,1 / +17,1 dBu. Latch del rosso
@@ -179,3 +182,10 @@ Rigenerata da `coordinate.json` nuovo: 59.0 × 185.8 mm (pannello 61 × 189.8 me
 ## 2026-11-10: moduli di Filippo (dec. 176)
 
 Scheda comandi rigenerata da `coordinate.json` nuovo (MIC e MONO 61 × 190, SEND in colonna sfalsata, GAIN in alto a sinistra): PASSA. La nota del pot in distinta ora dice 9 mm per le manopole piccole e molto piccole (prima le molto piccole risultavano 14 mm). La scheda principale non cambia.
+
+## Giro del 2026-11-11 (todo 288: U11 e 4 resistenze in più)
+
+213 componenti. Primo lancio NON PASSA: 4 tentativi su 4 con un tratto di +5V aperto vicino al C96
+(o un errore di distanza). Secondo lancio **PASSA** al 1o tentativo: DRC 0 errori, 5 via_dangling
+(prima 1), A2 35 (prima 32). La scheda è più stretta di prima: 5 tentativi falliti su 6.
+Se un giro futuro non passa, prima di tutto spostare U11 lontano dal C96.

@@ -190,13 +190,17 @@ d.R("RDP", "AGND", "20k 0.1%")
 d.R("MID", "RDN", "20k 0.1%")
 d.R("RDN", "LO_L", "20k 0.1%")
 opa("U3", ("AGND", "NSV", "SV"), ("AGND", "NLO", "LO_R"), note="I/V del VCA di S e uscita R'")
-# tasto MONO: chiuso = +5 V -> RC 1 ms -> follower -> 0,61 V su EC- = -100 dB (mono-ms.cir)
+# tasto MONO: chiuso = +5 V -> RC 1 ms -> stadio x2,36 -> partitore 18,2k/1k -> 0,61 V su EC- = -100 dB
+# (mono-ms.cir). Todo 288: prima inseguitore + 7,15k/1k, con l'op-amp al rail 1,88 V al pin (limite
+# del 2181: +-1 V). Ora l'op-amp al rail da' 0,80 V (sim/system/ec-pin-mono-mute.cir, mono-ec-pin.cir).
 d.R("MONO_SW", "AGND", "10k", note="NOTA: tasto a ritenuta verso +5 REF; aperto = stereo")
 d.R("MONO_SW", "MRC", "10k")
 d.C("MRC", "AGND", "100n C0G", note="rampa 1 ms (dec. 80, senza BBM)")
-d.R("MBUF", "ECM_MONO", "7k15 0.1%")
-d.R("ECM_MONO", "AGND", "1k 0.1%", note="5 V x 1/8,15 = 0,613 V = -100 dB")
-opa("U4", ("RDP", "RDN", "LO_L"), ("MRC", "MBUF", "MBUF"), note="uscita L' e follower della rampa MONO")
+d.R("MFB", "MBUF", "10k2 0.1%", note="stadio della rampa x2,36: 5 V -> 11,8 V (todo 288)")
+d.R("MFB", "AGND", "7k5 0.1%")
+d.R("MBUF", "ECM_MONO", "18k2 0.1%")
+d.R("ECM_MONO", "AGND", "1k 0.1%", note="11,8 V / 19,2 = 0,615 V = -100 dB; op-amp al rail: 0,80 V")
+opa("U4", ("RDP", "RDN", "LO_L"), ("MRC", "MFB", "MBUF"), note="uscita L' e stadio della rampa MONO")
 
 # ------------------------------------------------------------ insert del grafico (dec. 111 b)
 d.side = "F"

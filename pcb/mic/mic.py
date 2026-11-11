@@ -300,9 +300,19 @@ d.R("MRC", "AGND", "10k")
 d.C("MRC", "AGND", "220n C0G", C12, note="rampa 1,1 ms (dec. 111)")
 opa4(d, "U7", ("SM", "SMB", "SMB"), ("SUBP", "SUBN", "DSUB"), ("AGND", "HN", "HO"), ("MRC", "MUTE_CV", "MUTE_CV"),
      "+15LN", "-15LN", note="inseguitore di SM, sottrattore, mezza onda, inseguitore del MUTE")
-d.R("LIM", "ECM", "1k 0.1%", note="Ra")
-d.R("MUTE_CV", "ECM", "2k 0.1%", note="Rb: MUTE 2,5 V -> +0,79 V al pin = -129 dB")
-d.R("ECM", "AGND", "1k 0.1%", note="Rc")
+# Todo 288: la rete Ra/Rb/Rc non sta piu' sul pin. Uno stadio x19,21 e un partitore 1/19,21 la
+# riportano al pin con guadagno 1; con un op-amp al rail il pin resta a 0,80 V (limite del 2181:
+# +-1 V; prima fino a 9 V). Limiter e MUTE invariati: sim/mic/mic-limiter-ecpin.cir,
+# sim/system/ec-pin-mono-mute.cir. Il MUTE satura lo stadio: 0,77 V al pin (-126 dB).
+d.R("LIM", "ECS", "1k 0.1%", note="Ra")
+d.R("MUTE_CV", "ECS", "2k 0.1%", note="Rb: MUTE 2,5 V -> +0,79 V sulla rete; al pin 0,77 V = -126 dB")
+d.R("ECS", "AGND", "1k 0.1%", note="Rc")
+d.R("ECF", "ECO", "4k99 0.1%", note="stadio del limite x19,21 (todo 288)")
+d.R("ECF", "AGND", "274 0.1%")
+d.R("ECO", "ECM", "4k99 0.1%", note="partitore 1/19,21: op-amp al rail = 0,80 V al pin")
+d.R("ECM", "AGND", "274 0.1%")
+opa2(d, "U11", ("ECS", "ECF", "ECO"), ("AGND", "NU11", "NU11"), "+15LN", "-15LN",
+     note="stadio del limite del pin EC- (todo 288); seconda sezione libera, inseguitore a massa")
 
 d.side = "F"
 # ------------------------------------------------------------ uscite
