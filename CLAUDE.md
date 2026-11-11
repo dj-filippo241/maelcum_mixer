@@ -89,6 +89,7 @@ Regole di simulazione (ognuna nasce da un errore già pagato; il contesto sta ne
 - Non fermare LTspice con `pkill -f <nome netlist>`: uccide anche lo script. `drive2-chain` a 150 Hz non termina (causa ignota): usare 50 Hz o 1 kHz.
 - Nomi delle istanze senza maiuscole: `Vs1` e `VS1` sono la stessa («Instance already defined»). Un `PWL file=` con due punti allo stesso tempo ferma il giro (misto/sim, 2026-11-09).
 - Passo che collassa a t ~ns subito dopo il `.op` (migliaia di «tolerance relaxed»): `.options cshunt=1e-15`. 1 fF non sposta il polo della macro; `method=gear` e la macro senza anti-windup non bastano (NASTRO B9, todo 256).
+- Logica nei netlist: un flip-flop a fronte va modellato master-slave; un latch trasparente nasconde i blocchi. Click di una commutazione: leggere l'attenuazione del VCA all'istante dell'ADG, non il massimo della sonda su una finestra lunga (levetta del canale, todo 289).
 - Superdiodo (rivelatore di picco): la macro `OPDET` di `sim/meter/` ferma solo l'uscita, lo stato del polo corre a ~-1e4 V e sotto ~+3 dBu l'hold non si carica. Usare `OPDETC`/`OPDETN` di `sim/five-way/led-livello.inc` (stato fermato coi diodi). I numeri del meter restano validi: misurati a fondo scala (LED 5-way, 2026-11-11).
 
 ## Stato corrente (2026-11-10, decisioni 1-176)
