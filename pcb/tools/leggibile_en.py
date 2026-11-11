@@ -149,12 +149,18 @@ BLOCKS = {
     "RAIL +5 V: T2 A, TVS 5,0 V, 1 mF": "RAIL +5 V: T2 A, TVS 5.0 V, 1 mF",
     "V_FAN (T500 mA) e AC_OK": "V_FAN (T500 mA) and AC_OK",
     "STELLA analogue-0V (§4.2, grounding §2)": "analogue-0V STAR (§4.2, grounding §2)",
+    # master, scheda comandi
+    "POT e TASTO MONO (posizioni dal render del pannello)": "POTS and MONO BUTTON (positions from the panel render)",
+    "METER L e R: 2 LM3915 in cascata per lato, 20 LED": "METERS L and R: 2 cascaded LM3915 per side, 20 LEDs",
+    "CAVI: J1 verso la scheda di segnale (J3), J2 verso la scheda d'uscita L (J4)":
+        "CABLES: J1 to the signal board (J3), J2 to the L output board (J4)",
 }
 
 VALUES = {
     "1x5 ingressi": "1x5 inputs",
     "2u2 film": "2u2 film",
     "2x18 cavo piatto": "2x18 ribbon cable",
+    "2x2 cavo piatto": "2x2 ribbon cable",
     "2x18 ponte isolator": "2x18 isolator bridge",
     "C96 maschio": "C96 male",
     "TVS bidir <=5 pF": "TVS bidir. <=5 pF",

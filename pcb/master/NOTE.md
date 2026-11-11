@@ -73,7 +73,9 @@ Strade scritte il 2026-10-28 (la 1 è diventata la dec. 143):
    U4A su LO_L. Aggiunto 47p C0G sul 10k di M (separazione piatta fino a 20 kHz).
    Separazione −38 dB nel caso peggiore (errore di guadagno del VCA), rumore −96,4 dBu A.
 5. **Tasto MONO**: a ritenuta verso +5 REF, aperto = stereo; RC 10k/100n (1 ms in salita,
-   2 ms in discesa), partitore 7,15k/1k = 0,613 V su EC− = −100 dB.
+   2 ms in discesa), stadio x2,36 (10,2k / 7,5k) e partitore 18,2k/1k = 0,615 V su EC− = −100 dB.
+   Todo 288: prima inseguitore + 7,15k/1k, con l'op-amp al rail 1,88 V al pin (limite ±1 V); ora
+   0,80 V (`sim/system/RISULTATI-ec-pin.md` §4).
 6. **Riferimenti ±5 V**: LM4040-5,0 da +15 LN (1k5) + follower; −5 V = invertente 10k/10k.
 7. **Uscite verso il backplane** (MON, INS_SEND, VIE_TAP, REC): follower + 47 Ω.
 8. **Pad del REC**: 6,81k in serie, shunt 3,16k (−10 dB) o 757 Ω (−20 dB) a ponticello;
@@ -157,8 +159,35 @@ Probabile causa del giro 3 della L. Da guardare nel fanout del generatore.
 ### Cosa resta
 
 1. Clip detector delle uscite: soglia e tenuta scritte a mano (NOTA, «da simulare»): simulare.
-2. Scheda comandi (pot, tasto MONO, LM3915, LED) e schedina dei connettori: da scrivere.
-   J3 della segnale (pin 17-20 liberi) e J4 della L sono i suoi due cavi.
+2. Scheda comandi: fatta (sezione sotto). Schedina dei connettori: da scrivere.
 3. Pinout di MJE340/MJE350 sull'impronta BD139/BD140 («da verificare» nel file): dal datasheet.
 4. A1 della segnale: regolatori coi C a più di 10 mm.
 5. Nessuna domanda di design per Filippo da questi giri: nessuna modifica al backplane né al pannello.
+
+## Scheda comandi (todo 270, 2026-11-10/11)
+
+`master-comandi.py`, file in `comandi/`, celle in `pcb/tools/comandi.py` (nuovo: pot, fader,
+levette, bottoni con luce, barre LED con LM3915, jack; serve anche alle schede comandi che mancano).
+242 × 44 mm, parallela al pannello (450 × 48) da x 104 a x 346 mm, retta dai dadi dei due pot.
+Posizioni da `docs/pannelli/coordinate.json`, modulo «master» (dec. 176 f).
+
+- Pezzi: BOOTH e MASTER (pot singoli lineari 10k, manopola rovescia per lo shaper; MASTER con
+  scatto al centro, dec. 139), tasto MONO con luce, due barre da 20 LED con 2 LM3915 per lato
+  (VREFA 5,000 V e VREFB 1,581 V, da +24 a −33 dBu, sistema-metering.md §3 e §5).
+- Cavi: J1 2×10 verso J3 della segnale (ordine letto da `master-segnale.py`); J2 2×2 con +5V e
+  CTRL_GND dalla J4 dell'uscita L, pin alternati.
+- **PASSA** al 1o giro (2026-11-11): 60 componenti, 57 reti, 0 aperti, ERC pulito, DRC 0 errori
+  (38 silk_overlap, 76 silk_over_copper, 10 net_conflict attesi).
+
+NOTA della scheda comandi (da verificare):
+
+1. **A1: i 100n dei quattro LM3915 stanno fino a 77 mm dal chip** (pista fino a 113 mm). La cella
+   `meter` piazza i chip a mano ma lascia i condensatori al generatore, che non li mette vicino.
+   C'è una riserva da 2u2 per barra. Da sistemare nella cella prima del prototipo.
+2. CLIP_L e CLIP_R arrivano sul cavo ma il pannello non ha un LED di clip: restano liberi.
+3. Pinout dell'LM3915 dal simbolo KiCad LM3914N (stesso DIP-18): da verificare sul datasheet TI.
+4. Corrente dei LED con 6,2k: formula del datasheet da verificare (~2 mA, metering §1).
+5. Bottone del MONO: impronta NKK GW12LJP segnaposto, pinout da rifare col pezzo scelto.
+
+Scheda di segnale rigenerata il 2026-11-11 (todo 288: stadio x2,36 del MONO, 2 resistenze in più):
+**PASSA**, 285 componenti; via_dangling 7 → 8, A2 35 → 36.
