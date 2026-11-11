@@ -15,6 +15,18 @@ test point per modulo; CV 0-5 V = convenzione d'interfaccia. Masse:
 topologia in `sistema-grounding.md` (stella unica alla PSU; qui viaggiano
 i ritorni dedicati).
 
+## REV 2026-11-11 — backplane a tratti per la disposizione F (todo 269) [C, PROVVISORIO]
+
+Con la disposizione F (dec. 172) le schede stanno in due versi: un backplane unico
+(§10, «~15 slot in linea») non serve più. Quattro tratti, uno per zona del fondo:
+T1 fondo (MASTER segnale e uscite, 5-WAY 1-2, PSU-IN), T2 canali (FILTRO 1-2, 4 canali,
+4 FX-SEND), T3 cuffie (CUE), T4 destra (MIC, 3 MONO, 4 FX-RET). 25 slot. Fra i tratti:
+6 cavi piatti di segnale, ognuno solo VE o solo linee pilotate, ogni filo di segnale fra
+due masse; 3 cavi di potenza Mini-Fit Jr dal T1 (stella nel PSU-IN) agli altri tratti.
+Le reti di ogni slot vengono dal netlist vero della scheda (5-way e filtro: righe b di §4).
+Piano, reti e cavi: `pcb/backplane/PIANO.md` (da `piano_f.py`); schede e scelte NOTA:
+`pcb/backplane/NOTE.md`. Supera §10 «un backplane unico» e la lunghezza ≤ 70-80 cm.
+
 ## REV 2026-10-22 — decisione 130: quattro moduli FX-RET [PROVVISORIO]
 
 La classe FX (un modulo, 1 slot) diventa **FX-RET ×4**: un modulo per bus,

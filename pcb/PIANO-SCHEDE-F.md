@@ -36,6 +36,6 @@ Schede in tutto: 28.
 
 ## Aperto
 
-- Backplane: con schede in due versi servono più tratti di backplane (uno per zona). Da disegnare.
+- Backplane: quattro tratti, uno per zona (pcb/backplane/PIANO.md, todo 269). PSU-IN nella fila 4 sotto il 5-way.
 - 5-way e filtro: stime +-30 %; il 5-way è diviso in due schede da ~485 componenti l'una.
 - Schede comandi da disegnare: 5-way, filtro.

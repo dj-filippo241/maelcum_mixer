@@ -181,7 +181,7 @@ def piano_f():
     out += ["", "Schede in tutto: %d." % tot, ""]
     out += ["## Avvisi", ""] + (["- " + a for a in avvisi] or ["- Nessuno: ogni scheda ha il suo posto entro il 70 %."])
     out += ["", "## Aperto", "",
-            "- Backplane: con schede in due versi servono più tratti di backplane (uno per zona). Da disegnare.",
+            "- Backplane: quattro tratti, uno per zona (pcb/backplane/PIANO.md, todo 269). PSU-IN nella fila 4 sotto il 5-way.",
             "- 5-way e filtro: stime +-30 %; il 5-way è diviso in due schede da ~485 componenti l'una.",
             "- Schede comandi da disegnare: 5-way, filtro."]
     path = os.path.join(qui, "..", "PIANO-SCHEDE-F.md")   # PIANO-schede.md è il piano del 31/10 (macOS: maiuscole = minuscole)
