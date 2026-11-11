@@ -1,0 +1,25 @@
+* =====================================================================
+* Todo 289 (2026-11-11): la levetta torna indietro (OFF -> HPF -> OFF)
+* subito dopo il cambio dell'ADG, mentre il CLK del 74HC74 e' ancora alto.
+* Senza un nuovo fronte di salita il flip-flop non copia il ritorno: DIFF
+* resta alto e il dip non si rilascia (canale muto) finche' il CLK non
+* scende. Circuito e varianti: filtsel-dip-logica.inc.
+* Ritorno a tf dopo il primo scatto: 0,4 ms dopo l'ADG nel caso tipico.
+* Fader aperto, +18 dBu. Ordine degli step: logic, poi corner.
+* =====================================================================
+.param logic=0 corner=0 xp=0 vp=8.70 t0=1m rd2=68k
+.param tf={if(logic==2,3.0m,if(logic==1,1.65m,1.85m))}
+.include filtsel-dip-logica.inc
+Vd0 d0 0 PWL(0 0 {t0} 0 {t0+20n} 5 {t0+tf} 5 {t0+tf+20n} 0)
+.step param logic list 0 1 2
+.step param corner list 0 1 2
+.tran 0 200m 0 2u
+.meas tran tsw WHEN V(q0)=2.5 RISE=1
+.meas tran tback WHEN V(q0)=2.5 FALL=1
+.meas tran q20 FIND V(q0) AT 20m
+.meas tran pin20 FIND V(ecm) AT 20m
+.meas tran pin100 FIND V(ecm) AT 100m
+.meas tran pin199 FIND V(ecm) AT 199m
+.meas tran rel3 WHEN V(ecm)=0.0183 FALL=LAST
+.meas tran clkfall WHEN V(clk)=2.5 FALL=1
+.end

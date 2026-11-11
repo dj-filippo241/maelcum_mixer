@@ -12,6 +12,12 @@ silk_overlap, 63 silk_over_copper, 4 via_dangling, 58 attesi. ERC 2 avvisi VSS d
 audio A1/A2/A3/A4/A5 = 32 / 35 / 4 / 6 / 2 (A1: C dei regolatori lontani, come le altre schede).
 Un PASSA singolo non è una prova: per questo `canale.py` usa `pcbgen.DesignRiprova` (sotto).
 
+Giro 11 (2026-11-11, todo 289: DIFF ripreso, ritardo 68k + diodo, punto 2 sotto): **PASSA** al
+secondo tentativo (giro 1: 2 clearance). 383 impronte, 244 reti. DRC 0 errori; avvisi 52
+silk_overlap, 61 silk_over_copper, 4 via_dangling. Audio A4 6 → 8 (BUS_LPF_L/R e DJBUS_L vicine a
+CTRL_GND e Q1 a 0,35-0,49 mm, ~0,07 pF; K1W_L vicina a BTNC): Freerouting cambia le piste a ogni
+giro. Da guardare nel layout vero, non bloccante.
+
 Giri del 9/11:
 1-3. Contorno in diagonale passato a Freerouting: fanout 13 volte più lento, un giro non finisce in un'ora,
    uno si arena a 260 aperti. Più un errore mio: foro H2 sopra il cavo J2 (spostato a x 95).
@@ -105,7 +111,10 @@ Divisione di partenza (proposta originale):
    shaper del fader (REV 2026-11-10, todo 281: prima 3,01k su ogni EC−, 1,38 V al pin col
    fader chiuso, oltre il ±1 V del 2181). Il dip satura lo stadio del partitore: 0,70-0,80 V
    al pin (serve ≥ 0,61). `sim/system/RISULTATI-ec-pin.md`.
-   **Da simulare** (filtsel-dip.cir con la logica vera) e da provare al banco.
+   **REV 2026-11-11 (todo 289)**: simulato con la logica vera (RISULTATI-filtsel-dip §5).
+   DIFF ripreso da 74HC14 sez. 6 + 74HC86 sez. 4 (DIFFB): RC del dip e ritardo partono da
+   DIFFB. Ritardo 68k/47n + diodo DLY → DIFFB. Prima: rilascio di ~40 ms e canale muto se la
+   levetta tornava indietro col CLK alto. Da provare al banco.
 3. **CUE**: tasto a ritenuta verso +5VF (come gli assign del FX-SEND), switch sulla quarta
    sezione dell'ADG di ogni lato, 47 Ω verso lo slot 2. Il documento dice solo «switch CUE
    di canale».

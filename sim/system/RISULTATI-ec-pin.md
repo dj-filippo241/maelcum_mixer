@@ -42,7 +42,8 @@ Con lo stadio al rail negativo il VCA si apre al massimo (+130 dB nominali): l'u
 chip non si rompe. È un guasto, come oggi.
 
 Il dip ora arriva a −100 dB un po' prima (la rampa satura verso l'85 %) e riparte un po' dopo.
-**Da risimulare** con la logica vera (`filtsel-dip.cir`, pcb/canale/NOTE.md punto 2).
+~~Da risimulare~~ Risimulato il 2026-11-11 (todo 289, `sim/cdj/RISULTATI-filtsel-dip.md` §5): pin
+0,72-0,77 V all'ADG, lo stadio satura solo dopo; il guasto vero stava nella logica (DIFF lento).
 
 ## 3. Altri pin EC− da guardare
 

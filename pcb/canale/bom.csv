@@ -32,6 +32,7 @@ quantita;valore;impronta;riferimenti;nota
 2;100u 25V;CP_Radial_D6.3mm_P2.50mm;C7 C11;
 1;1N4148W;D_SOD-123;D1;scarica Cadj
 1;1N4148W;D_SOD-123;D12;NOTA: OR a diodi
+1;1N4148W;D_SOD-123;D14;scarica il ritardo al rilascio: CLK giù in pochi us (todo 289)
 1;S1G;D_SMA;D2;protezione inversa
 6;1N4148W;D_SOD-123;D3 D8 D9 D10 D11 D13;
 1;S1G;D_SMA;D4;
@@ -77,7 +78,7 @@ quantita;valore;impronta;riferimenti;nota
 2;10k;R_0805_2012Metric;R158 R160;levetta verso CTRL_GND sulla scheda comandi
 2;10k;R_0805_2012Metric;R159 R161;NOTA: antirimbalzo 1 ms
 2;1k 0.1%;R_0805_2012Metric;R16 R21;x3,15
-1;33k;R_0805_2012Metric;R163;NOTA: 33k x 47n, soglia dello Schmitt a ~1,5 ms (doc: ADG a 1,6 ms)
+1;68k;R_0805_2012Metric;R163;NOTA: 68k x 47n, ADG a 1,5-4 ms con le soglie del 74HC14 (todo 289)
 1;1k;R_0805_2012Metric;R164;NOTA: bit di modo sulla riga c; il backplane li porta per posizione
 1;10k;R_0805_2012Metric;R166;NOTA: tasto CUE a ritenuta verso +5VF
 2;10k 0.1%;R_0805_2012Metric;R168 R171;R lato sorgente sul DJ bus
@@ -129,8 +130,8 @@ quantita;valore;impronta;riferimenti;nota
 1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U20;I/V del fader, pilota i 10k dei bus
 1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U21;shaper F
 1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U22;due celle RC del dip con buffer (RISULTATI-filtsel-dip caso 3)
-1;74HC14PW;TSSOP-14_4.4x5mm_P0.65mm;U23;NOTA: antirimbalzo, ritardo Schmitt e DJSEL = NOT(Q0 xor Q1)
-1;74HC86PW;TSSOP-14_4.4x5mm_P0.65mm;U24;NOTA: confronto levetta / stato
+1;74HC14PW;TSSOP-14_4.4x5mm_P0.65mm;U23;NOTA: antirimbalzo, ritardo Schmitt, DJSEL = NOT(Q0 xor Q1), NDIFF (todo 289)
+1;74HC86PW;TSSOP-14_4.4x5mm_P0.65mm;U24;NOTA: confronto levetta / stato; sez. 4 = NOT(NDIFF) = DIFF ripreso (todo 289)
 1;74HC74PW;TSSOP-14_4.4x5mm_P0.65mm;U25;NOTA: stato dell'ADG
 2;ADG1434YRUZ;TSSOP-20_4.4x6.5mm_P0.65mm;U26 U27;SPDT: A = IN alto, B = shunt a massa (datasheet Rev. E tabella 9)
 1;OPA1654AIDR;SOIC-14_3.9x8.7mm_P1.27mm;U3;isolator lato L, sezioni 1-4

@@ -1,0 +1,26 @@
+* =====================================================================
+* Todo 289 (2026-11-11): scelta della R del ritardo nella correzione
+* (logic=2: DIFF ripreso + diodo di scarica). rd2 = 47k / 56k / 68k su 47n.
+* Criterio: ADG sotto -100 dB anche con le soglie minime del 74HC14, col
+* buco piu' corto possibile (respiro della dec. 163: 3-4 ms).
+* Circuito: filtsel-dip-logica.inc. Fader aperto e a meta', +18 dBu,
+* levetta a t0 = 1,25 ms (fase del click piu' alto nel giro grande).
+* Ordine degli step nel log: rd2, poi corner, poi xp.
+* Tolleranza RC: +-5 % su R*C sposta il tempo dell'ADG di +-5 %.
+* =====================================================================
+.param logic=2 corner=0 xp=0 vp=8.70 t0=1.25m rd2=68k
+.include filtsel-dip-logica.inc
+Vd0 d0 0 PWL(0 0 {t0} 0 {t0+20n} 5)
+.step param rd2 list 47k 56k 68k
+.step param corner list 0 1 2
+.step param xp list 0 2.5
+.tran 0 15m 0 1u
+.meas tran tsw WHEN V(q0)=2.5 RISE=1
+.meas tran dsw PARAM tsw-t0
+.meas tran pin_sw FIND V(ecm) AT tsw
+.meas tran t100 WHEN V(ecm)=0.61 RISE=1
+.meas tran t20 WHEN V(ecm)=0.122 RISE=1
+.meas tran r20 WHEN V(ecm)=0.122 FALL=1
+.meas tran r3 WHEN V(ecm)=0.0183 FALL=1
+.meas tran r1 WHEN V(ecm)=0.0061 FALL=1
+.end

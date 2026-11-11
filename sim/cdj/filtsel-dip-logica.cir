@@ -1,0 +1,38 @@
+* =====================================================================
+* Todo 289 (2026-11-11): click e tempi del dip della levetta con la logica
+* vera. Circuito e varianti (logic, corner): filtsel-dip-logica.inc.
+* xp = tensione del pot del fader: 0 = fader aperto (0 dB), 2,5 = meta'.
+* Segnale 1 kHz, +18 dBu = 8,70 Vp (il primo giro, 2026-11-11, ha dato
+* gli stessi numeri a +10 dBu: i rapporti non dipendono dal livello).
+* Levetta a t0 (4 fasi in 1 ms): l'ADG commuta 0,7-4 ms dopo.
+* Ordine degli step nel log: logic piu' veloce, poi corner, xp, t0.
+* =====================================================================
+.param logic=0 corner=0 xp=0 vp=8.70 t0=1m rd2=68k
+.include filtsel-dip-logica.inc
+Vd0 d0 0 PWL(0 0 {t0} 0 {t0+20n} 5)
+.step param logic list 0 1 2
+.step param corner list 0 1 2
+.step param xp list 0 2.5
+.step param t0 list 1m 1.25m 1.5m 1.75m
+.tran 0 45m 0 1u
+.meas tran tsw WHEN V(q0)=2.5 RISE=1
+.meas tran dsw PARAM tsw-t0
+.meas tran cvmax MAX V(dipcv)
+.meas tran pin0 FIND V(ecm) AT 0.5m
+.meas tran pinmax MAX V(ecm)
+.meas tran cvpmax MAX V(cvp)
+.meas tran pin_sw FIND V(ecm) AT tsw
+* tempi del dip (fader aperto): -100 dB = 0,61 V, -20 dB = 0,122 V, -3 dB = 18,3 mV, -1 dB = 6,1 mV
+.meas tran t100 WHEN V(ecm)=0.61 RISE=1
+.meas tran r100 WHEN V(ecm)=0.61 FALL=1
+.meas tran t20 WHEN V(ecm)=0.122 RISE=1
+.meas tran r20 WHEN V(ecm)=0.122 FALL=1
+.meas tran r3 WHEN V(ecm)=0.0183 FALL=1
+.meas tran r1 WHEN V(ecm)=0.0061 FALL=1
+.meas tran r01 WHEN V(ecm)=0.00061 FALL=1
+* click: picco della sonda attorno all'evento e programma puro
+.meas tran base_dj MAX ABS(V(hdj)) FROM 0.2m TO 0.7m
+.meas tran clk_dj MAX ABS(V(hdj)) FROM {t0} TO {t0+5m}
+.meas tran clk_hp MAX ABS(V(hhp)) FROM {t0} TO {t0+40m}
+.meas tran base_hp MAX ABS(V(hhp)) FROM 43m TO 45m
+.end

@@ -227,7 +227,13 @@ abbassa il VCA con due celle RC 10k/50n bufferizzate (mezzo OPA1654) sommate sul
 (giù a −100 dB in ~1 ms), commuta l'ADG a ~1,6 ms e rilascia (su in ~3 ms). Click sul bus
 che riceve: sotto la musica (secco: +14 dB). All'orecchio un respiro di 3-4 ms; CUE, FX
 SEND e meter non lo vedono. [PROVVISORIO fino al banco: feedthrough della CV, rimbalzo
-della levetta.] `sim/cdj/RISULTATI-filtsel-dip.md`. I 2 bit di modo
+della levetta.] `sim/cdj/RISULTATI-filtsel-dip.md`.
+**[REV 2026-11-11, todo 289]** Con la logica vera il circuito disegnato aveva due guasti: il
+nodo DIFF dei diodi si scaricava solo dal 100k (buco di ~40 ms) e una levetta che torna
+indietro col CLK alto lasciava il canale muto 40-80 ms. Correzione: DIFF ripreso da due
+porte libere (74HC14 sez. 6 + 74HC86 sez. 4), ritardo 68k/47n con diodo di scarica. L'ADG
+commuta a 1,4-3,8 ms (soglie del 74HC14), sempre sotto −120 dB; il respiro sotto −20 dB passa
+da ~3 a ~4 ms. RISULTATI-filtsel-dip §5. I 2 bit di modo
 restano sulla riga c: al modulo filtro servono per zittire la sezione senza canali.
 Backplane: lo slot 4 (FILT_SEND) diventa BUS_HPF out, lo slot 5 (FILT_RET) BUS_LPF
 out. **Fase 1**: senza modulo filtro l'interruttore resta su OFF; nessun ponticello.

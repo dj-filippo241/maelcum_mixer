@@ -131,10 +131,13 @@ for k, s in enumerate(SIDES):
 opa2(d, "U20", ("AGND", "NIF_L", "FAD_L"), ("AGND", "NIF_R", "FAD_R"), note="I/V del fader, pilota i 10k dei bus")
 shaper(d, "U21", "F", *cv.FADER)
 law_trim(d, "F", "ECF_L", "ECF_R")
-# dip: DIFF (logica) -> due RC 10k/50n bufferizzati -> 4,99k nel nodo di somma dello shaper del fader.
-# Il dip satura lo stadio del partitore: al pin 0,70-0,80 V (>= 0,61), mai oltre 1 V anche a fader
-# chiuso (todo 281; prima 3,01k sui due EC-: 1,38 V col fader chiuso, sim/system/ec-pin-limite.cir)
-d.R("DIFF", "DP1", "10k")
+# dip: DIFFB (DIFF ripreso da una porta) -> due RC 10k/50n bufferizzati -> 4,99k nel nodo di somma
+# dello shaper del fader. Al pin 0,72-0,80 V (>= 0,61), mai oltre 1 V anche a fader chiuso
+# (todo 281; prima 3,01k sui due EC-: 1,38 V col fader chiuso, sim/system/ec-pin-limite.cir).
+# Todo 289: RC e ritardo appesi al nodo dei diodi si scaricavano solo dal 100k (dip di ~40 ms e
+# canale muto se la levetta torna indietro col CLK alto): ora li pilota un'uscita logica
+# (sim/cdj/RISULTATI-filtsel-dip.md §5, filtsel-dip-logica.cir, filtsel-dip-flick.cir).
+d.R("DIFFB", "DP1", "10k")
 d.C("DP1", "AGND", "50n C0G", C12, note="NOTA: 50n = 47n + 3n3 in parallelo; tau 0,5 ms")
 d.R("DPB1", "DP2", "10k")
 d.C("DP2", "AGND", "50n C0G", C12, note="NOTA: 50n = 47n + 3n3 in parallelo")
@@ -150,13 +153,14 @@ for k in (0, 1):
     d.C("FR%d" % k, "CTRL_GND", "100n")
 d.part("U", HC14, "74HC14PW", TSSOP14, {"1A": "FR0", "1Y": "D0", "2A": "FR1", "2Y": "D1",
                                       "3A": "DLY", "3Y": "NCLK", "4A": "NCLK", "4Y": "CLK",
-                                      "5A": "XQ", "5Y": "DJSEL", "6A": "CTRL_GND", "6Y": None,
+                                      "5A": "XQ", "5Y": "DJSEL", "6A": "DIFF", "6Y": "NDIFF",
                                       "VCC": "+5VF", "GND": "CTRL_GND"}, ref="U23",
-       note="NOTA: antirimbalzo, ritardo Schmitt e DJSEL = NOT(Q0 xor Q1)")
+       note="NOTA: antirimbalzo, ritardo Schmitt, DJSEL = NOT(Q0 xor Q1), NDIFF (todo 289)")
 d.C("+5VF", "CTRL_GND", "100n")
 d.part("U", HC86, "74HC86PW", TSSOP14, {"1A": "D0", "1B": "Q0", "1Y": "X0", "2A": "D1", "2B": "Q1", "2Y": "X1",
-                                      "3A": "Q0", "3B": "Q1", "3Y": "XQ", "4A": "CTRL_GND", "4B": "CTRL_GND", "4Y": None,
-                                      "VCC": "+5VF", "GND": "CTRL_GND"}, ref="U24", note="NOTA: confronto levetta / stato")
+                                      "3A": "Q0", "3B": "Q1", "3Y": "XQ", "4A": "NDIFF", "4B": "+5VF", "4Y": "DIFFB",
+                                      "VCC": "+5VF", "GND": "CTRL_GND"}, ref="U24",
+       note="NOTA: confronto levetta / stato; sez. 4 = NOT(NDIFF) = DIFF ripreso (todo 289)")
 d.C("+5VF", "CTRL_GND", "100n")
 d.part("U", HC74, "74HC74PW", TSSOP14, {"1D": "D0", "1CLK": "CLK", "1Q": "Q0", "1QN": None, "1PRE": "+5VF", "1CLR": "+5VF",
                                       "2D": "D1", "2CLK": "CLK", "2Q": "Q1", "2QN": None, "2PRE": "+5VF", "2CLR": "+5VF",
@@ -165,8 +169,9 @@ d.C("+5VF", "CTRL_GND", "100n")
 cv.diode(d, "X0", "DIFF", note="NOTA: OR a diodi")
 cv.diode(d, "X1", "DIFF")
 d.R("DIFF", "CTRL_GND", "100k")
-d.R("DIFF", "DLY", "33k", note="NOTA: 33k x 47n, soglia dello Schmitt a ~1,5 ms (doc: ADG a 1,6 ms)")
+d.R("DIFFB", "DLY", "68k", note="NOTA: 68k x 47n, ADG a 1,5-4 ms con le soglie del 74HC14 (todo 289)")
 d.C("DLY", "CTRL_GND", "47n")
+cv.diode(d, "DLY", "DIFFB", note="scarica il ritardo al rilascio: CLK giù in pochi us (todo 289)")
 d.R("Q0", "FILT_MODE1_0", "1k", note="NOTA: bit di modo sulla riga c; il backplane li porta per posizione")
 d.R("Q1", "FILT_MODE1_1", "1k")
 # CUE: tasto verso +5VF sul cavo, come i bottoni assign del FX-SEND
@@ -203,7 +208,7 @@ d.part("J", "Connector_Generic:Conn_01x05", "1x5 ingressi", "Connector_PinHeader
 d.audio_rules = {
     "sensibili": r"^(INC_[LR]|NG_[LR]|GW_[LR]|NIF_[LR]|DJBUS_[LR]|BUS_[HL]PF_[LR]|CUE_OUT_[LR])$",
     "cavo": r"^(BUF|GW|LOO|LMO|MHO|HIO|K\dW)_[LR]$",
-    "rumorose": r"^(\+15SW|-15SW|\+5VF?|MET|FSW\d|FR\d|D\d|Q\d|X\d|XQ|DIFF|DLY|N?CLK|DJSEL|CUESEL|BTNC|DP.*|DIPCV|POT_F|CVP_F|SH_F|V27F[+-]|V22F[+-]|VREG[+-]|BASE[+-]|RAW.*|CTRL_GND)$",
+    "rumorose": r"^(\+15SW|-15SW|\+5VF?|MET|FSW\d|FR\d|D\d|Q\d|X\d|XQ|N?DIFFB?|DLY|N?CLK|DJSEL|CUESEL|BTNC|DP.*|DIPCV|POT_F|CVP_F|SH_F|V27F[+-]|V22F[+-]|VREG[+-]|BASE[+-]|RAW.*|CTRL_GND)$",
     "regolatori": ["U40", "U41", "U42", "U43", "U44", "U45", "Q40", "Q41"],
 }
 
