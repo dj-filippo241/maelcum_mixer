@@ -57,7 +57,8 @@ def header(n):
             "Connector_IDC:IDC-Header_2x%02d_P2.54mm_Vertical" % (n // 2))
 
 
-def main():
+def progetta():
+    """Il design del tratto (sys.argv[1], T1 se manca), senza generarlo: lo usano main() e leggibile.py."""
     t = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith("-") else "T1"
     cosa, (fx0, fy0, fx1, fy1) = pf.TRATTI[t]
     W, H = fx1 - fx0, fy1 - fy0
@@ -155,8 +156,14 @@ def main():
         x, y = loc(hx, hy)
         d.part("H", HOLE[0], "CHASSIS", HOLE[1], {1: "CHASSIS"}, ref="H%d" % (k + 1), place=(x, y, 0),
                note="fissaggio al fondo del telaio, a CHASSIS (bond con AGND solo nel PSU-IN)")
-    d.build()
+    return d
+
+
+def main():
+    progetta().build()
 
 
 if __name__ == "__main__":
     main()
+elif __name__ == "leggibile":      # pcb/tools/leggibile.py pcb/backplane/tratto.py:T1
+    d = progetta()

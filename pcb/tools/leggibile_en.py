@@ -231,14 +231,49 @@ VALUES = {
 
 # Words that mean the value is Italian prose, not a part number: a value with one of them and
 # no entry in VALUES stops the run.
-ITALIAN = re.compile(r"\b(cavo|piatto|maschio|ponte|ingress\w*|bottoni|doppio|tasto|bicolore|ventole|"
-                     r"pedale|lato|verso|scheda|della|del|dei|con|senza)\b", re.I)
+ITALIAN = re.compile(r"\b(cavo|piatto|maschio|femmina|ponte|ponticello|presa|potenza|pilotato|ingress\w*|"
+                     r"bottoni|doppio|tasto|bicolore|ventole|pedale|lato|verso|scheda|della|del|dei|con|senza)\b",
+                     re.I)
+
+# backplane (pcb/backplane/tratto.py): one block per slot, cable and power connector, named by
+# pattern, so the rules below cover every slot of the four sections
+SLOT_CLASS = {"master": "MASTER", "uscita": "MASTER-OUT", "5way": "5-WAY", "psu-in": "PSU-IN",
+              "canale": "CHANNEL", "fx-send": "FX-SEND", "filtro": "FILTER", "cue": "CUE",
+              "mic": "MIC", "mono": "MONO", "fx-ret": "FX-RET"}
+
+
+def _slot(m):
+    c = SLOT_CLASS.get(m.group(2))
+    return None if c is None else "SLOT %s (%s class)" % (m.group(1), c)
+
+
+BLOCK_RULES = [
+    (r"SLOT (\S+) \(([\w-]+)\)", _slot),
+    (r"CAVO (C\d+)", lambda m: "CABLE " + m.group(1)),
+    (r"POTENZA (P\d+)", lambda m: "POWER " + m.group(1)),
+    (r"PONTICELLI", lambda m: "JUMPERS AND HEADERS (dec. 111)"),
+]
+
+VALUE_RULES = [
+    (r"cavo (C\d+ T\d-T\d) \(VE\)", lambda m: "ribbon cable %s (virtual earth)" % m.group(1)),
+    (r"cavo (C\d+ T\d-T\d) \(pilotato\)", lambda m: "ribbon cable %s (driven lines)" % m.group(1)),
+    (r"C96 femmina (\S+)", lambda m: "C96 female " + m.group(1)),
+    (r"potenza (P\d+ T\d-T\d)", lambda m: "power " + m.group(1)),
+    (r"ponticello (\S+)", lambda m: "jumper " + m.group(1)),
+    (r"presa (\S+)", lambda m: "header " + m.group(1)),
+]
 
 TITLE = [
     (r"scheda di segnale", "signal board"),
     (r"scheda di USCITA", "OUTPUT board"),
     (r"scheda comandi", "control board"),
     (r"\bCANALE\b", "CHANNEL"),
+    (r"\bCANALI\b", "CHANNELS"),
+    (r"\bFILTRO\b", "FILTER"),
+    (r"\(fondo:", "(rear:"),
+    (r"\(canali:", "(channels:"),
+    (r"\(cuffie:", "(headphones:"),
+    (r"\(destra:", "(right:"),
     (r"\bbozza\b", "draft"),
 ]
 
@@ -253,11 +288,22 @@ def rev(r):
     return r.replace("bozza", "draft")
 
 
+def _rule(rules, s):
+    for a, f in rules:
+        m = re.fullmatch(a, s)
+        if m:
+            return f(m)
+    return None
+
+
 def block(b):
-    return BLOCKS.get(b)
+    return BLOCKS.get(b) or _rule(BLOCK_RULES, b)
 
 
 def value(v):
     if v in VALUES:
         return VALUES[v]
+    e = _rule(VALUE_RULES, v)
+    if e is not None:
+        return e
     return None if ITALIAN.search(v) else v

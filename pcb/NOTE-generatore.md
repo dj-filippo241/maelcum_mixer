@@ -167,6 +167,8 @@ legge o monta la scheda. Lo schema che alimenta la PCB non cambia.
 ```bash
 /Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/3.9/bin/python3 pcb/tools/leggibile.py pcb/mono/mono.py [altri ...]
 # il master d'uscita vuole il lato: pcb/master/master-uscita.py:L
+# il backplane vuole il tratto: pcb/backplane/tratto.py:T1 (fino a T4); blocchi e valori del
+# backplane si traducono a modello (BLOCK_RULES, VALUE_RULES in leggibile_en.py)
 ```
 
 Esce in `pcb/<scheda>/leggibile/`: `.kicad_sch`, PDF, `erc.json`, `riepilogo.json`. Esito
