@@ -1,0 +1,90 @@
+quantita;valore;impronta;riferimenti;nota
+2;220u 35V;CP_Radial_D8.0mm_P3.50mm;C1 C4;
+3;4u7 25V;C_1206_3216Metric;C10 C14 C15;
+2;10p C0G;C_0805_2012Metric;C17 C18;NOTA: come i ricevitori dei bus (Cf 10 pF)
+14;100n;C_0805_2012Metric;C19 C20 C23 C24 C25 C26 C27 C28 C32 C33 C34 C38 C40 C42;
+2;10u 35V;CP_Radial_D5.0mm_P2.00mm;C2 C5;
+2;10p C0G;C_0805_2012Metric;C21 C22;
+2;330p C0G;C_0805_2012Metric;C29 C35;Cf: incrocio dell'anello esterno ~1 MHz
+1;1000u 25V;CP_Radial_D10.0mm_P5.00mm;C3;bulk locale dei finali (§5)
+2;1u film;C_Rect_L7.2mm_W3.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2;C30 C36;Cb, film (WIMA MKS2 o simile)
+2;100n;C_0805_2012Metric;C31 C37;ai collettori dei finali
+1;47u 10V;CP_Radial_D5.0mm_P2.00mm;C39;riserva dei relè
+1;2u2 X7R;C_1206_3216Metric;C41;
+1;1000u 25V;CP_Radial_D10.0mm_P5.00mm;C6;
+2;47u 35V;CP_Radial_D6.3mm_P2.50mm;C7 C12;
+4;10u 25V;C_1206_3216Metric;C8 C11 C13 C16;
+1;4u7 25V;C_1206_3216Metric;C9;rumore del riferimento (datasheet: 4,7 uF)
+1;1N4148W;D_SOD-123;D1;scarica Cadj
+1;S1G;D_SMA;D2;protezione inversa (bulk 1000 uF)
+1;1N4148W;D_SOD-123;D3;
+1;S1G;D_SMA;D4;
+1;1N4148W;D_SOD-123;D5;scarica delle bobine
+2;BAT54W;SOT-323_SC-70;D6 D7;+5V spento e raw negativo presente: il nodo non scende sotto -0,3 V
+1;BAT54W;SOT-323_SC-70;D8;scarica CT in ~1 ms: i relè aprono subito al calo di un raw
+2;ferrite 600R 2A;L_1206_3216Metric;FB1 FB2;
+2;ferrite 600R;L_1206_3216Metric;FB3 FB4;
+1;C96 maschio;DIN41612_C_3x32_Male_Horizontal_THT;J1;DIN 41612 C 3x32, angolo retto; c9 libero per scelta (sistema-cue §6)
+1;2x7 cavo piatto;PinHeader_2x07_P2.54mm_Vertical;J2;pot BLEND e LEVEL (stesso ordine in cue-comandi.py)
+1;2x3 cavo;PinHeader_2x03_P2.54mm_Vertical;J3;NOTA: due jack cuffie sulla scheda comandi; HPG = ritorno, unito ad AGND solo qui
+1;G6K-2F DC5;Relay_DPDT_Omron_G6K-2F;K1;PHONES 1: L sulla punta, R sull'anello
+1;G6K-2F DC5;Relay_DPDT_Omron_G6K-2F;K2;PHONES 2: L sulla punta, R sull'anello
+2;BC847B;SOT-23;Q1 Q8;moltiplicatore di Vbe: vicino ai finali per l'inseguimento termico (§12)
+1;AO3400A;SOT-23;Q15;driver dei relè, logic level
+2;BF245B;TO-92_Inline_Wide;Q2 Q9;CRD ~8 mA: Idss da selezionare (BF245B 6-15 mA)
+2;BF245B;TO-92_Inline_Wide;Q3 Q10;CRD ~8 mA
+2;MJE340;TO-126-3_Vertical;Q4 Q11;finale +: 0,35 W a riposo, ~3 W in corto; rame >= 4 cm2 (§5)
+2;MJE350;TO-126-3_Vertical;Q5 Q12;finale -; rame >= 4 cm2
+2;BC847B;SOT-23;Q6 Q13;limitatore +
+2;BC857B;SOT-23;Q7 Q14;limitatore -
+4;120 1%;R_0805_2012Metric;R1 R3 R5 R8;
+8;10k 0.1%;R_0805_2012Metric;R11 R12 R13 R14 R16 R17 R18 R19;NOTA: iniezione 10k qui; il canale esce con 47 ohm dopo lo switch (canale.py)
+2;10k 0.1%;R_0805_2012Metric;R15 R20;
+1;1k62 1%;R_0805_2012Metric;R2;18,1 V (come master-uscita.py)
+2;20k 0.1%;R_0805_2012Metric;R21 R23;REV 2026-11-03 (F4): buffer MON invertente
+2;20k 0.1%;R_0805_2012Metric;R22 R24;
+2;1M;R_0805_2012Metric;R25 R26;tiene l'ingresso a massa a cavo staccato
+2;1M;R_0805_2012Metric;R27 R40;NOTA: tiene l'ingresso a massa a cavo staccato (il cursore del LEVEL basta in uso)
+2;470 1%;R_0805_2012Metric;R28 R41;Rf: retroazione DC da OUTA, prima della Rserie
+2;1k 1%;R_0805_2012Metric;R29 R42;Rdrv: isola l'op-amp e fissa la corrente che i limitatori vincono
+4;1k 1%;R_0805_2012Metric;R30 R31 R43 R44;
+2;22;R_0805_2012Metric;R32 R45;base stopper
+2;22;R_0805_2012Metric;R33 R46;
+2;6.8 1%;R_1206_3216Metric;R34 R47;Re: stabilità termica e senso della corrente
+2;6.8 1%;R_1206_3216Metric;R35 R48;
+5;100;R_0805_2012Metric;R36 R37 R49 R50 R53;
+2;10 2W;R_Axial_DIN0414_L11.9mm_D4.5mm_P15.24mm_Horizontal;R38 R51;Rserie del jack 1: isola i due jack, stabilità sul carico
+2;10 2W;R_Axial_DIN0414_L11.9mm_D4.5mm_P15.24mm_Horizontal;R39 R52;Rserie del jack 2: isola i due jack, stabilità sul carico
+1;1k62 1%;R_0805_2012Metric;R4;
+1;0;R_1206_3216Metric;R54;NOTA: ritorno delle cuffie (J3) unito ad AGND qui, vicino all'ampli
+1;1k;R_0805_2012Metric;R55;
+1;160k 1%;R_0805_2012Metric;R56;+22 < 17,1 V = muto (§6)
+1;27k4 1%;R_0805_2012Metric;R57;
+1;160k 1%;R_0805_2012Metric;R58;+27 < 20,2 V = muto (§6)
+1;22k6 1%;R_0805_2012Metric;R59;
+1;1k47 1%;R_0805_2012Metric;R6;16,6 V
+1;15k 1%;R_0805_2012Metric;R60;
+1;10k 1%;R_0805_2012Metric;R61;
+1;10k 1%;R_0805_2012Metric;R62;-22 > -17,0 V = muto
+1;120k 1%;R_0805_2012Metric;R63;
+1;10k 1%;R_0805_2012Metric;R64;-27 > -20,0 V = muto
+1;140k 1%;R_0805_2012Metric;R65;
+1;10k;R_0805_2012Metric;R66;ROK alto = quattro raw dentro la finestra
+1;1M2 1%;R_0805_2012Metric;R67;RT: accensione ~1,8 s (1,5-2 s, §6)
+1;10k;R_0805_2012Metric;R68;KG0 alto = cuffie collegate
+2;150k 0.1%;R_0805_2012Metric;R7 R10;
+1;1k47 1%;R_0805_2012Metric;R9;
+2;500;Potentiometer_Bourns_3266W_Vertical;RV1 RV2;trimmer del riposo: 210 ohm = 20 mA (si tara a banco, §12)
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U1;[A] somma dei cue
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U2;[B] MON dal master, -1
+1;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U3;inseguitori: il LEVEL da 10k non carica il cursore del BLEND (centro -6 dB per parte)
+2;OPA1612AIDR;SOIC-8_3.9x4.9mm_P1.27mm;U4 U8;gain +1: retroazione da OUTA (Rf 470), compensazione Cf 330p; sezione B libera
+1;LM317;TO-220-3_Vertical;U40;+18 V dell'ampli cuffia: 61 mA a riposo, ~0,55 W
+1;LM337;TO-220-3_Vertical;U41;
+1;LM317;SOT-223-3_TabPin2;U42;pre-regolatore (§2: +-16,5); ~25 mA
+1;LM337;SOT-223-3_TabPin2;U43;
+1;LT3045EMSE;MSOP-12-1EP_3x4.039mm_P0.65mm_EP1.651x2.845mm;U44;EN/UV a IN; ILIM a massa; PG libero; PGFB a IN (come master-segnale.py)
+1;LT3094EMSE;MSOP-12-1EP_3x4.039mm_P0.65mm_EP1.651x2.845mm;U45;EN/UV a IN; PG libero; PGFB a IN; ILIM a massa; VIOC libero
+1;TL431;SOT-23;U5;2,495 V
+1;LM339;SOIC-14_3.9x8.7mm_P1.27mm;U6;finestre dei quattro raw (uscite in OR)
+1;LM339;SOIC-14_3.9x8.7mm_P1.27mm;U7;timer dei relè

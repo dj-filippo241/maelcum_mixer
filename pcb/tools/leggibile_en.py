@@ -164,6 +164,32 @@ BLOCKS = {
     "POT: GAIN (doppio), EQ2 (doppi), REROUTE (singoli con scatto)": "POTS: GAIN (dual), EQ2 (dual), REROUTE (single, centre detent)",
     "FADER (PTA4543, corsa 45 mm, dec. 169)": "FADER (PTA4543, 45 mm travel, dec. 169)",
     "CAVO: J2 verso fx-ret.py (J2)": "CABLE: J2 to fx-ret.py (J2)",
+    # cue
+    "BACKPLANE C96 (classe CUE: slot 1-4 = CUE1-4 in, slot 5 = MON in)":
+        "BACKPLANE C96 (CUE class: slots 1-4 = CUE1-4 in, slot 5 = MON in)",
+    "ALIMENTAZIONE +18 audio (LM317 dal raw +27, bulk 1000 uF)": "POWER +18 audio (LM317 from raw +27, 1000 uF bulk)",
+    "ALIMENTAZIONE -18 audio (LM337 dal raw -27, bulk 1000 uF)": "POWER -18 audio (LM337 from raw -27, 1000 uF bulk)",
+    "ALIMENTAZIONE +15 LN (LM317 a +16,5 dal raw +22, poi LT3045)":
+        "POWER +15 LN (LM317 to +16.5 from raw +22, then LT3045)",
+    "ALIMENTAZIONE -15 LN (LM337 a -16,5 dal raw -22, poi LT3094)":
+        "POWER -15 LN (LM337 to -16.5 from raw -22, then LT3094)",
+    "[A] CUE SUMMING L/R (massa virtuale, Rf 10k, -1) e [B] MON (invertente 20k/20k, F4)":
+        "[A] CUE SUMMING L/R (virtual earth, Rf 10k, -1) and [B] MON (inverting 20k/20k, F4)",
+    "[C2] buffer fra BLEND e LEVEL (NOTA: tiene la law del blend esatta)":
+        "[C2] buffer between BLEND and LEVEL (keeps the blend law exact)",
+    "[E] AMPLI CUFFIA L (OPA1612 + diamond MJE340/350, v0.2)": "[E] HEADPHONE AMP L (OPA1612 + MJE340/350 diamond, v0.2)",
+    "[E] AMPLI CUFFIA R (OPA1612 + diamond MJE340/350, v0.2)": "[E] HEADPHONE AMP R (OPA1612 + MJE340/350 diamond, v0.2)",
+    "[F] RELE' delle cuffie (G6K-2F, 5 V, 237 ohm; eccitati = suono; failsafe)":
+        "[F] HEADPHONE RELAYS (G6K-2F, 5 V, 237 ohm; energised = sound; failsafe)",
+    "[G] PROTEZIONE: finestre sui raw +-22 e +-27, timer 1,8 s (il CUE non ascolta c9)":
+        "[G] PROTECTION: windows on raw +-22 and +-27, 1.8 s timer (the CUE ignores c9)",
+    "[F] RSERIE L (10 ohm 2 W, una per jack)": "[F] SERIES R L (10 ohm 2 W, one per jack)",
+    "[F] RSERIE R (10 ohm 2 W, una per jack)": "[F] SERIES R R (10 ohm 2 W, one per jack)",
+    "CAVI verso la scheda comandi: J2 pot, J3 cuffie": "CABLES to the control board: J2 pots, J3 headphones",
+    # cue, scheda comandi
+    "POT BLEND e LEVEL, JACK delle cuffie (posizioni dal render del pannello)":
+        "BLEND and LEVEL POTS, HEADPHONE JACKS (positions from the panel render)",
+    "CAVI: J3 pot (J2 di cue.py), J4 cuffie (J3 di cue.py)": "CABLES: J3 pots (J2 of cue.py), J4 headphones (J3 of cue.py)",
 }
 
 VALUES = {
@@ -197,6 +223,10 @@ VALUES = {
     "Mini-Fit Jr 2x12": "Mini-Fit Jr 2x12",
     "bond CHASSIS-AGND": "CHASSIS-AGND bond",
     "jack TS (cavo)": "TS jack (cable)",
+    "2x3 cavo": "2x3 cable",
+    "2x3 cavo piatto": "2x3 ribbon cable",
+    "10k lin, scatto al centro": "10k lin, centre detent",
+    "jack stereo 6,3": "6.3 mm stereo jack",
 }
 
 # Words that mean the value is Italian prose, not a part number: a value with one of them and

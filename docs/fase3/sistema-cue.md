@@ -97,6 +97,14 @@ bipolare TI, T = GBW/f = 4000) → leak = 15 mΩ/10 k = **−116 dB**; il
 sul pot = hardware, voce 40. A centro, carico visto da ciascuna sorgente ≈ 10k:
 trascurabile per OP1612.
 
+> **REV 2026-11-11 (todo 294, `pcb/cue/NOTE.md` punto 2).** Il Test 2 non
+> aveva il LEVEL sul cursore del BLEND. Il LEVEL da 10k carica il cursore
+> (sorgente fino a 2,5 kΩ al centro): peso 1/(1 + X(1−X)), al centro −8 dB
+> per parte invece di −6. Rimedio [C, PROVVISORIO]: inseguitore OPA1612 [C2]
+> fra cursore del BLEND e capo orario del LEVEL, su ±15 LN. La law torna
+> esatta. OPA1612 nel modulo: 5 (anche l'ampli cuffia
+> passa a un chip per lato, per il piazzamento: `pcb/cue/NOTE.md` punto 10).
+
 **Level [D]**: pot doppio gang 10k LOGARITMICO, CCW = wiper a massa =
 silenzio vero (−∞). Wiper → ingresso non invertente di [E]; ritorno DC
 del bias (2 pA) attraverso la pista: nessun pop.

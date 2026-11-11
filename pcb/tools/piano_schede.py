@@ -91,7 +91,9 @@ SCHEDE_F = {
                ("master-uscita.py R", 144, "vero")],
     "5-way": [("5-way (da scrivere)", 970, "stima +-30 %")],
     "filtro": [("filtro (da scrivere)", 450, "stima +-30 %")],
-    "cue": [("CUE (da scrivere)", 200, "stima +-30 %")],
+    # CUE: 157 impronte ma tante grandi (TO-220, TO-126, 1000 uF, relè, R da 2 W): 177 mm non bastava
+    # (giro 1, 113 aperti); lunghezza fissa 196 mm, tutto il pannello da 200 meno 2 mm per lato
+    "cue": [("cue.py", 157, "vero", 196.0)],
 }
 
 
@@ -136,10 +138,10 @@ def piano_f():
         in fila, ognuna lunga quanto le serve al 70 % ma almeno LATO_MIN."""
         file = max(1, int((y1 - y0) // PASSO))
         usate = [0.0] * file
-        for nome, n, fonte in schede:
+        for nome, n, fonte, *fisso in schede:
             for f in range(file):
                 yf = y0 + (f + 0.5) * (y1 - y0) / file
-                lun = max(LATO_MIN, n / (hh(yf) * DENS))
+                lun = fisso[0] if fisso else max(LATO_MIN, n / (hh(yf) * DENS))
                 if usate[f] + lun <= larg:
                     usate[f] += lun
                     righe.append((modulo, 1, nome, n, fonte, "sinistra-destra", f"{lun:.0f}", f"{hh(yf):.0f}",
@@ -180,8 +182,8 @@ def piano_f():
     out += ["## Avvisi", ""] + (["- " + a for a in avvisi] or ["- Nessuno: ogni scheda ha il suo posto entro il 70 %."])
     out += ["", "## Aperto", "",
             "- Backplane: con schede in due versi servono più tratti di backplane (uno per zona). Da disegnare.",
-            "- 5-way, filtro e CUE: stime +-30 %; il 5-way è diviso in due schede da ~485 componenti l'una.",
-            "- Schede comandi da disegnare: canale, ritorni, 5-way, filtro, master, CUE."]
+            "- 5-way e filtro: stime +-30 %; il 5-way è diviso in due schede da ~485 componenti l'una.",
+            "- Schede comandi da disegnare: 5-way, filtro."]
     path = os.path.join(qui, "..", "PIANO-SCHEDE-F.md")   # PIANO-schede.md è il piano del 31/10 (macOS: maiuscole = minuscole)
     open(path, "w", encoding="utf-8").write("\n".join(out) + "\n")
     print("\n".join(out))
