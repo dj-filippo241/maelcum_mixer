@@ -161,6 +161,9 @@ BLOCKS = {
     "METER: un LM3915, 10 LED (+24...-3 dBu)": "METER: one LM3915, 10 LEDs (+24...-3 dBu)",
     "FADER (PTA6043, corsa 60 mm, dec. 169)": "FADER (PTA6043, 60 mm travel, dec. 169)",
     "CAVI: J2 verso canale.py (J2), J3 verso fx-send.py (J3)": "CABLES: J2 to canale.py (J2), J3 to fx-send.py (J3)",
+    "POT: GAIN (doppio), EQ2 (doppi), REROUTE (singoli con scatto)": "POTS: GAIN (dual), EQ2 (dual), REROUTE (single, centre detent)",
+    "FADER (PTA4543, corsa 45 mm, dec. 169)": "FADER (PTA4543, 45 mm travel, dec. 169)",
+    "CAVO: J2 verso fx-ret.py (J2)": "CABLE: J2 to fx-ret.py (J2)",
 }
 
 VALUES = {

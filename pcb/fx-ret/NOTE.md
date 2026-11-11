@@ -78,7 +78,7 @@ Divisione di partenza (proposta originale):
 ## Da fare
 
 - Divisione in due schede (sopra), poi PCB di ognuna.
-- Cavo J2 (36 fili) e scheda comandi: pot GAIN doppio, EQ2 ×2 doppi, 4 reroute, fader, LM3915.
+- ~~Cavo J2 (36 fili) e scheda comandi~~: fatta il 2026-11-11, sezione «Scheda comandi» in fondo.
 - Polarità ricontata da capo a capo dopo la divisione (sistema-polarita §4).
 
 ## Esito della PCB (2026-11-04)
@@ -106,3 +106,29 @@ NOTA nuove della divisione:
 
 A2 alto sulla scheda segnale (67): reti del cavo dei pot e del ponte lunghe. Un PASSA singolo
 non è una prova (Freerouting cambia a ogni giro).
+
+## Scheda comandi (todo 270, 2026-11-11)
+
+`fx-ret-comandi.py`, file in `comandi/`, celle in `pcb/tools/comandi.py`. 59 × 225,85 mm, parallela
+al pannello (61 × 229,85), retta dai dadi dei pot. Posizioni da `coordinate.json`, modulo «fx-ret».
+Una scheda sola per i 4 ritorni (dec. 130).
+
+- Pezzi: GAIN pot doppio 10k lin selezionato (T2: antiorario = O2A, cursore GW, orario = GA;
+  verso da `sim/gain-pot/ritorno-buffer-g1.cir`, xg = 0 = retroazione zero = silenzio); EQ HIGH ed
+  EQ LOW pot doppi 10k (reti del FX-SEND); SELF, > FX2, > FX3, > FX4 pot singoli 10k lin con scatto,
+  rovesci (+REF5 - POT_Rj - AGND, sistema-comandi.md); barra da 10 LED con un LM3915 (RHI = +REF5,
+  chip a sinistra della barra); fader PTA4543 (+REF5 in cima, POT_F, AGND).
+- Cavo: J2 2×18 verso J2 di `fx-ret.py` (ordine letto dal file), sul bordo destro.
+- Esito: 23 componenti, 39 reti. Tre giri senza ripetizione: due PASSA, uno NON PASSA (14 aperti).
+  Ora con `riprova=True` (`DesignRiprova`, fino a 4 tentativi). A1: il pin 9 (MODE) dell'LM3915
+  resta lontano dal 100n, come sul canale; il pin 3 (V+) a 3,2 mm.
+
+NOTA della scheda comandi (da verificare):
+
+1. **Ordine dei reroute nei 4 moduli.** La scheda è una sola: il pot in posizione j (dall'alto)
+   va a POT_R1-R4, cioè al bus Sj. Il pannello di `proposta_f.py` fa lo stesso: in posizione j
+   scrive «> FXj», e «SELF» nella posizione del bus del modulo. `coordinate.json` riporta il ritorno
+   FX1. Nessun cavo diverso fra i moduli.
+2. **RHI del meter = +REF5 dei pot**, come il canale (canale/NOTE.md, nota 2): da misurare a banco.
+3. Pot di classe 14 mm (GAIN, reroute) su impronta RK09L, con l'ingombro da 14 mm.
+4. Fader PTA4543: pezzo a catalogo con l'impronta in KiCad, da confermare.

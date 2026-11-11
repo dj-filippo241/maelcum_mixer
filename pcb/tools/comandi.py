@@ -27,7 +27,7 @@ Pezzi e impronte (tutte della libreria di KiCad: il generatore non ne carica alt
 - Jack cuffie: Neutrik NJ3FD-V verticale (pad T, R, S dell'impronta KiCad).
 """
 import ast, json, math, os, sys
-from pcbgen import Design, boxsym, FPDIR
+from pcbgen import Design, DesignRiprova, boxsym, FPDIR
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")
 
@@ -103,13 +103,14 @@ class Comandi:
     """Una scheda comandi. finestra = (x0, y0, x1, y1) in mm del pannello: il pezzo di pannello
     che la scheda copre; senza, tutto il pannello meno 1 mm ai lati e 2 sopra e sotto."""
 
-    def __init__(self, nome, outdir, titolo, modulo, finestra=None, rev="0.1-bozza"):
+    def __init__(self, nome, outdir, titolo, modulo, finestra=None, rev="0.1-bozza", riprova=False):
+        """riprova: Freerouting ripetuto fino a 4 volte (pcbgen.DesignRiprova)."""
         self.pan = pannello(modulo)
         if finestra is None:
             finestra = (1.0, 2.0, self.pan["larghezza"] - 1.0, self.pan["altezza"] - 2.0)
         self.x0, self.y0 = finestra[0], finestra[1]
         self.W, self.H = finestra[2] - finestra[0], finestra[3] - finestra[1]
-        self.d = d = Design(nome, outdir, titolo, board=(self.W, self.H), rev=rev)
+        self.d = d = (DesignRiprova if riprova else Design)(nome, outdir, titolo, board=(self.W, self.H), rev=rev)
         d.gnd = "AGND"
         d.power_nets("AGND", width=0.5)
         d.link_pairs = True

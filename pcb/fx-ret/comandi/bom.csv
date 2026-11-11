@@ -1,0 +1,24 @@
+quantita;valore;impronta;riferimenti;nota
+1;100n;C_0805_2012Metric;C1;disaccoppiamento dell'LM3915 R
+1;2u2 16V;C_1206_3216Metric;C2;NOTA: riserva locale dei LED (cavo lungo)
+1;LED 5x2;LED_Rectangular_W5.0mm_H2.0mm;D1;barra METER, segmento 1 di 10 (1 = soglia più bassa); colore: metering §3
+1;LED 5x2;LED_Rectangular_W5.0mm_H2.0mm;D10;barra METER, segmento 10 di 10 (1 = soglia più bassa); colore: metering §3
+1;LED 5x2;LED_Rectangular_W5.0mm_H2.0mm;D2;barra METER, segmento 2 di 10 (1 = soglia più bassa); colore: metering §3
+1;LED 5x2;LED_Rectangular_W5.0mm_H2.0mm;D3;barra METER, segmento 3 di 10 (1 = soglia più bassa); colore: metering §3
+1;LED 5x2;LED_Rectangular_W5.0mm_H2.0mm;D4;barra METER, segmento 4 di 10 (1 = soglia più bassa); colore: metering §3
+1;LED 5x2;LED_Rectangular_W5.0mm_H2.0mm;D5;barra METER, segmento 5 di 10 (1 = soglia più bassa); colore: metering §3
+1;LED 5x2;LED_Rectangular_W5.0mm_H2.0mm;D6;barra METER, segmento 6 di 10 (1 = soglia più bassa); colore: metering §3
+1;LED 5x2;LED_Rectangular_W5.0mm_H2.0mm;D7;barra METER, segmento 7 di 10 (1 = soglia più bassa); colore: metering §3
+1;LED 5x2;LED_Rectangular_W5.0mm_H2.0mm;D8;barra METER, segmento 8 di 10 (1 = soglia più bassa); colore: metering §3
+1;LED 5x2;LED_Rectangular_W5.0mm_H2.0mm;D9;barra METER, segmento 9 di 10 (1 = soglia più bassa); colore: metering §3
+1;2x18 cavo piatto;PinHeader_2x18_P2.54mm_Vertical;J2;stesso ordine di J2 su fx-ret.py
+1;6k2;R_0805_2012Metric;R1;NOTA: corrente dei LED ~2 mA (metering §1): I = 12,5 V / R, formula del datasheet LM3915 da verificare
+1;10k lin doppio selezionato;Potentiometer_Alps_RK09L_Double_Vertical;RV1;GAIN T2 (dec. 162): antiorario = silenzio; pot selezionato per il tracking L/R; manopola GAIN, pot di classe 14 mm, cappuccio 15.0 mm
+1;10k doppio;Potentiometer_Alps_RK09L_Double_Vertical;RV2;EQ HIGH: tutto antiorario = kill (come il FX-SEND); manopola EQ HIGH, pot di classe 9 mm, cappuccio 11.0 mm
+1;10k doppio;Potentiometer_Alps_RK09L_Double_Vertical;RV3;EQ LOW Baxandall: tutto antiorario = kill, cursore = massa virtuale; manopola EQ LOW, pot di classe 9 mm, cappuccio 11.0 mm
+1;10k lin, scatto al centro;Potentiometer_Alps_RK09L_Single_Vertical;RV4;REROUTE 1 verso il bus S1 (SELF sul ritorno FX1, SELF sul ritorno FX1); manopola rovescia: antiorario = +REF5; manopola SELF, pot di classe 14 mm, cappuccio 12.0 mm
+1;10k lin, scatto al centro;Potentiometer_Alps_RK09L_Single_Vertical;RV5;REROUTE 2 verso il bus S2 (> FX2 sul ritorno FX1, SELF sul ritorno FX2); manopola rovescia: antiorario = +REF5; manopola > FX2, pot di classe 14 mm, cappuccio 12.0 mm
+1;10k lin, scatto al centro;Potentiometer_Alps_RK09L_Single_Vertical;RV6;REROUTE 3 verso il bus S3 (> FX3 sul ritorno FX1, SELF sul ritorno FX3); manopola rovescia: antiorario = +REF5; manopola > FX3, pot di classe 14 mm, cappuccio 12.0 mm
+1;10k lin, scatto al centro;Potentiometer_Alps_RK09L_Single_Vertical;RV7;REROUTE 4 verso il bus S4 (> FX4 sul ritorno FX1, SELF sul ritorno FX4); manopola rovescia: antiorario = +REF5; manopola > FX4, pot di classe 14 mm, cappuccio 12.0 mm
+1;10k lin;Potentiometer_Bourns_PTA4543_Single_Slide;RV8;FADER: in cima = 0 dB, in fondo = silenzio; fader FADER, corsa 45 mm (Bourns PTA4543, NOTA: pezzo da confermare)
+1;LM3915N-1;DIP-18_W7.62mm;U1;barra METER, 10 segmenti da 3 dB sotto +REF5; modo barra (MODE a V+); V- a CTRL_GND: le correnti dei LED restano fuori da AGND
