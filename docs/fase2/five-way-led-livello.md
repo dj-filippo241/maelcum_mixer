@@ -1,8 +1,8 @@
 # 5-WAY — LED di livello delle 5 vie (dec. 176 g, todo 291)
 
 Versione v0.1, 2026-11-11. Stato: topologia [PROPOSTA di Claude, simulata];
-soglie e somma L+R [PROVVISORIO, da confermare con Filippo: A24 in
-`docs/02-questioni-aperte.md`]. Simulazione: `sim/five-way/led-livello-soglie.cir`,
+soglie e somma L+R [BLOCCATO, dec. 177: confermate da Filippo il
+2026-11-11, chiude A24]. Simulazione: `sim/five-way/led-livello-soglie.cir`,
 risultati `sim/five-way/RISULTATI-led-livello.md`.
 
 ## 1. Requisito (dec. 176 g)
@@ -42,7 +42,7 @@ presa del meter L, R (dopo il drive, -6 dBu nominali interni)
 Il sommatore inverte: per un LED la polarità non conta (il rivelatore legge
 il picco positivo; su musica i picchi sono simmetrici entro pochi dB).
 
-## 3. Soglie [PROVVISORIO]
+## 3. Soglie [BLOCCATO, dec. 177]
 
 Un partitore solo sul +15 LN, comune alle 5 vie (E96, 0,1 %):
 
@@ -99,7 +99,7 @@ resto del 5-way quando si disegna la sua scheda (todo 270 per la scheda
 comandi). Corrente: 5 × 2 × 2,8 mA = 28 mA sul +5 V nel caso peggiore, ~40 mA
 sul ±15 LN per i 5 quad (~2 mA per sezione).
 
-## 6. Limiti e scelte da confermare (A24)
+## 6. Limiti e scelte (A24, chiusa dalla dec. 177: somma L+R)
 
 - **Somma L+R.** Un suono solo su un lato legge 6 dB più basso; un suono
   in controfase non accende niente. Alternativa: banco e rivelatore per lato,
