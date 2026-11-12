@@ -252,8 +252,9 @@ def main():
             canale.banda_pioneer))
         controlla(f"MID-HIGH {pos} %", db(a), atteso)
 
-    print("GAIN (1 kHz)")
-    for pos, atteso in [(0, -999.0), (25, -50.0), (50, 0.0), (75, 5.0), (100, 10.0)]:
+    print("GAIN (1 kHz, pot doppio della dec. 162)")
+    for pos, atteso in [(0, -999.0)] + [(p, db(canale.gain_lin(p / 100)))
+                                        for p in (10, 25, 50, 75, 100)]:
         a, _ = suona(testo, 1000, durata=0.03, coda=0.01, gain=pos)
         controlla(f"GAIN {pos} %", db(a), atteso)
 

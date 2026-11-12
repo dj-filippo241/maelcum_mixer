@@ -933,5 +933,29 @@ pulito; GROWL **BANDE** senza ritocchi, curva più lenta con metà corsa al 30 %
 (`fiveway.GROWL_ESP` 1,5 → 1,74, vale per tutte le voci di GROWL VER e per MC-5WAY-S);
 NASTRO **BANDE** B9 con la curva di oggi; medi schiacciati sui picchi: ok.
 
-MC-5WAY e MC-5WAY-S rigenerati col nuovo esponente. MC-5WAY-S resta su E, LIBERO, EXCITER.
+MC-5WAY e MC-5WAY-S rigenerati col nuovo esponente. MC-5WAY-S resta su E, LIBERO, EXCITER. [Superato il 2026-11-12: §22.]
 
+## 22. MC-5WAY-S con le scelte della dec. 175; GROWL VER fino a BANDE (2026-11-12)
+
+Richiesta di Filippo (banco nel browser, `web/`): le versioni -S con le ultime scelte.
+
+**MC-5WAY-S** ora fissa CROSSOVER H 60/250/1,2k/8k, GROWL BANDE e NASTRO BANDE B9
+(`genera_5way.py`, `SCELTA_XO` 6, `SCELTA_GV` 2, `SCELTA_NV` 6). Calcola solo quei blocchi:
+il clipper del GROWL LIBERO e i sei NASTRO vecchi non si scrivono. Con la manopola a zero
+(sotto 0,001) GROWL BANDE e NASTRO BANDE non si calcolano e i loro stati vanno a zero, come
+già fa MC-5WAY con le voci non scelte. `prova_semplice.py`: MC-5WAY-S contro MC-5WAY con
+xo 6, gv 2, nver 6, scarto massimo 3e-15, PASS. Peso nel modello JavaScript del banco
+(`web/tools/prova.mjs`, un core M3 Max): 13 % del tempo reale con GROWL e NASTRO a zero,
+31 % col solo GROWL a metà, 52 % col solo NASTRO, 70 % con tutti e due (il completo con le
+stesse scelte: 130 %).
+
+**GROWL VER fino a BANDE.** In MC-5WAY il `Param gv` aveva `max=1`, ma il selettore GROWL VER
+di Max manda 0, 1 o 2 (BANDE). Se gen~ taglia un `Param` al suo massimo, in Live BANDE suonava
+come LIBERO: la scelta GROWL BANDE della dec. 175 (c) sarebbe stata fatta sentendo il LIBERO.
+Non ho trovato nella documentazione di Cycling '74 se il `Param` di un codebox taglia o no:
+**deduzione, da verificare in Live** (selettore su BANDE, GROWL al massimo: se il suono non
+cambia fra LIBERO e BANDE, il taglio c'era). Le prove in Python non se ne accorgevano: il
+traduttore non applica i massimi (regola 11 del CLAUDE.md). Correzione: `max` = numero di voci
+meno 1 (`genera_5way.py`); MC-5WAY rigenerato.
+
+Verificato in: Python sì / LTspice no / Live no.

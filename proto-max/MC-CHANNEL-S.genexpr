@@ -44,9 +44,11 @@ s_midhigh = midhigh + t10 * (s_midhigh - midhigh);
 s_high = high + t10 * (s_high - high);
 s_fader = fader + t10 * (s_fader - fader);
 
-// GAIN: fondo corsa muto, meta CCW -100..0 dB, meta CW 0..+10 dB
+// GAIN a pot doppio (dec. 162, T1): partitore caricato Rl/R 0,43, x3,15;
+// meta CCW = trim, silenzio a fondo corsa; meta CW 0..+10 dB
 tg = s_gain / 100;
-g_gain = pow(10, min(200 * tg - 100, 20 * tg - 10) / 20) * (tg > 0);
+lo_g = tg * 0.43 / (tg + 0.43);
+g_gain = 3.15 * lo_g / (lo_g + 1 - tg);
 // bande: pot lineare x2, oppure curva Pioneer ideale (docs/09 §7):
 // taglio (2 theta)^1,5, boost uguale; a fondo corsa il contatto da silenzio
 x_low = 2 * s_low / 100;

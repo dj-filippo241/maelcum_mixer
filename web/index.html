@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>maelcum banco</title>
+<style>
+  :root { --fondo: #f4f4f1; --testo: #1d1d1b; --tenue: #8a8a84; --linea: #b9b9b2; --pannello: #ffffff; --acceso: #e0662a; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fondo); color: var(--testo); font: 13px/1.35 -apple-system, Helvetica, Arial, sans-serif; }
+  header { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 12px; background: var(--fondo); border-bottom: 1px solid var(--linea); }
+  button { font: inherit; padding: 4px 10px; border: 1px solid var(--testo); background: #fff; border-radius: 3px; cursor: pointer; }
+  button[aria-pressed="true"] { background: var(--testo); color: #fff; }
+  #stato { color: var(--tenue); margin-left: auto; font-variant-numeric: tabular-nums; }
+  #aiuto { width: 100%; color: var(--tenue); font-size: 12px; }
+  svg { display: block; width: 100%; height: auto; max-width: 1400px; margin: 8px auto 40px; touch-action: none; user-select: none; -webkit-user-select: none; }
+  svg text { font-family: -apple-system, Helvetica, Arial, sans-serif; pointer-events: none; }
+  .modulo { fill: var(--pannello); stroke: var(--linea); stroke-width: 0.4; }
+  .titolo { font-size: 3.2px; font-weight: 700; fill: var(--testo); }
+  .eti { font-size: 2.3px; fill: var(--testo); text-anchor: middle; }
+  .val { font-size: 2.1px; fill: var(--acceso); text-anchor: middle; }
+  .manopola circle { fill: #fff; stroke: var(--testo); stroke-width: 0.45; }
+  .manopola line { stroke: var(--testo); stroke-width: 0.8; stroke-linecap: round; }
+  .comando { cursor: ns-resize; }
+  .click { cursor: pointer; }
+  .inerte circle, .inerte rect { stroke: var(--tenue); stroke-dasharray: 0.8 0.6; fill: none; }
+  .inerte line { stroke: var(--tenue); }
+  .inerte text { fill: var(--tenue); }
+  .bottone rect { fill: #fff; stroke: var(--testo); stroke-width: 0.45; }
+  .bottone.on rect { fill: var(--acceso); stroke: var(--acceso); }
+  .levetta rect { fill: #fff; stroke: var(--testo); stroke-width: 0.45; }
+  .binario { stroke: var(--linea); stroke-width: 1; }
+  .cursore { fill: var(--testo); }
+  .seg { fill: #e6e6e1; }
+  .seg.v { fill: #41a04c; } .seg.g { fill: #e2a828; } .seg.r { fill: #d44731; }
+  .deck-file { font-size: 2.2px; fill: var(--tenue); text-anchor: middle; }
+  .bersaglio { fill: transparent; }
+  .levetta.on rect { fill: var(--acceso); stroke: var(--acceso); }
+  .drop .modulo { fill: #fff2ea; stroke: var(--acceso); }
+</style>
+</head>
+<body>
+<header>
+  <button id="accendi">Accendi</button>
+  <button id="play" aria-pressed="false" disabled>Play</button>
+  <button id="riavvolgi" disabled>Da capo</button>
+  <button id="mic" aria-pressed="false" disabled>Mic</button>
+  <span id="stato">spento</span>
+  <div id="aiuto">Manopole e fader: trascina su e giù (doppio clic = posizione di partenza). Levette e bottoni: clic. Kill del 5-way: clic sopra = FISSO, tieni premuto sotto = MOLLA. Una traccia tua: trascina un file audio su una striscia CDJ, o clic sul suo titolo. Grigio tratteggiato = comando senza dispositivo nel prototipo.</div>
+</header>
+<svg id="banco" xmlns="http://www.w3.org/2000/svg"></svg>
+<script type="module" src="app.js"></script>
+</body>
+</html>

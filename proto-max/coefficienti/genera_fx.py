@@ -235,10 +235,8 @@ def genexpr_ret():
     lisci(r, [n for n, _, _ in RET_DIAL], {})
     r("sr4 = samplerate * 4;")
     r("tg = s_gain / 100;")
-    gm, gk, tk = fx.GAIN_MAX_DB, fx.GAIN_KNEE_DB, fx.GAIN_KNEE_T
-    r(f"gnl = (tg >= 0.5) * pow(10, {gm / 0.5 / 20!r} * (tg - 0.5))"
-      f" + (tg < 0.5) * (tg >= {tk!r}) * pow(10, {gk / (0.5 - tk) / 20!r}"
-      f" * (0.5 - tg)) + (tg < {tk!r}) * {10 ** (gk / 20) / tk!r} * tg;")
+    r("// GAIN a pot doppio (dec. 162, T2): pot in retroazione, Ra/R 0,124, x0,625 x2")
+    r(f"gnl = {fx.GAIN_K2!r} * tg / (1 - tg + {fx.GAIN_RA!r});")
     coefficienti_eq(r, "s_low / 100", "s_high / 100")
     r(f"// REROUTE: law a tratti della SPEC §7, CV lisciato 1 ms")
     r(f"ccr = exp(-1 / ({fx.T_REROUTE!r} * samplerate));")

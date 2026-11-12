@@ -37,7 +37,7 @@ dire alla traccia quale bus ascolta.
 | ASSIGN | rampa 1 ms | dec. 80 |
 | EQ LOW (mandata e ritorno) | taglio: 0 → −6 dB tra 50 e 20 %, −6 → −30 dB negli ultimi 20 %; boost 0 → +6 dB | [PROVVISORIO]: la SPEC dice solo «rapidi solo al taglio estremo» |
 | EQ HIGH | taglio: asintoto 0 → −15 dB tra 50 e 30 %, poi fino al kill; boost 0 → +6 dB | [PROVVISORIO]: la SPEC dice «taglio rapido in partenza, poi graduale» |
-| GAIN (ritorno) | 0 → +20 dB su metà corsa CW; −40 → 0 dB tra 5 e 50 %; silenzio a fondo corsa | [PROVVISORIO] |
+| GAIN (ritorno) | dal 2026-11-12 pot doppio della dec. 162 (T2: Ra/R 0,124, ×0,625 dopo il buffer ×2): centro ~0 dB, fine corsa +20 dB, metà sinistra = trim (−3,2 dB al 40 %, −11,4 al 20 %). Prima: 0 → +20 dB su metà corsa CW; −40 → 0 dB tra 5 e 50 % | [PROVVISORIO fino al banco] |
 | REROUTE | a tratti, SPEC §7: 0-20 % −∞…−40, 20-45 % −40…−20, 45-70 % −20…−10, 70-85 % −10…−4, 85-95 % −4…−1, 95-100 % −1…0 dB; CV lisciato 1 ms | BLOCCATO |
 | MASTER | −∞ a fondo corsa, 0 dB all'80 % (detent), +6 dB a fine corsa | [PROVVISORIO]: master-out §3.2 dice unity al 75-80 % |
 | MONO | M/S, S in un VCA da 0 a −100 dB in 1 ms | addendum dec. 111 |

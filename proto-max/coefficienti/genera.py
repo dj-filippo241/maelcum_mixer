@@ -203,9 +203,11 @@ def genexpr():
         r(f"s_c = {CURVA[0]} + t20 * (s_c - {CURVA[0]});")
         r(f"s_t = {EQTIPO[0]} + t20 * (s_t - {EQTIPO[0]});")
     r()
-    r("// GAIN: fondo corsa muto, meta CCW -100..0 dB, meta CW 0..+10 dB")
+    r("// GAIN a pot doppio (dec. 162, T1): partitore caricato Rl/R 0,43, x3,15;")
+    r("// meta CCW = trim, silenzio a fondo corsa; meta CW 0..+10 dB")
     r("tg = s_gain / 100;")
-    r("g_gain = pow(10, min(200 * tg - 100, 20 * tg - 10) / 20) * (tg > 0);")
+    r(f"lo_g = tg * {canale.GAIN_RL!r} / (tg + {canale.GAIN_RL!r});")
+    r(f"g_gain = {canale.GAIN_A!r} * lo_g / (lo_g + 1 - tg);")
     r("// bande: pot lineare x2, oppure curva Pioneer ideale (docs/09 §7):")
     r("// taglio (2 theta)^1,5, boost uguale; a fondo corsa il contatto da silenzio")
     for b in BANDE:

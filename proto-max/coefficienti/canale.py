@@ -52,15 +52,19 @@ BOOST_MAX = 2.0               # somma x2: pot a fine corsa = +6 dB
 
 # --- law dei comandi (theta = posizione della manopola, 0...1) ---
 
+# GAIN a pot doppio (dec. 162, circuito T1 di sim/gain-pot): pot 10k lineare, Rl 4,30k
+# dal cursore a massa, non invertente x3,15. Metà sinistra = trim (-2/-3 dB a ore 11),
+# silenzio solo a fondo corsa; metà destra 0 -> +10 dB. Prima: legge del VCA -100...0...+10.
+GAIN_A = 3.15
+GAIN_RL = 0.43                # Rl / R
+
+
 def gain_lin(theta):
-    """GAIN: -inf (fondo corsa) ... 0 dB (centro) ... +10 dB (fine corsa)."""
+    """GAIN: 0 (fondo corsa) ... ~0 dB (centro) ... +10 dB (fine corsa), partitore caricato."""
     if theta <= 0.0:
         return 0.0
-    if theta < 0.5:
-        db = -100.0 * (1.0 - 2.0 * theta)
-    else:
-        db = 20.0 * (theta - 0.5)
-    return 10.0 ** (db / 20.0)
+    lo = theta * GAIN_RL / (theta + GAIN_RL)
+    return GAIN_A * lo / (lo + 1.0 - theta)
 
 
 def banda_lin(theta):

@@ -111,13 +111,16 @@ GAIN_KNEE_DB = -40.0
 GAIN_KNEE_T = 0.05
 
 
+# GAIN del ritorno a pot doppio (dec. 162, circuito T2 di sim/gain-pot): pot 10k in
+# retroazione con Ra 1,24k, invertente x0,625 dopo il buffer x2. Centro ~0 dB, fine
+# corsa +20 dB, metà sinistra = trim. Prima: legge del VCA con ginocchio a -40 dB.
+GAIN_K2 = 2 * 0.625           # buffer x2 per lo stadio x0,625
+GAIN_RA = 0.124               # Ra / R
+
+
 def gain_lin(t):
-    if t >= 0.5:
-        return 10 ** (GAIN_MAX_DB * (t - 0.5) / 0.5 / 20)
-    if t >= GAIN_KNEE_T:
-        d = GAIN_KNEE_DB * (0.5 - t) / (0.5 - GAIN_KNEE_T)
-        return 10 ** (d / 20)
-    return 10 ** (GAIN_KNEE_DB / 20) * t / GAIN_KNEE_T
+    t = min(max(t, 0.0), 1.0)
+    return GAIN_K2 * t / (1.0 - t + GAIN_RA)
 
 
 REROUTE_PUNTI = ((0.0, -100.0), (0.2, -40.0), (0.45, -20.0), (0.7, -10.0),

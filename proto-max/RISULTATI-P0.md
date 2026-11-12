@@ -324,3 +324,16 @@ contatto di fondo corsa, dec. 127). Il prototipo non la imita.
 MC-CHANNEL invariato (rigenerato identico). `prova_semplice.py` confronta
 ora il -S con MC-CHANNEL su INCROCI C 350 e CURVA LINEARE: PASS, scarto 0
 su 6 casi. `prova_gen.py` PASS; `regole_gen.py` nessuna collisione.
+
+## GAIN a pot doppio in MC-CHANNEL e MC-CHANNEL-S (2026-11-12, dec. 162)
+
+Il GAIN del prototipo seguiva ancora la legge del VCA (−100 dB → 0 → +10 dB, a ore 11 già
+−20 dB). La dec. 162 ha messo un pot doppio nel segnale: ora il prototipo usa il circuito T1
+(`sim/gain-pot/`, pot 10k lineare, Rl 4,30k dal cursore a massa, non invertente ×3,15;
+`canale.gain_lin`, `genera.py`). All'orecchio: la metà sinistra diventa un trim (−5,2 dB al
+25 %, silenzio solo a fondo corsa), la metà destra resta 0 → +10 dB (+4,3 dB al 75 %). Lo
+stesso per il GAIN dei ritorni (RISULTATI-P3, T2). Prove: `prova_gen.py` (attesi dal modello)
+e `prova_fx.py` PASS; `prova_semplice.py` PASS.
+
+Verificato in: Python sì / LTspice no (la curva viene da `sim/gain-pot/gain_pot.py`) / Live no.
+

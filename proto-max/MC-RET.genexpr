@@ -58,7 +58,8 @@ s_low = low + t10 * (s_low - low);
 s_high = high + t10 * (s_high - high);
 sr4 = samplerate * 4;
 tg = s_gain / 100;
-gnl = (tg >= 0.5) * pow(10, 2.0 * (tg - 0.5)) + (tg < 0.5) * (tg >= 0.05) * pow(10, -4.444444444444445 * (0.5 - tg)) + (tg < 0.05) * 0.19999999999999998 * tg;
+// GAIN a pot doppio (dec. 162, T2): pot in retroazione, Ra/R 0,124, x0,625 x2
+gnl = 1.25 * tg / (1 - tg + 0.124);
 // EQ2 LOW: dB voluti -> posizione x del pot (fx.low_x)
 ldb = (s_low / 100 >= 0.5) * 12.0 * (s_low / 100 - 0.5) + (s_low / 100 < 0.5) * ((s_low / 100 < 0.2) * (-30.0 + 120.0 * (s_low / 100 - 0.0)) + (s_low / 100 >= 0.2) * (-6.0 + 20.0 * (s_low / 100 - 0.2)));
 lgl = pow(10, ldb / 20);

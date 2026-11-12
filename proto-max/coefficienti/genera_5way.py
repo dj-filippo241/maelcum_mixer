@@ -62,11 +62,12 @@ SA_LATO = SA_NB + 2 * (len(NB.e_lo) + len(NB.e_hi) + len(NB.e_t)) + 4
 VS20, ID0, VD0 = fw.jfet_riposo()
 _CA = al.ClasseA(48000.0)
 VE20, VCAP0 = _CA.ve2, _CA.vcap
-# versione semplice (Filippo 2026-10-21): scelte fissate, niente selettori
+# versione semplice (Filippo 2026-10-21): scelte fissate, niente selettori.
+# Scelte della dec. 175 (2026-11-10): prima E, LIBERO, EXCITER.
 SEMPLICE = False
-SCELTA_XO = 4                   # E 80/170/1,2k/6k (impianto di Filippo)
-SCELTA_GV = 1                   # GROWL LIBERO
-SCELTA_NV = 2                   # NASTRO EXCITER
+SCELTA_XO = 6                   # H 60/250/1,2k/8k
+SCELTA_GV = 2                   # GROWL A BANDE (dec. 165)
+SCELTA_NV = 6                   # NASTRO A BANDE B9 (dec. 166)
 
 
 def funzioni(r):
@@ -124,7 +125,7 @@ def funzioni(r):
     r(f"\treturn {fw.G_RF!r} * (a - id) * (pos * 2 - 1);")
     r("}")
     r()
-    for banda in ("low", "mid") if not SEMPLICE else ():
+    for banda in ("low", "mid"):
         _, rf, rs, na, nb, _ = GB[banda]
         ra, rb = rs + na * fw.D_RS, rs + nb * fw.D_RS
         va, vb = na * fw.D_N * fw.VT27, nb * fw.D_N * fw.VT27
@@ -348,11 +349,11 @@ def genexpr():
         r(f"Param {nome}(0, min=0, max=100);")
     if not SEMPLICE:
         r(f"Param {XO[0]}(0, min=0, max={len(XO[2]) - 1});")
-        r(f"Param {GV[0]}(0, min=0, max=1);")
+        r(f"Param {GV[0]}(0, min=0, max={len(GV[2]) - 1});")
         r(f"Param {NV[0]}(0, min=0, max={len(NV[2]) - 1});")
-    # il -S non ha le voci a bande: stati e indici come prima
-    nsv = SVF_VECCHI if SEMPLICE else SVF_LATO
-    nsa = SA_VECCHI if SEMPLICE else SA_LATO
+    # il -S tiene gli indici del completo: gli stati dei NASTRO non scelti restano allocati
+    nsv = SVF_LATO
+    nsa = SA_LATO
     r(f"Data sv({2 * 2 * nsv});")
     r(f"Data sa({2 * nsa});")
     r("Data zk(30);  // kill allo zero: per lato e via stato, campione prima, conteggio")
@@ -426,7 +427,7 @@ def genexpr():
       f" * (tn - 0.5) / 0.5));")
     r(f"// NASTRO LIBERO: spinta 0 -> +{al.NL_GMAX_DB:g} dB con la manopola")
     r(f"gnl = pow(10, {al.NL_GMAX_DB / 20!r} * tn);")
-    if not SEMPLICE:
+    if True:
         inv = nbm.SCELTA in nbm.INVERSA
         r("// NASTRO A BANDE: manopola a curva "
           + (f"inversa, tb = 1 - (1 - tn)^{nbm.INV_ESP:g}" if inv
@@ -437,10 +438,10 @@ def genexpr():
           f"{1 - fw.TAPER_A_MID!r} * (tb - 0.5) / 0.5));")
         r(f"gnb = pow(10, {al.NL_GMAX_DB / 20!r} * tb);")
     if SEMPLICE:
-        assert SCELTA_GV == 1
-        r("// GROWL LIBERO (spinta 0 -> +18 dB col pot)")
-        r(f"gg = pow(10, {fw.LIB_GMAX_DB / 20!r} * mg);")
-        r(f"kk = {fw.LIB_K!r};")
+        assert SCELTA_GV == 2
+        r("// GROWL A BANDE (dec. 165, 175): solo questo, il LIBERO non si calcola;")
+        r("// con la manopola a zero il blocco non si calcola e i suoi stati vanno a zero")
+        r("wgb = s_growl > 0.001;")
     else:
         r("// GROWL VER: 0 = dec. 99, 1 = LIBERO (spinta 0 -> +18 dB col pot),")
         r("// 2 = A BANDE (dec. 165), in dissolvenza dal LIBERO")
@@ -448,6 +449,7 @@ def genexpr():
         r("wgb = max(s_gv - 1, 0);")
         r(f"gg = 1 + glib * (pow(10, {fw.LIB_GMAX_DB / 20!r} * mg) - 1);")
         r(f"kk = {fw.KG!r} + glib * {fw.LIB_K - fw.KG!r};")
+    if True:
         lo_, mi_ = GB["low"], GB["mid"]
         r(f"// GROWL A BANDE: LP4 {GB['FL']} Hz al basso, LP1 {GB['FM']} Hz ai"
           f" medi; spinta 0 -> +{lo_[0]:g} / +{mi_[0]:g} dB col pot")
@@ -460,12 +462,17 @@ def genexpr():
     r(f"ghg = tan(pi * {fw.F_HP_G!r} / sr4);")
     r(f"kcb = 1 / (sr4 * {fw.J_CB!r});")
     r(f"kc = 1 / (sr4 * {10e-6 * fw.J_RTS!r});")
-    if not SEMPLICE:
+    if SEMPLICE:
+        assert SCELTA_NV == 6
+        r("// NASTRO A BANDE B9 (dec. 166, 175): solo questo; a manopola zero non si calcola")
+        r(f"wn{len(NV[2]) - 1} = s_nastro > 0.001;")
+    else:
         r("// NASTRO VER: 0 OGGI, 1 COMPLETO, 2 EXCITER, 3 CLASSE A, 4 LIBERO,"
           " 5 COMPLETO MEDI, 6 A BANDE"
           " (20 ms)")
         for j in range(len(NV[2])):
             r(f"wn{j} = max(0, 1 - abs(s_nver - {j}));")
+    if True:
         fz, fp, fa, fb = nbm.VAR[nbm.SCELTA][:4]
         r(f"// NASTRO A BANDE: enfasi (bassi {fz:g}/{fp:g} Hz e super"
           f" {fa:g}/{fb:g} Hz tagliati) davanti al LIBERO, de-enfasi dopo")
@@ -541,21 +548,23 @@ def genexpr():
                 i += 2
             r("// GROWL (sotto 350 Hz) e NASTRO, volt del dominio interno")
             r(f"xa = ya * {liv!r};")
-            r(f"lw = svlp(sv, {i}, xa, glp, {kq!r});")
-            i += 2
-            r(f"dg = kk * hp1(sa, {sa0}, clipg(gg * lw), ghg) - lw;")
             if not SEMPLICE:
-                growl_bande(r, b0, sa0, kq)
+                r(f"lw = svlp(sv, {i}, xa, glp, {kq!r});")
+            i += 2
+            if SEMPLICE:
+                # GROWL A BANDE da solo: il clipper del LIBERO non si calcola
+                r("dg = 0;")
+            else:
+                r(f"dg = kk * hp1(sa, {sa0}, clipg(gg * lw), ghg) - lw;")
+            growl_bande(r, b0, sa0, kq)
             r("y1 = xa + mg * dg;")
             if SEMPLICE:
-                # solo l'EXCITER: gli altri NASTRO non si scrivono, ma i loro
-                # stati restano allocati (stessi indici dell'originale)
-                assert SCELTA_NV == 2
-                i += 2
-                r(f"exh = svhp(sv, {i}, y1, gex, {kq!r});")
-                i += 2
-                r(f"dex = {al.EX_K!r} * hp1(sa, {sa0 + 9}, clipe(exh), gex);")
-                r(f"{lato}_y{k} = (y1 + mt * dex) / {liv!r};")
+                # solo il NASTRO A BANDE: gli altri NASTRO non si scrivono, ma i
+                # loro stati restano allocati (stessi indici del completo)
+                assert SCELTA_NV == 6
+                i += 4
+                nastro_bande(r, sa0)
+                r(f"{lato}_y{k} = (y1 + mtb * dnb) / {liv!r};")
                 assert i == b0 + 2 * SVF_VECCHI
                 continue
             r(f"jvs = {VS20!r} + peek(sa, {sa0 + 1});")
@@ -644,8 +653,7 @@ def genexpr():
               " + wn5 * dme;")
             r(f"{lato}_y{k} = (y1 + mt * dn + mtb * wn6 * dnb) / {liv!r};")
             assert i == b0 + 2 * SVF_VECCHI
-        if not SEMPLICE:
-            spegni(r, b0, sa0)
+        spegni(r, b0, sa0)
         g.giu(f"{lato}_v0", f"{lato}_y0", f"{lato}_y1", 2, (lato, "giu", 2))
         g.giu(f"{lato}_v1", f"{lato}_y2", f"{lato}_y3", 2, (lato, "giu", 2))
         g.giu(f"{lato}_w", f"{lato}_v0", f"{lato}_v1", 1, (lato, "giu", 1))
@@ -730,8 +738,8 @@ def patch(codice):
                          numoutlets=0, presentation=1,
                          presentation_rect=[8, 150, 490, 18],
                          patching_rect=[20, 520, 490, 18],
-                         text="Semplice: CROSSOVER E 80/170/1,2k/6k, GROWL "
-                              "LIBERO, NASTRO EXCITER. 0 dBu = -12 dBFS."))
+                         text="Semplice (dec. 175): CROSSOVER H 60/250/1,2k/8k, "
+                              "GROWL BANDE, NASTRO BANDE B9. 0 dBu = -12 dBFS."))
         return finestra(boxes, lines, parametri)
     tab(XO[0], XO[1], XO[2], 0, [312, 78, 114, 66])
     boxes[-2]["box"]["num_lines_presentation"] = len(XO[2])

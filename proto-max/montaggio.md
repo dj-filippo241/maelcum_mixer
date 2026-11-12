@@ -213,9 +213,9 @@ selettori non ci sono più; i comandi del pannello vero restano.
 
 | Dispositivo | Scelte fissate | Comandi |
 |---|---|---|
-| `MC-CHANNEL-S` | ISOLATOR, INCROCI C 150d/350/3150 (dec. 152), CURVA LINEARE (dec. 168, come l'hardware) | GAIN, 4 bande, FADER |
-| `MC-FILTRO-S` | CORE PULITO (c-B), PENDENZA BUTTERWORTH | FREQ, RES, DRIVE ×2, MODO, LIMITATORE (2+2 / 3+3 / OTA, da ascoltare) |
-| `MC-5WAY-S` | CROSSOVER E 80/170/1,2k/6k, GROWL LIBERO, NASTRO EXCITER | KILL, GAIN, POS, WIDTH ×5, GROWL, NASTRO |
+| `MC-CHANNEL-S` | ISOLATOR, INCROCI C 150d/350/3150 (dec. 152), CURVA LINEARE (dec. 168, come l'hardware), GAIN a pot doppio (dec. 162, dal 2026-11-12) | GAIN, 4 bande, FADER |
+| `MC-FILTRO-S` | CORE OTA (a′) col partitore 1/30 (dec. 148), PENDENZA BUTTERWORTH; senza limitatore (serve solo al PULITO) | FREQ, RES, DRIVE ×2, MODO |
+| `MC-5WAY-S` | CROSSOVER H 60/250/1,2k/8k, GROWL BANDE, NASTRO BANDE B9 (dec. 175, dal 2026-11-12; prima E, LIBERO, EXCITER). GROWL e NASTRO a zero non si calcolano | KILL, GAIN, POS, WIDTH ×5, GROWL, NASTRO |
 
 Si montano come gli originali: al posto di MC-CHANNEL, MC-FILTRO e
 MC-5WAY sulla traccia del canale. Il codice calcola solo la versione
