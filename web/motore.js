@@ -10,6 +10,7 @@
 //   MC-MIC -> somma master
 //   somma master -> MC-MASTER -> protezione per le orecchie (-1 dBFS, fuori dal design) -> uscita
 //
+// LED delle 5 vie: banco d'analisi sull'uscita del 5-way (ledvie.js, dec. 177).
 // I moduli MONO, il CUE, BOOTH e LINE/PHONO non hanno un dispositivo nel prototipo: restano muti.
 
 import { Dispositivo as Canale } from "./dsp/mc-channel-s.js";
@@ -21,6 +22,7 @@ import { Dispositivo as Ret } from "./dsp/mc-ret.js";
 import { Dispositivo as Mic } from "./dsp/mc-mic.js";
 import { Dispositivo as Master } from "./dsp/mc-master.js";
 import { creaPedali } from "./pedali.js";
+import { LedVie } from "./ledvie.js";
 
 import { B, LAT, ANELLO } from "./costanti.js";
 export { LAT, ANELLO };
@@ -89,6 +91,7 @@ export class Mixer {
     this.pkMaster = [0, 0];
     this.clipMaster = [0, 0];
     this.led = 0;
+    this.ledVie = new LedVie(fs);
   }
 
   comando(m) {
@@ -183,6 +186,7 @@ export class Mixer {
     if (this.esterno) this.fiveFuori();
     else this.fiveS.process(this.dj[0], this.dj[1], [this.oFive], B);
     this.pkFive = Math.max(this.pkFive, picco(this.oFive[0], this.oFive[1]));
+    this.ledVie.process(this.oFive[0], this.oFive[1], B);
 
     this.mic.process(micL || ZERO, micR || micL || ZERO, this.oMic, B);
     this.led = Math.max(this.led, this.mic.meter[0]);
@@ -288,6 +292,7 @@ export class Mixer {
       master: this.pkMaster.slice(),
       clipMaster: this.clipMaster.slice(),
       led: this.led,
+      ledVie: this.ledVie.leggi(),
       prot: this.prot,
       persi: this.persi || 0,
     };

@@ -82,7 +82,12 @@ function collega(mod, c, k) {
         return { tipo: "kill", p: KILL[v] };
       }
       if (n === "METER") return { tipo: "meter", src: ["five"] };
-      return null; // LED delle vie: il prototipo non dà il livello per via
+      if (n === "LED") {
+        // un LED per via, da sinistra: SUB, KICK, MID, HIGH, SUPER (ledvie.js nel motore)
+        const v = mod.comandi.filter((x) => x.nome === "LED").indexOf(c);
+        return { tipo: "led", src: ["five", v] };
+      }
+      return null;
     }
     case "master":
       if (n === "MASTER") return par("master", "level");
@@ -626,8 +631,9 @@ function meter(m) {
       else if (src === "five") accendiSeg(ctl, dBuCampione(m.five), -24, 18);
       else if (src === "master") accendiSeg(ctl, dBuMeter(m.master[i]), -30, 24);
     } else if (b.tipo === "led") {
-      // MC-MIC dà già lo stato del LED: 0 spento, 1 verde, 2 giallo, 3 rosso (soglie nel dispositivo)
-      ctl.dbu = Math.max(m.led, ctl.dbu - 0.2);
+      // stato del LED: 0 spento, 1 verde, 2 giallo, 3 rosso (MC-MIC nel dispositivo, 5 vie in ledvie.js)
+      const st = b.src[0] === "five" ? m.ledVie[b.src[1]] : m.led;
+      ctl.dbu = Math.max(st, ctl.dbu - 0.2);
       ctl.led[0].setAttribute("class", "seg" + (ctl.dbu >= 1 ? " v" : ""));
       ctl.led[1].setAttribute("class", "seg" + (ctl.dbu >= 2 ? " g" : ""));
       ctl.led[2].setAttribute("class", "seg" + (ctl.dbu >= 3 ? " r" : ""));
