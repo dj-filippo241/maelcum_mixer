@@ -17,10 +17,13 @@
 //         470k / 220k / 100k / 68k (circa 150 / 330 / 720 / 1060 Hz); modulazione dai diodi
 //         D1/D2 con R8/R9 220k sulle basi
 //   uscita C9 100n / R26 15k, C8 100n / R27 15k (due passa-alto a 106 Hz), R3 100k su R30 10k
-// Deduzione mia, non scritta sul disegno in modo leggibile: cosa porta ogni posizione di S4
-// (MODULATION). Qui: 1 = sirena (C5 sulle basi), 2 = sirena a scatti (metà oscillatore
-// alimentata dall'onda quadra), 3 = nota fissa a scatti, 4 = suono che vive solo con C5
-// (cade e si spegne). Anche la rampa del tasto POWER (0,1 s) è mia.
+//   S4    MODULATION, letto sul disegno (rev. 12/11): il comune di C2 alimenta le resistenze di
+//         base della metà A, quello di C3 la metà B, C1 porta +9 V sui diodi D1/D2 in posizione 3.
+//           pos. 1  A = +9 V         B = SHAPED-LFO   sirena che cade e si spegne con C5
+//           pos. 2  A = +9 V         B = LFO quadra   beep a scatti
+//           pos. 3  A = LFO quadra   B = LFO quadra   due toni (diodi a +9 V: suona anche a quadra bassa)
+//           pos. 4  A = SHAPED-LFO   B = SHAPED-LFO   sirena piena, segue C5 sulle due metà
+// Deduzione mia: la rampa del tasto POWER (20 ms).
 
 const VCC = 9;
 const VBE = 0.6, VCE = 0.2;
@@ -69,7 +72,7 @@ export class Njd {
       let acc = 0;
       for (let s = 0; s < this.os; s++) {
         // alimentazione: S6 con una rampa breve
-        this.vs += ((p.power ? VCC : 0) - this.vs) * (dt / 0.1);
+        this.vs += ((p.power ? VCC : 0) - this.vs) * (dt / 0.02);
         const vs = this.vs;
         // LFO a onda quadra; S1 tiene la linea a +9 V
         if (!p.s1) {
@@ -83,11 +86,12 @@ export class Njd {
         if (vq - VBE > a) a = vq - VBE;
         this.vc += ((a - this.vc) / (1e3 * C5)) * dt;
         const vsh = this.vc; // SHAPED-LFO
-        // MODULATION (S4, mappa dedotta): alimentazione della metà B, tensione sui diodi
-        const vb = mod === 0 ? vs : mod === 3 ? vsh : vq;
-        const vm = mod === 2 ? vs : mod === 3 ? 0 : vsh;
+        // MODULATION (S4): alimentazione delle due metà, tensione sui diodi
+        const va = mod <= 1 ? vs : mod === 2 ? vq : vsh;
+        const vb = mod === 0 ? vsh : mod === 3 ? vsh : vq;
+        const vm = mod === 2 ? vs : 0;
         // base del transistor spento: carica verso Veff con tau = Req C
-        const vSup = this.on3 ? vb : vs; // T3 acceso: si carica la base di T4 (metà B)
+        const vSup = this.on3 ? vb : va; // T3 acceso: si carica la base di T4 (metà B)
         const gm = vm - VBE > this.vbOff ? 1 / 220e3 : 0;
         const req = 1 / (1 / rOsc + gm);
         const veff = req * (vSup / rOsc + (vm - VBE) * gm);

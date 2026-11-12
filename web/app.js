@@ -604,7 +604,7 @@ function fiveInterno(perche) {
 }
 
 async function accendiDavvero() {
-  ctx = new AudioContext({ latencyHint: "playback" });
+  ctx = new AudioContext({ latencyHint: "interactive" }); // buffer corti: tasti e kill rispondono subito (playback: ~90 ms)
   await ctx.audioWorklet.addModule("motore.js");
   const { LAT, ANELLO } = await import("./costanti.js");
   let sab = null;
