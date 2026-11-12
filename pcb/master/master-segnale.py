@@ -16,7 +16,7 @@ import os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "tools"))
 from pcbgen import Design, boxsym
-from backplane import c96, SYM_C96, FP_C96, A_STANDARD
+from backplane import c96, SYM_C96, FP_C96, A_STANDARD, C96_DAL_BORDO
 
 d = Design("master-segnale", os.path.join(HERE, "segnale"), "maelcum MASTER scheda di segnale (dec. 140) - bozza v0.1",
            board=(100, 220), rev="0.2-bozza")
@@ -75,7 +75,7 @@ b["b31"], b["b32"] = "VIE_TAP_L", "VIE_TAP_R"
 # (giri 1-6: sempre aperti). CTRL_GND resta sui ritorni di riga c (c16-c28), uniti lungo il C96.
 # RAW+-22 (a5-a8) non servono qui: le univa solo un ponticello pin-pin del C96 (giro 8: RAW+22 aperta).
 pins = c96(b, a=[k for k in A_STANDARD if k not in ("a5", "a6", "a7", "a8", "a21", "a22", "a23", "a24")])
-d.part("J", SYM_C96, "C96 maschio", FP_C96, pins, ref="J1", place=(50, 213.5, 180),
+d.part("J", SYM_C96, "C96 maschio", FP_C96, pins, ref="J1", place=(50, 220 - C96_DAL_BORDO, 180),
        note="DIN 41612 C 3x32, angolo retto; a9-a12 sulle schede d'uscita (dec. 143)")
 d.part("H", "Mechanical:MountingHole_Pad", "CHASSIS", "MountingHole:MountingHole_3.2mm_M3_Pad",
        {1: "CHASSIS"}, ref="H1", place=(5, 5, 0), note="foro di fissaggio al pannello, a CHASSIS")

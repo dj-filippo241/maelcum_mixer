@@ -10,12 +10,12 @@
  "routing": {
   "ok": true,
   "aperti": {
-   "AGND": 121
+   "AGND": 115
   },
-  "tentativi": 2
+  "tentativi": 1
  },
  "drc": {
-  "violations/warning/via_dangling": 4,
+  "violations/warning/via_dangling": 5,
   "violations/warning/silk_overlap": 52,
   "violations/warning/silk_over_copper": 61,
   "atteso/warning/net_conflict": 56
@@ -23,6 +23,34 @@
  "controllo_audio": {
   "regole": {
    "A1": [
+    {
+     "regola": "A1",
+     "oggetto": "U41.2 (V27F-)",
+     "misura": 29.33,
+     "soglia": 10.0,
+     "nota": "regolatore, C piu' vicino C2"
+    },
+    {
+     "regola": "A1",
+     "oggetto": "U41.3 (VREG-)",
+     "misura": 14.96,
+     "soglia": 10.0,
+     "nota": "regolatore, C piu' vicino C9"
+    },
+    {
+     "regola": "A1",
+     "oggetto": "U40.2 (VREG+)",
+     "misura": 17.07,
+     "soglia": 10.0,
+     "nota": "regolatore, C piu' vicino C5"
+    },
+    {
+     "regola": "A1",
+     "oggetto": "U40.3 (V27F+)",
+     "misura": 34.07,
+     "soglia": 10.0,
+     "nota": "regolatore, C piu' vicino C1"
+    },
     {
      "regola": "A1",
      "oggetto": "Q40.1 (+18V)",
@@ -39,73 +67,10 @@
     },
     {
      "regola": "A1",
-     "oggetto": "U44.1 (+18V)",
-     "misura": 19.45,
+     "oggetto": "Q41.1 (-18V)",
+     "misura": 13.32,
      "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C119"
-    },
-    {
-     "regola": "A1",
-     "oggetto": "U44.2 (+18V)",
-     "misura": 19.3,
-     "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C119"
-    },
-    {
-     "regola": "A1",
-     "oggetto": "U44.3 (+18V)",
-     "misura": 19.18,
-     "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C119"
-    },
-    {
-     "regola": "A1",
-     "oggetto": "U44.4 (+18V)",
-     "misura": 19.08,
-     "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C119"
-    },
-    {
-     "regola": "A1",
-     "oggetto": "U44.7 (+18V)",
-     "misura": 23.24,
-     "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C119"
-    },
-    {
-     "regola": "A1",
-     "oggetto": "U44.10 (+15LN)",
-     "misura": 16.33,
-     "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C23"
-    },
-    {
-     "regola": "A1",
-     "oggetto": "U44.11 (+15LN)",
-     "misura": 16.94,
-     "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C23"
-    },
-    {
-     "regola": "A1",
-     "oggetto": "U44.12 (+15LN)",
-     "misura": 17.56,
-     "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C23"
-    },
-    {
-     "regola": "A1",
-     "oggetto": "U40.2 (VREG+)",
-     "misura": 17.07,
-     "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C5"
-    },
-    {
-     "regola": "A1",
-     "oggetto": "U40.3 (V27F+)",
-     "misura": 34.07,
-     "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C1"
+     "nota": "regolatore, C piu' vicino C11"
     },
     {
      "regola": "A1",
@@ -165,38 +130,24 @@
     },
     {
      "regola": "A1",
-     "oggetto": "Q41.1 (-18V)",
-     "misura": 13.32,
-     "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C11"
+     "oggetto": "U25.1 (+5VF)",
+     "misura": 6.18,
+     "soglia": 3.0,
+     "nota": "pad-pad verso C136, pista 71.2 mm"
     },
     {
      "regola": "A1",
-     "oggetto": "U41.2 (V27F-)",
-     "misura": 29.33,
-     "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C2"
+     "oggetto": "U25.4 (+5VF)",
+     "misura": 5.74,
+     "soglia": 3.0,
+     "nota": "pad-pad verso C136, pista 76.1 mm"
     },
     {
      "regola": "A1",
-     "oggetto": "U41.3 (VREG-)",
-     "misura": 14.96,
-     "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C9"
-    },
-    {
-     "regola": "A1",
-     "oggetto": "U42.1 (+15SW)",
-     "misura": 15.72,
-     "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C14"
-    },
-    {
-     "regola": "A1",
-     "oggetto": "U42.3 (V22F+)",
-     "misura": 14.59,
-     "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C12"
+     "oggetto": "U25.10 (+5VF)",
+     "misura": 3.18,
+     "soglia": 3.0,
+     "nota": "pad-pad verso C137, pista 5.4 mm"
     },
     {
      "regola": "A1",
@@ -214,24 +165,73 @@
     },
     {
      "regola": "A1",
-     "oggetto": "U25.1 (+5VF)",
-     "misura": 6.18,
-     "soglia": 3.0,
-     "nota": "pad-pad verso C136, pista 24.9 mm"
+     "oggetto": "U42.1 (+15SW)",
+     "misura": 15.72,
+     "soglia": 10.0,
+     "nota": "regolatore, C piu' vicino C14"
     },
     {
      "regola": "A1",
-     "oggetto": "U25.4 (+5VF)",
-     "misura": 5.74,
-     "soglia": 3.0,
-     "nota": "pad-pad verso C136, pista 6.8 mm"
+     "oggetto": "U42.3 (V22F+)",
+     "misura": 14.59,
+     "soglia": 10.0,
+     "nota": "regolatore, C piu' vicino C12"
     },
     {
      "regola": "A1",
-     "oggetto": "U25.10 (+5VF)",
-     "misura": 3.18,
-     "soglia": 3.0,
-     "nota": "pad-pad verso C137, pista 4.2 mm"
+     "oggetto": "U44.1 (+18V)",
+     "misura": 19.45,
+     "soglia": 10.0,
+     "nota": "regolatore, C piu' vicino C119"
+    },
+    {
+     "regola": "A1",
+     "oggetto": "U44.2 (+18V)",
+     "misura": 19.3,
+     "soglia": 10.0,
+     "nota": "regolatore, C piu' vicino C119"
+    },
+    {
+     "regola": "A1",
+     "oggetto": "U44.3 (+18V)",
+     "misura": 19.18,
+     "soglia": 10.0,
+     "nota": "regolatore, C piu' vicino C119"
+    },
+    {
+     "regola": "A1",
+     "oggetto": "U44.4 (+18V)",
+     "misura": 19.08,
+     "soglia": 10.0,
+     "nota": "regolatore, C piu' vicino C119"
+    },
+    {
+     "regola": "A1",
+     "oggetto": "U44.7 (+18V)",
+     "misura": 23.24,
+     "soglia": 10.0,
+     "nota": "regolatore, C piu' vicino C119"
+    },
+    {
+     "regola": "A1",
+     "oggetto": "U44.10 (+15LN)",
+     "misura": 16.33,
+     "soglia": 10.0,
+     "nota": "regolatore, C piu' vicino C23"
+    },
+    {
+     "regola": "A1",
+     "oggetto": "U44.11 (+15LN)",
+     "misura": 16.94,
+     "soglia": 10.0,
+     "nota": "regolatore, C piu' vicino C23"
+    },
+    {
+     "regola": "A1",
+     "oggetto": "U44.12 (+15LN)",
+     "misura": 17.56,
+     "soglia": 10.0,
+     "nota": "regolatore, C piu' vicino C23"
     },
     {
      "regola": "A1",
@@ -252,14 +252,21 @@
     {
      "regola": "A2",
      "oggetto": "BUS_HPF_L",
-     "misura": 37.85,
+     "misura": 38.97,
      "soglia": 25.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
+     "oggetto": "BUS_HPF_L",
+     "misura": 2,
+     "soglia": 1,
+     "nota": "numero di via"
+    },
+    {
+     "regola": "A2",
      "oggetto": "BUS_LPF_L",
-     "misura": 55.43,
+     "misura": 57.43,
      "soglia": 25.0,
      "nota": "lunghezza di pista (mm)"
     },
@@ -273,20 +280,27 @@
     {
      "regola": "A2",
      "oggetto": "BUS_LPF_R",
-     "misura": 44.12,
+     "misura": 32.63,
      "soglia": 25.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "CUE_OUT_L",
-     "misura": 49.82,
+     "misura": 48.06,
      "soglia": 25.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
-     "oggetto": "CUE_OUT_L",
+     "oggetto": "CUE_OUT_R",
+     "misura": 26.85,
+     "soglia": 25.0,
+     "nota": "lunghezza di pista (mm)"
+    },
+    {
+     "regola": "A2",
+     "oggetto": "CUE_OUT_R",
      "misura": 2,
      "soglia": 1,
      "nota": "numero di via"
@@ -294,7 +308,7 @@
     {
      "regola": "A2",
      "oggetto": "DJBUS_L",
-     "misura": 42.53,
+     "misura": 44.49,
      "soglia": 25.0,
      "nota": "lunghezza di pista (mm)"
     },
@@ -308,133 +322,140 @@
     {
      "regola": "A2",
      "oggetto": "DJBUS_R",
-     "misura": 49.0,
+     "misura": 32.72,
      "soglia": 25.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "GW_L",
-     "misura": 76.18,
+     "misura": 80.71,
      "soglia": 40.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "GW_R",
-     "misura": 75.39,
+     "misura": 74.01,
      "soglia": 40.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "HIO_L",
-     "misura": 72.49,
+     "misura": 75.42,
      "soglia": 40.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "HIO_R",
-     "misura": 77.89,
+     "misura": 72.74,
      "soglia": 40.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "K1W_L",
-     "misura": 123.2,
+     "misura": 123.53,
      "soglia": 40.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "K1W_R",
-     "misura": 136.86,
+     "misura": 135.32,
      "soglia": 40.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "K2W_L",
-     "misura": 128.58,
+     "misura": 129.52,
      "soglia": 40.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "K2W_R",
-     "misura": 144.08,
+     "misura": 135.89,
      "soglia": 40.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "K3W_L",
-     "misura": 126.64,
+     "misura": 129.15,
      "soglia": 40.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "K3W_R",
-     "misura": 136.48,
+     "misura": 138.02,
      "soglia": 40.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "K4W_L",
-     "misura": 126.25,
+     "misura": 125.15,
      "soglia": 40.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "K4W_R",
-     "misura": 132.86,
+     "misura": 147.48,
      "soglia": 40.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
+     "oggetto": "K4W_R",
+     "misura": 3,
+     "soglia": 1,
+     "nota": "numero di via"
+    },
+    {
+     "regola": "A2",
      "oggetto": "LMO_L",
-     "misura": 116.73,
+     "misura": 111.1,
      "soglia": 40.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "LMO_R",
-     "misura": 152.2,
+     "misura": 145.15,
      "soglia": 40.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
-     "oggetto": "LOO_L",
-     "misura": 114.05,
-     "soglia": 40.0,
-     "nota": "lunghezza di pista (mm)"
-    },
-    {
-     "regola": "A2",
-     "oggetto": "LOO_R",
-     "misura": 119.54,
-     "soglia": 40.0,
-     "nota": "lunghezza di pista (mm)"
-    },
-    {
-     "regola": "A2",
-     "oggetto": "LOO_R",
+     "oggetto": "LMO_R",
      "misura": 2,
      "soglia": 1,
      "nota": "numero di via"
     },
     {
      "regola": "A2",
+     "oggetto": "LOO_L",
+     "misura": 112.91,
+     "soglia": 40.0,
+     "nota": "lunghezza di pista (mm)"
+    },
+    {
+     "regola": "A2",
+     "oggetto": "LOO_R",
+     "misura": 117.45,
+     "soglia": 40.0,
+     "nota": "lunghezza di pista (mm)"
+    },
+    {
+     "regola": "A2",
      "oggetto": "MHO_L",
-     "misura": 111.98,
+     "misura": 103.74,
      "soglia": 40.0,
      "nota": "lunghezza di pista (mm)"
     },
@@ -448,28 +469,35 @@
     {
      "regola": "A2",
      "oggetto": "MHO_R",
-     "misura": 134.81,
+     "misura": 130.54,
      "soglia": 40.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
-     "oggetto": "NIF_L",
-     "misura": 69.74,
-     "soglia": 25.0,
-     "nota": "lunghezza di pista (mm)"
-    },
-    {
-     "regola": "A2",
-     "oggetto": "NIF_L",
+     "oggetto": "NG_R",
      "misura": 2,
      "soglia": 1,
      "nota": "numero di via"
     },
     {
      "regola": "A2",
+     "oggetto": "NIF_L",
+     "misura": 82.5,
+     "soglia": 25.0,
+     "nota": "lunghezza di pista (mm)"
+    },
+    {
+     "regola": "A2",
+     "oggetto": "NIF_L",
+     "misura": 4,
+     "soglia": 1,
+     "nota": "numero di via"
+    },
+    {
+     "regola": "A2",
      "oggetto": "NIF_R",
-     "misura": 79.8,
+     "misura": 83.78,
      "soglia": 25.0,
      "nota": "lunghezza di pista (mm)"
     },
@@ -501,7 +529,7 @@
      "oggetto": "C121.1 (NIF_L)",
      "misura": 9.57,
      "soglia": 6.0,
-     "nota": "dal pin U18.8, pista 11.0 mm"
+     "nota": "dal pin U18.8, pista 11.2 mm"
     },
     {
      "regola": "A3",
@@ -515,65 +543,30 @@
     {
      "regola": "A4",
      "oggetto": "BUS_LPF_L",
-     "misura": 0.0663,
+     "misura": 0.1011,
      "soglia": 0.05,
-     "nota": "CTRL_GND 0.066 pF (gap 0.48 mm)"
+     "nota": "DJSEL 0.099 pF (gap 0.20 mm); +15SW 0.002 pF (gap 0.71 mm)"
     },
     {
      "regola": "A4",
-     "oggetto": "BUS_LPF_R",
-     "misura": 0.0653,
+     "oggetto": "CUE_OUT_L",
+     "misura": 0.1134,
      "soglia": 0.05,
-     "nota": "Q1 0.065 pF (gap 0.35 mm); RAW+22 0.000 pF (gap 1.42 mm)"
+     "nota": "CUESEL 0.093 pF (gap 0.20 mm); RAW+27 0.017 pF (gap 0.56 mm)"
     },
     {
      "regola": "A4",
      "oggetto": "DJBUS_L",
-     "misura": 0.0715,
+     "misura": 0.0972,
      "soglia": 0.05,
-     "nota": "Q1 0.064 pF (gap 0.49 mm); RAW-22 0.006 pF (gap 0.48 mm)"
-    },
-    {
-     "regola": "A4",
-     "oggetto": "K1W_L",
-     "misura": 0.8701,
-     "soglia": 0.05,
-     "nota": "BTNC 0.858 pF (gap 0.20 mm); +5VF 0.011 pF (gap 1.13 mm)"
-    },
-    {
-     "regola": "A4",
-     "oggetto": "K1W_R",
-     "misura": 0.0595,
-     "soglia": 0.05,
-     "nota": "FSW0 0.059 pF (gap 0.70 mm)"
-    },
-    {
-     "regola": "A4",
-     "oggetto": "LMO_R",
-     "misura": 0.3647,
-     "soglia": 0.05,
-     "nota": "FSW0 0.365 pF (gap 0.25 mm)"
-    },
-    {
-     "regola": "A4",
-     "oggetto": "LOO_L",
-     "misura": 1.3865,
-     "soglia": 0.05,
-     "nota": "BTNC 0.854 pF (gap 0.20 mm); +5VF 0.514 pF (gap 0.20 mm)"
-    },
-    {
-     "regola": "A4",
-     "oggetto": "MHO_L",
-     "misura": 0.3709,
-     "soglia": 0.05,
-     "nota": "FSW0 0.303 pF (gap 0.27 mm); +5VF 0.068 pF (gap 0.23 mm)"
+     "nota": "RAW+27 0.095 pF (gap 0.41 mm); CUESEL 0.002 pF (gap 0.76 mm)"
     }
    ],
    "A5": [
     {
      "regola": "A5",
      "oggetto": "NIF_L",
-     "misura": 2.25,
+     "misura": 1.65,
      "soglia": 3.0,
      "nota": "distanza dal riquadro di Q41 (mm)"
     }
@@ -613,35 +606,35 @@
     "U25.1 (+5VF) -> C136"
    ],
    "A1_pista_max_mm": [
-    24.89,
-    "U25.1 (+5VF) -> C136"
+    76.14,
+    "U25.4 (+5VF) -> C136"
    ],
    "A2_lunghezza_max_mm": [
-    152.2,
-    "LMO_R"
+    147.48,
+    "K4W_R"
    ],
    "A2_via_max": [
-    2,
-    "BUS_LPF_L"
+    4,
+    "NIF_L"
    ],
    "A3_distanza_max_mm": [
     9.57,
     "C121.1 -> U18.8 (NIF_L)"
    ],
    "A4_cm_max_pf": [
-    1.3865,
-    "LOO_L"
+    0.1134,
+    "CUE_OUT_L"
    ],
    "A5_distanza_min_mm": [
-    2.25,
+    1.65,
     "NIF_L vicino a Q41"
    ]
   },
   "conteggio": {
    "A1": 32,
-   "A2": 33,
+   "A2": 37,
    "A3": 4,
-   "A4": 8,
+   "A4": 3,
    "A5": 1
   }
  },
@@ -701,21 +694,22 @@
   "grappolo: U22 con 5 passivi",
   "grappolo: U23 con 8 passivi",
   "grappolo: U24 con 3 passivi",
-  "blocco «LEVETTA HPF/OFF/LPF: logica autotemporiz»: x 68-108, y 83-149, 12 pin di connettore",
+  "blocco «LEVETTA HPF/OFF/LPF: logica autotemporiz»: x 68-108, y 82-147, 12 pin di connettore",
   "blocco «ISOLATOR lato L (incroci C, dec. 152; is»: x 109-162, y 28-154, 8 pin di connettore",
   "blocco «ISOLATOR lato R (incroci C, dec. 152; is»: x 163-216, y 29-154, 8 pin di connettore",
   "blocco «INGRESSO LINE [A] e GAIN T1 [B] (dec. 16»: x 48-108, y 20-53, 6 pin di connettore",
-  "blocco «FADER [H] (2 VCA, shaper del fader, dec.»: x 55-67, y 101-132, 1 pin di connettore",
+  "blocco «FADER [H] (2 VCA, shaper del fader, dec.»: x 55-67, y 100-131, 1 pin di connettore",
   "blocco «SOMMA DELL'ISOLATOR (non invertente) e S»: x 217-251, y 116-151, 0 pin di connettore",
   "blocco «ALIMENTAZIONE +-18 audio, +-15 switch, +»: x 8-54, y 55-148, 12 pin di connettore",
   "retro: 14 gruppi",
   "fanout di massa: 151 via, 8 senza posto libero",
   "piste fra pad gemelli: 8",
-  "Freerouting (canale, 4 tentativi al più): giro 1 (-mp 40): Freerouting chiuso, DRC 1 aperti, errori {'clearance': 2}; giro 2 (-mp 20): Freerouting chiuso, DRC 0 aperti, errori 0"
+  "Freerouting (canale, 4 tentativi al più): giro 1 (-mp 40): Freerouting chiuso, DRC 0 aperti, errori 0"
  ],
  "esito": "PASSA",
  "errori": [],
  "peggiorato": [
-  "controllo audio A4: 6 -> 8"
+  "drc violations/warning/via_dangling: 4 -> 5",
+  "controllo audio A2: 32 -> 37"
  ]
 }

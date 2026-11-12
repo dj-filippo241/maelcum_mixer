@@ -172,3 +172,11 @@ NOTA della scheda comandi (da verificare):
    Verso della levetta FILTRO (HPF in alto) dal render: da verificare sul pezzo.
 5. Pot di classe 14 mm dell'isolator su impronta RK09L (KiCad non ha l'RK14): ingombro da 14 mm
    tenuto nel controllo del piazzamento, come FX-SEND e MIC.
+
+## C96 a 5,3 mm dal bordo (2026-11-12, todo 303)
+
+Il C96 maschio sta a y = H - `backplane.C96_DAL_BORDO` (7,84: fila b; fila a a 5,3 mm dal bordo,
+disegno Harting e riga «Board edge» dell'impronta). Prima y = H - 6,5 metteva la fila a a 3,96 mm.
+Esito: PASSA al 2o lancio (il 1o: 4 tentativi di Freerouting con 2, 1, 3, 21 aperti; il 2o al primo tentativo, A2 37, A5 1).
+
+Verificato in: KiCad (ERC, DRC). Live: no.

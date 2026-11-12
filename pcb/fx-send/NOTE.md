@@ -137,3 +137,11 @@ Rigenerata da `coordinate.json` nuovo: 48.0 × 63.8 mm (pannello 50 × 67.8 meno
 ## 2026-11-10: moduli di Filippo (dec. 176)
 
 Rigenerata da `coordinate.json` nuovo: LEVEL sopra, HIGH e LOW affiancati sotto. I due pot affiancati hanno i pin verso l'alto (rotazione 270), sotto il LEVEL: con la regola di prima i loro pin cadevano nello stesso punto (NON PASSA, 12 reti aperte). PASSA. La scheda principale non cambia.
+
+## C96 a 5,3 mm dal bordo (2026-11-12, todo 303)
+
+Il C96 maschio sta a y = H - `backplane.C96_DAL_BORDO` (7,84: fila b; fila a a 5,3 mm dal bordo,
+disegno Harting e riga «Board edge» dell'impronta). Prima y = H - 6,5 metteva la fila a a 3,96 mm.
+Esito: PASSA al primo giro.
+
+Verificato in: KiCad (ERC, DRC). Live: no.

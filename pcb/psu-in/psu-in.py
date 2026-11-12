@@ -14,7 +14,7 @@ import os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "tools"))
 from pcbgen import Design
-from backplane import c96, SYM_C96, FP_C96, RIGA_A
+from backplane import c96, SYM_C96, FP_C96, RIGA_A, C96_DAL_BORDO
 
 d = Design("psu-in", HERE, "maelcum PSU-IN (dec. 113) - bozza v0.1", board=(100, 220), rev="0.1-bozza")
 d.gnd = "AGND"
@@ -30,7 +30,7 @@ d.block = "BACKPLANE C96 (slot PSU-IN): riga a intera, AC_OK su c17"
 d.power_nets("RAW+27", "RAW-27", "RAW+22", "RAW-22", "RAW+26", "RAW-26", "+5V", "AGND", "CTRL_GND", "CHASSIS",
              "C+22", "C-22", "C+19", "C-19", "C+27", "C-27", "C+5", "VFAN", "VFAN_F",
              "0V_A", "0V_LN", "0V_M", "0V_FAN", width=0.8)
-d.part("J", SYM_C96, "C96 maschio", FP_C96, c96({}, a=list(RIGA_A), c=["c17"]), ref="J1", place=(50, 213.5, 180),
+d.part("J", SYM_C96, "C96 maschio", FP_C96, c96({}, a=list(RIGA_A), c=["c17"]), ref="J1", place=(50, 220 - C96_DAL_BORDO, 180),
        note="DIN 41612 C 3x32, angolo retto; riga a intera, compresi i [M] a9-a12")
 for ref, x in (("H1", 5), ("H2", 95)):
     d.part("H", "Mechanical:MountingHole_Pad", "CHASSIS", "MountingHole:MountingHole_3.2mm_M3_Pad",

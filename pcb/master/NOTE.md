@@ -191,3 +191,11 @@ NOTA della scheda comandi (da verificare):
 
 Scheda di segnale rigenerata il 2026-11-11 (todo 288: stadio x2,36 del MONO, 2 resistenze in più):
 **PASSA**, 285 componenti; via_dangling 7 → 8, A2 35 → 36.
+
+## C96 a 5,3 mm dal bordo (2026-11-12, todo 303)
+
+Il C96 maschio sta a y = H - `backplane.C96_DAL_BORDO` (7,84: fila b; fila a a 5,3 mm dal bordo,
+disegno Harting e riga «Board edge» dell'impronta). Prima y = H - 6,5 metteva la fila a a 3,96 mm.
+Esito: segnale, uscita L e uscita R PASSA al primo giro (A2 uscita L 9 -> 10, uscita R 9 -> 11).
+
+Verificato in: KiCad (ERC, DRC). Live: no.

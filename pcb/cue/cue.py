@@ -29,7 +29,7 @@ import os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "tools"))
 from pcbgen import DesignRiprova
-from backplane import c96, SYM_C96, FP_C96
+from backplane import c96, SYM_C96, FP_C96, C96_DAL_BORDO
 
 L, H = 196, 124        # pcb/PIANO-SCHEDE-F.md: CUE, sinistra-destra; 177 mm al giro 1 (113 aperti), ora tutto il pannello
 d = DesignRiprova("cue", HERE, "maelcum CUE / cuffie (sistema-cue v0.2) - bozza v0.1", board=(L, H), rev="0.1-bozza")
@@ -76,7 +76,7 @@ for k, n in enumerate(["CUE1", "CUE2", "CUE3", "CUE4", "MON"]):
     b["b%d" % (3 * k + 2)] = n + "_R"
     b["b%d" % (3 * k + 3)] = "AGND"
 # RAW+-26 (a9-a12) solo per il master; c9 (GLOBAL_MUTE) NON collegato: il CUE non lo ascolta (§6, §8)
-d.part("J", SYM_C96, "C96 maschio", FP_C96, c96(b), ref="J1", place=(L / 2, H - 6.5, 180),
+d.part("J", SYM_C96, "C96 maschio", FP_C96, c96(b), ref="J1", place=(L / 2, H - C96_DAL_BORDO, 180),
        note="DIN 41612 C 3x32, angolo retto; c9 libero per scelta (sistema-cue §6)")
 for ref, x in (("H1", 5), ("H2", L - 5)):
     d.part("H", "Mechanical:MountingHole_Pad", "CHASSIS", "MountingHole:MountingHole_3.2mm_M3_Pad",

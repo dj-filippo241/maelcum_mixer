@@ -27,7 +27,7 @@ import os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "tools"))
 from pcbgen import DesignRiprova, boxsym
-from backplane import c96, SYM_C96, FP_C96
+from backplane import c96, SYM_C96, FP_C96, C96_DAL_BORDO
 import celle_vca as cv
 from celle_vca import opa2, opa4, vca, iv, shaper, law_trim, C12, SOIC14
 from celle_micmono import power_18_sw, power_ln, ADG
@@ -68,7 +68,7 @@ b = {"b1": "DJBUS_L", "b2": "DJBUS_R", "b4": "CUE_OUT_L", "b5": "CUE_OUT_R", "b7
      "b10": "BUS_HPF_L", "b11": "BUS_HPF_R", "b13": "BUS_LPF_L", "b14": "BUS_LPF_R"}
 for s in range(1, 11):
     b["b%d" % (3 * s)] = "AGND"
-d.part("J", SYM_C96, "C96 maschio", FP_C96, c96(b, c=["c1", "c2"]), ref="J1", place=(50, H_DIETRO - 6.5, 180),
+d.part("J", SYM_C96, "C96 maschio", FP_C96, c96(b, c=["c1", "c2"]), ref="J1", place=(50, H_DIETRO - C96_DAL_BORDO, 180),
        note="DIN 41612 C 3x32, angolo retto")
 # NOTA: C96 dietro (x 2,5-97,5), alla stessa profondità di quello del FX-SEND accanto; la posizione
 # vera la fissa il backplane della disposizione F (todo 269)

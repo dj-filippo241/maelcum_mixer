@@ -73,14 +73,14 @@ def diode(d, a, k, note=""):
 # ------------------------------------------------------------ backplane
 def backplane(d, msum):
     """Classe MIC/GEN (sistema-backplane §4): slot 1 = MSUM6 o MSUM7, slot 2-5 = S1-S4_OUT."""
-    from backplane import c96, SYM_C96, FP_C96
+    from backplane import c96, SYM_C96, FP_C96, C96_DAL_BORDO
     b = {"b1": msum + "_L", "b2": msum + "_R"}
     for k in range(1, 5):
         b["b%d" % (3 * k + 1)] = "S%d_OUT_L" % k
         b["b%d" % (3 * k + 2)] = "S%d_OUT_R" % k
     for s in range(1, 11):
         b["b%d" % (3 * s)] = "AGND"
-    d.part("J", SYM_C96, "C96 maschio", FP_C96, c96(b, c=["c9"]), ref="J1", place=(50, 213.5, 180),
+    d.part("J", SYM_C96, "C96 maschio", FP_C96, c96(b, c=["c9"]), ref="J1", place=(50, 220 - C96_DAL_BORDO, 180),
            note="DIN 41612 C 3x32, angolo retto")
     for ref, x in (("H1", 5), ("H2", 95)):
         d.part("H", "Mechanical:MountingHole_Pad", "CHASSIS", "MountingHole:MountingHole_3.2mm_M3_Pad",

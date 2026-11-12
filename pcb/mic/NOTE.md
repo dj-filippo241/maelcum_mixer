@@ -189,3 +189,11 @@ Scheda comandi rigenerata da `coordinate.json` nuovo (MIC e MONO 61 × 190, SEND
 (o un errore di distanza). Secondo lancio **PASSA** al 1o tentativo: DRC 0 errori, 5 via_dangling
 (prima 1), A2 35 (prima 32). La scheda è più stretta di prima: 5 tentativi falliti su 6.
 Se un giro futuro non passa, prima di tutto spostare U11 lontano dal C96.
+
+## C96 a 5,3 mm dal bordo (2026-11-12, todo 303)
+
+Il C96 maschio sta a y = H - `backplane.C96_DAL_BORDO` (7,84: fila b; fila a a 5,3 mm dal bordo,
+disegno Harting e riga «Board edge» dell'impronta). Prima y = H - 6,5 metteva la fila a a 3,96 mm.
+Esito: PASSA al primo tentativo di Freerouting.
+
+Verificato in: KiCad (ERC, DRC). Live: no.

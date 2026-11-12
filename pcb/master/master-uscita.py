@@ -22,7 +22,7 @@ import os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "tools"))
 from pcbgen import Design
-from backplane import c96, SYM_C96, FP_C96
+from backplane import c96, SYM_C96, FP_C96, C96_DAL_BORDO
 
 LATO = next((a for a in sys.argv[1:] if a in ("L", "R")), None)
 if LATO is None:
@@ -121,7 +121,7 @@ if s == "L":
     a_pins += ["a5", "a6"]      # RAW+22 per la finestra del supervisore (mute-ctrl.cir)
     c_pins += ["c17"]           # AC_OK
 pins = c96({}, a=a_pins, c=c_pins)
-d.part("J", SYM_C96, "C96 maschio", FP_C96, pins, ref="J1", place=(50, 213.5, 180),
+d.part("J", SYM_C96, "C96 maschio", FP_C96, pins, ref="J1", place=(50, 220 - C96_DAL_BORDO, 180),
        note="DIN 41612 C 3x32; classe MASTER-OUT (dec. 143): RAW+-26, +5V, CTRL_GND, c9%s" %
        (", c17, RAW+22" if s == "L" else ""))
 for k, x in ((1, 5), (2, 95)):

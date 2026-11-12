@@ -21,23 +21,37 @@
    "A1": [
     {
      "regola": "A1",
-     "oggetto": "U40.3 (V26F+)",
-     "misura": 19.27,
-     "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C3"
-    },
-    {
-     "regola": "A1",
      "oggetto": "U41.2 (V26F-)",
      "misura": 28.38,
      "soglia": 10.0,
      "nota": "regolatore, C piu' vicino C2"
+    },
+    {
+     "regola": "A1",
+     "oggetto": "U40.3 (V26F+)",
+     "misura": 19.27,
+     "soglia": 10.0,
+     "nota": "regolatore, C piu' vicino C3"
     }
    ],
    "A2": [
     {
      "regola": "A2",
      "oggetto": "INN_C",
+     "misura": 3,
+     "soglia": 1,
+     "nota": "numero di via"
+    },
+    {
+     "regola": "A2",
+     "oggetto": "INN_H",
+     "misura": 26.66,
+     "soglia": 25.0,
+     "nota": "lunghezza di pista (mm)"
+    },
+    {
+     "regola": "A2",
+     "oggetto": "INN_H",
      "misura": 2,
      "soglia": 1,
      "nota": "numero di via"
@@ -45,21 +59,21 @@
     {
      "regola": "A2",
      "oggetto": "INP_C",
-     "misura": 74.71,
+     "misura": 73.73,
      "soglia": 25.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "INP_H",
-     "misura": 72.61,
+     "misura": 74.38,
      "soglia": 25.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "MRX",
-     "misura": 87.19,
+     "misura": 82.02,
      "soglia": 25.0,
      "nota": "lunghezza di pista (mm)"
     },
@@ -73,7 +87,7 @@
     {
      "regola": "A2",
      "oggetto": "SVN_C",
-     "misura": 77.1,
+     "misura": 71.24,
      "soglia": 25.0,
      "nota": "lunghezza di pista (mm)"
     },
@@ -87,14 +101,14 @@
     {
      "regola": "A2",
      "oggetto": "SVN_H",
-     "misura": 75.35,
+     "misura": 69.8,
      "soglia": 25.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "SVN_H",
-     "misura": 4,
+     "misura": 2,
      "soglia": 1,
      "nota": "numero di via"
     }
@@ -112,59 +126,67 @@
      "oggetto": "R27.2 (INN_C)",
      "misura": 12.52,
      "soglia": 6.0,
-     "nota": "dal pin U21.2, pista 13.4 mm"
+     "nota": "dal pin U21.2, pista 16.8 mm"
     },
     {
      "regola": "A3",
      "oggetto": "R17.2 (INN_H)",
      "misura": 12.52,
      "soglia": 6.0,
-     "nota": "dal pin U11.2, pista 15.1 mm"
+     "nota": "dal pin U11.2, pista 13.1 mm"
     },
     {
      "regola": "A3",
      "oggetto": "R28.2 (INP_C)",
      "misura": 62.47,
      "soglia": 6.0,
-     "nota": "dal pin U21.3, pista 74.7 mm"
+     "nota": "dal pin U21.3, pista 73.7 mm"
     },
     {
      "regola": "A3",
      "oggetto": "R16.2 (INP_H)",
      "misura": 62.47,
      "soglia": 6.0,
-     "nota": "dal pin U11.3, pista 72.6 mm"
-    },
-    {
-     "regola": "A3",
-     "oggetto": "R15.1 (MRX)",
-     "misura": 35.44,
-     "soglia": 6.0,
-     "nota": "dal pin U1.2, pista 40.0 mm"
+     "nota": "dal pin U11.3, pista 74.4 mm"
     },
     {
      "regola": "A3",
      "oggetto": "R26.1 (MRX)",
      "misura": 62.47,
      "soglia": 6.0,
-     "nota": "dal pin U1.2, pista 85.2 mm"
+     "nota": "dal pin U1.2, pista 80.7 mm"
+    },
+    {
+     "regola": "A3",
+     "oggetto": "R15.1 (MRX)",
+     "misura": 35.44,
+     "soglia": 6.0,
+     "nota": "dal pin U1.2, pista 39.4 mm"
     },
     {
      "regola": "A3",
      "oggetto": "R30.2 (SVN_C)",
      "misura": 56.1,
      "soglia": 6.0,
-     "nota": "dal pin U22.2, pista 75.7 mm"
+     "nota": "dal pin U22.2, pista 69.5 mm"
     },
     {
      "regola": "A3",
      "oggetto": "R19.2 (SVN_H)",
      "misura": 56.1,
      "soglia": 6.0,
-     "nota": "dal pin U12.2, pista 73.4 mm"
+     "nota": "dal pin U12.2, pista 69.7 mm"
     }
    ],
-   "A4": [],
+   "A4": [
+    {
+     "regola": "A4",
+     "oggetto": "SVN_C",
+     "misura": 0.1006,
+     "soglia": 0.05,
+     "nota": "KG0 0.100 pF (gap 0.56 mm); V26F- 0.001 pF (gap 0.66 mm)"
+    }
+   ],
    "A5": []
   },
   "misure": {
@@ -181,38 +203,38 @@
    "reti_sensibili": 10,
    "A1_padpad_max_mm": [
     2.08,
-    "U1.4 (-18V) -> C10"
+    "U2.4 (-18V) -> C12"
    ],
    "A1_pista_max_mm": [
     2.08,
-    "U1.4 (-18V) -> C10"
+    "U2.4 (-18V) -> C12"
    ],
    "A2_lunghezza_max_mm": [
-    87.19,
+    82.02,
     "MRX"
    ],
    "A2_via_max": [
-    4,
-    "SVN_H"
+    3,
+    "INN_C"
    ],
    "A3_distanza_max_mm": [
     62.47,
     "R28.2 -> U21.3 (INP_C)"
    ],
    "A4_cm_max_pf": [
-    0.0487,
+    0.1006,
     "SVN_C"
    ],
    "A5_distanza_min_mm": [
-    61.08,
+    59.99,
     "INP_C vicino a U40"
    ]
   },
   "conteggio": {
    "A1": 2,
-   "A2": 9,
+   "A2": 11,
    "A3": 9,
-   "A4": 0,
+   "A4": 1,
    "A5": 0
   }
  },
@@ -231,15 +253,18 @@
   "grappolo: U22 con 2 passivi",
   "grappolo: U3 con 13 passivi",
   "blocco «RELE' di MASTER e BOOTH (G6K-2F, 5 V, 23»: x 25-39, y 9-51, 6 pin di connettore",
-  "blocco «COMANDO DEI RELE' dalla GLOBAL_MUTE (c9)»: x 40-65, y 198-207, 3 pin di connettore",
+  "blocco «COMANDO DEI RELE' dalla GLOBAL_MUTE (c9)»: x 40-65, y 197-205, 3 pin di connettore",
   "blocco «RICEVITORE del MASTER e DRIVER del BOOTH»: x 44-68, y 9-33, 2 pin di connettore",
   "blocco «STADIO D'USCITA caldo [F]+[G] (bootstrap»: x 40-70, y 33-111, 0 pin di connettore",
   "blocco «STADIO D'USCITA freddo [F]+[G] (bootstra»: x 8-39, y 51-129, 0 pin di connettore",
-  "blocco «ALIMENTAZIONE [M]: statici +-26 filtrati»: x 66-97, y 136-207, 4 pin di connettore",
+  "blocco «ALIMENTAZIONE [M]: statici +-26 filtrati»: x 66-97, y 135-205, 4 pin di connettore",
   "retro: 3 gruppi",
   "fanout di massa: 24 via, 0 senza posto libero"
  ],
  "esito": "PASSA",
  "errori": [],
- "peggiorato": []
+ "peggiorato": [
+  "controllo audio A2: 9 -> 11",
+  "controllo audio A4: 0 -> 1"
+ ]
 }

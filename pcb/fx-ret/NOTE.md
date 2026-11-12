@@ -132,3 +132,11 @@ NOTA della scheda comandi (da verificare):
 2. **RHI del meter = +REF5 dei pot**, come il canale (canale/NOTE.md, nota 2): da misurare a banco.
 3. Pot di classe 14 mm (GAIN, reroute) su impronta RK09L, con l'ingombro da 14 mm.
 4. Fader PTA4543: pezzo a catalogo con l'impronta in KiCad, da confermare.
+
+## C96 a 5,3 mm dal bordo (2026-11-12, todo 303)
+
+Il C96 maschio sta a y = H - `backplane.C96_DAL_BORDO` (7,84: fila b; fila a a 5,3 mm dal bordo,
+disegno Harting e riga «Board edge» dell'impronta). Prima y = H - 6,5 metteva la fila a a 3,96 mm.
+Esito: segnale PASSA al 4o giro (giro 2 PASSA con A5 7, giro 3 NON PASSA con 3 aperti, giro 4 PASSA con A5 12, tenuto il giro 5: A1/A2/A3/A4/A5 19/67/27/4/0).
+
+Verificato in: KiCad (ERC, DRC). Live: no.

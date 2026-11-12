@@ -33,3 +33,11 @@ F7 (J1 a21/a22 e R1 senza piste). Giro 4 con Schurter FAB: piazzamento a colonne
 
 Resta (non ferma la bozza): piste di potenza a 0,8 mm, per 1,7 A servono colate di potenza
 (NOTA 5); circuito del driver delle ventole (NOTA 4).
+
+## C96 a 5,3 mm dal bordo (2026-11-12, todo 303)
+
+Il C96 maschio sta a y = H - `backplane.C96_DAL_BORDO` (7,84: fila b; fila a a 5,3 mm dal bordo,
+disegno Harting e riga «Board edge» dell'impronta). Prima y = H - 6,5 metteva la fila a a 3,96 mm.
+Esito: PASSA.
+
+Verificato in: KiCad (ERC, DRC). Live: no.

@@ -13,6 +13,12 @@ I pin non elencati restano senza rete (pin liberi del connettore).
 SYM_C96 = "Connector:DIN41612_03x32_C_Split"
 FP_C96 = "Connector_DIN:DIN41612_C_3x32_Male_Horizontal_THT"
 
+# Distanza fra il bordo della scheda di modulo e il centro dei pad del C96 (place = centro dei
+# pad = fila b). Harting 09 03 196 6921 (catalogo DIN Signal p. 01.21) e la riga "Board edge"
+# dell'impronta KiCad: fori della fila a a 5,3 mm dal bordo; fila b 2,54 mm più dentro. Prima
+# era 6,5 (fila a a 3,96: la scheda andava sotto il labbro del corpo, todo 303).
+C96_DAL_BORDO = 5.3 + 2.54        # 7,84 mm: place=(x, H - C96_DAL_BORDO, 180)
+
 # §3: riga a, identica per tutte le classi
 RIGA_A = {}
 for _i in (1, 2): RIGA_A["a%d" % _i] = "RAW+27"

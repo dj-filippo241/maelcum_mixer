@@ -22,7 +22,7 @@ import os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "tools"))
 from pcbgen import Design
-from backplane import c96, SYM_C96, FP_C96
+from backplane import c96, SYM_C96, FP_C96, C96_DAL_BORDO
 import celle_vca as cv
 from celle_vca import opa2, opa4, vca, iv, shaper, law_trim, C12
 from celle_micmono import power_ln
@@ -41,7 +41,7 @@ for k in range(1, 5):
     b["b%d" % (3 * k + 2)] = "S%d_OUT_R" % k
 for s in range(1, 11):
     b["b%d" % (3 * s)] = "AGND"
-d.part("J", SYM_C96, "C96 maschio", FP_C96, c96(b), ref="J1", place=(50, 213.5, 180),
+d.part("J", SYM_C96, "C96 maschio", FP_C96, c96(b), ref="J1", place=(50, 220 - C96_DAL_BORDO, 180),
        note="DIN 41612 C 3x32, angolo retto")
 for ref, x in (("H1", 5), ("H2", 95)):
     d.part("H", "Mechanical:MountingHole_Pad", "CHASSIS", "MountingHole:MountingHole_3.2mm_M3_Pad",

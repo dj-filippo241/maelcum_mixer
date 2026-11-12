@@ -61,3 +61,11 @@ due jack Neutrik NJ3FD-V verticali; J3 (2x7, pot) e J4 (2x3, cuffie) verso J2 e 
   il blocco non trova posto («servono 117 mm in più di larghezza») e finisce fuori scheda. Non è
   lo spazio: la scheda è mezza vuota. Rimedio (giro 3, punto 10): un OPA1612 per lato dentro il blocco del
   suo ampli e Rserie in un blocco loro; tutti i blocchi entrano nella scheda.
+
+## C96 a 5,3 mm dal bordo (2026-11-12, todo 303)
+
+Il C96 maschio sta a y = H - `backplane.C96_DAL_BORDO` (7,84: fila b; fila a a 5,3 mm dal bordo,
+disegno Harting e riga «Board edge» dell'impronta). Prima y = H - 6,5 metteva la fila a a 3,96 mm.
+Esito: PASSA al primo tentativo di Freerouting.
+
+Verificato in: KiCad (ERC, DRC). Live: no.

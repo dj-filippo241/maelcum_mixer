@@ -77,3 +77,11 @@ Rigenerata da `coordinate.json` nuovo: 59.0 × 175.8 mm (pannello 61 × 179.8 me
 ## 2026-11-10: moduli di Filippo (dec. 176)
 
 Scheda comandi rigenerata da `coordinate.json` nuovo (MIC e MONO 61 × 190, SEND in colonna sfalsata, GAIN in alto a sinistra): PASSA. La nota del pot in distinta ora dice 9 mm per le manopole piccole e molto piccole (prima le molto piccole risultavano 14 mm). La scheda principale non cambia.
+
+## C96 a 5,3 mm dal bordo (2026-11-12, todo 303)
+
+Il C96 maschio sta a y = H - `backplane.C96_DAL_BORDO` (7,84: fila b; fila a a 5,3 mm dal bordo,
+disegno Harting e riga «Board edge» dell'impronta). Prima y = H - 6,5 metteva la fila a a 3,96 mm.
+Esito: PASSA (via_dangling 0 -> 5, avvisi).
+
+Verificato in: KiCad (ERC, DRC). Live: no.

@@ -46,9 +46,13 @@ separati, i bus passerebbero su un cavo in più.
    4,65 mm verso la fila c (`tratto.FILA_A_DAL_PIANO`). Lato F del modulo: verso +y nelle schede
    sinistra-destra, verso -x in quelle dietro-davanti. I gruppi PTC di T2 si spostano con i C96.
    Femmina 09 03 296 6825 (p. 01.22-01.23): file a/b/c a passo 2,54, nessuna quota che cambi altro.
-   Trovato insieme (todo nuovo): il disegno vuole il bordo della scheda di modulo a 5,3 ± 0,1 mm dai
-   fori della fila a; le schede di modulo li hanno a 6,5 (C96 a y = H - 6,5). Il labbro del corpo
-   scende 1,7 mm oltre la faccia F proprio dopo quel bordo: 1,2 mm di scheda finiscono contro il corpo.
+   Trovato insieme (todo 303): il disegno vuole il bordo della scheda di modulo a 5,3 ± 0,1 mm dai
+   fori della fila a; il labbro del corpo scende 1,7 mm oltre la faccia F proprio dopo quel bordo.
+   REV 2026-11-12 (todo 303): `place` del generatore è il centro dei pad, cioè la fila b. Con
+   y = H - 6,5 la fila a stava a 3,96 mm dal bordo, non a 6,5: 1,34 mm di scheda sotto il labbro.
+   Anche l'impronta KiCad segna «Board edge» a 5,3 mm dalla fila a. Ora tutte le schede usano
+   `backplane.C96_DAL_BORDO` = 7,84 (fila b): il C96 sale di 1,34 mm verso l'interno. Il backplane
+   non cambia; il bordo delle schede di modulo finisce 1,34 mm più lontano dal backplane.
 2. **Posti delle schede dietro-davanti**: posto q a x_striscia + (q + 0,5) x larghezza / posti
    (canale 12,5 e FX-SEND 37,5 nella striscia da 50; MIC, MONO, FX-RET a 15,25 nella striscia da 61).
 3. **PSU-IN** nella fila 4 sotto il 5-way, x 350-450: è libera nel piano F e sta vicino alla colonna
