@@ -21,6 +21,15 @@ import piano_f as pf                # noqa: E402
 
 FP_C96F = "Connector_DIN:DIN41612_C_3x32_Female_Vertical_THT"
 PTC_FP = "Fuse:Fuse_1812_4532Metric"
+# Distanza fra il piano medio della scheda di modulo e la fila a della femmina (todo 302). Disegno
+# Harting del maschio angolato tipo C (09 03 196 6921, catalogo DIN Signal p. 01.21): fila b a
+# 3,85 mm dalla faccia componenti della scheda, file a 1,31 / b 3,85 / c 6,39 tutte dal lato
+# componenti, a la più vicina. Scheda di modulo 1,6 mm: piano medio a 0,8 dalla faccia.
+# Le file vanno dal lato F della scheda di modulo (lì sta il maschio): F guarda verso la fila c.
+SPESSORE_MODULO = 1.6
+FILA_A_DAL_PIANO = SPESSORE_MODULO / 2 + (3.85 - 2.54)      # 2,11 mm
+# I gruppi PTC di T2 stanno fra due C96 dietro-davanti: si spostano con loro
+DX_GRUPPI = -(FILA_A_DAL_PIANO + 2.54)                     # -4,65 mm rispetto alla bozza del 12/11
 HOLE = ("Mechanical:MountingHole_Pad", "MountingHole:MountingHole_3.2mm_M3_Pad")
 
 # posizioni fisse (coordinate del pavimento) di cavi, ponticelli e fori: (x, y, rotazione);
@@ -90,16 +99,20 @@ def progetta():
         d.block = "SLOT %s (%s)" % (s.nome, s.classe)
         x, y = loc(*s.a1)
         # a1 -> a32 verso -x (sinistra-destra: file a -> c verso +y) o verso -y (dietro-davanti: file
-        # a -> c verso -x); a1 si sposta di una fila perché la fila b stia sulla linea del posto
+        # a -> c verso -x). La linea del posto è il piano medio della scheda di modulo: la fila a sta
+        # a FILA_A_DAL_PIANO da lì, verso la fila c (disegno Harting, todo 302)
         if s.a1[1] == s.a32[1]:
-            rot, y = 270, y - 2.54
+            rot, y = 270, y + FILA_A_DAL_PIANO
         else:
-            rot, x = 180, x + 2.54
+            rot, x = 180, x - FILA_A_DAL_PIANO
         d.part("J", SYM_C96, "C96 femmina %s" % s.nome, FP_C96F, s.reti(), ref="J" + s.nome,
                place=(x, y, rot), anchor=(0, 0),
-               note="slot %s, classe %s; pin da %s. NOTA: distanza fila-scheda da leggere sul disegno "
-                    "del connettore vero" % (s.nome, s.classe, s.sorgente))
+               note="slot %s, classe %s; pin da %s. Fila a a %.2f mm dal piano medio della scheda di "
+                    "modulo, lato F del modulo verso la fila c (Harting 09 03 196 6921)"
+                    % (s.nome, s.classe, s.sorgente, FILA_A_DAL_PIANO))
         g = GRUPPI.get(t, {}).get(s.nome)
+        if g:
+            g = (g[0] + DX_GRUPPI, g[1], g[2])
         for i, (tr, rs) in enumerate(sorted(s.rail().items())):
             k = tr.strip("RAW+-V") or "5"
             a = s.ptc.get(k)

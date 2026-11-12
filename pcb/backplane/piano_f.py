@@ -15,9 +15,9 @@ Fonti:
 
 Geometria del C96 (impronte KiCad): il maschio ad angolo retto sta a x = 50 della scheda di modulo,
 ruotato di 180 gradi, quindi a1 sta a 89,37 mm dall'inizio della scheda e a32 a 10,63. La femmina
-verticale del backplane mette a1 nello stesso punto del pavimento. NOTA: la distanza fra il piano
-della scheda di modulo e le file a/b/c della femmina va letta sul disegno del connettore vero
-(TE/Harting/ept); qui la fila b sta sulla linea del posto.
+verticale del backplane mette a1 nello stesso punto del pavimento. La linea del posto è il piano
+medio della scheda di modulo; la fila a della femmina sta 2,11 mm più in là, verso la fila c
+(disegno Harting 09 03 196 6921, todo 302: tratto.FILA_A_DAL_PIANO).
 """
 import os
 import sys

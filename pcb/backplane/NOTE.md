@@ -33,9 +33,22 @@ separati, i bus passerebbero su un cavo in più.
 ## Scelte segnate NOTA
 
 1. **Verso del C96.** La femmina mette a1 nello stesso punto del maschio della scheda di modulo
-   (maschio a x = 50, ruotato 180: a1 a 89,37 mm dall'inizio della scheda). La fila b sta sulla
-   linea del posto. La distanza vera fra la scheda di modulo e le file va letta sul disegno del
-   connettore (TE/Harting/ept), insieme a quale fila sta dal lato componenti: oggi non verificato.
+   (maschio a x = 50, ruotato 180: a1 a 89,37 mm dall'inizio della scheda). Verificato il
+   2026-11-12 (todo 302) sul disegno Harting del maschio angolato tipo C, 09 03 196 6921
+   (catalogo DIN Signal, p. 01.21, vista laterale «Angled solder pins»; PDF da
+   b2b.harting.com/files/livebooks/en/PRD0200000100063/downloads/livebook.pdf, lo stesso
+   citato dalle impronte KiCad):
+   - le tre file stanno tutte dal lato componenti (F) della scheda di modulo, la a più vicina:
+     a 1,31 / b 3,85 / c 6,39 mm dalla faccia F;
+   - con la scheda da 1,6 mm la fila a sta a 2,11 mm dal piano medio, la b a 4,65.
+   La bozza dell'11/11 metteva la fila b sul piano medio: 4,65 mm di troppo verso la fila a.
+   Ora la linea del posto è il piano medio della scheda di modulo e la femmina si sposta di
+   4,65 mm verso la fila c (`tratto.FILA_A_DAL_PIANO`). Lato F del modulo: verso +y nelle schede
+   sinistra-destra, verso -x in quelle dietro-davanti. I gruppi PTC di T2 si spostano con i C96.
+   Femmina 09 03 296 6825 (p. 01.22-01.23): file a/b/c a passo 2,54, nessuna quota che cambi altro.
+   Trovato insieme (todo nuovo): il disegno vuole il bordo della scheda di modulo a 5,3 ± 0,1 mm dai
+   fori della fila a; le schede di modulo li hanno a 6,5 (C96 a y = H - 6,5). Il labbro del corpo
+   scende 1,7 mm oltre la faccia F proprio dopo quel bordo: 1,2 mm di scheda finiscono contro il corpo.
 2. **Posti delle schede dietro-davanti**: posto q a x_striscia + (q + 0,5) x larghezza / posti
    (canale 12,5 e FX-SEND 37,5 nella striscia da 50; MIC, MONO, FX-RET a 15,25 nella striscia da 61).
 3. **PSU-IN** nella fila 4 sotto il 5-way, x 350-450: è libera nel piano F e sta vicino alla colonna
@@ -78,4 +91,8 @@ Dettagli in `t<n>/out/riepilogo.json`.
 | T3 | 22 | PASSA al primo tentativo, DRC 0 |
 | T4 | 137 | PASSA al primo tentativo, DRC 0 |
 
-Verificato in: KiCad (ERC, DRC). Live: no. Il verso del C96 (NOTA 1) resta da leggere sul disegno.
+Rigenerati il 2026-11-12 col C96 spostato (NOTA 1, todo 302): tutti e quattro PASSA, DRC 0 aperti,
+avvisi di serigrafia uguali al giro prima. T1, T3, T4 al primo tentativo; T2 al secondo (il primo
+lasciava CTRL_GND e BUS_HPF_R aperti). Netlist invariato: gli schemi leggibili non cambiano.
+
+Verificato in: KiCad (ERC, DRC). Live: no. Verso del C96 letto sul disegno Harting (NOTA 1).
