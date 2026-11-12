@@ -373,3 +373,7 @@ Filippo ha suonato il libretto `proto-max/tutorial-live.html` dopo la Prova 0 pa
 ## Decisioni del 2026-11-11
 
 177. **[F — 2026-11-11, «2 si», todo 292; chiude A24; precisa la dec. 176 (g)] LED di livello delle 5 vie.** (a) Lettura dopo il drive, alla presa del meter: il LED segue il GAIN della via, GROWL e NASTRO compresi. (b) Soglie all'uscita del modulo: verde da −18 dBu, giallo da +12, rosso da +18 (rosso = tetto di progetto del modulo). (c) Il LED legge la somma L+R (~136 impronte); un suono solo a sinistra legge 6 dB più basso. Scartata la lettura del lato più forte (~+80 impronte). Circuito e numeri: `docs/fase2/five-way-led-livello.md` §3, §6; `sim/five-way/RISULTATI-led-livello.md`. Verificato in: Python no / LTspice sì / Live no.
+
+## Decisioni del 2026-11-12
+
+178. **[F — 2026-11-12, «3», todo 26; chiude A10 e la voce 29] Nome sul telaio: «maelcum mixer».** Resta il nome del progetto. Le misure del telaio le hanno già fissate le dec. 158, 170 e 172 (rack 19", 13U = 578 mm, inclinato ~150 → 215 mm). Grafica e posizione del nome sul pannello: di Filippo, in Illustrator (dec. 176). Nella stessa sessione A11 (strumenti di misura) resta rinviata fino al prototipo: todo 306, FERMO.
