@@ -43,6 +43,7 @@ Regole delle PCB (nate il 2026-10-27):
 - Grappolo attorno all'op-amp: `d.cluster_gap` 0,5 mm. Con 0,2 mm Freerouting lascia reti aperte (FX-SEND: NON PASSA). Un op-amp doppio condiviso da due circuiti grandi (L e R dell'ampli cuffia) si porta dietro i passivi di entrambi: il blocco esce dalla scheda («servono N mm in più») e restano ~100 aperti. Un chip per circuito, nel suo blocco (CUE, 2026-11-11).
 - Geometria del C96 (Harting 09 03 196 6921, catalogo p. 01.21; todo 302): le file stanno dal lato F della scheda di modulo, fila a a 2,11 mm dal piano medio (`tratto.FILA_A_DAL_PIANO`); fori della fila a a 5,3 mm dal bordo: `place` del C96 è il centro dei pad (fila b), quindi y = H - `backplane.C96_DAL_BORDO` (7,84) su tutte le schede di modulo (todo 303, 2026-11-12).
 - Il C96 è lungo 95 mm (impronta KiCad): il lato della scheda col connettore è lungo almeno 100 mm. Sotto i moduli bassi e larghi (master, 5-way, filtro, CUE) le schede vanno da sinistra a destra. Due pot da 9 mm in colonna sfalsata vogliono 14 mm di passo anche col cappuccio da 6 mm (DRC delle schede comandi).
+- Banco web (`web/`): Yab non apre la pagina (né localhost né il link, 2026-11-12). Prova con Chrome senza finestra comandato via DevTools, sempre con `--mute-audio`, e alla fine `pgrep -fl "Google Chrome.*remote-debugging"` a zero: un Chrome rimasto acceso suona nelle casse di Filippo.
 - macOS non distingue maiuscole e minuscole nei nomi: `PIANO-SCHEDE.md` sovrascrive `PIANO-schede.md`. Prima di scrivere un file nuovo, `ls` senza badare alle maiuscole.
 - I datasheet di analog.com non si scaricano da qui (timeout, errore HTTP/2). Copia funzionante: la pagina radiolocman del pezzo → link «Download PDF» su rlocman.ru (così è arrivato l'ADG1434 Rev. E; il PDF è l'URL dentro `rs.php?u=`, con curl `-L`). Alps (tech.alpsalpine.com) e il catalogo Alpha (taiwanalpha.com.tw/downloads) si scaricano. Pinout sempre dal datasheet, mai a memoria.
 
@@ -150,7 +151,7 @@ docs/03 … 08                  revisione critica, architettura filtro, benchmar
 docs/09-budget.md             costi per modulo e totale (generato da docs/budget/genera_budget.py)
 cheap/                        progetto parallelo CHEAP (versione economica): non tocca docs/ e sim/
 misto/                        progetto parallelo MISTO (chip che muove solo le CV, dec. 174): non tocca docs/, sim/, pcb/
-web/                          banco nel browser: pannello F + pedali, suono dai -S di proto-max (`python3 web/servi.py`; README)
+web/                          banco nel browser: pannello F + pedali + strumenti (NJD, lickshot nei MONO), suono dai -S di proto-max e da MC-MONO (`python3 web/servi.py`; README)
 docs/storico-sessioni.md      cronaca delle sessioni fino al 2026-10-13
 docs/fase1 … fase4/           design doc per modulo (tabella sopra)
 docs/diagrammi/               SVG generati da genera_diagrammi.py
