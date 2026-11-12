@@ -1,7 +1,12 @@
-"""Genera il dispositivo di P4: MC-MIC.
+"""Genera i dispositivi di P4: MC-MIC e MC-MONO.
 
 Uso:  python3 proto-max/coefficienti/genera_mic.py
-Scrive in proto-max/: MC-MIC.genexpr, .maxpat, .amxd.
+Scrive in proto-max/: MC-MIC e MC-MONO (.genexpr, .maxpat, .amxd).
+
+MC-MONO (mic-mono-moduli §4-§5, aggiunto il 2026-11-12 per il banco web):
+jack -> buffer unity -> pot GAIN passivo curva A -> make-up +10 dB -> PRE
+(LED) -> EQ2 -> uscita L = R e 4 SEND. Niente passa-alto, MUTE e limiter:
+li ha solo il MIC (dec. 97, dec. 145).
 
 I numeri vengono da mic.py (e da fx.py per EQ2, rail e law di mandata).
 Le mandate vanno ai bus di P3 con send~ mcfx_b<n>L / mcfx_b<n>R, come
@@ -31,6 +36,86 @@ DIAL = [("gain", "GAIN", 0.0), ("low", "EQ LOW", 50.0),
 # colori del LED: spento, verde, giallo, rosso
 COLORI = ["0.18 0.18 0.18 1.", "0.1 0.85 0.25 1.", "1. 0.82 0. 1.",
           "1. 0.1 0.1 1."]
+
+
+# MONO: make-up non invertente 2,15k/1k (mic-mono-moduli §4)
+MONO_MAKEUP = 1 + 2150.0 / 1000.0
+DIAL_MONO = [("gain", "GAIN", 62.0), ("low", "EQ LOW", 50.0),
+             ("high", "EQ HIGH", 50.0)] + [(f"snd{n}", f"FX{n}", 0.0)
+                                           for n in range(1, 5)]
+
+
+def led(r, ppk):
+    """LED al nodo PRE: picco dei 4 campioni, rilascio 0,3 s, rosso con
+    latch 0,5 s (mic.Led). Uguale in MIC e MONO (mic-mono-moduli §1)."""
+    r("// LED al nodo PRE: picco dei 4 campioni, rilascio 0,3 s,")
+    r("// rosso con latch 0,5 s (mic.Led)")
+    r(f"lcr = exp(-1 / ({mic.T_LED!r} * samplerate));")
+    r(f"lenv = max({ppk}, lcr * lenv);")
+    v0, v1, v2 = mic.LED_V
+    r(f"llat = ({ppk} >= {v2!r}) * {mic.T_ROSSO!r} + ({ppk} < {v2!r})"
+      f" * max(llat - 1 / samplerate, 0);")
+    r(f"lst = (llat > 0) * 3 + (llat <= 0) * ((lenv >= {v0!r})"
+      f" + (lenv >= {v1!r}));")
+
+
+def genexpr_mono():
+    g = Codice()
+    r = g.r
+    r("// MC-MONO - modulo MONO (mic-mono-moduli §4-§5), per il banco web.")
+    r("// GENERATO da proto-max/coefficienti/genera_mic.py: non modificare.")
+    r(f"// in1 = jack (1,0 = {fx.LIV:.4f} V); in2 ignorato.")
+    r("// buffer unity (rail) -> pot GAIN passivo curva A -> make-up +10 dB")
+    r("// (rail) -> PRE (LED) -> EQ2 (rail) -> out1 = out2 (mono centrato);")
+    r("// out3..out10 = SEND ai bus 1-4 (L, R); out11 = LED")
+    r("// (0 spento, 1 verde, 2 giallo, 3 rosso).")
+    r()
+    funzioni_eq(r)
+    for nome, _, ini in DIAL_MONO:
+        r(f"Param {nome}({ini:g}, min=0, max=100);")
+    r("History lenv(0);")
+    r("History llat(0);")
+    r("Data sv(2);")
+    r("Data sa(2);")
+    pos = len(g.righe)
+    r("@@DATA@@")
+    lisci(r, [n for n, _, _ in DIAL_MONO], {n: ini for n, _, ini in DIAL_MONO})
+    r("sr4 = samplerate * 4;")
+    r("// GAIN: pot passivo curva A (fx.TAPER_A_MID) prima del make-up")
+    m = fx.TAPER_A_MID
+    r("tg = s_gain / 100;")
+    r(f"lg = (tg <= 0.5) * {m / 0.5!r} * tg + (tg > 0.5) * "
+      f"({m!r} + {(1 - m) / 0.5!r} * (tg - 0.5));")
+    coefficienti_eq(r, "s_low / 100", "s_high / 100")
+    r("// SEND: pot curva A (fx.level_send)")
+    for n in range(1, 5):
+        r(f"ts{n} = s_snd{n} / 100;")
+        r(f"ls{n} = (ts{n} <= 0.5) * {m / 0.5!r} * ts{n} + (ts{n} > 0.5) * "
+          f"({m!r} + {(1 - m) / 0.5!r} * (ts{n} - 0.5));")
+    g.su("in1", "M_e", "M_o", 1, ("M", "su", 1))
+    g.su("M_e", "M_u0", "M_u1", 2, ("M", "su", 2))
+    g.su("M_o", "M_u2", "M_u3", 2, ("M", "su", 2))
+    r("ppk = 0;")
+    for k in range(4):
+        r(f"pv = min(max({fx.LIV!r} * M_u{k}, {-fx.RAIL!r}), {fx.RAIL!r});")
+        r(f"pv = min(max({MONO_MAKEUP!r} * lg * pv, {-fx.RAIL!r}), "
+          f"{fx.RAIL!r});")
+        r("ppk = max(ppk, abs(pv));")
+        r(f"eq = pv / {fx.LIV!r};")
+        eq_campione(r, "eq", 0, 0)
+        r(f"M_y{k} = min(max(eq, {-RD!r}), {RD!r});")
+    g.giu("M_v0", "M_y0", "M_y1", 2, ("M", "giu", 2))
+    g.giu("M_v1", "M_y2", "M_y3", 2, ("M", "giu", 2))
+    g.giu("M_w", "M_v0", "M_v1", 1, ("M", "giu", 1))
+    led(r, "ppk")
+    r("out1 = M_w;")
+    r("out2 = M_w;")
+    for n in range(4):
+        r(f"out{3 + 2 * n} = ls{n + 1} * M_w;")
+        r(f"out{4 + 2 * n} = ls{n + 1} * M_w;")
+    r("out11 = lst;")
+    g.righe[pos] = f"Data hb({g.n_hb});"
+    return "\n".join(g.righe) + "\n"
 
 
 def genexpr():
@@ -109,15 +194,7 @@ def genexpr():
       " * samplerate))) + (lre <= lpk) * lpk;")
     r(f"lpk = lpk * exp(-1 / ({mic.LIM_T_REL!r} * samplerate));")
     r(f"lsm = lpk + (lsm - lpk) * exp(-1 / ({mic.LIM_T_SM!r} * samplerate));")
-    r("// LED al nodo PRE: picco dei 4 campioni, rilascio 0,3 s,")
-    r("// rosso con latch 0,5 s (mic.Led)")
-    r(f"lcr = exp(-1 / ({mic.T_LED!r} * samplerate));")
-    r("lenv = max(ppk, lcr * lenv);")
-    v0, v1, v2 = mic.LED_V
-    r(f"llat = (ppk >= {v2!r}) * {mic.T_ROSSO!r} + (ppk < {v2!r})"
-      f" * max(llat - 1 / samplerate, 0);")
-    r(f"lst = (llat > 0) * 3 + (llat <= 0) * ((lenv >= {v0!r})"
-      f" + (lenv >= {v1!r}));")
+    led(r, "ppk")
     r("out1 = mo;")
     r("out2 = mo;")
     for n in range(4):
@@ -128,7 +205,7 @@ def genexpr():
     return "\n".join(g.righe) + "\n"
 
 
-def patch(codice):
+def patch(codice, mono=False):
     p = Patch()
     p.gen(codice, 11)
     for n, b in enumerate(BUS):
@@ -137,11 +214,13 @@ def patch(codice):
             p.obj(id_, f"send~ {b}{lato}", 1, 0, [20 + 110 * (2 * n + j),
                                                     460, 100, 22], [])
             p.lines.append(linea("obj-gen", 2 + 2 * n + j, id_, 0))
-    for j, (ng, nl, ini) in enumerate(DIAL[:3]):
+    dial = DIAL_MONO if mono else DIAL
+    for j, (ng, nl, ini) in enumerate(dial[:3]):
         p.dial(ng, nl, ini, [8 + 60 * j, 8, 54, 48])
-    for j, (ng, nl, ini) in enumerate(DIAL[3:]):
+    for j, (ng, nl, ini) in enumerate(dial[3:]):
         p.dial(ng, nl, ini, [8 + 60 * j, 70, 54, 48])
-    p.tab("mute", "MUTE", ["-", "MUTE"], 0, [190, 30, 50, 22])
+    if not mono:
+        p.tab("mute", "MUTE", ["-", "MUTE"], 0, [190, 30, 50, 22])
     # LED: snapshot dello stato -> colore del pannello
     p.obj("obj-snap", "snapshot~ 30", 2, 1, [900, 480, 80, 22], ["float"])
     p.obj("obj-int", "i", 2, 1, [900, 510, 30, 22], ["int"])
@@ -165,14 +244,20 @@ def patch(codice):
                            patching_rect=[900 + 140 * k, 620, 130, 22]))
         p.lines += [linea("obj-sel", k, id_, 0),
                     linea(id_, 0, "obj-led", 0)]
-    p.nota("Mic sulla sua traccia, uscita al Master. Preamp della scheda "
-           "al minimo. LED pre-EQ, prima del MUTE.", [8, 124, 240, 40])
+    if mono:
+        p.nota("Sorgente mono a livello linea sulla sua traccia, uscita al "
+               "Master. LED pre-EQ.", [8, 124, 240, 40])
+    else:
+        p.nota("Mic sulla sua traccia, uscita al Master. Preamp della scheda "
+               "al minimo. LED pre-EQ, prima del MUTE.", [8, 124, 240, 40])
     return p.json()
 
 
 def main():
     c = genexpr()
     scrivi("MC-MIC", patch(c), c)
+    c = genexpr_mono()
+    scrivi("MC-MONO", patch(c, mono=True), c)
 
 
 if __name__ == "__main__":

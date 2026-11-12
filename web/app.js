@@ -3,6 +3,7 @@
 // Grafica minima: cerchi, rettangoli e scritte. Misure in millimetri (1 unità SVG = 1 mm).
 
 import { NOMI_PEDALI } from "./pedali.js";
+import { STRUMENTI } from "./strumenti.js";
 
 const NS = "http://www.w3.org/2000/svg";
 const svg = document.getElementById("banco");
@@ -28,7 +29,7 @@ const VIE = ["SUB", "KICK", "MID", "HIGH", "SUPER"];
 const KILL = ["k_sub", "k_kick", "k_mid", "k_high", "k_super"];
 const def = (dev, p) => {
   const tab = { ch: "MC-CHANNEL-S", send: "MC-SEND", hpf: "MC-FILTRO-HPF", lpf: "MC-FILTRO-LPF",
-    five: "MC-5WAY-S", ret: "MC-RET", mic: "MC-MIC", master: "MC-MASTER" }[dev];
+    five: "MC-5WAY-S", ret: "MC-RET", mic: "MC-MIC", mono: "MC-MONO", master: "MC-MASTER" }[dev];
   return indice[tab][p][0];
 };
 const par = (dev, p, i, d) => ({ tipo: "param", dev, p, i, def: d ?? def(dev, p) });
@@ -95,8 +96,18 @@ function collega(mod, c, k) {
       if (n === "L") return { tipo: "meter", src: ["master", 0] };
       if (n === "R") return { tipo: "meter", src: ["master", 1] };
       return null; // BOOTH
+    case "mono": {
+      // MONO 1 = NJD, MONO 2 = LICKSHOT (strumenti.js), MONO 3 senza sorgente
+      const j = i - 1;
+      if (n === "GAIN") return par("mono", "gain", j, [90, 75, 62][j]);
+      if (n === "EQ HIGH") return par("mono", "high", j);
+      if (n === "EQ LOW") return par("mono", "low", j);
+      if (n.startsWith("SEND")) return par("mono", "snd" + n.slice(-1), j);
+      if (n === "LED") return { tipo: "led", src: ["mono", j] };
+      return null;
+    }
     default:
-      return null; // MONO, CUE
+      return null; // CUE
   }
 }
 
@@ -119,6 +130,7 @@ const WP = 64, HP = 92;
 svg.setAttribute("viewBox", `-4 -4 ${XP + 2 * WP + 12} ${H + 8}`);
 
 const comandi = []; // { b, val, aggiorna(), ... }
+const tastiStrum = {}; // tasto della tastiera -> pulsante di uno strumento
 
 function disegnaManopola(g, c, ctl) {
   const r = (c.cappuccio || 10) / 2;
@@ -242,7 +254,7 @@ NOMI_PEDALI.forEach(([nome, a, b, da, db], i) => {
   const g = el("g", {});
   el("rect", { x, y, width: WP, height: HP, rx: 3, class: "modulo" }, g);
   testo(x + 3, y + 6, `FX ${i + 1} · ${nome}`, "titolo", g);
-  testo(x + 3, y + 10.5, "pedale fuori dal mixer", "deck-file", g).setAttribute("text-anchor", "start");
+  testo(x + 3, y + 10.5, "pedale fuori dal mixer", "deck-file", g).style.textAnchor = "start"; // la classe CSS vince sull'attributo
   [[a, "a", da], [b, "b", db]].forEach(([eti, k, d], j) => {
     const c = { tipo: "manopola", nome: eti, x: x + 18 + j * 28, y: y + 35, cappuccio: 18 };
     const gc = el("g", { class: "manopola comando" }, g);
@@ -255,12 +267,72 @@ NOMI_PEDALI.forEach(([nome, a, b, da, db], i) => {
   el("rect", { x: x + 22, y: y + 62, width: 20, height: 12, rx: 2, fill: "none", stroke: "#b9b9b2", "stroke-width": 0.4 }, g);
   testo(x + WP / 2, y + 69.5, "100 % wet", "eti", g);
 });
-testo(XP, 34, "PEDALI FX (mandata dai bus, ritorno nei FX RET)", "eti", svg).setAttribute("text-anchor", "start");
+testo(XP, 34, "PEDALI FX (mandata dai bus, ritorno nei FX RET)", "eti", svg).style.textAnchor = "start"; // la classe CSS vince sull'attributo
+
+// strumenti, sotto i pedali: NJD nel MONO 1, LICKSHOT nel MONO 2 (strumenti.js)
+const YS = 40 + 2 * (HP + 6) + 12;
+testo(XP, YS - 4, "STRUMENTI (nel jack dei MONO 1 e 2) · tasti 1, 2, 3", "eti", svg).style.textAnchor = "start"; // la classe CSS vince sull'attributo
+STRUMENTI.forEach((st, i) => {
+  const x = XP + i * (WP + 4), y = YS;
+  const g = el("g", {});
+  el("rect", { x, y, width: WP, height: HP + 14, rx: 3, class: "modulo" }, g);
+  testo(x + 3, y + 6, st.nome, "titolo", g);
+  testo(x + 3, y + 10.5, `strumento fuori dal mixer · MONO ${st.mono}`, "deck-file", g).style.textAnchor = "start"; // la classe CSS vince sull'attributo
+  const lamp = el("circle", { cx: x + WP - 6, cy: y + 5, r: 1.8, class: "seg r", style: "opacity:0.15" }, g);
+  comandi.push({ c: { tipo: "led", nome: "LED" }, b: { tipo: "ledStrum", i }, lampada: lamp });
+  st.comandi.forEach(([eti, k, d, scatti], j) => {
+    const c = { tipo: "manopola", nome: eti, x: x + 14 + (j % 2) * 36, y: y + 24 + Math.floor(j / 2) * 26, cappuccio: 13, scatti };
+    const gc = el("g", { class: "manopola comando" }, g);
+    const v0 = scatti ? (Math.round((d / 100) * (scatti - 1)) * 100) / (scatti - 1) : d;
+    const ctl = { c, b: { tipo: "strum", i, k, def: v0, scatti }, val: v0, g: gc, dove: st.nome };
+    disegnaManopola(gc, c, ctl);
+    ctl.aggiorna();
+    comandi.push(ctl);
+    attiva(ctl);
+  });
+  const [eL, kL, voci, dL = 0] = st.levetta;
+  {
+    const c = { tipo: "bottone", nome: eL, x: x + WP / 2, y: y + 78 };
+    const gc = el("g", { class: "bottone click" }, g);
+    const ctl = { c, b: { tipo: "strum", i, k: kL, def: dL }, val: dL, g: gc, dove: st.nome };
+    el("rect", { x: c.x - 11, y: c.y - 4, width: 22, height: 8, rx: 1 }, gc);
+    const t = testo(c.x, c.y + 0.8, "", "eti", gc);
+    ctl.aggiorna = () => {
+      t.textContent = `${eL} ${voci[ctl.val]}`;
+      gc.classList.toggle("on", ctl.val > 0);
+    };
+    ctl.aggiorna();
+    gc.addEventListener("pointerenter", () => mostra(ctl));
+    gc.addEventListener("click", () => imposta(ctl, ctl.val > 0 ? 0 : 1));
+    comandi.push(ctl);
+  }
+  st.tasti.forEach(([eti, k, tasto], j) => {
+    const n = st.tasti.length;
+    const c = { tipo: "bottone", nome: eti, x: x + WP / 2 + (j - (n - 1) / 2) * 24, y: y + 94 };
+    const gc = el("g", { class: "bottone click" }, g);
+    const ctl = { c, b: { tipo: "strum", i, k, def: 0 }, val: 0, g: gc, dove: st.nome };
+    el("rect", { x: c.x - 10, y: c.y - 6, width: 20, height: 12, rx: 2 }, gc);
+    testo(c.x, c.y + 0.8, `${eti} (${tasto})`, "eti", gc);
+    ctl.aggiorna = () => gc.classList.toggle("on", ctl.val > 0);
+    gc.addEventListener("pointerenter", () => mostra(ctl));
+    gc.addEventListener("touchstart", (e) => e.preventDefault(), { passive: false });
+    gc.addEventListener("pointerdown", (e) => {
+      if (e.button !== 0) return;
+      e.preventDefault();
+      gc.setPointerCapture(e.pointerId);
+      imposta(ctl, 1);
+      gc.addEventListener("lostpointercapture", () => imposta(ctl, 0), { once: true });
+    });
+    tastiStrum[tasto] = ctl;
+    comandi.push(ctl);
+  });
+});
 
 // ---------------------------------------------------------------- interazione
 const mostra = (ctl) =>
   (lettura.textContent = `${ctl.dove ?? "PEDALE"} · ${ctl.c.etichetta || ctl.c.nome}` +
-    (["manopola", "fader"].includes(ctl.c.tipo) ? `: ${Math.round(ctl.val)}` : ""));
+    (ctl.b?.scatti ? `: posizione ${Math.round((ctl.val / 100) * (ctl.b.scatti - 1)) + 1}`
+      : ["manopola", "fader"].includes(ctl.c.tipo) ? `: ${Math.round(ctl.val)}` : ""));
 
 function attiva(ctl) {
   const { c, b, g } = ctl;
@@ -349,6 +421,7 @@ function attiva(ctl) {
 }
 
 function imposta(ctl, v) {
+  if (ctl.b?.scatti) v = (Math.round((v / 100) * (ctl.b.scatti - 1)) * 100) / (ctl.b.scatti - 1); // commutatore a scatti
   ctl.val = v;
   ctl.aggiorna?.();
   mostra(ctl);
@@ -367,6 +440,7 @@ function invia(ctl) {
   } else if (b.tipo === "modo") motore.port.postMessage({ t: "modo", i: b.i, v });
   else if (b.tipo === "faderRet") motore.port.postMessage({ t: "faderRet", i: b.i, v });
   else if (b.tipo === "pedale") motore.port.postMessage({ t: "pedale", i: b.i, k: b.k, v });
+  else if (b.tipo === "strum") motore.port.postMessage({ t: "strum", i: b.i, k: b.k, v: b.scatti ? Math.round((v / 100) * 3) * 25 + 12.5 : v });
 }
 
 // ---------------------------------------------------------------- tracce
@@ -549,7 +623,7 @@ async function accendiDavvero() {
   });
   motore.connect(ctx.destination);
   motore.port.onmessage = (e) => meter(e.data);
-  for (const c of comandi) if (c.b && c.b.tipo !== "meter" && c.b.tipo !== "led") invia(c);
+  for (const c of comandi) if (c.b && !["meter", "led", "ledStrum"].includes(c.b.tipo)) invia(c);
   motore.port.postMessage({ t: "bpm", v: 75 });
   riddim(ctx.sampleRate).forEach(([L, R], i) => {
     if (!deck[i]) mandaTraccia(i, L, R);
@@ -559,6 +633,16 @@ async function accendiDavvero() {
 }
 
 bAccendi.addEventListener("click", () => accendi().catch(() => {}));
+// tasti 1, 2, 3: i pulsanti degli strumenti, tenuti finché il tasto è giù
+for (const [tipo, v] of [["keydown", 1], ["keyup", 0]]) {
+  addEventListener(tipo, (e) => {
+    const ctl = tastiStrum[e.key];
+    if (!ctl || e.repeat || e.target.tagName === "INPUT") return;
+    e.preventDefault();
+    if (ctl.val !== v) imposta(ctl, v);
+  });
+}
+addEventListener("blur", () => { for (const k in tastiStrum) if (tastiStrum[k].val) imposta(tastiStrum[k], 0); });
 addEventListener("keydown", (e) => {
   if (e.code !== "Space" || e.target.tagName === "BUTTON" || bPlay.disabled) return;
   e.preventDefault();
@@ -630,9 +714,11 @@ function meter(m) {
       else if (src === "ret") accendiSeg(ctl, dBuMeter(m.ret[i]), -24, 18);
       else if (src === "five") accendiSeg(ctl, dBuCampione(m.five), -24, 18);
       else if (src === "master") accendiSeg(ctl, dBuMeter(m.master[i]), -30, 24);
+    } else if (b.tipo === "ledStrum") {
+      ctl.lampada.style.opacity = (0.15 + 0.85 * Math.min(1, m.ledStrum[b.i])).toFixed(2);
     } else if (b.tipo === "led") {
       // stato del LED: 0 spento, 1 verde, 2 giallo, 3 rosso (MC-MIC nel dispositivo, 5 vie in ledvie.js)
-      const st = b.src[0] === "five" ? m.ledVie[b.src[1]] : m.led;
+      const st = b.src[0] === "five" ? m.ledVie[b.src[1]] : b.src[0] === "mono" ? m.ledMono[b.src[1]] : m.led;
       ctl.dbu = Math.max(st, ctl.dbu - 0.2);
       ctl.led[0].setAttribute("class", "seg" + (ctl.dbu >= 1 ? " v" : ""));
       ctl.led[1].setAttribute("class", "seg" + (ctl.dbu >= 2 ? " g" : ""));

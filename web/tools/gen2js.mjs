@@ -24,6 +24,7 @@ export const DISPOSITIVI = {
   "MC-5WAY-S": { audio: [[1, 2]], meter: [] },
   "MC-RET": { audio: STEREO5, meter: [11, 12] },
   "MC-MIC": { audio: STEREO5, meter: [11] },
+  "MC-MONO": { audio: STEREO5, meter: [11] },
   "MC-MASTER": { audio: [[1, 2]], meter: [3, 4, 5, 6] },
 };
 

@@ -30,6 +30,7 @@ con GROWL e NASTRO alzati il suono si interrompe.
 | `motore.js` | AudioWorklet: canali, mandate, levetta HPF/OFF/LPF, filtri sui bus, MIC, pedali, ritorni, master | a mano |
 | `five.worker.js` | il 5-way in un filo di calcolo a parte (16 ms di ritardo, ritorni e mic allineati) | a mano |
 | `coi.js` | service worker: dà la memoria condivisa su GitHub Pages, che non manda le intestazioni | a mano |
+| `strumenti.js` | sirena NJD (dallo schema ridisegnato da Zen Instruments) e LICKSHOT (struttura del firmware open source xioTechnologies/Dub-Siren) | a mano |
 | `ledvie.js` | LED di livello delle 5 vie (dec. 177) | a mano |
 | `costanti.js` | blocco, ritardo e anello, comuni a pagina, motore e Worker | a mano |
 | `pedali.js` | eco a nastro, eco ping-pong, molla, riverbero | dai pedali di Federico |
@@ -43,8 +44,10 @@ node web/tools/gen2js.mjs && python3 web/tools/pannello.py && node web/tools/pro
 
 ## Limiti
 
-- Muti, perché il prototipo non ha il loro dispositivo: MONO 1-3, CUE e cuffie, BOOTH,
-  LINE/PHONO.
+- Muti, perché il prototipo non ha il loro dispositivo: CUE e cuffie, BOOTH, LINE/PHONO.
+- MONO 1-3 suonano con MC-MONO (generato da `genera_mic.py`, mic-mono-moduli §4-§5). Nel jack
+  del MONO 1 c'è la sirena NJD, nel MONO 2 la LICKSHOT (`strumenti.js`, riquadri sotto i
+  pedali, tasti 1, 2, 3). Il MONO 3 non ha sorgente.
 - LED delle cinque vie: non vengono dal prototipo ma da `ledvie.js`, che rifà il circuito della
   dec. 177 (banco d'analisi agli incroci H sull'uscita del 5-way, somma L+R, soglie −18 / +12 /
   +18 dBu, rilascio 0,3 s, rosso tenuto 0,52 s). Aggiunti il 2026-11-12.

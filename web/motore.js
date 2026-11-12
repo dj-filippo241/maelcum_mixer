@@ -11,7 +11,8 @@
 //   somma master -> MC-MASTER -> protezione per le orecchie (-1 dBFS, fuori dal design) -> uscita
 //
 // LED delle 5 vie: banco d'analisi sull'uscita del 5-way (ledvie.js, dec. 177).
-// I moduli MONO, il CUE, BOOTH e LINE/PHONO non hanno un dispositivo nel prototipo: restano muti.
+//   strumenti (strumenti.js: NJD, LICKSHOT) -> MC-MONO 1 e 2 (MONO 3 senza sorgente) -> somma master + bus FX
+// Il CUE, BOOTH e LINE/PHONO non hanno un dispositivo nel prototipo: restano muti.
 
 import { Dispositivo as Canale } from "./dsp/mc-channel-s.js";
 import { Dispositivo as Send } from "./dsp/mc-send.js";
@@ -20,6 +21,8 @@ import { Dispositivo as FiltroLPF } from "./dsp/mc-filtro-lpf.js";
 import { Dispositivo as FiveS } from "./dsp/mc-5way-s.js";
 import { Dispositivo as Ret } from "./dsp/mc-ret.js";
 import { Dispositivo as Mic } from "./dsp/mc-mic.js";
+import { Dispositivo as Mono } from "./dsp/mc-mono.js";
+import { Njd, Lickshot } from "./strumenti.js";
 import { Dispositivo as Master } from "./dsp/mc-master.js";
 import { creaPedali } from "./pedali.js";
 import { LedVie } from "./ledvie.js";
@@ -63,6 +66,11 @@ export class Mixer {
     this.lpf.set("freq_lp", 100); // LPF aperto
     this.fiveS = this.esterno ? null : new FiveS();
     this.mic = new Mic();
+    this.monos = [0, 1, 2].map(() => new Mono());
+    this.strum = [new Njd(fs), new Lickshot(fs)];
+    this.inMono = [new Float32Array(B), new Float32Array(B), new Float32Array(B)];
+    this.oMono = this.monos.map(() => cinque());
+    this.ledMono = [0, 0, 0];
     this.rets = [0, 1, 2, 3].map(() => new Ret());
     this.master = new Master();
     this.pedali = creaPedali(fs);
@@ -104,10 +112,12 @@ export class Mixer {
         if (this.fiveS) this.fiveS.set(m.p, m.v);
       } else if (m.dev === "ret") this.rets[m.i].set(m.p, m.v);
       else if (m.dev === "mic") this.mic.set(m.p, m.v);
+      else if (m.dev === "mono") this.monos[m.i].set(m.p, m.v);
       else if (m.dev === "master") this.master.set(m.p, m.v);
     } else if (m.t === "modo") this.deck[m.i].modoVoluto = m.v;
     else if (m.t === "faderRet") this.faderRet[m.i] = m.v;
     else if (m.t === "pedale") this.pedali[m.i][m.k] = m.v;
+    else if (m.t === "strum") this.strum[m.i].set(m.k, m.v);
     else if (m.t === "bpm") for (const p of this.pedali) p.bpm?.(m.v);
     else if (m.t === "interno") {
       // il Worker del 5-way non è partito: il 5-way torna qui dentro
@@ -190,11 +200,27 @@ export class Mixer {
 
     this.mic.process(micL || ZERO, micR || micL || ZERO, this.oMic, B);
     this.led = Math.max(this.led, this.mic.meter[0]);
+    // strumenti nei MONO: volt al jack -> scala di MC-MONO (1,0 = 4,36 V, fx.LIV)
+    for (let j = 0; j < 2; j++) {
+      this.strum[j].process(this.inMono[j], B);
+      for (let k = 0; k < B; k++) this.inMono[j][k] /= 4.3609; // fx.LIV
+    }
+    for (let j = 0; j < 3; j++) {
+      this.monos[j].process(this.inMono[j], this.inMono[j], this.oMono[j], B);
+      this.ledMono[j] = Math.max(this.ledMono[j], this.monos[j].meter[0]);
+    }
     for (let b = 0; b < 4; b++) {
       const s = this.oMic[b + 1];
       for (let k = 0; k < B; k++) {
         this.bus[b][0][k] += s[0][k];
         this.bus[b][1][k] += s[1][k];
+      }
+      for (const om of this.oMono) {
+        const sm = om[b + 1];
+        for (let k = 0; k < B; k++) {
+          this.bus[b][0][k] += sm[0][k];
+          this.bus[b][1][k] += sm[1][k];
+        }
       }
       this.rerPrec[b][0].fill(0);
       this.rerPrec[b][1].fill(0);
@@ -203,6 +229,12 @@ export class Mixer {
     const S = this.somma; // qui: mic e ritorni; il 5-way si aggiunge dopo, allineato
     S[0].set(this.oMic[0][0]);
     S[1].set(this.oMic[0][1]);
+    for (const om of this.oMono) {
+      for (let k = 0; k < B; k++) {
+        S[0][k] += om[0][0][k];
+        S[1][k] += om[0][1][k];
+      }
+    }
     for (let r = 0; r < 4; r++) {
       this.pedali[r].elabora(this.bus[r][0], this.bus[r][1], this.ped[r][0], this.ped[r][1], B);
       const o = this.oRet[r];
@@ -293,11 +325,15 @@ export class Mixer {
       clipMaster: this.clipMaster.slice(),
       led: this.led,
       ledVie: this.ledVie.leggi(),
+      ledMono: this.ledMono.slice(),
+      ledStrum: this.strum.map((x) => x.led),
       prot: this.prot,
       persi: this.persi || 0,
     };
     for (const d of this.deck) d.pk = 0;
     this.pkFive = this.led = 0;
+    this.ledMono.fill(0);
+    for (const x of this.strum) x.led = 0;
     this.pkRet.fill(0);
     this.clipRet.fill(0);
     this.pkMaster.fill(0);
