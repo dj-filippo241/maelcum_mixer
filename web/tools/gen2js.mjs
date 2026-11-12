@@ -142,6 +142,7 @@ function traduci(testo, nome, cfg) {
   L.push(`const min = Math.min, max = Math.max, abs = Math.abs, pow = Math.pow, exp = Math.exp;`);
   L.push(`const log = Math.log, tan = Math.tan, tanh = Math.tanh, sqrt = Math.sqrt;`);
   L.push(`const samplerate = globalThis.sampleRate;`);
+  L.push(`if (!(samplerate > 0)) throw new Error("sampleRate non definito prima dell'import");`);
   L.push(`function noise() { return Math.random() * 2 - 1; }`);
   L.push(`function isnan(x) { return x !== x ? 1 : 0; }`);
   L.push(`function isinf(x) { return x === Infinity || x === -Infinity ? 1 : 0; }`);
@@ -158,7 +159,7 @@ function traduci(testo, nome, cfg) {
   L.push(`\t\tthis.D = { ${a.data.map((d) => `${d.nome}: new Float64Array(${d.n})`).join(", ")} };`);
   L.push(`\t\tthis.meter = new Float64Array(${cfg.meter.length});`);
   L.push(`\t}`);
-  L.push(`\tset(n, v) { const q = PARAMS[n]; if (q) this.P[n] = Math.min(q.max, Math.max(q.min, +v)); }`);
+  L.push(`\tset(n, v) { const q = PARAMS[n]; v = +v; if (q && v === v) this.P[n] = Math.min(q.max, Math.max(q.min, v)); }`);
   L.push(`\t// ingresso: [L, R]; uscite: un [L, R] per coppia stereo. Il meter tiene il picco del blocco.`);
   L.push(`\tprocess(iL, iR, uscite, n) {`);
   cfg.audio.forEach(([l, r], k) => L.push(`\t\tconst o${l} = uscite[${k}][0], o${r} = uscite[${k}][1];`));
@@ -180,6 +181,13 @@ function traduci(testo, nome, cfg) {
   });
   L.push(`\t\t}`);
   if (a.history.length) L.push(`\t\tObject.assign(this.H, { ${a.history.map((h) => h.nome).join(", ")} });`);
+  // In più rispetto al prototipo: un valore rotto (NaN, infinito) non resta negli stati per sempre.
+  L.push(`\t\tconst fine = o${cfg.audio[0][0]}[n - 1] + o${cfg.audio[0][1]}[n - 1];`);
+  L.push(`\t\tif (!(fine - fine === 0)) {`);
+  L.push(`\t\t\tthis.H = Object.assign({}, HISTORY);`);
+  L.push(`\t\t\tfor (const k in this.D) this.D[k].fill(0);`);
+  L.push(`\t\t\tfor (const u of uscite) { u[0].fill(0); u[1].fill(0); }`);
+  L.push(`\t\t}`);
   L.push(`\t}`);
   L.push(`}`);
   return { codice: L.join("\n") + "\n", params: a.params };

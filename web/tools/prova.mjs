@@ -61,7 +61,7 @@ rms = Math.sqrt(rms / (blocchi * 128));
 
 // Nel browser il 5-way gira in un Worker: si misurano a parte il motore senza 5-way e il 5-way
 // con GROWL e NASTRO a metà (il caso più pesante che si usa).
-const { ANELLO } = await import("../motore.js");
+const { ANELLO } = await import("../costanti.js");
 const mx2 = new Mixer(fs, new SharedArrayBuffer(16 + 2 * ANELLO * 2 * 128 * 4));
 for (const [i, t] of tracce.entries()) mx2.comando({ t: "traccia", i, L: t.L, R: t.R });
 mx2.comando({ t: "play", on: true });

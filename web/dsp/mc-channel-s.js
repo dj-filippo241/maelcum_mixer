@@ -4,6 +4,7 @@ const pi = Math.PI, twopi = 2 * Math.PI, e = Math.E;
 const min = Math.min, max = Math.max, abs = Math.abs, pow = Math.pow, exp = Math.exp;
 const log = Math.log, tan = Math.tan, tanh = Math.tanh, sqrt = Math.sqrt;
 const samplerate = globalThis.sampleRate;
+if (!(samplerate > 0)) throw new Error("sampleRate non definito prima dell'import");
 function noise() { return Math.random() * 2 - 1; }
 function isnan(x) { return x !== x ? 1 : 0; }
 function isinf(x) { return x === Infinity || x === -Infinity ? 1 : 0; }
@@ -33,7 +34,7 @@ export class Dispositivo {
 		this.D = { st: new Float64Array(52), hb: new Float64Array(128) };
 		this.meter = new Float64Array(0);
 	}
-	set(n, v) { const q = PARAMS[n]; if (q) this.P[n] = Math.min(q.max, Math.max(q.min, +v)); }
+	set(n, v) { const q = PARAMS[n]; v = +v; if (q && v === v) this.P[n] = Math.min(q.max, Math.max(q.min, v)); }
 	// ingresso: [L, R]; uscite: un [L, R] per coppia stereo. Il meter tiene il picco del blocco.
 	process(iL, iR, uscite, n) {
 		const o1 = uscite[0][0], o2 = uscite[0][1];
@@ -508,5 +509,11 @@ export class Dispositivo {
 			o2[__k] = out2;
 		}
 		Object.assign(this.H, { s_gain, s_low, s_lowmid, s_midhigh, s_high, s_fader });
+		const fine = o1[n - 1] + o2[n - 1];
+		if (!(fine - fine === 0)) {
+			this.H = Object.assign({}, HISTORY);
+			for (const k in this.D) this.D[k].fill(0);
+			for (const u of uscite) { u[0].fill(0); u[1].fill(0); }
+		}
 	}
 }

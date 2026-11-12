@@ -22,9 +22,8 @@ import { Dispositivo as Mic } from "./dsp/mc-mic.js";
 import { Dispositivo as Master } from "./dsp/mc-master.js";
 import { creaPedali } from "./pedali.js";
 
-const B = 128;
-export const LAT = 6;      // blocchi di ritardo del 5-way nel Worker (6 x 128 = 16 ms a 48 kHz)
-export const ANELLO = 32;  // blocchi nell'anello condiviso
+import { B, LAT, ANELLO } from "./costanti.js";
+export { LAT, ANELLO };
 const st = () => [new Float32Array(B), new Float32Array(B)];
 const cinque = () => [st(), st(), st(), st(), st()];
 const ZERO = new Float32Array(B);
@@ -73,6 +72,7 @@ export class Mixer {
     this.busHPF = st();
     this.busLPF = st();
     this.dj = st();
+    this.daPulire = [this.busHPF, this.busLPF, this.dj];
     this.oHPF = st();
     this.oLPF = st();
     this.oFive = st();
@@ -89,7 +89,6 @@ export class Mixer {
     this.pkMaster = [0, 0];
     this.clipMaster = [0, 0];
     this.led = 0;
-    this.carico = 0;
   }
 
   comando(m) {
@@ -107,7 +106,14 @@ export class Mixer {
     else if (m.t === "faderRet") this.faderRet[m.i] = m.v;
     else if (m.t === "pedale") this.pedali[m.i][m.k] = m.v;
     else if (m.t === "bpm") for (const p of this.pedali) p.bpm?.(m.v);
-    else if (m.t === "traccia") {
+    else if (m.t === "interno") {
+      // il Worker del 5-way non è partito: il 5-way torna qui dentro
+      if (this.esterno) {
+        this.esterno = false;
+        this.fiveS = new FiveS();
+      }
+    } else if (m.t === "traccia") {
+      if (!m.L || !m.L.length) return;
       const d = this.deck[m.i];
       d.L = m.L;
       d.R = m.R;
@@ -120,8 +126,7 @@ export class Mixer {
 
   // un blocco da 128 campioni: micL/micR = ingresso del microfono, out = [L, R]
   blocco(micL, micR, out) {
-    const t0 = Date.now();
-    for (const a of [this.busHPF, this.busLPF, this.dj]) {
+    for (const a of this.daPulire) {
       a[0].fill(0);
       a[1].fill(0);
     }
@@ -240,13 +245,16 @@ export class Mixer {
     this.clipMaster[0] = Math.max(this.clipMaster[0], M[2]);
     this.clipMaster[1] = Math.max(this.clipMaster[1], M[3]);
     for (let k = 0; k < B; k++) {
-      const p = Math.max(Math.abs(this.oMs[0][k]), Math.abs(this.oMs[1][k]));
+      let p = Math.max(Math.abs(this.oMs[0][k]), Math.abs(this.oMs[1][k]));
+      if (!(p < 1e6)) p = 1e6;
       const voluto = p * this.prot > 0.89 ? 0.89 / p : 1;
       this.prot = voluto < this.prot ? voluto : this.prot + (1 - this.prot) * 0.00005;
       out[0][k] = this.oMs[0][k] * this.prot;
       out[1][k] = this.oMs[1][k] * this.prot;
+      // un valore rotto (NaN, infinito) non arriva alle casse
+      if (!(Math.abs(out[0][k]) < 4)) out[0][k] = 0;
+      if (!(Math.abs(out[1][k]) < 4)) out[1][k] = 0;
     }
-    this.carico = Math.max(this.carico, (Date.now() - t0) / ((B / this.fs) * 1000));
   }
 
   // DJ BUS verso il Worker, 5-way di LAT blocchi fa dal Worker
@@ -281,11 +289,10 @@ export class Mixer {
       clipMaster: this.clipMaster.slice(),
       led: this.led,
       prot: this.prot,
-      carico: this.carico,
       persi: this.persi || 0,
     };
     for (const d of this.deck) d.pk = 0;
-    this.pkFive = this.led = this.carico = 0;
+    this.pkFive = this.led = 0;
     this.pkRet.fill(0);
     this.clipRet.fill(0);
     this.pkMaster.fill(0);

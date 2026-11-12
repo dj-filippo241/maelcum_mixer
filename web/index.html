@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>maelcum banco</title>
 <style>
-  :root { --fondo: #f4f4f1; --testo: #1d1d1b; --tenue: #8a8a84; --linea: #b9b9b2; --pannello: #ffffff; --acceso: #e0662a; }
+  :root { --fondo: #f4f4f1; --testo: #1d1d1b; --tenue: #6b6b66; --linea: #b9b9b2; --pannello: #ffffff; --acceso: #e0662a; }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--fondo); color: var(--testo); font: 13px/1.35 -apple-system, Helvetica, Arial, sans-serif; }
   header { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 12px; background: var(--fondo); border-bottom: 1px solid var(--linea); }
@@ -13,7 +13,14 @@
   button[aria-pressed="true"] { background: var(--testo); color: #fff; }
   #stato { color: var(--tenue); margin-left: auto; font-variant-numeric: tabular-nums; }
   #aiuto { width: 100%; color: var(--tenue); font-size: 12px; }
-  svg { display: block; width: 100%; height: auto; max-width: 1400px; margin: 8px auto 40px; touch-action: none; user-select: none; -webkit-user-select: none; }
+  svg { display: block; width: 100%; height: auto; max-width: 1400px; margin: 8px auto 40px; touch-action: pan-x pan-y pinch-zoom; user-select: none; -webkit-user-select: none; }
+  .comando, .click { touch-action: none; }
+  .manopola circle.bersaglio { fill: transparent; stroke: none; }
+  #avviso { width: 100%; color: #b3261e; }
+  #avviso:empty { display: none; }
+  #lettura { min-width: 15em; font-variant-numeric: tabular-nums; }
+  #tavolo { overflow-x: auto; }
+  details summary { cursor: pointer; display: inline; text-decoration: underline; }
   svg text { font-family: -apple-system, Helvetica, Arial, sans-serif; pointer-events: none; }
   .modulo { fill: var(--pannello); stroke: var(--linea); stroke-width: 0.4; }
   .titolo { font-size: 3.2px; font-weight: 700; fill: var(--testo); }
@@ -45,10 +52,19 @@
   <button id="play" aria-pressed="false" disabled>Play</button>
   <button id="riavvolgi" disabled>Da capo</button>
   <button id="mic" aria-pressed="false" disabled>Mic</button>
-  <span id="stato">spento</span>
-  <div id="aiuto">Manopole e fader: trascina su e giù (doppio clic = posizione di partenza). Levette e bottoni: clic. Kill del 5-way: clic sopra = FISSO, tieni premuto sotto = MOLLA. Una traccia tua: trascina un file audio su una striscia CDJ, o clic sul suo titolo. Grigio tratteggiato = comando senza dispositivo nel prototipo.</div>
+  <button id="meno" aria-label="Rimpicciolisci il pannello">−</button>
+  <button id="piu" aria-label="Ingrandisci il pannello">+</button>
+  <span id="lettura"></span>
+  <span id="stato">spento: premi Accendi, poi Play</span>
+  <span id="avviso" role="alert"></span>
+  <div id="aiuto"><b>maelcum mixer, banco di prova.</b> Premi Accendi, poi Play: suona un riddim di prova, i volumi sono già aperti. Meglio in cuffia.
+    <details><summary>Come si usa</summary>
+    Manopole e fader: trascina su e giù (doppio clic = posizione di partenza; Maiusc = movimento fine). Levette e bottoni: clic. Levetta FILTRO: sopra HPF, in mezzo OFF, sotto LPF. Kill del 5-way: clic sopra = resta (FISSO), tieni premuto sotto = finché tieni (MOLLA). Una traccia tua: trascina un file audio su una striscia CDJ, o clic sul suo titolo. Barra spaziatrice = Play. Tasti − e + = grandezza del pannello. Grigio tratteggiato = comando finto, qui non fa niente. Mic: usa le cuffie, sennò fischia.
+    </details></div>
 </header>
-<svg id="banco" xmlns="http://www.w3.org/2000/svg"></svg>
+<div id="tavolo"><svg id="banco" xmlns="http://www.w3.org/2000/svg"></svg></div>
+<script>if (location.protocol === "file:") document.getElementById("avviso").textContent = "Aperta dal disco non funziona. Apri il link, oppure lancia: python3 web/servi.py";</script>
+<script src="coi.js"></script>
 <script type="module" src="app.js"></script>
 </body>
 </html>

@@ -7,10 +7,20 @@ import { NOMI_PEDALI } from "./pedali.js";
 const NS = "http://www.w3.org/2000/svg";
 const svg = document.getElementById("banco");
 const stato = document.getElementById("stato");
-const [pannello, indice] = await Promise.all([
-  fetch("pannello.json").then((r) => r.json()),
-  fetch("dsp/indice.json").then((r) => r.json()),
-]);
+const avvisa = (t) => (document.getElementById("avviso").textContent = t);
+const lettura = document.getElementById("lettura");
+const leggiFile = async (u) => {
+  const r = await fetch(u);
+  if (!r.ok) throw new Error(`${u}: ${r.status}`);
+  return r.json();
+};
+let pannello, indice;
+try {
+  [pannello, indice] = await Promise.all([leggiFile("pannello.json"), leggiFile("dsp/indice.json")]);
+} catch (e) {
+  avvisa("La pagina non ha letto i suoi file. Ricaricala; aprila dal link, non dal disco.");
+  throw e;
+}
 
 // ---------------------------------------------------------------- collegamenti dei comandi
 const BANDE = { HIGH: "high", "MID-HIGH": "midhigh", "LOW-MID": "lowmid", LOW: "low" };
@@ -107,6 +117,7 @@ const comandi = []; // { b, val, aggiorna(), ... }
 
 function disegnaManopola(g, c, ctl) {
   const r = (c.cappuccio || 10) / 2;
+  if (ctl.b && r < 5) el("circle", { cx: c.x, cy: c.y, r: 5, class: "bersaglio" }, g);
   el("circle", { cx: c.x, cy: c.y, r }, g);
   if (c.scatto) el("line", { x1: c.x, y1: c.y - r - 1.4, x2: c.x, y2: c.y - r - 0.4, class: "tacca", stroke: "#8a8a84", "stroke-width": 0.4 }, g);
   const ind = el("line", { x1: c.x, y1: c.y, x2: c.x, y2: c.y - r * 0.85 }, g);
@@ -168,7 +179,7 @@ function disegnaMeter(g, c, ctl) {
 
 function disegnaLed(g, c, ctl) {
   ctl.led = [-1, 0, 1].map((d) => el("circle", { cx: c.x + d * (c.passo || 4), cy: c.y, r: 1.2, class: "seg" }, g));
-  ctl.dbu = -99;
+  ctl.dbu = 0;
 }
 
 for (const mod of pannello.moduli) {
@@ -183,7 +194,7 @@ for (const mod of pannello.moduli) {
   mod.comandi.forEach((c, k) => {
     const b = collega(mod, c, k);
     const gc = el("g", {}, g);
-    const ctl = { c, b, val: 0 };
+    const ctl = { c, b, val: 0, dove: mod.titolo };
     const inerte = !b && c.tipo !== "jack";
     if (inerte || c.tipo === "jack") gc.classList.add("inerte");
     if (c.tipo === "manopola") {
@@ -209,7 +220,7 @@ for (const mod of pannello.moduli) {
     }
     if (inerte) {
       const t = el("title", {}, gc);
-      t.textContent = `${c.nome}: senza dispositivo nel prototipo`;
+      t.textContent = `${c.nome}: comando finto, qui non fa niente`;
     }
     ctl.g = gc;
     if (b && b.def !== undefined) ctl.val = b.def;
@@ -242,11 +253,29 @@ NOMI_PEDALI.forEach(([nome, a, b, da, db], i) => {
 testo(XP, 34, "PEDALI FX (mandata dai bus, ritorno nei FX RET)", "eti", svg).setAttribute("text-anchor", "start");
 
 // ---------------------------------------------------------------- interazione
+const mostra = (ctl) =>
+  (lettura.textContent = `${ctl.dove ?? "PEDALE"} · ${ctl.c.etichetta || ctl.c.nome}` +
+    (["manopola", "fader"].includes(ctl.c.tipo) ? `: ${Math.round(ctl.val)}` : ""));
+
 function attiva(ctl) {
   const { c, b, g } = ctl;
+  g.addEventListener("pointerenter", () => mostra(ctl));
+  if (c.tipo === "manopola" || c.tipo === "fader") {
+    // il dito sul comando non fa scorrere la pagina (Safari su iOS)
+    g.addEventListener("touchstart", (e) => e.preventDefault(), { passive: false });
+  }
+  // doppio tocco = posizione di partenza (su touch il dblclick non arriva)
+  const doppio = (e) => {
+    const d = e.timeStamp - (ctl.tUltimo || 0) < 300;
+    ctl.tUltimo = e.timeStamp;
+    if (d) imposta(ctl, b.def ?? 50);
+    return d;
+  };
   if (c.tipo === "manopola") {
     g.addEventListener("pointerdown", (e) => {
+      if (e.button !== 0) return;
       e.preventDefault();
+      if (doppio(e)) return;
       g.setPointerCapture(e.pointerId);
       const y0 = e.clientY, v0 = ctl.val;
       ctl.trascino = true;
@@ -260,39 +289,43 @@ function attiva(ctl) {
         g.removeEventListener("pointermove", muovi);
       };
       g.addEventListener("pointermove", muovi);
-      g.addEventListener("pointerup", fine, { once: true });
-      g.addEventListener("pointercancel", fine, { once: true });
+      g.addEventListener("lostpointercapture", fine, { once: true }); // dopo pointerup e pointercancel
     });
-    g.addEventListener("dblclick", () => imposta(ctl, b.def ?? 50));
   } else if (c.tipo === "fader") {
-    const daPunto = (ev) => {
+    const yDi = (ev) => {
       const p = svg.createSVGPoint();
       p.x = ev.clientX;
       p.y = ev.clientY;
-      const q = p.matrixTransform(svg.getScreenCTM().inverse());
-      imposta(ctl, Math.min(100, Math.max(0, ((ctl.fader.y0 - q.y) / ctl.fader.h) * 100)));
+      return p.matrixTransform(svg.getScreenCTM().inverse()).y;
     };
     g.addEventListener("pointerdown", (e) => {
+      if (e.button !== 0) return;
       e.preventDefault();
+      if (doppio(e)) return;
       g.setPointerCapture(e.pointerId);
-      daPunto(e);
-      g.addEventListener("pointermove", daPunto);
-      g.addEventListener("pointerup", () => g.removeEventListener("pointermove", daPunto), { once: true });
+      // sul cursore: trascina da dov'è; fuori dal cursore: salta al punto toccato
+      const y0 = yDi(e);
+      const yCur = ctl.fader.y0 - (ctl.val / 100) * ctl.fader.h;
+      const v0 = Math.abs(y0 - yCur) <= 3 ? ctl.val : ((ctl.fader.y0 - y0) / ctl.fader.h) * 100;
+      const muovi = (ev) => imposta(ctl, Math.min(100, Math.max(0, v0 + ((y0 - yDi(ev)) / ctl.fader.h) * 100)));
+      muovi(e);
+      g.addEventListener("pointermove", muovi);
+      g.addEventListener("lostpointercapture", () => g.removeEventListener("pointermove", muovi), { once: true });
     });
-    g.addEventListener("dblclick", () => imposta(ctl, b.def ?? 0));
   } else if (c.tipo === "bottone") {
     g.addEventListener("click", () => imposta(ctl, ctl.val > 0 ? 0 : 1));
   } else if (c.tipo === "levetta") {
     if (b.tipo === "modo") {
       // clic sopra = HPF, in mezzo = OFF, sotto = LPF
       g.addEventListener("click", (e) => {
-        const r = g.getBoundingClientRect();
+        const r = g.querySelector("rect").getBoundingClientRect(); // la levetta, non le scritte
         const t = (e.clientY - r.top) / r.height;
-        imposta(ctl, t < 0.38 ? 0 : t > 0.62 ? 2 : 1);
+        imposta(ctl, t < 1 / 3 ? 0 : t > 2 / 3 ? 2 : 1);
       });
     } else if (b.tipo === "kill") {
       g.addEventListener("pointerdown", (e) => {
-        const r = g.getBoundingClientRect();
+        if (e.button !== 0) return;
+        const r = g.querySelector("rect").getBoundingClientRect();
         if ((e.clientY - r.top) / r.height < 0.5) {
           ctl.fisso = !ctl.fisso;
         } else {
@@ -302,8 +335,7 @@ function attiva(ctl) {
             ctl.molla = false;
             imposta(ctl, ctl.fisso ? 1 : 0);
           };
-          g.addEventListener("pointerup", lascia, { once: true });
-          g.addEventListener("pointercancel", lascia, { once: true });
+          g.addEventListener("lostpointercapture", lascia, { once: true });
         }
         imposta(ctl, ctl.fisso || ctl.molla ? 1 : 0);
       });
@@ -314,6 +346,7 @@ function attiva(ctl) {
 function imposta(ctl, v) {
   ctl.val = v;
   ctl.aggiorna?.();
+  mostra(ctl);
   invia(ctl);
 }
 
@@ -343,7 +376,11 @@ function preparaDeck(mod) {
   const titolo = el("rect", { x: mod.x, y: mod.y, width: mod.w, height: 12, class: "bersaglio", style: "cursor:pointer" }, mod.g);
   el("title", {}, titolo).textContent = "Clic per caricare una traccia su questo deck";
   titolo.addEventListener("click", () => scegli.click());
-  scegli.addEventListener("change", () => scegli.files[0] && caricaFile(mod, scegli.files[0]));
+  scegli.addEventListener("change", () => {
+    const f = scegli.files[0];
+    scegli.value = ""; // lo stesso file si può ricaricare
+    if (f) caricaFile(mod, f);
+  });
   mod.g.addEventListener("dragover", (e) => {
     e.preventDefault();
     mod.g.classList.add("drop");
@@ -358,9 +395,9 @@ function preparaDeck(mod) {
 }
 
 async function caricaFile(mod, file) {
-  if (!ctx) await accendi();
   mod.etiFile.textContent = "carico…";
   try {
+    await accendi();
     const buf = await ctx.decodeAudioData(await file.arrayBuffer());
     const L = buf.getChannelData(0).slice();
     const R = (buf.numberOfChannels > 1 ? buf.getChannelData(1) : buf.getChannelData(0)).slice();
@@ -368,12 +405,13 @@ async function caricaFile(mod, file) {
     mod.etiFile.textContent = file.name.length > 22 ? file.name.slice(0, 21) + "…" : file.name;
   } catch {
     mod.etiFile.textContent = "file non letto";
+    avvisa(`Non leggo ${file.name}: prova un mp3 o un wav.`);
   }
 }
 
 function mandaTraccia(i, L, R) {
-  deck[i] = true;
   motore.port.postMessage({ t: "traccia", i, L, R }, [L.buffer, R.buffer]);
+  deck[i] = true;
 }
 
 // Riddim di prova a 75 BPM, 4 battute, un elemento per deck: batteria, basso, skank, melodica.
@@ -453,21 +491,54 @@ const bPlay = document.getElementById("play");
 const bCapo = document.getElementById("riavvolgi");
 const bMic = document.getElementById("mic");
 
-async function accendi() {
-  if (ctx) return;
+let accensione = null;
+function accendi() {
+  return (accensione ??= (async () => {
+    bAccendi.disabled = true;
+    stato.textContent = "accendo…";
+    try {
+      await accendiDavvero();
+      stato.textContent = "acceso: premi Play";
+    } catch (e) {
+      console.error(e);
+      accensione = null;
+      try { ctx?.close(); } catch {}
+      ctx = motore = null;
+      worker?.terminate();
+      worker = null;
+      bAccendi.disabled = false;
+      stato.textContent = "spento";
+      avvisa("L'audio non parte in questo browser. Prova Chrome o Firefox aggiornati.");
+      throw e;
+    }
+  })());
+}
+
+function fiveInterno(perche) {
+  if (!worker) return;
+  worker.terminate();
+  worker = null;
+  motore.port.postMessage({ t: "interno" });
+  for (const c of comandi) if (c.b && (c.b.dev === "five" || c.b.tipo === "kill")) invia(c);
+  fiveFuori = "modo leggero: con GROWL e NASTRO alti il suono può interrompersi";
+  if (perche) console.warn("5-way nel filo del motore:", perche);
+}
+
+async function accendiDavvero() {
   ctx = new AudioContext({ latencyHint: "playback" });
   await ctx.audioWorklet.addModule("motore.js");
-  const { LAT, ANELLO } = await import("./motore.js");
+  const { LAT, ANELLO } = await import("./costanti.js");
   let sab = null;
-  if (globalThis.crossOriginIsolated) {
+  if (globalThis.crossOriginIsolated && typeof Atomics.waitAsync === "function") {
     sab = new SharedArrayBuffer(16 + 2 * ANELLO * 2 * 128 * 4);
     worker = new Worker("five.worker.js", { type: "module" });
     const p5 = {};
     for (const c of comandi) if (c.b && (c.b.dev === "five" || c.b.tipo === "kill")) p5[c.b.p] = c.val;
     worker.postMessage({ t: "avvia", fs: ctx.sampleRate, sab, param: p5 });
-    worker.onmessage = (e) => (ultimoFive = e.data.five);
+    worker.onmessage = (e) => e.data.errore && fiveInterno(e.data.errore);
+    worker.onerror = (e) => fiveInterno(e.message);
     fiveFuori = `5-way in un filo a parte (+${Math.round((LAT * 128 * 1000) / ctx.sampleRate)} ms)`;
-  } else fiveFuori = "5-way nello stesso filo: apri la pagina con web/servi.py";
+  } else fiveFuori = "modo leggero: con GROWL e NASTRO alti il suono può interrompersi";
   motore = new AudioWorkletNode(ctx, "maelcum", {
     numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2], processorOptions: { sab },
   });
@@ -478,12 +549,27 @@ async function accendi() {
   riddim(ctx.sampleRate).forEach(([L, R], i) => {
     if (!deck[i]) mandaTraccia(i, L, R);
   });
-  bAccendi.disabled = true;
   bAccendi.textContent = "Acceso";
   bPlay.disabled = bCapo.disabled = bMic.disabled = false;
 }
 
-bAccendi.addEventListener("click", accendi);
+bAccendi.addEventListener("click", () => accendi().catch(() => {}));
+addEventListener("keydown", (e) => {
+  if (e.code !== "Space" || e.target.tagName === "BUTTON" || bPlay.disabled) return;
+  e.preventDefault();
+  bPlay.click();
+});
+// un file lasciato fuori da una striscia non fa aprire il file al browser
+for (const t of ["dragover", "drop"]) addEventListener(t, (e) => e.preventDefault());
+
+let zoom = 1;
+const scala = (d) => {
+  zoom = Math.min(8, Math.max(0.4, zoom * d));
+  svg.style.width = zoom * 100 + "%";
+  svg.style.maxWidth = zoom > 1 ? "none" : zoom * 1400 + "px";
+};
+document.getElementById("piu").addEventListener("click", () => scala(1.25));
+document.getElementById("meno").addEventListener("click", () => scala(0.8));
 bPlay.addEventListener("click", async () => {
   await ctx.resume();
   const on = bPlay.getAttribute("aria-pressed") !== "true";
@@ -500,18 +586,21 @@ bMic.addEventListener("click", async () => {
     bMic.setAttribute("aria-pressed", "false");
     return;
   }
+  bMic.disabled = true;
   try {
     const s = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
     micNodo = ctx.createMediaStreamSource(s);
     micNodo.connect(motore);
     bMic.setAttribute("aria-pressed", "true");
   } catch {
-    stato.textContent = "microfono non disponibile";
+    avvisa("Microfono non disponibile: controlla il permesso del browser.");
+  } finally {
+    bMic.disabled = false;
   }
 });
 
 // ---------------------------------------------------------------- meter
-let ultimoFive = 0, fiveFuori = "";
+let fiveFuori = "";
 const dBuCampione = (x) => 20 * Math.log10((x * 4.3609) / 1.0957 + 1e-9); // 1,0 = 4,36 V di picco
 const dBuMeter = (m) => 24 + 20 * Math.log10(m + 1e-9); // meter dei dispositivi: 1 = +24 dBu
 
@@ -534,16 +623,16 @@ function meter(m) {
       const [src, i] = b.src;
       if (src === "deck") accendiSeg(ctl, dBuCampione(m.deck[i]), -24, 18);
       else if (src === "ret") accendiSeg(ctl, dBuMeter(m.ret[i]), -24, 18);
-      else if (src === "five") accendiSeg(ctl, dBuCampione(worker ? ultimoFive : m.five), -24, 18);
+      else if (src === "five") accendiSeg(ctl, dBuCampione(m.five), -24, 18);
       else if (src === "master") accendiSeg(ctl, dBuMeter(m.master[i]), -30, 24);
     } else if (b.tipo === "led") {
-      ctl.dbu = Math.max(dBuMeter(m.led), ctl.dbu - 2);
-      // soglie del LED del MIC [PROVVISORIE, B9]: -6 / +11 / +17 dBu
-      ctl.led[0].setAttribute("class", "seg" + (ctl.dbu >= -6 ? " v" : ""));
-      ctl.led[1].setAttribute("class", "seg" + (ctl.dbu >= 11 ? " g" : ""));
-      ctl.led[2].setAttribute("class", "seg" + (ctl.dbu >= 17 ? " r" : ""));
+      // MC-MIC dà già lo stato del LED: 0 spento, 1 verde, 2 giallo, 3 rosso (soglie nel dispositivo)
+      ctl.dbu = Math.max(m.led, ctl.dbu - 0.2);
+      ctl.led[0].setAttribute("class", "seg" + (ctl.dbu >= 1 ? " v" : ""));
+      ctl.led[1].setAttribute("class", "seg" + (ctl.dbu >= 2 ? " g" : ""));
+      ctl.led[2].setAttribute("class", "seg" + (ctl.dbu >= 3 ? " r" : ""));
     }
   }
-  const prot = m.prot < 0.98 ? ` · protezione ${(20 * Math.log10(m.prot)).toFixed(1)} dB` : "";
+  const prot = m.prot < 0.98 ? ` · volume troppo alto, abbasso di ${(-20 * Math.log10(m.prot)).toFixed(1)} dB` : "";
   stato.textContent = `${fiveFuori}${m.persi ? ` · blocchi 5-way persi ${m.persi}` : ""}${prot}`;
 }
