@@ -36,9 +36,12 @@ pannello). Fonte: `docs/fase3/sistema-cue.md` v0.2. Valori [PROVVISORIO].
 6. **Finestre dei raw negativi**: un LM339 su +5 V non legge tensioni negative. Partitore fra
    VREF (2,495 V) e il raw: il nodo sale quando il raw cala. Soglia 1,00 V; −22 scatta a
    −17,0 V (10k/120k), −27 a −20,0 V (10k/140k). BAT54 a CTRL_GND sui due nodi: a +5 V spento
-   il nodo non scende sotto −0,3 V. Calcolo, da simulare insieme al timer.
+   il nodo non scende sotto −0,3 V. Simulato il 2026-11-12 (`sim/system/RISULTATI-cue.md` Test 9):
+   soglie 17,06 / 20,15 / −16,94 / −19,93 V, nodi negativi a −0,19 V al più.
 7. **Timer**: 1,2 MΩ × 2,2 µF, soglia VREF: ~1,8 s (requisito 1,5-2 s). Scarica di CT con un
    BAT54 verso ROK: al calo di un raw i relè aprono in ~1 ms più il rilascio del relè.
+   Simulato (Test 9): accensione 1,78 s, contatti aperti 4,1 ms dopo il guasto. In distinta
+   CT = 2,2 µF X7R **50 V** 1206: con una X7R che perde il 20 % a 2,5 V il timer scende a 1,42 s.
 8. **Pre-regolatori ±16,5 in SOT-223** (25 mA, 0,14 W): il design doc non dice il contenitore.
 9. **Finali**: rame ≥ 4 cm² (§5) e moltiplicatore di Vbe vicino ai finali: il generatore non
    li garantisce. Da controllare nel layout vero.

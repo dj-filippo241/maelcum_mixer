@@ -183,6 +183,74 @@ stabilità. Armoniche a 40 kHz e oltre = fuori banda udibile; **ACCETTATO
 da Filippo (decisione 96: standard classe cuffie DJM, non audiofilo)**. Leva documentata se servisse: Cf più
 piccolo (crossover più alto) da rivalidare coi Test 6-7.
 
+## Test 9 — protezione [G]: finestre, timer, relè (cue-protect, cue-protect-soglie) — 2026-11-12
+
+Netlist: `sim/system/cue-protect.cir` (tempi) e `cue-protect-soglie.cir` (soglie). Circuito
+come `pcb/cue/cue.py` blocco [G] e `pcb/cue/NOTE.md` punti 6-7. LM339 = interruttore senza
+isteresi; sotto +5 = 2 V l'uscita resta aperta (caso peggiore). Relè: due G6K-2F 5 V
+(237 Ω, 3 ms max di rilascio, datasheet Omron, vedi `sim/master-out/RISULTATI-mute-ctrl.md`).
+Rail a valle stimati: ±18 = raw ±27 − 1,7 V; ±15 LN = ±22 − 1,6 − 0,15 V (LM317/337 e LT3045/3094).
+
+**Soglie** (rampe lente, TL431 2,495 V ±1 %):
+
+| Raw | −1 % | nominale | +1 % | Calcolo (NOTE punto 6) |
+|---|---|---|---|---|
+| +22 | 16,89 V | 17,06 V | 17,23 V | 17,06 |
+| +27 | 19,95 V | 20,15 V | 20,35 V | 20,16 |
+| −22 | −16,77 V | −16,94 V | −17,11 V | −17,0 |
+| −27 | −19,73 V | −19,93 V | −20,13 V | −20,0 |
+
+I partitori a 1 % aggiungono al più ±2 % sul rapporto (calcolo, non simulato).
+
+**Tempi** (CT 2,2 µF × kC; kC 0,8 = X7R con la tensione continua addosso):
+
+| Misura | kC 0,8 | 0,9 | 1,0 | 1,1 | Requisito (§6) |
+|---|---|---|---|---|---|
+| Accensione: relè chiusi dopo l'ultima condizione in finestra | 1,42 s | 1,60 s | 1,78 s | 1,95 s | 1,5-2 s |
+| Riarmo dopo un guasto del −22 di 20 ms | 1,38 s | 1,55 s | 1,72 s | 1,89 s | 1,5-2 s |
+| Guasto del −22 (a −15 V): ROK basso | 0,12 ms | | | | subito |
+| Guasto del −22: contatti aperti (bobina al 10 % + 3 ms) | 4,10 ms | 4,10 | 4,10 | 4,10 | < 10 ms |
+| Guasto del +27 (a 19 V): contatti aperti | 4,12 ms | 4,12 | 4,12 | 4,12 | < 10 ms |
+
+L'ordine di accensione non cambia i tempi: +5 per primo o per ultimo, 1,42-1,96 s.
+
+**Spegnimento** (rete −10 %: il ±22 del box tiene 25,9 ms, poi cala; il ±27 cala subito a 29 V/s):
+
+| Pendenza del ±22 dopo l'uscita degli LDO | Scatta a | Contatti aperti dopo il distacco | ±15 LN in quell'istante | ±18 |
+|---|---|---|---|---|
+| 0,16 V/ms (2,7 A su 17,2 mF, dec. 131) | +22 a 17,05 V | 60,8 ms | ±14,66 V | ±18 |
+| 1 V/ms (caso del mute-ctrl del master) | +22 a 17,01 V | 34,9 ms | ±11,3 V | ±18 |
+
+**Altri controlli**
+
+- **Nodi negativi** (N22, N27) mai sotto −0,19 V, anche con +5 spento e raw presenti: BAT54 a
+  posto, LM339 dentro il suo −0,3 V.
+- **Modo comune dell'LM339.** D27 vale 3,42 V col raw a 27,5 V e 3,75 V a rete +10 % (30,3 V):
+  oltre il limite Vcc − 1,5 = 3,5 V. Il datasheet TI (LM339, nota della tabella elettrica)
+  dice: un ingresso può superare il limite, l'uscita resta giusta se l'altro sta dentro. VREF
+  (2,495 V) sta dentro: va bene. Con la versione LM339B il limite è Vcc − 2 = 3,0 V: VREF
+  resta dentro anche lì.
+- **Accensione col +5 sotto 2 V.** Nel modello le uscite restano aperte: il gate del driver
+  segue il +5 e nelle bobine passano fino a 16 mA in tutto (8 mA per relè, 39 % del nominale)
+  con meno di 2 V. Il G6K vuole 4 V per chiudere: nessun contatto. Il chip vero tiene
+  l'uscita bassa prima: il caso reale sta sotto.
+- Bobine scariche dopo lo spegnimento; corrente dei due relè eccitati 42 mA dal +5.
+
+**Lettura**
+
+1. Accensione e guasti: dentro il requisito. Al guasto di un raw i contatti si aprono in 4,1 ms,
+   3 ms dei quali sono il rilascio meccanico.
+2. Il timer dipende da CT. Con una X7R da 2,2 µF che perde il 20 % a 2,5 V scende a 1,42 s. Il
+   numero non pesa sul suono (l'ampli è stabile in pochi ms), ma esce dal requisito: in
+   distinta CT va da 2,2 µF X7R **50 V** 1206 (a 2,5 V perde pochi punti). Il valore resta.
+3. Spegnimento: la cuffia muta mentre l'ampli ha ancora ±18 pieni. Il ±15 LN della catena
+   [A]-[D] perde la regolazione col +22 a ~16,75 V, quasi sulla soglia (17,06 ± 0,17 V): coi
+   dati del box il rail cala di 0,3 V prima dell'apertura; nel caso pessimo a 1 V/ms di 3,7 V.
+   Il calo è lento e uguale sui due rail: gli op-amp restano lineari, nessun gradino in uscita.
+   Se a banco servisse più margine: soglia del +22 a ~18,5 V (27k4 → 24k9), un solo resistore.
+
+Verificato in: LTspice (sì). Python: no. Banco: no.
+
 ## Lezioni di metodo (da tenere)
 
 1. **.four con N-Period di default = 1 ciclo**: con un secondo tono a

@@ -1,0 +1,46 @@
+* SOGLIE della protezione del CUE [G] (todo 298): rampe lente, un raw alla volta.
+* Circuito delle finestre identico a cue-protect.cir (blocco copiato). kr = VREF del TL431
+* (2,495 V x kr: +-1 % del TL431 classe B; i partitori a 1 % aggiungono al piu' +-2 % sul rapporto).
+* Ogni raw scende dal nominale a 0 in 1 s (22 o 27 V/s), gli altri restano nominali.
+.param kr=1
+.step param kr list 0.99 1 1.01
+.model BAT54 D(Is=0.1u Rs=1.5 N=1.0 Cjo=10p BV=30)
+.model SWC SW(Ron=50 Roff=100Meg Vt=0 Vh=1m)
+.subckt CMP inp inm out vcc
+Bc c 0 V=if(V(vcc)>2, V(inm)-V(inp), -1)
+S1 out 0 c 0 SWC
+.ends
+Vp5 p5 0 5
+Vp22 r22p 0 PWL(0 22 1 22 2 0 2.001 22)
+Vp27 r27p 0 PWL(0 27.5 3 27.5 4 0 4.001 27.5)
+Vn22 r22n 0 PWL(0 -22 5 -22 6 0 6.001 -22)
+Vn27 r27n 0 PWL(0 -27.5 7 -27.5 8 0 8.001 -27.5)
+* ---------------- VREF (TL431, 2,495 V)
+Rref p5 vref 1k
+Bsh vref 0 I=if(V(vref)>2.495*kr, (V(vref)-2.495*kr)*1000, 0)
+* ---------------- finestre
+Rd22a r22p d22 160k
+Rd22b d22 0 27.4k
+Rd27a r27p d27 160k
+Rd27b d27 0 22.6k
+Rth1 vref thn 15k
+Rth2 thn 0 10k
+Rn22a vref n22 10k
+Rn22b n22 r22n 120k
+Rn27a vref n27 10k
+Rn27b n27 r27n 140k
+Dc22 0 n22 BAT54
+Dc27 0 n27 BAT54
+* LM339 U6: uscita bassa quando inm > inp
+Xc1 d22 vref rok p5 CMP
+Xc2 d27 vref rok p5 CMP
+Xc3 thn n22 rok p5 CMP
+Xc4 thn n27 rok p5 CMP
+Rrok rok p5 10k
+.tran 0 8.5 0 0.1m
+.meas tran sp22 FIND V(r22p) WHEN V(rok)=2.5 TD=0.9 FALL=1
+.meas tran sp27 FIND V(r27p) WHEN V(rok)=2.5 TD=2.9 FALL=1
+.meas tran sn22 FIND V(r22n) WHEN V(rok)=2.5 TD=4.9 FALL=1
+.meas tran sn27 FIND V(r27n) WHEN V(rok)=2.5 TD=6.9 FALL=1
+.meas tran vref AVG V(vref) FROM 0.1 TO 0.5
+.end

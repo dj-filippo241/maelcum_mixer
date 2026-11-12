@@ -188,6 +188,10 @@ tick udibile allo spegnimento, stesso carattere di master-out §3.7
 «muta il blend 10 ms prima dei relay» (una cella RC in più sul
 controller).
 
+> **Simulato 2026-11-12 (todo 298, RISULTATI-cue Test 9).** Soglie, timer (1,42-1,95 s con
+> CT da −20 % a +10 %) e apertura dei relè in 4,1 ms dal guasto di un raw. Allo spegnimento la
+> cuffia muta coi ±18 dell'ampli ancora pieni. CT in distinta: X7R 50 V.
+
 ## 7. Polarità e fase tra i due percorsi del blend
 
 Polarità relativa VERIFICATA in sim (RISULTATI-cue Test 3): cue summer
