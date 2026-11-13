@@ -21,7 +21,9 @@ export const DISPOSITIVI = {
   "MC-SEND": { audio: STEREO5, meter: [] },
   "MC-FILTRO-HPF": { audio: [[1, 2]], meter: [] },
   "MC-FILTRO-LPF": { audio: [[1, 2]], meter: [] },
-  "MC-5WAY-S": { audio: [[1, 2]], meter: [] },
+  // newton: passi di Newton ripetuti uguali che si fermano appena il passo è sotto 1e-9 relativo;
+  // lati: scrive anche mc-5way-s-l.js e -r.js (un lato solo, per due Worker in parallelo)
+  "MC-5WAY-S": { audio: [[1, 2]], meter: [], newton: ["jstep"], lati: true },
   "MC-RET": { audio: STEREO5, meter: [11, 12] },
   "MC-MIC": { audio: STEREO5, meter: [11] },
   "MC-MONO": { audio: STEREO5, meter: [11] },
@@ -172,7 +174,28 @@ function traduci(testo, nome, cfg) {
   L.push(`\t\tfor (let __k = 0; __k < n; __k++) {`);
   L.push(`\t\t\tconst in1 = iL[__k], in2 = iR[__k];`);
   L.push(`\t\t\tlet ${[...outs.map((o) => `out${o}`), ...locali].map((v) => `${v} = 0`).join(", ")};`);
-  for (const r of a.corpo) L.push("\t\t\t" + r);
+  // Alleggerimento (2026-11-13): i passi di Newton uguali in fila (cfg.newton) si fermano
+  // quando il passo è sotto 1e-9 relativo. Uscita uguale a 32 bit (prova del 13/11).
+  const corpo = [];
+  for (let j = 0; j < a.corpo.length; j++) {
+    const r = a.corpo[j];
+    const m = r.match(/^([A-Za-z_]\w*)\s*=(?!=)\s*(.+);$/);
+    // passi di Newton uguali in fila: si fermano quando hanno già la risposta
+    if (m && cfg.newton) {
+      const f = m[2].match(/^([A-Za-z_]\w*)\(/);
+      if (f && cfg.newton.includes(f[1])) {
+        let k = 1;
+        while (a.corpo[j + k] === r) k++;
+        if (k > 1) {
+          corpo.push(`for (let __i = 0, __o = 0; __i < ${k}; __i++) { __o = ${m[1]}; ${m[1]} = ${m[2]}; if (abs(${m[1]} - __o) <= 1e-9 * abs(${m[1]})) break; }`);
+          j += k - 1;
+          continue;
+        }
+      }
+    }
+    corpo.push(r);
+  }
+  for (const r of corpo) L.push("\t\t\t" + r);
   for (const [l, r] of cfg.audio) {
     L.push(`\t\t\to${l}[__k] = ${outUsate.has(l) ? `out${l}` : 0};`);
     L.push(`\t\t\to${r}[__k] = ${outUsate.has(r) ? `out${r}` : 0};`);
@@ -201,6 +224,17 @@ function main() {
     const testo = fs.readFileSync(path.join(SORGENTE, `${nome}.genexpr`), "utf8");
     const { codice, params } = traduci(testo, nome, cfg);
     fs.writeFileSync(path.join(USCITA, `${nome.toLowerCase()}.js`), codice);
+    if (cfg.lati) {
+      // un lato solo: la parte comune (fino a "===== lato L =====") e il blocco di quel lato
+      const righe = testo.split("\n");
+      const iL = righe.findIndex((r) => r.includes("===== lato L =====")), iR = righe.findIndex((r) => r.includes("===== lato R ====="));
+      if (iL < 0 || iR < iL) throw new Error(`${nome}: mancano i segni dei lati L e R`);
+      const lati = { l: righe.slice(0, iR), r: [...righe.slice(0, iL), ...righe.slice(iR)] };
+      for (const [k, rr] of Object.entries(lati)) {
+        const t = traduci(rr.join("\n"), nome, cfg);
+        fs.writeFileSync(path.join(USCITA, `${nome.toLowerCase()}-${k}.js`), t.codice.replace("a partire da proto-max/" + nome + ".genexpr", `a partire da proto-max/${nome}.genexpr (solo il lato ${k.toUpperCase()})`));
+      }
+    }
     indice[nome] = Object.fromEntries(params.map((p) => [p.nome, [p.def, p.min, p.max]]));
     console.log(`${nome}: ${params.length} param, ${cfg.audio.length} uscite stereo, ${cfg.meter.length} meter`);
   }

@@ -516,28 +516,16 @@ export class Dispositivo {
 			qig = peek(sa, 34);
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvd = 1455.0392860607237 * (0.012 + qvc / 48543.68932038835 - qid);
 			qtac = qvd - qvc;
 			poke(sa, qvs2 + kcb * (qid + qig - qvs2 / 900.0) - 2.017546946859815, 31);
@@ -687,28 +675,16 @@ export class Dispositivo {
 			qig = peek(sa, 34);
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvd = 1455.0392860607237 * (0.012 + qvc / 48543.68932038835 - qid);
 			qtac = qvd - qvc;
 			poke(sa, qvs2 + kcb * (qid + qig - qvs2 / 900.0) - 2.017546946859815, 31);
@@ -858,28 +834,16 @@ export class Dispositivo {
 			qig = peek(sa, 34);
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvd = 1455.0392860607237 * (0.012 + qvc / 48543.68932038835 - qid);
 			qtac = qvd - qvc;
 			poke(sa, qvs2 + kcb * (qid + qig - qvs2 / 900.0) - 2.017546946859815, 31);
@@ -1029,28 +993,16 @@ export class Dispositivo {
 			qig = peek(sa, 34);
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvd = 1455.0392860607237 * (0.012 + qvc / 48543.68932038835 - qid);
 			qtac = qvd - qvc;
 			poke(sa, qvs2 + kcb * (qid + qig - qvs2 / 900.0) - 2.017546946859815, 31);
@@ -1281,28 +1233,16 @@ export class Dispositivo {
 			qig = peek(sa, 74);
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvd = 1455.0392860607237 * (0.012 + qvc / 48543.68932038835 - qid);
 			qtac = qvd - qvc;
 			poke(sa, qvs2 + kcb * (qid + qig - qvs2 / 900.0) - 2.017546946859815, 71);
@@ -1452,28 +1392,16 @@ export class Dispositivo {
 			qig = peek(sa, 74);
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvd = 1455.0392860607237 * (0.012 + qvc / 48543.68932038835 - qid);
 			qtac = qvd - qvc;
 			poke(sa, qvs2 + kcb * (qid + qig - qvs2 / 900.0) - 2.017546946859815, 71);
@@ -1623,28 +1551,16 @@ export class Dispositivo {
 			qig = peek(sa, 74);
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvd = 1455.0392860607237 * (0.012 + qvc / 48543.68932038835 - qid);
 			qtac = qvd - qvc;
 			poke(sa, qvs2 + kcb * (qid + qig - qvs2 / 900.0) - 2.017546946859815, 71);
@@ -1794,28 +1710,16 @@ export class Dispositivo {
 			qig = peek(sa, 74);
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvg = gatev(qvin, qvs2 + 150.0 * (qid + qig));
 			qig = (qvin - qvg) / 10000.0;
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
-			qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid);
+			for (let __i = 0, __o = 0; __i < 4; __i++) { __o = qid; qid = jstep(qvg, qvs2 + 150.0 * qig, qvc, qid); if (abs(qid - __o) <= 1e-9 * abs(qid)) break; }
 			qvd = 1455.0392860607237 * (0.012 + qvc / 48543.68932038835 - qid);
 			qtac = qvd - qvc;
 			poke(sa, qvs2 + kcb * (qid + qig - qvs2 / 900.0) - 2.017546946859815, 71);

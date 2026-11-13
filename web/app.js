@@ -435,7 +435,7 @@ function invia(ctl) {
   if (b.tipo === "param" || b.tipo === "kill") {
     const dev = b.tipo === "kill" ? "five" : b.dev;
     const msg = { t: "p", dev, i: b.i ?? 0, p: b.p, v };
-    if (dev === "five" && worker) worker.postMessage(msg);
+    if (dev === "five" && worker) fiveScrivi(b.p, v);
     else motore.port.postMessage(msg);
   } else if (b.tipo === "modo") motore.port.postMessage({ t: "modo", i: b.i, v });
   else if (b.tipo === "faderRet") motore.port.postMessage({ t: "faderRet", i: b.i, v });
@@ -583,8 +583,7 @@ function accendi() {
       accensione = null;
       try { ctx?.close(); } catch {}
       ctx = motore = null;
-      worker?.terminate();
-      worker = null;
+      fermaWorker();
       bAccendi.disabled = false;
       stato.textContent = "spento";
       avvisa("L'audio non parte in questo browser. Prova Chrome o Firefox aggiornati.");
@@ -593,10 +592,22 @@ function accendi() {
   })());
 }
 
+// i due Worker del 5-way (lato L e lato R): manopole scritte nella memoria condivisa
+function fiveScrivi(p, v) {
+  const i = worker.chiavi.indexOf(p);
+  if (i < 0) return;
+  worker.par[i] = v;
+  Atomics.add(worker.ctl, 3, 1);
+  Atomics.notify(worker.ctl, 0);
+}
+function fermaWorker() {
+  if (worker) for (const w of worker.lati) w.terminate();
+  worker = null;
+}
+
 function fiveInterno(perche) {
   if (!worker) return;
-  worker.terminate();
-  worker = null;
+  fermaWorker();
   motore.port.postMessage({ t: "interno" });
   for (const c of comandi) if (c.b && (c.b.dev === "five" || c.b.tipo === "kill")) invia(c);
   fiveFuori = "modo leggero: con GROWL e NASTRO alti il suono può interrompersi";
@@ -604,19 +615,34 @@ function fiveInterno(perche) {
 }
 
 async function accendiDavvero() {
-  ctx = new AudioContext({ latencyHint: "interactive" }); // buffer corti: tasti e kill rispondono subito (playback: ~90 ms)
+  // 48 kHz fissi: con una scheda audio a 96 kHz il 5-way (4x dentro) costerebbe il doppio.
+  // Il browser converte verso la scheda. Se il browser rifiuta, si usa la frequenza della scheda.
+  const opz = { latencyHint: "interactive" }; // buffer corti: tasti e kill rispondono subito (playback: ~90 ms)
+  try {
+    ctx = new AudioContext({ ...opz, sampleRate: 48000 });
+  } catch {
+    ctx = new AudioContext(opz);
+  }
   await ctx.audioWorklet.addModule("motore.js");
-  const { LAT, ANELLO } = await import("./costanti.js");
+  const { LAT, NPAR, SAB_BYTE, viste } = await import("./costanti.js");
   let sab = null;
-  if (globalThis.crossOriginIsolated && typeof Atomics.waitAsync === "function") {
-    sab = new SharedArrayBuffer(16 + 2 * ANELLO * 2 * 128 * 4);
-    worker = new Worker("five.worker.js", { type: "module" });
-    const p5 = {};
-    for (const c of comandi) if (c.b && (c.b.dev === "five" || c.b.tipo === "kill")) p5[c.b.p] = c.val;
-    worker.postMessage({ t: "avvia", fs: ctx.sampleRate, sab, param: p5 });
-    worker.onmessage = (e) => e.data.errore && fiveInterno(e.data.errore);
-    worker.onerror = (e) => fiveInterno(e.message);
-    fiveFuori = `5-way in un filo a parte (+${Math.round((LAT * 128 * 1000) / ctx.sampleRate)} ms)`;
+  if (globalThis.crossOriginIsolated) {
+    const indice = await (await fetch("dsp/indice.json")).json();
+    const chiavi = Object.keys(indice["MC-5WAY-S"]);
+    if (chiavi.length > NPAR) throw new Error("5-way: più manopole delle caselle condivise");
+    sab = new SharedArrayBuffer(SAB_BYTE);
+    const { ctl, par } = viste(sab);
+    chiavi.forEach((k, i) => (par[i] = indice["MC-5WAY-S"][k][0])); // valori di partenza del dispositivo
+    worker = { lati: [], chiavi, ctl, par };
+    for (const c of comandi) if (c.b && (c.b.dev === "five" || c.b.tipo === "kill")) fiveScrivi(c.b.p, c.val);
+    for (const lato of ["l", "r"]) {
+      const w = new Worker("five.worker.js", { type: "module" });
+      w.onmessage = (e) => e.data.errore && fiveInterno(e.data.errore);
+      w.onerror = (e) => fiveInterno(e.message);
+      w.postMessage({ t: "avvia", fs: ctx.sampleRate, sab, lato, chiavi });
+      worker.lati.push(w);
+    }
+    fiveFuori = `5-way in due fili a parte (+${Math.round((LAT * 128 * 1000) / ctx.sampleRate)} ms)`;
   } else fiveFuori = "modo leggero: con GROWL e NASTRO alti il suono può interrompersi";
   motore = new AudioWorkletNode(ctx, "maelcum", {
     numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2], processorOptions: { sab },
@@ -693,6 +719,14 @@ let fiveFuori = "";
 const dBuCampione = (x) => 20 * Math.log10((x * 4.3609) / 1.0957 + 1e-9); // 1,0 = 4,36 V di picco
 const dBuMeter = (m) => 24 + 20 * Math.log10(m + 1e-9); // meter dei dispositivi: 1 = +24 dBu
 
+// La grafica si tocca solo quando cambia: un setAttribute su SVG costa anche a valore uguale.
+function classe(nodo, c) {
+  if (nodo.__c !== c) {
+    nodo.__c = c;
+    nodo.setAttribute("class", c);
+  }
+}
+
 function accendiSeg(ctl, dbu, basso, alto) {
   ctl.dbu = Math.max(dbu, ctl.dbu - 2);
   const n = ctl.segs.length;
@@ -700,7 +734,7 @@ function accendiSeg(ctl, dbu, basso, alto) {
     const soglia = basso + ((alto - basso) * k) / (n - 1);
     const acceso = ctl.dbu >= soglia;
     const col = k >= n - Math.max(1, Math.round(n / 10)) ? "r" : k >= n - Math.max(2, Math.round(n / 4)) ? "g" : "v";
-    s.setAttribute("class", "seg" + (acceso ? " " + col : ""));
+    classe(s, "seg" + (acceso ? " " + col : ""));
   });
 }
 
@@ -715,16 +749,18 @@ function meter(m) {
       else if (src === "five") accendiSeg(ctl, dBuCampione(m.five), -24, 18);
       else if (src === "master") accendiSeg(ctl, dBuMeter(m.master[i]), -30, 24);
     } else if (b.tipo === "ledStrum") {
-      ctl.lampada.style.opacity = (0.15 + 0.85 * Math.min(1, m.ledStrum[b.i])).toFixed(2);
+      const op = (0.15 + 0.85 * Math.min(1, m.ledStrum[b.i])).toFixed(2);
+      if (ctl.lampada.__op !== op) ctl.lampada.style.opacity = ctl.lampada.__op = op;
     } else if (b.tipo === "led") {
       // stato del LED: 0 spento, 1 verde, 2 giallo, 3 rosso (MC-MIC nel dispositivo, 5 vie in ledvie.js)
       const st = b.src[0] === "five" ? m.ledVie[b.src[1]] : b.src[0] === "mono" ? m.ledMono[b.src[1]] : m.led;
       ctl.dbu = Math.max(st, ctl.dbu - 0.2);
-      ctl.led[0].setAttribute("class", "seg" + (ctl.dbu >= 1 ? " v" : ""));
-      ctl.led[1].setAttribute("class", "seg" + (ctl.dbu >= 2 ? " g" : ""));
-      ctl.led[2].setAttribute("class", "seg" + (ctl.dbu >= 3 ? " r" : ""));
+      classe(ctl.led[0], "seg" + (ctl.dbu >= 1 ? " v" : ""));
+      classe(ctl.led[1], "seg" + (ctl.dbu >= 2 ? " g" : ""));
+      classe(ctl.led[2], "seg" + (ctl.dbu >= 3 ? " r" : ""));
     }
   }
   const prot = m.prot < 0.98 ? ` · volume troppo alto, abbasso di ${(-20 * Math.log10(m.prot)).toFixed(1)} dB` : "";
-  stato.textContent = `${fiveFuori}${m.persi ? ` · blocchi 5-way persi ${m.persi}` : ""}${prot}`;
+  const testo = `${fiveFuori}${m.persi ? ` · blocchi 5-way persi ${m.persi}` : ""}${prot}`;
+  if (stato.textContent !== testo) stato.textContent = testo;
 }

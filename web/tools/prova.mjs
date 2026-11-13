@@ -59,16 +59,16 @@ for (let b = 0; b < blocchi; b++) {
 const ms = performance.now() - t0;
 rms = Math.sqrt(rms / (blocchi * 128));
 
-// Nel browser il 5-way gira in un Worker: si misurano a parte il motore senza 5-way e il 5-way
-// con GROWL e NASTRO a metà (il caso più pesante che si usa).
-const { ANELLO } = await import("../costanti.js");
-const mx2 = new Mixer(fs, new SharedArrayBuffer(16 + 2 * ANELLO * 2 * 128 * 4));
+// Nel browser il 5-way gira in due Worker, uno per lato: si misurano a parte il motore senza
+// 5-way e un lato del 5-way con GROWL e NASTRO a metà (il caso più pesante che si usa).
+const { SAB_BYTE } = await import("../costanti.js");
+const mx2 = new Mixer(fs, new SharedArrayBuffer(SAB_BYTE));
 for (const [i, t] of tracce.entries()) mx2.comando({ t: "traccia", i, L: t.L, R: t.R });
 mx2.comando({ t: "play", on: true });
 let t1 = performance.now();
 for (let b = 0; b < blocchi; b++) mx2.blocco(null, null, out);
 const caricoMotore = (performance.now() - t1) / 1000 / secondi;
-const { Dispositivo: Five } = await import("../dsp/mc-5way-s.js");
+const { Dispositivo: Five } = await import("../dsp/mc-5way-s-l.js");
 const f5 = new Five();
 f5.set("growl", 50);
 f5.set("nastro", 50);
@@ -78,9 +78,9 @@ for (let b = 0; b < blocchi; b++) f5.process(iL, iR, [out], 128);
 const caricoFive = (performance.now() - t1) / 1000 / secondi;
 const dB = (x) => (20 * Math.log10(x + 1e-12)).toFixed(1);
 console.log(`tutto in un filo: ${secondi} s di audio in ${(ms / 1000).toFixed(2)} s -> carico ${((ms / 1000 / secondi) * 100).toFixed(0)} %`);
-console.log(`nel browser: motore senza 5-way ${(caricoMotore * 100).toFixed(0)} %, 5-way-S nel Worker (GROWL e NASTRO a metà) ${(caricoFive * 100).toFixed(0)} %`);
+console.log(`nel browser: motore senza 5-way ${(caricoMotore * 100).toFixed(0)} %, un lato del 5-way-S per Worker (GROWL e NASTRO a metà) ${(caricoFive * 100).toFixed(0)} %`);
 console.log(`uscita: rms ${dB(rms)} dBFS, picco ${dB(maxAbs)} dBFS, campioni non numerici ${nan}`);
 console.log(`meter: deck ${m.deck.map((x) => dB(x)).join(" / ")} dBFS · 5-way ${dB(m.five)} · ritorni ${m.ret.map((x) => x.toFixed(2)).join(" / ")} · master ${m.master.map((x) => x.toFixed(2)).join(" / ")} · protezione ${m.prot.toFixed(2)}`);
-const ok = nan === 0 && rms > 1e-4 && caricoMotore < 0.6 && caricoFive < 0.85;
+const ok = nan === 0 && rms > 1e-4 && caricoMotore < 0.6 && caricoFive < 0.45;
 console.log(ok ? "PROVA PASSA" : "PROVA NON PASSA");
 process.exit(ok ? 0 : 1);

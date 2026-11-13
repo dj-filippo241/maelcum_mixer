@@ -3,8 +3,8 @@
 //
 //   deck i -> MC-CHANNEL-S -> MC-SEND -> levetta HPF / OFF / LPF (dip di 3 ms, dec. 163)
 //        OFF -> DJ BUS ; HPF -> bus HPF -> MC-FILTRO-HPF -> DJ BUS ; LPF -> bus LPF -> MC-FILTRO-LPF -> DJ BUS
-//   DJ BUS -> MC-5WAY-S (scelte della dec. 175) -> somma master. Il 5-way gira in un Worker
-//   (five.worker.js) quando la pagina ha la memoria condivisa: arriva LAT blocchi dopo, e
+//   DJ BUS -> MC-5WAY-S (scelte della dec. 175) -> somma master. Il 5-way gira in due Worker,
+//   uno per lato (five.worker.js), quando la pagina ha la memoria condivisa: arriva LAT blocchi dopo, e
 //   ritorni e mic si ritardano dello stesso tempo.
 //   mandate (MC-SEND, MC-MIC) + reroute dei ritorni -> bus FX 1-4 -> pedale -> MC-RET -> fader -> somma master
 //   MC-MIC -> somma master
@@ -27,7 +27,7 @@ import { Dispositivo as Master } from "./dsp/mc-master.js";
 import { creaPedali } from "./pedali.js";
 import { LedVie } from "./ledvie.js";
 
-import { B, LAT, ANELLO } from "./costanti.js";
+import { B, LAT, ANELLO, viste } from "./costanti.js";
 export { LAT, ANELLO };
 const st = () => [new Float32Array(B), new Float32Array(B)];
 const cinque = () => [st(), st(), st(), st(), st()];
@@ -43,14 +43,12 @@ function picco(a, b) {
 }
 
 export class Mixer {
-  // sab: memoria condivisa col Worker del 5-way (null = 5-way qui dentro)
+  // sab: memoria condivisa coi due Worker del 5-way, lato L e lato R (null = 5-way qui dentro)
   constructor(fs, sab = null) {
     this.fs = fs;
     this.esterno = !!sab;
     if (sab) {
-      this.ctl = new Int32Array(sab, 0, 4); // 0 = blocchi scritti, 1 = blocchi fatti dal Worker
-      this.ringIn = new Float32Array(sab, 16, ANELLO * 2 * B);
-      this.ringOut = new Float32Array(sab, 16 + ANELLO * 2 * B * 4, ANELLO * 2 * B);
+      Object.assign(this, viste(sab)); // ctl, par, ringIn, ringOut (costanti.js)
       this.n = 0;
       this.ritardo = Array.from({ length: LAT }, () => st());
       this.persi = 0;
@@ -293,7 +291,7 @@ export class Mixer {
     }
   }
 
-  // DJ BUS verso il Worker, 5-way di LAT blocchi fa dal Worker
+  // DJ BUS verso i Worker, 5-way di LAT blocchi fa dai Worker (pronto quando lo sono i due lati)
   fiveFuori() {
     const n = this.n;
     const o = (n % ANELLO) * 2 * B;
@@ -302,14 +300,16 @@ export class Mixer {
     Atomics.store(this.ctl, 0, n + 1);
     Atomics.notify(this.ctl, 0);
     const vecchio = n - LAT;
-    if (vecchio >= 0 && Atomics.load(this.ctl, 1) > vecchio) {
+    const pronti = Math.min(Atomics.load(this.ctl, 1), Atomics.load(this.ctl, 2));
+    if (vecchio >= 0 && pronti > vecchio) {
       const q = (vecchio % ANELLO) * 2 * B;
       this.oFive[0].set(this.ringOut.subarray(q, q + B));
       this.oFive[1].set(this.ringOut.subarray(q + B, q + 2 * B));
     } else {
       this.oFive[0].fill(0);
       this.oFive[1].fill(0);
-      if (vecchio >= 0 && Atomics.load(this.ctl, 1) > 0) this.persi++; // l'avvio del Worker non conta
+      // il primo secondo non conta: i due Worker si scaldano (compilazione del codice)
+      if (vecchio >= 0 && pronti > 0 && n * B > this.fs) this.persi++;
     }
   }
 
