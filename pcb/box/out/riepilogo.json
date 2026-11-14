@@ -1,0 +1,114 @@
+{
+ "modulo": "box",
+ "componenti": 141,
+ "reti": 93,
+ "controllo_netlist": [],
+ "erc": {
+  "warning/isolated_pin_label": 2,
+  "warning/lib_symbol_mismatch": 1
+ },
+ "reti_diverse_schema": [],
+ "routing": {
+  "ok": true,
+  "aperti": {},
+  "tentativi": 4
+ },
+ "drc": {
+  "atteso/warning/net_conflict": 27
+ },
+ "controllo_audio": {
+  "regole": {
+   "A1": [
+    {
+     "regola": "A1",
+     "oggetto": "U6.8 (5V_L)",
+     "misura": 11.44,
+     "soglia": 3.0,
+     "nota": "pad-pad verso C29, pista 22.3 mm"
+    },
+    {
+     "regola": "A1",
+     "oggetto": "U1.4 (0V_A)",
+     "misura": 9.28,
+     "soglia": 3.0,
+     "nota": "pad-pad verso C11, pista n/c mm"
+    },
+    {
+     "regola": "A1",
+     "oggetto": "U2.7 (0V_A)",
+     "misura": 9.28,
+     "soglia": 3.0,
+     "nota": "pad-pad verso C15, pista n/c mm"
+    }
+   ],
+   "A2": [],
+   "A3": [],
+   "A4": [],
+   "A5": []
+  },
+  "misure": {
+   "alimentazioni": [
+    "0V_A",
+    "5V_L"
+   ],
+   "regolatori": [],
+   "reti_sensibili": 0,
+   "A1_padpad_max_mm": [
+    11.44,
+    "U6.8 (5V_L) -> C29"
+   ],
+   "A1_pista_max_mm": [
+    22.31,
+    "U6.8 (5V_L) -> C29"
+   ],
+   "A2_lunghezza_max_mm": [
+    0.0,
+    ""
+   ],
+   "A2_via_max": [
+    0,
+    ""
+   ],
+   "A3_distanza_max_mm": [
+    0.0,
+    ""
+   ],
+   "A4_cm_max_pf": [
+    0.0,
+    ""
+   ],
+   "A5_distanza_min_mm": [
+    99.0,
+    ""
+   ]
+  },
+  "conteggio": {
+   "A1": 3,
+   "A2": 0,
+   "A3": 0,
+   "A4": 0,
+   "A5": 0
+  }
+ },
+ "bom": "bom.csv",
+ "note": [
+  "disaccoppiamento: U1 con C11",
+  "disaccoppiamento: U2 con C15",
+  "grappolo: U6 con 10 passivi",
+  "blocco «PONTI E BULK (§2.1, dec. 131): sull'alet»: x 88-199, y 59-132, 25 pin di connettore",
+  "blocco «SECONDARI: morsetti dal toroidale (~420 »: x 199-239, y 59-172, 11 pin di connettore",
+  "blocco «+5 V (§2.4): LM1084 dal raw W4, sull'ale»: x 240-252, y 89-120, 8 pin di connettore",
+  "blocco «LDO W1 +22,0 V (§2.2, dec. 131): Rsense »: x 54-122, y 16-46, 6 pin di connettore",
+  "blocco «LDO W1 -22,0 V»: x 64-87, y 46-100, 6 pin di connettore",
+  "blocco «LDO W2 +19 V (§2.2): Rsense 0,56 ohm, li»: x 130-198, y 132-161, 6 pin di connettore",
+  "blocco «LDO W2 -19 V»: x 121-189, y 161-190, 6 pin di connettore",
+  "blocco «AC_OK (§2.5): doppia semionda dal W1, 47»: x 85-129, y 132-159, 6 pin di connettore",
+  "fanout di massa: 14 via, 0 senza posto libero",
+  "fanout di massa: 3 via, 0 senza posto libero",
+  "piste fra pad gemelli: 3",
+  "Freerouting (box, 4 tentativi al più): giro 1 (-mp 40): {'CTRL_GND': 1}, DRC 0 aperti, errori 0; giro 2 (-mp 20): {'CTRL_GND': 1}, DRC 0 aperti, errori 0; giro 3 (-mp 30): {'CTRL_GND': 1}, DRC 0 aperti, errori 0; giro 4 (-mp 15): Freerouting chiuso, DRC 0 aperti, errori 0"
+ ],
+ "esito": "PASSA",
+ "errori": [],
+ "peggiorato": []
+}

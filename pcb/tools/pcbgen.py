@@ -511,6 +511,11 @@ class Design:
         # inner_signal (dec. 142, SMD sui due lati): In2 diventa uno strato di piste, la massa
         # resta piena su In1; con i due lati pieni di pezzi F e B non bastano per le piste
         sig2 = getattr(self, "inner_signal", False)
+        # piano_in2 = "<rete>" (box, 2026-11-14): In2 diventa un piano pieno di una seconda massa senza
+        # colata (CTRL_GND), coi via accanto ai pad SMD come per d.gnd; vince su inner_signal
+        p2 = getattr(self, "piano_in2", None) if layers == 4 else None
+        if p2:
+            sig2 = False
         if layers == 4:
             b.SetLayerType(pcbnew.In1_Cu, pcbnew.LT_POWER)
             b.SetLayerType(pcbnew.In2_Cu, pcbnew.LT_SIGNAL if sig2 else pcbnew.LT_POWER)
@@ -585,11 +590,13 @@ class Design:
         gnd = self.gnd
         if layers == 4:
             self._fanout(b, nets[gnd], mm, pcbnew)
+            if p2:
+                self._fanout(b, nets[p2], mm, pcbnew)
         if getattr(self, "link_pairs", False):
-            self._link_pairs(b, mm, pcbnew)
+            self._link_pairs(b, mm, pcbnew, dmax=getattr(self, "link_pairs_dmax", 4.0))
         zl = ([pcbnew.In1_Cu] if sig2 else [pcbnew.In1_Cu, pcbnew.In2_Cu]) if layers == 4 else []
         for layer in zl:
-            self._zone(b, nets[gnd], layer, X0, Y0, W, H, mm, pcbnew)
+            self._zone(b, nets[p2 if (p2 and layer == pcbnew.In2_Cu) else gnd], layer, X0, Y0, W, H, mm, pcbnew)
         self._edge_keepout(b, X0, Y0, W, H, mm, pcbnew, cut=self.cut)
         path = os.path.join(self.outdir, self.name + ".kicad_pcb")
         b.Save(path)

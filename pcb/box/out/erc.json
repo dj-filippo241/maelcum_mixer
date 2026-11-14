@@ -1,0 +1,83 @@
+{
+    "$schema": "https://schemas.kicad.org/erc.v1.json",
+    "coordinate_units": "mm",
+    "date": "2026-11-14T22:04:02",
+    "ignored_checks": [
+        {
+            "description": "Global label only appears once in the schematic",
+            "key": "single_global_label"
+        },
+        {
+            "description": "Four connection points are joined together",
+            "key": "four_way_junction"
+        },
+        {
+            "description": "SPICE model issue",
+            "key": "simulation_model_issue"
+        },
+        {
+            "description": "Assigned footprint doesn't match footprint filters",
+            "key": "footprint_filter"
+        }
+    ],
+    "included_severities": [
+        "error",
+        "warning",
+        "exclusion"
+    ],
+    "kicad_version": "10.0.7",
+    "sheets": [
+        {
+            "path": "/",
+            "uuid_path": "/61dc0d95-5230-527b-bfdf-00275499b481",
+            "violations": [
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ZK_1N'",
+                            "pos": {
+                                "x": 175.26,
+                                "y": 345.44
+                            },
+                            "uuid": "753be403-b37d-58c5-948a-f9b8d1901b54"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "Label connected to only one pin",
+                    "items": [
+                        {
+                            "description": "Global Label 'ZK_1P'",
+                            "pos": {
+                                "x": 205.74,
+                                "y": 345.44
+                            },
+                            "uuid": "d86da848-8cfc-5d30-a7b1-ee339ea50414"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "isolated_pin_label"
+                },
+                {
+                    "description": "Symbol 'KBPC2502T' doesn't match copy in library 'Diode_Bridge'",
+                    "items": [
+                        {
+                            "description": "Symbol D1 [KBPC2502T]",
+                            "pos": {
+                                "x": 439.42,
+                                "y": 58.42
+                            },
+                            "uuid": "1ec2ce1f-c98a-567b-9210-7ab7eabd75c2"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "lib_symbol_mismatch"
+                }
+            ]
+        }
+    ],
+    "source": "box.kicad_sch"
+}
