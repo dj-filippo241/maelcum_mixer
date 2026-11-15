@@ -16,7 +16,8 @@ banca agli incroci H di bank-aligned-h.cir):
   -> GROWL A BANDE (growl-bande.cir) -> NASTRO A BANDE B9 (nastro-b9.cir), dec. 165, 166, 175
   -> make-up +6 dB col servo DC (§5bis.7) -> 47R -> 5W_OUT (slot 2, verso MSUM1 del master)
   Ogni scheda B porta la presa del meter (EDRV per 100R) sul cavo: i LED di livello delle 5 vie
-  (five-way-led-livello.md, dec. 177) stanno sulla scheda comandi; la B della L porta anche +-15LN e +5VF.
+  (five-way-led-livello.md, dec. 177) stanno sulla scheda comandi (five-way-comandi.py); la B della L
+  porta anche +-15LN e +5VF.
 
 Polarita' (sistema-polarita.md): dal net DJ bus a 5W_OUT -1; il ricevitore [A2] del master raddrizza.
 Valori [PROVVISORIO]. Le scelte non scritte nei documenti sono segnate NOTA (pcb/five-way/NOTE.md).
@@ -512,95 +513,30 @@ if PARTE == "B":
     d.R("VOUT", "5W_OUT_" + s, "47", note="NOTA: 47R verso MSUM1 (20k sul master); ponticello J5W sul backplane")
     d.R("EDRV", "5W_MET_" + s, "100", note="presa del meter verso i LED di livello sulla scheda comandi")
 
-# ------------------------------------------------------------ LED e meter (solo L)
-# NON chiamata: il blocco va sulla scheda comandi del 5-way (scelta 3 di Filippo, 2026-11-15).
-# Ingressi: 5W_MET_L e 5W_MET_R dai cavi delle schede B (EDRV di ogni lato per 100R).
-def led_livello():
-    d.block = "LED DI LIVELLO delle 5 vie e presa del meter (five-way-led-livello.md, dec. 177)"
-    PL = Pack("+15LN", "-15LN")
-    d.R("5W_MET_L", "SNL", "20k 0.1%")
-    d.R("5W_MET_R", "SNL", "20k 0.1%")
-    d.R("SNL", "SOL", "5k76 0.1%", note="(L+R)/2 x 0,576 (metering: g = 0,576)")
-    d.C("SNL", "SOL", "100p C0G")
-    PL.add(("AGND", "SNL", "SOL"))
-    LP2 = {"SUB": ("17k8", "220n", "100n"), "KICK": ("19k6", "47n", "22n"), "MID": ("19k6", "10n", "4n7"),
-           "HIGH": ("13k3", "2n2", "1n")}
-    HP2 = {"KICK": ("100n", "18k7", "37k4"), "MID": ("22n", "20k5", "41k2"), "HIGH": ("4n7", "20k", "40k2"),
-           "SUPER": ("1n", "14k", "28k")}
-    for i, v in enumerate(VIE, 1):
-        x = "SOL"
-        if v in HP2:
-            c, rfb, rg = HP2[v]
-            t = "AH%d" % i
-            Cx(x, t + "1", c); Cx(t + "1", t + "2", c)
-            d.R(t + "1", t, rfb + " 0.1%"); d.R(t + "2", "AGND", rg + " 0.1%")
-            PL.add((t + "2", t, t))
-            x = t
-        if v in LP2:
-            r, c1, c2 = LP2[v]
-            t = "AL%d" % i
-            d.R(x, t + "1", r + " 0.1%"); d.R(t + "1", t + "2", r + " 0.1%")
-            Cx(t + "1", t, c1); Cx(t + "2", "AGND", c2)
-            PL.add((t + "2", t, t))
-            x = t
-        # rivelatore di picco (cella del metering): superdiodo, hold 100n, release 3M, buffer
-        d.R("DO" + v, "DA" + v, "1k")
-        cv.diode(d, "DA" + v, "HO" + v)
-        d.C("DO" + v, "HO" + v, "47p C0G")
-        d.C("HO" + v, "AGND", "100n C0G", C12, note="hold")
-        d.R("HO" + v, "AGND", "3M", note="release 0,3 s (dec. 81)")
-        PL.add((x, "HO" + v, "DO" + v))
-        PL.add(("HO" + v, "MET" + v, "MET" + v))
-    # barra del meter del modulo: stesso segnale della somma, rivelatore uguale
-    d.R("DOM", "DAM", "1k")
-    cv.diode(d, "DAM", "HOM")
-    d.C("DOM", "HOM", "47p C0G")
-    d.C("HOM", "AGND", "100n C0G", C12, note="hold della barra del 5-way")
-    d.R("HOM", "AGND", "3M")
-    PL.add(("SOL", "HOM", "DOM"))
-    PL.add(("HOM", "MET", "MET"))
-    PL.flush("LED: somma L+R, banco d'analisi, rivelatori")
-    # soglie comuni e latch (dec. 177)
-    d.R("+15LN", "VR", "127k 0.1%")
-    d.R("VR", "VY", "12k7 0.1%")
-    d.R("VY", "VG", "12k4 0.1%")
-    d.R("VG", "AGND", "402 0.1%")
-    for n in ("VR", "VY", "VG"):
-        d.C(n, "AGND", "100n")
-    d.R("+5VF", "VTL", "10k")
-    d.R("VTL", "CTRL_GND", "10k")
-    d.C("VTL", "CTRL_GND", "100n")
-    for i, v in enumerate(VIE, 1):
-        m = "MET" + v
-        d.R("+5VF", "LT" + v, "750k", note="latch del rosso 0,52 s")
-        d.C("LT" + v, "CTRL_GND", "1u 25V", C12)
-        d.R("+5VF", "LQ" + v, "10k")
-        d.part("U", LM339, "LM339DR", SOIC14, {
-            "1IN+": "VR", "1IN-": m, "1OUT": "LT" + v, "2IN+": "LT" + v, "2IN-": "VTL", "2OUT": "LQ" + v,
-            "3IN+": "VY", "3IN-": m, "3OUT": "KR" + v, "4IN+": "VG", "4IN-": m, "4OUT": "KG" + v,
-            "VCC": "+5VF", "GND": "CTRL_GND"}, ref=uref(), note="LED3 della via %s (celle_micmono.led3)" % v)
-        d.C("+5VF", "CTRL_GND", "100n")
-        cv.diode(d, "KR" + v, "LQ" + v, note="rosso acceso durante il latch")
-        d.part("Q", "Transistor_FET:2N7002", "2N7002", SOT23, {"D": "GF" + v, "S": "KG" + v, "G": "LQ" + v},
-               note="spegne il verde durante il latch")
-        d.R("LEDR%d" % i, "KR" + v, "1k", note="~2,8 mA nel rosso")
-        d.R("LEDG%d" % i, "GF" + v, "1k", note="~2,8 mA nel verde")
-
 # ------------------------------------------------------------ cavo
 d.block = "CAVO SCHEDA COMANDI (J2)"
-if PARTE == "A":
-    FILI = ["KSW1", "KSW2", "KSW3", "KSW4", "KSW5", "CTRL_GND"]
-else:
-    FILI = ["AGND", "+REF5"]
-    for n in range(1, 6):
-        t = str(n)
-        FILI += ["POSW" + t, "BPB" + t, "WW" + t, "WB" + t, "DQ" + t, "GW" + t, "NDQ" + t, "AGND"]
-    FILI += ["DDG", "DWG", "GLOW", "GLR", "GMID", "GMR", "AGND",
-             "DTP", "DWT", "LSP", "LSN", "AGND", "5W_MET_" + s, "AGND"]
-    if s == "L":   # alimentazione dei LED di livello sulla scheda comandi
-        FILI += ["+15LN", "AGND", "-15LN", "+5VF", "CTRL_GND"]
-if len(FILI) % 2:
-    FILI.append("AGND")
+
+
+def fili_cavo(s, parte):
+    """Ordine dei fili di J2. Letta anche da five-way-comandi.py (comandi.funzione_da): una fonte
+    sola, i due connettori non possono divergere. Solo letterali qui dentro."""
+    if parte == "A":
+        fili = ["KSW1", "KSW2", "KSW3", "KSW4", "KSW5", "CTRL_GND"]
+    else:
+        fili = ["AGND", "+REF5"]
+        for n in range(1, 6):
+            t = str(n)
+            fili += ["POSW" + t, "BPB" + t, "WW" + t, "WB" + t, "DQ" + t, "GW" + t, "NDQ" + t, "AGND"]
+        fili += ["DDG", "DWG", "GLOW", "GLR", "GMID", "GMR", "AGND",
+                 "DTP", "DWT", "LSP", "LSN", "AGND", "5W_MET_" + s, "AGND"]
+        if s == "L":   # alimentazione dei LED di livello sulla scheda comandi
+            fili += ["+15LN", "AGND", "-15LN", "+5VF", "CTRL_GND"]
+    if len(fili) % 2:
+        fili.append("AGND")
+    return fili
+
+
+FILI = fili_cavo(s, PARTE)
 cv.cavo(d, FILI, x=L / 2 - 40 if PARTE == "B" else L / 2 - 20, y=14)
 
 d.audio_rules = {}

@@ -1,0 +1,123 @@
+{
+ "modulo": "five-way-comandi",
+ "componenti": 187,
+ "reti": 209,
+ "controllo_netlist": [],
+ "erc": {
+  "warning/lib_symbol_mismatch": 10
+ },
+ "reti_diverse_schema": [],
+ "routing": {
+  "ok": true,
+  "aperti": {
+   "AGND": 7
+  },
+  "tentativi": 3
+ },
+ "drc": {
+  "violations/warning/silk_overlap": 15,
+  "violations/warning/silk_over_copper": 17,
+  "atteso/warning/net_conflict": 31
+ },
+ "controllo_audio": {
+  "regole": {
+   "A1": [
+    {
+     "regola": "A1",
+     "oggetto": "U1.3 (+5VF)",
+     "misura": 3.21,
+     "soglia": 3.0,
+     "nota": "pad-pad verso C59, pista 2.9 mm"
+    },
+    {
+     "regola": "A1",
+     "oggetto": "U1.9 (+5VF)",
+     "misura": 15.88,
+     "soglia": 3.0,
+     "nota": "pad-pad verso C59, pista 19.9 mm"
+    }
+   ],
+   "A2": [],
+   "A3": [],
+   "A4": [],
+   "A5": []
+  },
+  "misure": {
+   "alimentazioni": [
+    "+15LN",
+    "+5VF",
+    "-15LN"
+   ],
+   "regolatori": [],
+   "reti_sensibili": 0,
+   "A1_padpad_max_mm": [
+    15.88,
+    "U1.9 (+5VF) -> C59"
+   ],
+   "A1_pista_max_mm": [
+    19.87,
+    "U1.9 (+5VF) -> C59"
+   ],
+   "A2_lunghezza_max_mm": [
+    0.0,
+    ""
+   ],
+   "A2_via_max": [
+    0,
+    ""
+   ],
+   "A3_distanza_max_mm": [
+    0.0,
+    ""
+   ],
+   "A4_cm_max_pf": [
+    0.0,
+    ""
+   ],
+   "A5_distanza_min_mm": [
+    99.0,
+    ""
+   ]
+  },
+  "conteggio": {
+   "A1": 2,
+   "A2": 0,
+   "A3": 0,
+   "A4": 0,
+   "A5": 0
+  }
+ },
+ "bom": "bom.csv",
+ "note": [
+  "comandi del pannello sulla scheda: 28",
+  "disaccoppiamento: U101 con C30, C31",
+  "disaccoppiamento: U102 con C32, C33",
+  "disaccoppiamento: U103 con C34, C35",
+  "disaccoppiamento: U104 con C36, C37",
+  "disaccoppiamento: U105 con C38, C39",
+  "disaccoppiamento: U106 con C40, C41",
+  "disaccoppiamento: U107 con C47",
+  "disaccoppiamento: U108 con C49",
+  "disaccoppiamento: U109 con C51",
+  "disaccoppiamento: U110 con C53",
+  "disaccoppiamento: U111 con C55",
+  "grappolo: U101 con 16 passivi",
+  "grappolo: U102 con 11 passivi",
+  "grappolo: U103 con 11 passivi",
+  "grappolo: U104 con 11 passivi",
+  "grappolo: U105 con 11 passivi",
+  "grappolo: U107 con 14 passivi",
+  "grappolo: U108 con 4 passivi",
+  "grappolo: U109 con 4 passivi",
+  "grappolo: U110 con 4 passivi",
+  "grappolo: U111 con 4 passivi",
+  "blocco «METER: un LM3915, 10 LED (zona del 5-way»: x 422-438, y 56-63, 48 pin di connettore",
+  "retro: 35 gruppi",
+  "fanout di massa: 42 via, 0 senza posto libero",
+  "piste fra pad gemelli: 7",
+  "Freerouting (five-way-comandi, 4 tentativi al più): giro 1 (-mp 40): Freerouting chiuso, DRC 26 aperti, errori 0; giro 2 (-mp 20): Freerouting chiuso, DRC 3 aperti, errori 0; giro 3 (-mp 30): Freerouting chiuso, DRC 0 aperti, errori 0"
+ ],
+ "esito": "PASSA",
+ "errori": [],
+ "peggiorato": []
+}

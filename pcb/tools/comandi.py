@@ -80,6 +80,18 @@ def fili_da(percorso, nome="FILI"):
     raise ValueError("%s: lista %s non trovata" % (percorso, nome))
 
 
+def funzione_da(percorso, nome):
+    """Una funzione del file della scheda di segnale, compilata da sola senza eseguire il file:
+    per i cavi che cambiano con la variante della scheda (5-way: fili_cavo(lato, parte)).
+    Dentro la funzione solo letterali e builtin."""
+    for nodo in ast.parse(open(percorso).read()).body:
+        if isinstance(nodo, ast.FunctionDef) and nodo.name == nome:
+            spazio = {}
+            exec(compile(ast.Module(body=[nodo], type_ignores=[]), percorso, "exec"), spazio)
+            return spazio[nome]
+    raise ValueError("%s: funzione %s non trovata" % (percorso, nome))
+
+
 def _ruota(px, py, rot):
     a = math.radians(rot)
     return px * math.cos(a) + py * math.sin(a), -px * math.sin(a) + py * math.cos(a)
@@ -208,13 +220,15 @@ class Comandi:
                           note="%s; fader %s, corsa %d mm (Bourns PTA%d43, NOTA: pezzo da confermare)" % (
                               nota, c["nome"], corsa, corsa))
 
-    def levetta(self, c, su, comune, giu, nota=""):
+    def levetta(self, c, su, comune, giu, nota="", b=None):
         """Levetta verticale. Leva in su = comune col pin in basso (3), leva in giù = comune col
-        pin in alto (1): è il verso solito delle levette, da verificare sul pezzo scelto."""
+        pin in alto (1): è il verso solito delle levette, da verificare sul pezzo scelto.
+        b = (su, comune, giu) del secondo polo (pin 4, 5, 6), per due schede separate."""
         x, y = self.xy(c)
         self.contati += 1
+        b = b or (None, None, None)
         return self.metti("SW", LEVETTA, "levetta " + "/".join(c.get("posizioni", [])), LEV_FP,
-                          {"1": giu, "2": comune, "3": su, "4": None, "5": None, "6": None}, (1.27, 2.54), x, y,
+                          {"1": giu, "2": comune, "3": su, "4": b[0], "5": b[1], "6": b[2]}, (1.27, 2.54), x, y,
                           (0, 180), note="%s; levetta %s; NOTA: impronta segnaposto (NKK G1xJP)" % (nota, c["nome"]))
 
     def bottone(self, c, a, b, luce=None, rluce="1k", nota=""):

@@ -14,8 +14,8 @@ La fila 4 tiene due schede del reroute e il PSU-IN (x 350-450, `piano_f.py`).
 ## Divisione e LED di livello (2026-11-15)
 
 - Il conto vero (864 sulla L, 725 sulla R) non stava in una scheda per lato. Scelta 3 di Filippo
-  (2026-11-15): i LED di livello delle 5 vie vanno sulla scheda comandi del 5-way. Il codice resta
-  in `five-way.py`, funzione `led_livello()`, non chiamata: si sposta quando nasce la scheda comandi.
+  (2026-11-15): i LED di livello delle 5 vie vanno sulla scheda comandi del 5-way. Il circuito sta
+  in `five-way-comandi.py` (spostato da `five-way.py` il 2026-11-15, stessi valori).
 - Ogni scheda B porta sul cavo la presa del meter `5W_MET_L` / `5W_MET_R` (EDRV per 100 ohm). La LB
   porta anche +15LN, -15LN, +5VF e CTRL_GND per i LED. La presa della R non passa più dal backplane.
 - La somma delle vie va dalla A alla B sul backplane: `5W_SUM_L` sul b7, `5W_SUM_R` sul b8, per 47 ohm.
@@ -49,9 +49,23 @@ in più»). POSITION resta davanti: sul retro con le celle lasciava aperti negli
 6. LB: 12 pad di massa senza posto per la via. `d.fanout_more = True` (nato sul master) le cerca anche di
    traverso: restano 2. LB PASSA al terzo tentativo, RB al primo.
 
+## Scheda comandi (`five-way-comandi.py`, 2026-11-15, todo 335)
+
+448 x 98 mm, tutto il pannello. 28 comandi del pannello, LED di livello e barra METER. Esito: **PASSA**
+(ERC 0, DRC 0 aperti al terzo tentativo di Freerouting; controllo audio 0).
+
+- Quattro cavi: J1 LB (2x31), J2 RB (2x28), J3 LA (2x3), J4 RA (2x3). Ordine da `fili_cavo(lato, parte)`
+  in `five-way.py`, letta con `comandi.funzione_da` senza eseguire il file. Schemi delle quattro schede
+  di segnale invariati dopo lo spostamento (rigenerati, stesso contenuto).
+- Masse separate per cavo (AGND, AGNDR, CTRL_GND, CTRL_GND_A_L, CTRL_GND_A_R): niente anelli fra le schede.
+- GAIN e WIDTH doppi (A = L, B = R). POSITION singolo sul +REF5 della LB, cursore alle due B; il +REF5
+  della RB resta libero sul cavo. KILL a levetta a due poli: polo A = LA, polo B = RA.
+- NOTA: GROWL vuole un pot a 6 sezioni (10k/10k/5k per lato), NASTRO a 4 (10k log A / 5k per lato).
+  Nessuno dei due sta nella libreria di KiCad: impronta segnaposto a pin header, pezzo da scegliere.
+- Circuito dei LED sul retro (solo SMD), valori di five-way-led-livello.md, alimentato dal cavo della LB.
+
 ## Resta
 
-- Scheda comandi del 5-way, coi LED di livello: l'ordine del cavo viene da queste schede.
 - Slot 5W1-5W4 del backplane dai netlist (oggi SINTETICO in `piano_f.py`).
 - Schema leggibile in inglese (`leggibile.py`).
 
