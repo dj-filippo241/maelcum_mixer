@@ -801,8 +801,8 @@ class Design:
         # grappoli: i passivi di una cella attorno al pin del loro op-amp
         if getattr(self, "cluster_auto", True):
             for ic, items in self._clusters(groups).items():
-                self._cluster_place(fps, ic, items, groups.get(ic, []))
-                groups.setdefault(ic, []).extend((r, pin) for r, pin, _ in items)
+                fuori = self._cluster_place(fps, ic, items, groups.get(ic, []))
+                groups.setdefault(ic, []).extend((r, pin) for r, pin, _ in items if r not in fuori)
         attached = {c for caps in groups.values() for c, _ in caps}
         free = [p for p in free if p.ref not in attached]
         # retro (dec. 142): i gruppi col chip sul retro si ribaltano attorno al chip, poi si
@@ -1160,6 +1160,9 @@ class Design:
         nets = {p.ref: p.nets for p in self.parts}
         boxes = [self._bbox(u)] + [self._bbox(fps[c]) for c, _ in caps]
         info = {}            # ref -> (punto di partenza, direzione verso fuori)
+        # d.cluster_fuori = True: i passivi senza posto tornano al piazzamento a blocchi invece di
+        # restare impilati (5-way, 2026-11-15); spento di default, le schede a PASSA non cambiano
+        fuori = set()
 
         def free_at(cf):
             x1, y1, x2, y2 = self._bbox(cf)
@@ -1180,6 +1183,8 @@ class Design:
                 shared = nets[ic][pin]
             else:
                 if par not in info:
+                    if getattr(self, "cluster_fuori", False):
+                        fuori.add(ref)
                     continue
                 (sx, sy), horiz, sgn, plead = info[par]
                 pf = fps[par]
@@ -1205,13 +1210,18 @@ class Design:
                         break
                 if ok:
                     break
+            if not ok and getattr(self, "cluster_fuori", False):
+                fuori.add(ref)
+                continue
             near = min(cf.Pads(), key=lambda q: (q.GetPosition().x / 1e6 - start[0]) ** 2 +
                        (q.GetPosition().y / 1e6 - start[1]) ** 2)
             if nets[ref].get(near.GetNumber()) != shared:
                 cf.SetOrientationDegrees((0 if horiz else 90) + 180)
             boxes.append(self._bbox(cf))
             info[ref] = (start, horiz, sgn, lead)
-        self.notes.append("grappolo: %s con %d passivi" % (ic, len(items)))
+        self.notes.append("grappolo: %s con %d passivi" % (ic, len(items) - len(fuori))
+                          + (", %d senza posto (a blocchi)" % len(fuori) if fuori else ""))
+        return fuori
 
     def _gbox(self, fps, ref, groups):
         """Riquadro di un pezzo, o del chip col suoi condensatori."""
