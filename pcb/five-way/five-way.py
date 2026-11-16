@@ -30,6 +30,7 @@ from backplane import c96, SYM_C96, FP_C96, C96_DAL_BORDO
 import celle_vca as cv
 from celle_vca import C12, SOIC14
 from celle_micmono import power_18_sw, power_ln, ADG, LM339
+from comune_5w import Parti
 
 ARG = next((a for a in sys.argv[1:] if a in ("LA", "LB", "RA", "RB")), None)
 if ARG is None:
@@ -53,7 +54,6 @@ if PARTE == "B":
 
 SOIC8 = "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
 TSSOP14 = "Package_SO:TSSOP-14_4.4x5mm_P0.65mm"
-CF = "Capacitor_SMD:C_1812_4532Metric"          # film PPS / C0G grandi
 CNP = "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm"
 SOT23 = "Package_TO_SOT_SMD:SOT-23"
 
@@ -72,51 +72,18 @@ HC74 = boxsym("74HC74", [("1", "1CLR", "input"), ("2", "1D", "input"), ("3", "1C
               [("5", "1Q", "output"), ("6", "1QN", "output"), ("9", "2Q", "output"), ("8", "2QN", "output"),
                ("14", "VCC", "power_in"), ("7", "GND", "power_in")],
               fp=SOIC14, desc="Due flip-flop D. Pinout TI SCLS094F, Pin Functions (2026-11-04)")
-JDUAL = boxsym("JFET_DUAL_N", [("1", "S1", "passive"), ("2", "D1", "passive"), ("3", "G1", "passive"), ("4", "NC1", "no_connect")],
-               [("8", "S2", "passive"), ("7", "D2", "passive"), ("6", "G2", "passive"), ("5", "NC2", "no_connect")],
-               ref="Q", fp=SOIC8, desc="Dual JFET N appaiato (classe LSK389/LSK589). NOTA: pinout DA CONFERMARE sul datasheet")
+# Pinout: Linear Systems LSK389 A/B/C/D, Doc 201122 Rev A27 (06/23/2023), SOIC 8L Top View (todo 339).
+# SS = substrato: il TO-71 6L non lo porta fuori, quindi resta libero anche sul SOIC [deduzione].
+JDUAL = boxsym("JFET_DUAL_N", [("1", "S1", "passive"), ("2", "D1", "passive"), ("4", "G1", "passive"), ("3", "SS1", "no_connect")],
+               [("5", "S2", "passive"), ("6", "D2", "passive"), ("8", "G2", "passive"), ("7", "SS2", "no_connect")],
+               ref="Q", fp=SOIC8, desc="Dual JFET N appaiato LSK389. Pinout Linear Systems Doc 201122 Rev A27, SOIC 8L")
 
-_u = [0]
-
-
-def uref():
-    _u[0] += 1
-    return "U%d" % _u[0]
-
-
-class Pack:
-    """Raccoglie sezioni op-amp (ingresso +, ingresso -, uscita) e le mette in quad OPA1654."""
-
-    def __init__(self, vp="+18V", vm="-18V"):
-        self.secs, self.vp, self.vm = [], vp, vm
-
-    def add(self, sec):
-        self.secs.append(sec)
-
-    def flush(self, note):
-        while self.secs:
-            q = self.secs[:4]
-            self.secs = self.secs[4:]
-            k = 0
-            while len(q) < 4:
-                k += 1
-                n = "NU%s_%d" % (_u[0] + 1, k)
-                q.append(("AGND", n, n))     # sezione libera: inseguitore a massa
-            cv.opa4(d, uref(), *q, vp=self.vp, vm=self.vm, note=note)
+pz = Parti(d)           # riferimenti U, condensatori, quad: comune_5w.py (todo 342)
+uref, Cx, Pack = pz.uref, pz.Cx, pz.Pack
 
 
 def opa2(a, b, note="", value="OPA1612AIDR", vp="+18V", vm="-18V"):
     cv.opa2(d, uref(), a, b, vp, vm, note=note, value=value)
-
-
-def Cx(a, b, v, note=""):
-    """Condensatore di segnale: C0G 1206 fino a 22n, film 1812 oltre."""
-    if "u" in v:
-        big = True
-    else:
-        num = float(v.replace("n", ".") if not v.endswith("n") else v[:-1])
-        big = num >= 33
-    d.C(a, b, v + (" film" if big else " C0G"), CF if big else C12, note=note)
 
 
 # ------------------------------------------------------------ backplane
@@ -347,7 +314,7 @@ if PARTE == "B":
         for k, (src, st, stb) in enumerate((("HP" + t, "BP" + t, "BPB" + t), ("BPB" + t, "LP" + t, "LPB" + t)), 1):
             tk = "%s_%d" % (t, k)
             d.part("Q", JDUAL, "LSK389 (dual)", SOIC8,
-                   {"D1": src, "G1": "GS" + tk, "S1": "NI" + tk, "D2": "VRD", "G2": "GR" + tk, "S2": "SV" + tk, "NC1": None, "NC2": None},
+                   {"D1": src, "G1": "GS" + tk, "S1": "NI" + tk, "D2": "VRD", "G2": "GR" + tk, "S2": "SV" + tk, "SS1": None, "SS2": None},
                    note="JFET di segnale (1) e replica (2) nello stesso die (REV todo 50); bin Idss/Vp")
             d.R(src, "GS" + tk, "100k 0.1%", note="gate a (Vd + vc2)/2")
             d.R("VC" + tk, "GS" + tk, "100k 0.1%")
@@ -458,7 +425,7 @@ if PARTE == "B":
     # JFET J310 a sorgente comune
     d.R("LSP", "LGATE", "10k")
     d.part("Q", "Transistor_FET:MMBFJ113", "MMBFJ310", SOT23, {"D": "LDRAIN", "G": "LGATE", "S": "LJS1"},
-           note="NJ310 in sim; NOTA: simbolo MMBFJ113, pinout D-S-G da confermare sul datasheet del J310")
+           note="NJ310 in sim; simbolo MMBFJ113 (1 D, 2 S, 3 G) = MMBFJ310L onsemi, SOT-23 case 318 style 10 (todo 339)")
     d.R("+18V", "LDRAIN", "1k5")
     d.R("LJS1", "LJS2", "150")
     d.R("LJS2", "AGND", "910", note="sim 900")

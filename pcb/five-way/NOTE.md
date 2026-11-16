@@ -24,7 +24,11 @@ La fila 4 tiene due schede del reroute e il PSU-IN (x 350-450, `piano_f.py`).
 
 ## Scelte segnate NOTA
 
-1. Pinout del dual JFET (classe LSK389) e del J310 (simbolo MMBFJ113): da confermare sul datasheet.
+1. Pinout del dual JFET e del J310 (todo 339, 2026-11-16). LSK389 SOIC 8L dal datasheet Linear Systems
+   Doc 201122 Rev A27 (06/23/2023), Top View: 1 S1, 2 D1, 3 SS, 4 G1, 5 S2, 6 D2, 7 SS, 8 G2. Il simbolo
+   del 15/11 era sbagliato (gate su 3 e 6, drain 2 su 7): corretto, LB e RB rigenerate. SS è il substrato:
+   il TO-71 6L non lo porta fuori, quindi resta libero [deduzione mia; il datasheet non dice dove va].
+   J310: simbolo MMBFJ113 (1 D, 2 S, 3 G) = MMBFJ310L onsemi, SOT-23 case 318 style 10. Confermato.
 2. Cf 22p del ricevitore come i ricevitori del master.
 3. 22k + Schottky BAT54WS davanti al LM339: l'ingresso resta sopra -0,3 V.
 4. OR a diodi del fronte e del tempo massimo; logica dello zero da simulare a porte.

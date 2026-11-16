@@ -8,12 +8,12 @@
  "routing": {
   "ok": true,
   "aperti": {
-   "AGND": 79
+   "AGND": 78
   },
-  "tentativi": 1
+  "tentativi": 2
  },
  "drc": {
-  "violations/warning/via_dangling": 6,
+  "violations/warning/via_dangling": 8,
   "violations/warning/silk_overlap": 30,
   "violations/warning/silk_over_copper": 54,
   "atteso/warning/net_conflict": 82
@@ -21,6 +21,20 @@
  "controllo_audio": {
   "regole": {
    "A1": [
+    {
+     "regola": "A1",
+     "oggetto": "U141.2 (V27F-)",
+     "misura": 34.74,
+     "soglia": 10.0,
+     "nota": "regolatore, C piu' vicino C2"
+    },
+    {
+     "regola": "A1",
+     "oggetto": "U141.3 (VREG-)",
+     "misura": 18.14,
+     "soglia": 10.0,
+     "nota": "regolatore, C piu' vicino C9"
+    },
     {
      "regola": "A1",
      "oggetto": "U145.1 (-18V)",
@@ -54,35 +68,28 @@
      "oggetto": "U145.10 (-15LN)",
      "misura": 15.72,
      "soglia": 3.0,
-     "nota": "pad-pad verso C24, pista 42.3 mm"
+     "nota": "pad-pad verso C24, pista 28.8 mm"
     },
     {
      "regola": "A1",
      "oggetto": "U145.11 (-15LN)",
      "misura": 16.35,
      "soglia": 3.0,
-     "nota": "pad-pad verso C24, pista 42.6 mm"
+     "nota": "pad-pad verso C24, pista 29.1 mm"
     },
     {
      "regola": "A1",
      "oggetto": "U145.12 (-15LN)",
      "misura": 16.99,
      "soglia": 3.0,
-     "nota": "pad-pad verso C24, pista 43.3 mm"
+     "nota": "pad-pad verso C24, pista 29.7 mm"
     },
     {
      "regola": "A1",
      "oggetto": "U145.13 (-18V)",
      "misura": 18.62,
      "soglia": 3.0,
-     "nota": "pad-pad verso C20, pista 25.1 mm"
-    },
-    {
-     "regola": "A1",
-     "oggetto": "Q140.1 (+18V)",
-     "misura": 10.83,
-     "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C7"
+     "nota": "pad-pad verso C20, pista 25.0 mm"
     },
     {
      "regola": "A1",
@@ -100,38 +107,45 @@
     },
     {
      "regola": "A1",
+     "oggetto": "Q140.1 (+18V)",
+     "misura": 10.83,
+     "soglia": 10.0,
+     "nota": "regolatore, C piu' vicino C7"
+    },
+    {
+     "regola": "A1",
      "oggetto": "U144.1 (+18V)",
      "misura": 17.8,
      "soglia": 3.0,
-     "nota": "pad-pad verso C17, pista 29.5 mm"
+     "nota": "pad-pad verso C17, pista 30.0 mm"
     },
     {
      "regola": "A1",
      "oggetto": "U144.2 (+18V)",
      "misura": 17.79,
      "soglia": 3.0,
-     "nota": "pad-pad verso C17, pista 28.8 mm"
+     "nota": "pad-pad verso C17, pista 29.4 mm"
     },
     {
      "regola": "A1",
      "oggetto": "U144.3 (+18V)",
      "misura": 17.81,
      "soglia": 3.0,
-     "nota": "pad-pad verso C17, pista 28.2 mm"
+     "nota": "pad-pad verso C17, pista 28.7 mm"
     },
     {
      "regola": "A1",
      "oggetto": "U144.4 (+18V)",
      "misura": 17.85,
      "soglia": 3.0,
-     "nota": "pad-pad verso C17, pista 27.5 mm"
+     "nota": "pad-pad verso C17, pista 28.1 mm"
     },
     {
      "regola": "A1",
      "oggetto": "U144.7 (+18V)",
      "misura": 13.77,
      "soglia": 3.0,
-     "nota": "pad-pad verso C17, pista 18.7 mm"
+     "nota": "pad-pad verso C17, pista 18.9 mm"
     },
     {
      "regola": "A1",
@@ -156,20 +170,6 @@
     },
     {
      "regola": "A1",
-     "oggetto": "U141.2 (V27F-)",
-     "misura": 34.74,
-     "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C2"
-    },
-    {
-     "regola": "A1",
-     "oggetto": "U141.3 (VREG-)",
-     "misura": 18.14,
-     "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C9"
-    },
-    {
-     "regola": "A1",
      "oggetto": "U140.2 (VREG+)",
      "misura": 17.31,
      "soglia": 10.0,
@@ -184,13 +184,6 @@
     },
     {
      "regola": "A1",
-     "oggetto": "Q141.1 (-18V)",
-     "misura": 13.32,
-     "soglia": 10.0,
-     "nota": "regolatore, C piu' vicino C11"
-    },
-    {
-     "regola": "A1",
      "oggetto": "U143.2 (V22F-)",
      "misura": 16.72,
      "soglia": 10.0,
@@ -202,6 +195,13 @@
      "misura": 30.27,
      "soglia": 10.0,
      "nota": "regolatore, C piu' vicino C15"
+    },
+    {
+     "regola": "A1",
+     "oggetto": "Q141.1 (-18V)",
+     "misura": 13.32,
+     "soglia": 10.0,
+     "nota": "regolatore, C piu' vicino C11"
     }
    ],
    "A2": [],
@@ -238,8 +238,8 @@
     "U145.5 (-18V) -> C20"
    ],
    "A1_pista_max_mm": [
-    43.26,
-    "U145.12 (-15LN) -> C24"
+    30.02,
+    "U144.1 (+18V) -> C17"
    ],
    "A2_lunghezza_max_mm": [
     0.0,
@@ -336,9 +336,11 @@
   "retro: 21 gruppi",
   "fanout di massa: 159 via, 1 senza posto libero",
   "piste fra pad gemelli: 7",
-  "Freerouting (five-way-RB, 6 tentativi al più): giro 1 (-mp 40): Freerouting chiuso, DRC 0 aperti, errori 0"
+  "Freerouting (five-way-RB, 6 tentativi al più): giro 1 (-mp 40): Freerouting chiuso, DRC 0 aperti, errori {'starved_thermal': 1}; giro 2 (-mp 20): Freerouting chiuso, DRC 0 aperti, errori 0"
  ],
  "esito": "PASSA",
  "errori": [],
- "peggiorato": []
+ "peggiorato": [
+  "drc violations/warning/via_dangling: 6 -> 8"
+ ]
 }

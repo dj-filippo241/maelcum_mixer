@@ -46,6 +46,7 @@ from comandi import Comandi, funzione_da, POT1, POT1_FP
 import celle_vca as cv
 from celle_vca import C12
 from celle_micmono import LM339
+from comune_5w import Parti
 
 VIE = ("SUB", "KICK", "MID", "HIGH", "SUPER")
 fili_cavo = funzione_da(os.path.join(HERE, "five-way.py"), "fili_cavo")
@@ -57,39 +58,13 @@ d.power_nets("+5VF", "CTRL_GND", "+15LN", "-15LN", width=0.4)
 d.link_pairs_masse = True
 d.cluster_fuori = True
 
-CF = "Capacitor_SMD:C_1812_4532Metric"
-_u = [100]
+pz = Parti(d, primo=100, nu_col_ref=True)     # comune_5w.py (todo 342)
+uref, Cx = pz.uref, pz.Cx
 
 
-def uref():
-    _u[0] += 1
-    return "U%d" % _u[0]
-
-
-def Cx(a, b, v, note=""):
-    """Condensatore di segnale: C0G 1206 fino a 22n, film 1812 oltre (come five-way.py)."""
-    big = "u" in v or float(v[:-1] if v.endswith("n") else v.replace("n", ".")) >= 33
-    d.C(a, b, v + (" film" if big else " C0G"), CF if big else C12, note=note)
-
-
-class Pack:
-    """Sezioni op-amp (ingresso +, ingresso -, uscita) in quad OPA1654 sul +-15 LN."""
-
-    def __init__(self):
-        self.secs = []
-
-    def add(self, sec):
-        self.secs.append(sec)
-
-    def flush(self, note):
-        while self.secs:
-            q, self.secs = self.secs[:4], self.secs[4:]
-            ref = uref()
-            k = 0
-            while len(q) < 4:
-                k += 1
-                q.append(("AGND", "NU%s_%d" % (ref, k), "NU%s_%d" % (ref, k)))   # libera: inseguitore a massa
-            cv.opa4(d, ref, *q, vp="+15LN", vm="-15LN", note=note)
+def Pack():
+    """Sezioni op-amp in quad OPA1654 sul +-15 LN."""
+    return pz.Pack("+15LN", "-15LN")
 
 
 def via(c):
