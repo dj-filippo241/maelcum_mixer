@@ -99,6 +99,13 @@ resto del 5-way quando si disegna la sua scheda (todo 270 per la scheda
 comandi). Corrente: 5 × 2 × 2,8 mA = 28 mA sul +5 V nel caso peggiore, ~40 mA
 sul ±15 LN per i 5 quad (~2 mA per sezione).
 
+REV 2026-11-16 (todo 343): il circuito sta sulla **scheda comandi del 5-way**,
+`pcb/five-way/five-way-comandi.py` (todo 335, PASSA il 2026-11-15), sul retro
+(solo SMD, dec. 142), coi valori di questo documento. Le prese 5W_MET_L e
+5W_MET_R arrivano dai cavi delle schede LB e RB; ±15LN, +5VF e CTRL_GND dei LED
+dal cavo della LB. I LED bicolori e la barra METER (LM3915) stanno davanti, sul
+pannello. Esito ed elenco dei cavi: `pcb/five-way/NOTE.md`.
+
 ## 6. Limiti e scelte (A24, chiusa dalla dec. 177: somma L+R)
 
 - **Somma L+R.** Un suono solo su un lato legge 6 dB più basso; un suono
