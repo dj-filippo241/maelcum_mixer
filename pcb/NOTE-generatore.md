@@ -158,6 +158,24 @@ Due opzioni nuove, spente di default (FX-SEND rigenerato con le opzioni spente: 
 Regola per i connettori: due pin vicini della stessa rete su un header fanno fallire Freerouting
 su tutta la rete. Pin alternati (+5V, CTRL_GND, +5V, CTRL_GND) o `link_pairs`.
 
+## Tre opzioni nate con box e 5-way (2026-11-14/15, todo 341)
+
+Tutte spente di default: le schede già a PASSA non cambiano.
+
+- `d.link_pairs_dmax = <mm>` (default 4,0): la distanza massima fra i due pad gemelli che
+  `link_pairs` unisce. 4,0 basta per il C96. Box del PSU: 4,5, perché le due file del Mini-Fit Jr
+  stanno a 4,2 mm (`pcb/box/box.py`). Più largo unisce pad che non sono gemelli: alzarlo solo
+  quanto serve al connettore.
+- `d.piano_in2 = "<rete>"` (solo 4 strati): In2 diventa un piano pieno di una seconda massa
+  senza colata (box: `CTRL_GND`), coi via accanto ai pad SMD come per `d.gnd`. Vince su
+  `inner_signal`: In2 non porta più piste. Box: con le piste restavano aperti 5-7 collegamenti
+  del CTRL_GND a ogni giro; col piano, PASSA (`pcb/box/NOTE.md`, giro 7).
+- `d.cluster_fuori = True`: un passivo del grappolo che non trova posto attorno al suo op-amp
+  (sei file per 13 posti) non resta impilato sopra un altro: torna al piazzamento a blocchi
+  insieme ai passivi che dipendono da lui. Serve sulle schede fitte di resistenze
+  (5-way, 2026-11-15: courtyard sovrapposti). Senza l'opzione il passivo resta nell'ultimo
+  posto provato, anche se occupato.
+
 ## Schema leggibile (2026-11-09)
 
 Lo schema del generatore mette un'etichetta su ogni pin: giusto per la macchina, illeggibile per
