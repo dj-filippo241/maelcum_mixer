@@ -190,6 +190,44 @@ BLOCKS = {
     "POT BLEND e LEVEL, JACK delle cuffie (posizioni dal render del pannello)":
         "BLEND and LEVEL POTS, HEADPHONE JACKS (positions from the panel render)",
     "CAVI: J3 pot (J2 di cue.py), J4 cuffie (J3 di cue.py)": "CABLES: J3 pots (J2 of cue.py), J4 headphones (J3 of cue.py)",
+    # 5-way, schede di segnale LA/RA/LB/RB (todo 338)
+    "BACKPLANE C96 (classe 5-WAY, sistema-backplane §4)": "BACKPLANE C96 (5-WAY class, sistema-backplane §4)",
+    "INGRESSO: ricevitore del DJ bus (inverte) e pad -6 dB (§2, REV todo 227)":
+        "INPUT: DJ bus receiver (inverting) and -6 dB pad (§2, rev. todo 227)",
+    "BANCA allineata agli incroci H 60/250/1,2k/8k (§3.2bis, bank-aligned-h.cir)":
+        "BAND SPLIT aligned to the H crossovers 60/250/1.2k/8k (§3.2bis, bank-aligned-h.cir)",
+    "KILL a pi greco (ADG1434) e somma delle 5 vie (§8.10)": "PI KILL (ADG1434) and sum of the 5 ways (§8.10)",
+    "KILL allo zero della via: LM339, 74HC86, 74HC14, 74HC74 (RISULTATI-kill-zc.md, dec. 164)":
+        "KILL AT THE WAY'S ZERO CROSSING: LM339, 74HC86, 74HC14, 74HC74 (RISULTATI-kill-zc.md, dec. 164)",
+    "CELLA 1 (v0.2.2, §4.2-4.3)": "CELL 1 (v0.2.2, §4.2-4.3)",
+    "CELLA 2 (v0.2.2, §4.2-4.3)": "CELL 2 (v0.2.2, §4.2-4.3)",
+    "CELLA 3 (v0.2.2, §4.2-4.3)": "CELL 3 (v0.2.2, §4.2-4.3)",
+    "CELLA 4 (v0.2.2, §4.2-4.3)": "CELL 4 (v0.2.2, §4.2-4.3)",
+    "CELLA 5 (v0.2.2, §4.2-4.3)": "CELL 5 (v0.2.2, §4.2-4.3)",
+    "POSITION: shaper a diodi per banda e riferimento di drain 0,1 V dei replica (REV todo 50)":
+        "POSITION: diode shaper per band and 0.1 V drain reference of the replicas (rev. todo 50)",
+    "GROWL A BANDE (dec. 165, 175; growl-bande.cir, module-noise-b9.cir)":
+        "BANDED GROWL (dec. 165, 175; growl-bande.cir, module-noise-b9.cir)",
+    "NASTRO A BANDE B9 (dec. 166, 175; nastro-b9.cir, module-noise-b9.cir)":
+        "BANDED NASTRO (TAPE) B9 (dec. 166, 175; nastro-b9.cir, module-noise-b9.cir)",
+    "MAKE-UP +6 dB, servo DC (§5bis.7) e uscita verso MSUM1": "MAKE-UP +6 dB, DC servo (§5bis.7) and output to MSUM1",
+    # 5-way, scheda comandi
+    "GAIN, POSITION, WIDTH delle 5 vie (pot doppi: sezione A = L, B = R)":
+        "GAIN, POSITION, WIDTH of the 5 ways (dual pots: section A = L, B = R)",
+    "GROWL (6 sezioni) e NASTRO (4 sezioni): pot sul segnale, segnaposto":
+        "GROWL (6 gangs) and NASTRO (4 gangs): pots on the signal, placeholder",
+    "KILL: levette ON-OFF-(ON) a due poli (polo A = LA, polo B = RA)":
+        "KILL: two-pole ON-OFF-(ON) toggles (pole A = LA, pole B = RA)",
+    "LED di livello delle 5 vie (LED bicolore, giallo = verde + rosso)":
+        "LEVEL LEDS of the 5 ways (two-colour LED, yellow = green + red)",
+    "LED DI LIVELLO: somma L+R, banco d'analisi, rivelatori (five-way-led-livello.md, dec. 177)":
+        "LEVEL LEDS: L+R sum, analysis filter bank, detectors (five-way-led-livello.md, dec. 177)",
+    "LED DI LIVELLO: soglie comuni, latch e comparatori (dec. 177)":
+        "LEVEL LEDS: shared thresholds, latches and comparators (dec. 177)",
+    "METER: un LM3915, 10 LED (zona del 5-way, g = 0,576, RHI = +REF5 della LB)":
+        "METER: one LM3915, 10 LEDs (5-way zone, g = 0.576, RHI = +REF5 of LB)",
+    "CAVI: J1 LB, J2 RB, J3 LA, J4 RA (ordine da five-way.py, fili_cavo)":
+        "CABLES: J1 LB, J2 RB, J3 LA, J4 RA (wire order from five-way.py, fili_cavo)",
 }
 
 VALUES = {
@@ -227,6 +265,10 @@ VALUES = {
     "2x3 cavo piatto": "2x3 ribbon cable",
     "10k lin, scatto al centro": "10k lin, centre detent",
     "jack stereo 6,3": "6.3 mm stereo jack",
+    "2x31 cavo piatto": "2x31 ribbon cable",
+    "2x28 cavo piatto": "2x28 ribbon cable",
+    "1k log doppio": "1k log dual",
+    "10k lin doppio, scatto": "10k lin dual, centre detent",
 }
 
 # Words that mean the value is Italian prose, not a part number: a value with one of them and
@@ -275,6 +317,8 @@ TITLE = [
     (r"\(cuffie:", "(headphones:"),
     (r"\(destra:", "(right:"),
     (r"\bbozza\b", "draft"),
+    (r"parte A: ricevitore, banca, kill", "part A: receiver, band split, kill"),
+    (r"parte B: celle, GROWL, NASTRO, uscita", "part B: cells, GROWL, NASTRO, output"),
 ]
 
 
