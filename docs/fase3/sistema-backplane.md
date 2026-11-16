@@ -19,11 +19,16 @@ i ritorni dedicati).
 
 Con la disposizione F (dec. 172) le schede stanno in due versi: un backplane unico
 (§10, «~15 slot in linea») non serve più. Quattro tratti, uno per zona del fondo:
-T1 fondo (MASTER segnale e uscite, 5-WAY 1-2, PSU-IN), T2 canali (FILTRO 1-2, 4 canali,
-4 FX-SEND), T3 cuffie (CUE), T4 destra (MIC, 3 MONO, 4 FX-RET). 25 slot. Fra i tratti:
+T1 fondo (MASTER segnale e uscite, 5-WAY 1-4, PSU-IN), T2 canali (FILTRO 1-2, 4 canali,
+4 FX-SEND), T3 cuffie (CUE), T4 destra (MIC, 3 MONO, 4 FX-RET). 27 slot. Fra i tratti:
 6 cavi piatti di segnale, ognuno solo VE o solo linee pilotate, ogni filo di segnale fra
 due masse; 3 cavi di potenza Mini-Fit Jr dal T1 (stella nel PSU-IN) agli altri tratti.
-Le reti di ogni slot vengono dal netlist vero della scheda (5-way e filtro: righe b di §4).
+Le reti di ogni slot vengono dal netlist vero della scheda (filtro: righe b di §4).
+REV 2026-11-16 (todo 336): il 5-way ha quattro schede (`pcb/five-way/`, 2026-11-15), una
+per lato e per parte. A (ricevitore, banca, kill) prende DJBUS su b1 (L) o b2 (R) e manda la
+somma delle vie a B sul tratto: 5W_SUM su b7 (L) o b8 (R). B (celle, GROWL, NASTRO) riceve
+5W_SUM sugli stessi pin e manda 5W_OUT su b4 (L) o b5 (R) al ponticello J5W. Slot 5W1 = LB
+(fila 1), 5W2 = RB (fila 2), 5W3 = LA e 5W4 = RA affiancate nella fila 3.
 Piano, reti e cavi: `pcb/backplane/PIANO.md` (da `piano_f.py`); schede e scelte NOTA:
 `pcb/backplane/NOTE.md`. Supera §10 «un backplane unico» e la lunghezza ≤ 70-80 cm.
 
@@ -85,7 +90,7 @@ c'è. Senza modulo il segnale passa sul rame, come oggi.
    d'assegnazione. Costo nel canale, sempre presente: 1 driver + 1 buffer
    stereo (~4 sezioni op-amp, rumore ~−112 dBu, trascurabile).
 2. **EQ grafico — due punti d'inserzione.**
-   - Dopo il 5-way: il net 5-WAY slot 2 (MSUM out) → MASTER slot 1 (MSUM1
+   - Dopo il 5-way: il net 5-WAY slot 2 delle schede B (MSUM out, 5W_OUT) → MASTER slot 1 (MSUM1
      in) passa da un **ponticello J5W** (L/R). Il modulo grafico, se c'è,
      riceve il 5-way e rimanda su MSUM1.
    - Sul master: il modulo MASTER espone **INS_SEND (slot 9) e INS_RET
@@ -133,7 +138,7 @@ margine ≥2,7× (≥4× sul tipico 0,9 A).
 | CDJ CH1-4 | 4 | 1×C96 | out DJ bus, cue, send tap (→FX-SEND, dec. 91), out bus HPF e bus LPF + mode bit (dec. 159) |
 | FX-SEND | 4 | 1×C96 | micro-modulo send (dec. 91a): EQ2+level+assign di UN canale; bottoni via harness dal pannello canale |
 | FILTRO | 1 | 1×C96 | [dec. 159] bus HPF in, bus LPF in, 2 uscite sul DJ bus = 4 slot stereo, 8 mode bit in (muto della sezione) |
-| 5-WAY | 1 | 1×C96 | DJ bus in → out MASTER SUM |
+| 5-WAY | 4 schede (REV 2026-11-16) | 1×C96 cad. | A: DJ bus in → 5W_SUM (b7/b8) verso B; B: 5W_SUM in → out MASTER SUM (b4/b5). Ogni scheda un lato solo |
 | FX | 1 | 1×C96 | 4 bus-net in (multidrop, dec. 91) + 4 return out = 8 slot stereo |
 | MASTER | 1 | 1×C96 | 7 contributori MASTER SUM + MON out verso CUE |
 | MASTER-OUT (dec. 143) | 2 | 1×C96 cad. | solo alimentazione e controllo: RAW±26 [M] a9-a12, +5V, CTRL_GND, GLOBAL_MUTE c9, AC_OK c17; nessun audio; schede d'uscita del master accanto alla scheda di segnale |
@@ -188,16 +193,19 @@ Semantica degli slot PER CLASSE (slot 1 = b1-b3, slot 2 = b4-b6, …):
 
 | Slot | CDJ (CHn) | FILTRO | 5-WAY | FX | MASTER | CUE | MIC/GEN |
 |---|---|---|---|---|---|---|---|
-| 1 | DJBUS out L/R | ~~CH1 send in~~ BUS_HPF in (net)² | DJBUS in L/R | BUS1 net in¹ | MSUM1 in (5-way) | CUE1 in (CH1) | MSUM out |
-| 2 | CUE out L/R | ~~CH1 return out~~ BUS_LPF in (net)² | MSUM out L/R | BUS2 net in¹ | MSUM2 in (FX1) | CUE2 in (CH2) | S1_OUT (net¹) |
+| 1 | DJBUS out L/R | ~~CH1 send in~~ BUS_HPF in (net)² | DJBUS in L/R (A)³ | BUS1 net in¹ | MSUM1 in (5-way) | CUE1 in (CH1) | MSUM out |
+| 2 | CUE out L/R | ~~CH1 return out~~ BUS_LPF in (net)² | MSUM out L/R (B)³ | BUS2 net in¹ | MSUM2 in (FX1) | CUE2 in (CH2) | S1_OUT (net¹) |
 | 3 | SEND TAP out (→FX-SEND) | ~~CH2 send in~~ HPF out → DJBUS (net)² | — | BUS3 net in¹ | MSUM3 in (FX2) | CUE3 in (CH3) | S2_OUT (net¹) |
 | 4 | ~~FILT_SEND out~~ BUS_HPF out L/R (net)² | ~~CH2 return out~~ LPF out → DJBUS (net)² | — | BUS4 net in¹ | MSUM4 in (FX3) | CUE4 in (CH4) | S3_OUT (net¹) |
 | 5 | ~~FILT_RET in~~ BUS_LPF out L/R (net)² | ~~CH3 send in~~ spare | — | RET1 out (→MSUM2) | MSUM5 in (FX4) | MON in (master) | S4_OUT (net¹) |
 | 6 | ~~XF_SEND out~~ spare (dec. 160-161) | ~~CH3 return out~~ spare | — | RET2 out (→MSUM3) | MSUM6 in (mic) | — | — |
-| 7 | ~~XF_RET in~~ spare (dec. 160-161) | ~~CH4 send in~~ spare | — | RET3 out (→MSUM4) | MSUM7 in (generic) | — | — |
+| 7 | ~~XF_RET in~~ spare (dec. 160-161) | ~~CH4 send in~~ spare | 5W_SUM A → B³ | RET3 out (→MSUM4) | MSUM7 in (generic) | — | — |
 | 8 | — | ~~CH4 return out~~ spare | — | RET4 out (→MSUM5) | MON out L/R | — | — |
 | 9 | spare | spare | spare | spare | INS_SEND out (dec. 111) | spare | spare |
 | 10 | spare | spare | spare | spare | INS_RET in (dec. 111) | spare | spare |
+
+³ **REV 2026-11-16 (todo 336)**: il 5-way sta su quattro schede, una per lato: la L usa il
+pin L dello slot (b1, b4, b7), la R il pin R (b2, b5, b8). 5W_SUM resta sul tratto T1.
 
 ² **REV dec. 159 (2026-10-31)**: il filtro lavora dopo il fader. I bus HPF e LPF sono net
 multidrop come il DJ bus: ogni canale inietta con R 10k lato sorgente sul net scelto dalla

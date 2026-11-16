@@ -7,8 +7,8 @@ Scrive pcb/backplane/PIANO.md e si ferma con codice 1 se un controllo non passa.
 Fonti:
 - posizioni delle schede: pcb/tools/piano_schede.py --f (pcb/PIANO-SCHEDE-F.md) e
   docs/pannelli/proposta_f.py; x = 0 a sinistra del pannello, y = 0 dietro, y cresce verso chi suona;
-- pin del C96 di ogni scheda: il netlist vero, pcb/<modulo>/out/netlist.xml (J1); 5-way e filtro
-  non hanno ancora una scheda: riga b da docs/fase3/sistema-backplane.md §4 (SINTETICO);
+- pin del C96 di ogni scheda: il netlist vero, pcb/<modulo>/out/netlist.xml (J1); il filtro
+  non ha ancora una scheda: riga b da docs/fase3/sistema-backplane.md §4 (SINTETICO);
 - reti per posizione: sistema-backplane.md §4-§5 e REV dec. 130 (il numero del bus di un FX-RET,
   i bit FILT_MODE e i net CUE di un canale li decide lo slot, non la scheda);
 - PTC per slot e per rail: sistema-psu-esterno.md §4.3.
@@ -82,12 +82,9 @@ def agnd_b(b):
     return b
 
 
-# SINTETICI: schede non ancora scritte (sistema-backplane.md §4). 5-way: slot 1 DJBUS in, slot 2
-# MSUM out; seconda scheda solo alimentazione, come le uscite del master (dec. 143). Filtro: slot 1-2
-# bus HPF e LPF in, slot 3-4 uscite sul DJ bus, c1-c8 FILT_MODE; seconda scheda solo alimentazione.
+# SINTETICI: schede non ancora scritte (sistema-backplane.md §4). Filtro: slot 1-2 bus HPF e LPF
+# in, slot 3-4 uscite sul DJ bus, c1-c8 FILT_MODE; seconda scheda solo alimentazione.
 SINT = {
-    "5w1": c96(agnd_b({"b1": "DJBUS_L", "b2": "DJBUS_R", "b4": "MSUM_OUT_L", "b5": "MSUM_OUT_R"})),
-    "5w2": c96({}, a=A_STANDARD),
     "fil1": c96(agnd_b({"b1": "BUS_HPF_L", "b2": "BUS_HPF_R", "b4": "BUS_LPF_L", "b5": "BUS_LPF_R",
                         "b7": "HPF_OUT_L", "b8": "HPF_OUT_R", "b10": "LPF_OUT_L", "b11": "LPF_OUT_R"}),
                 c=["c%d" % k for k in range(1, 9)]),
@@ -196,11 +193,15 @@ def slots():
         a1, a32 = lr(x0, Y_MAS)
         S.append(Slot("OUT_" + lato, "T1", "uscita", netlist_c96(os.path.join("master", "uscita-" + lato)),
                       a1, a32, {}, PTC["uscita"], "pcb/master/uscita-%s (netlist)" % lato))
-    for k in range(2):
-        a1, a32 = lr(0.0, Y_5W[k])
-        S.append(Slot("5W%d" % (k + 1), "T1", "5way", SINT["5w%d" % (k + 1)], a1, a32,
-                      {"MSUM_OUT_L": "5W_OUT_L", "MSUM_OUT_R": "5W_OUT_R"}, PTC["5way"],
-                      "SINTETICO (backplane §4)"))
+    # 5-way: quattro schede (five-way.py, 2026-11-15). A = ricevitore del DJ bus e banca, manda
+    # 5W_SUM a B sul tratto (b7 L, b8 R); B = celle, GROWL, NASTRO, uscita 5W_OUT (b4 L, b5 R) verso
+    # il ponticello J5W. C96 a L/2 ruotato di 180 gradi: a1 a L/2 + 39,37 dall'inizio della scheda.
+    # File: LB 1, RB 2, LA e RA affiancate nella 3 (PIANO-SCHEDE-F.md).
+    for k, (parte, x0, fila, lung) in enumerate((("LB", 0.0, 0, 300.0), ("RB", 0.0, 1, 300.0),
+                                                 ("LA", 0.0, 2, 206.0), ("RA", 206.0, 2, 206.0))):
+        a1, a32 = lr(x0, Y_5W[fila], lung / 2 + 39.37, lung / 2 - 39.37)
+        S.append(Slot("5W%d" % (k + 1), "T1", "5way", netlist_c96(os.path.join("five-way", parte)), a1, a32,
+                      {}, PTC["5way"], "pcb/five-way/%s (netlist)" % parte))
     a1, a32 = lr(350.0, Y_5W[3])     # fila 4 sotto il 5-way, libera; vicino alla colonna destra
     S.append(Slot("PSU", "T1", "psu-in", netlist_c96("psu-in"), a1, a32, {}, {}, "pcb/psu-in (netlist)"))
     return S

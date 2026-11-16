@@ -7,7 +7,7 @@ x da sinistra, y da dietro (mm). [C, PROVVISORIO]
 
 | Tratto | Cosa | x | y | Misura (mm) | Slot |
 |---|---|---|---|---|---|
-| T1 | fondo: MASTER, 5-WAY, PSU-IN | 0-450 | 10-148 | 450 x 138 | MAS OUT_L OUT_R 5W1 5W2 PSU |
+| T1 | fondo: MASTER, 5-WAY, PSU-IN | 0-450 | 10-148 | 450 x 138 | MAS OUT_L OUT_R 5W1 5W2 5W3 5W4 PSU |
 | T2 | canali: FILTRO, 4 CANALI, 4 FX-SEND | 0-200 | 152-318 | 200 x 166 | CH1 SEND1 CH2 SEND2 CH3 SEND3 CH4 SEND4 FIL1 FIL2 |
 | T3 | cuffie: CUE | 0-200 | 515-555 | 200 x 40 | CUE |
 | T4 | destra: MIC, 3 MONO, 4 FX-RET | 206-450 | 150-446 | 244 x 296 | MIC RET1 MONO1 RET2 MONO2 RET3 MONO3 RET4 |
@@ -38,8 +38,10 @@ x da sinistra, y da dietro (mm). [C, PROVVISORIO]
 | MAS | T1 | master | 89.4, 24.0 | lungo x | RAW+27 0.3, RAW-27 0.3 | INS_RET_L INS_RET_R INS_SEND_L INS_SEND_R MON_L MON_R MSUM1_L MSUM1_R MSUM2_L MSUM2_R MSUM3_L MSUM3_R MSUM4_L MSUM4_R MSUM5_L MSUM5_R MSUM6_L MSUM6_R MSUM7_L MSUM7_R VIE_TAP_L VIE_TAP_R | pcb/master/segnale (netlist) |
 | OUT_L | T1 | uscita | 260.4, 24.0 | lungo x | +5V 0.2, RAW+26 0.2, RAW-26 0.2 | AC_OK GLOBAL_MUTE | pcb/master/uscita-L (netlist) |
 | OUT_R | T1 | uscita | 360.4, 24.0 | lungo x | +5V 0.2, RAW+26 0.2, RAW-26 0.2 | GLOBAL_MUTE | pcb/master/uscita-R (netlist) |
-| 5W1 | T1 | 5way | 89.4, 60.8 | lungo x | +5V 0.1, RAW+22 0.05, RAW+27 0.5, RAW-22 0.05, RAW-27 0.5 | 5W_OUT_L 5W_OUT_R DJBUS_L DJBUS_R | SINTETICO (backplane §4) |
-| 5W2 | T1 | 5way | 89.4, 86.2 | lungo x | +5V 0.1, RAW+22 0.05, RAW+27 0.5, RAW-22 0.05, RAW-27 0.5 | - | SINTETICO (backplane §4) |
+| 5W1 | T1 | 5way | 189.4, 60.8 | lungo x | +5V 0.1, RAW+22 0.05, RAW+27 0.5, RAW-22 0.05, RAW-27 0.5 | 5W_OUT_L 5W_SUM_L | pcb/five-way/LB (netlist) |
+| 5W2 | T1 | 5way | 189.4, 86.2 | lungo x | +5V 0.1, RAW+22 0.05, RAW+27 0.5, RAW-22 0.05, RAW-27 0.5 | 5W_OUT_R 5W_SUM_R | pcb/five-way/RB (netlist) |
+| 5W3 | T1 | 5way | 142.4, 111.8 | lungo x | +5V 0.1, RAW+22 0.05, RAW+27 0.5, RAW-22 0.05, RAW-27 0.5 | 5W_SUM_L DJBUS_L | pcb/five-way/LA (netlist) |
+| 5W4 | T1 | 5way | 348.4, 111.8 | lungo x | +5V 0.1, RAW+22 0.05, RAW+27 0.5, RAW-22 0.05, RAW-27 0.5 | 5W_SUM_R DJBUS_R | pcb/five-way/RA (netlist) |
 | PSU | T1 | psu-in | 439.4, 137.2 | lungo x | - | AC_OK | pcb/psu-in (netlist) |
 
 ## Cavi fra tratti

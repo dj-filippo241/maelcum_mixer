@@ -11,7 +11,7 @@ unico coprirebbe tutto il fondo (450 x 570 mm, quasi tutto vuoto). Quattro tratt
 
 | Tratto | Zona | Slot |
 |---|---|---|
-| T1 | fondo, 450 x 138 | MASTER segnale, uscite L e R, 5-WAY 1 e 2, PSU-IN |
+| T1 | fondo, 450 x 138 | MASTER segnale, uscite L e R, 5-WAY 1-4 (LB, RB, LA, RA), PSU-IN |
 | T2 | canali, 200 x 166 | FILTRO 1 e 2, 4 canali, 4 FX-SEND |
 | T3 | cuffie, 200 x 40 | CUE |
 | T4 | destra, 244 x 296 | MIC, 3 MONO, 4 FX-RET |
@@ -23,8 +23,11 @@ separati, i bus passerebbero su un cavo in più.
 
 - Ogni slot prende i pin dal netlist vero della sua scheda (`pcb/<modulo>/out/netlist.xml`, J1).
   Una scheda rigenerata con un pin nuovo: si rilancia `piano_f.py`, poi i tratti.
-- 5-WAY e FILTRO non hanno ancora una scheda: righe b da `sistema-backplane.md` §4 (SINTETICO).
-  La seconda scheda di ognuno ha solo l'alimentazione, come le uscite del master (dec. 143). NOTA.
+- Il FILTRO non ha ancora una scheda: righe b da `sistema-backplane.md` §4 (SINTETICO).
+  La seconda scheda ha solo l'alimentazione, come le uscite del master (dec. 143). NOTA.
+- 5-WAY (2026-11-16, todo 336): quattro schede vere, pin dai netlist di `pcb/five-way/<LA|LB|RA|RB>`.
+  La somma delle vie passa da A a B sul tratto (5W_SUM, b7/b8). PTC di classe 5way su ogni
+  scheda (0,5 A sui ±27): con quattro schede è larga; si rifà con le correnti vere a banco. NOTA.
 - Le reti che decide la posizione: canale n → CUEn, SEND_TAPn, FILT_MODEn (c1-c2 del canale vanno
   a c(2n-1)-c(2n) del filtro); FX-RET n → BUS_IN su Sn, RET_OUT su MSUM(n+1) (dec. 130).
 - Ponticelli di continuità (dec. 111): J5W (5-way → MSUM1) e JMS (inserzione del master) su T1.
