@@ -196,12 +196,31 @@ Gli schemi sono in inglese (richiesta di Filippo, 2026-11-09): titoli dei blocch
 descrittivi stanno in `pcb/tools/leggibile_en.py`; i file delle schede restano in italiano. Un
 blocco o un valore senza traduzione ferma il giro. I nomi delle reti restano quelli della PCB.
 Con più schede in un lancio esce anche `pcb/schematics-readable.pdf`: copertina con indice e
-legenda, poi una pagina per scheda nell'ordine dei file dati (unione con `pdfunite` di poppler).
+legenda, poi le pagine di ogni scheda nell'ordine dei file dati (unione con `pdfunite` di poppler).
 
 Regole del disegno: alimentazioni e masse come simboli; passivi attaccati coi fili al pin che
 toccano (in serie lungo il pin, in derivazione verso il simbolo); etichetta solo dove il filo non
-arriva (riquadro = la rete va in un altro blocco); i lati con più di 3 pin (connettori, LM339,
-ADG1434) portano solo etichette, e i loro passivi stanno in gruppi a catena sotto.
+arriva (riquadro = la rete va in un'altra pagina); i connettori e i lati con più di 12 pin portano
+solo etichette, e i loro passivi stanno in gruppi a catena sotto.
+
+Versione 2 (2026-11-17, commento di un lettore: «non abbastanza leggibile»; benchmark: lo schema
+PDF rev2 del Deep Field Preamp V1, `docs/07` §6). La v1 metteva una scheda intera su un foglio
+fino a 1 × 1,1 m, che stampato in A3 diventava minuscolo, e collegava gli stadi solo con etichette.
+La v2:
+- schema gerarchico: pagina 1 = indice dei blocchi (con le pagine collegate), poi una o più
+  pagine A3 per blocco (`BUDGET` 225 mm di altezza utile, `BANDW` 370 mm di larghezza);
+- stadi in colonne nell'ordine del segnale (uscita di un'unità -> ingresso della dopo, anche
+  attraverso passivi in serie); ogni catena indipendente (lato L, lato R) ha la sua fascia; una
+  catena lunga va a capo in fasce sotto; un blocco si divide fra pagine solo fra una fascia e l'altra;
+- `pcb/tools/instrada.py`: instradatore a griglia di 1,27 mm che sostituisce le etichette coi fili
+  dove il percorso è libero e non più lungo di 1,5 volte la distanza + 50 mm; incrocia altri fili
+  solo ad angolo retto, mai sopra un estremo; i fili rimasti appesi si potano;
+- pagina POWER DECOUPLING: condensatori fra alimentazione e massa, unità di sola alimentazione
+  degli op-amp, unità non usate;
+- tutte le etichette di reti presenti su più pagine sono globali (i nomi delle reti sono unici
+  sulla scheda); i PWR_FLAG stanno sulla prima pagina che usa la rete (l'ERC di KiCad conta il
+  flag collegato solo con un altro simbolo della stessa rete sulla stessa pagina).
+Limite noto: i blocchi fitti di OTA (core del filtro) restano più intricati di un disegno a mano.
 
 Trappole pagate: nello stesso processo tre moduli caricano il proprio `cavo.py` col nome uguale e
 Python riusa il primo (un processo per modulo); un confronto `== 0` su una differenza di float

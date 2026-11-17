@@ -1,0 +1,1731 @@
+(kicad_sch
+	(version 20260101)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "ab6476bf-5e10-54a8-8174-8a163ed48c37")
+	(paper "A3")
+	(title_block
+		(title "LEVEL LEDS of the 5 ways (two-colour LED, yellow = green + red)")
+		(rev "0.1-draft")
+		(comment 1 "maelcum 5-WAY control board - draft v0.1 - readable schematic")
+		(comment 2 "Page 5")
+	)
+	(lib_symbols
+		(symbol
+			"maelcum:LED_BICOLORE_CA"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property
+				"Reference"
+				"D"
+				(at 0 6.35 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Value"
+				"LED_BICOLORE_CA"
+				(at 0 -6.35 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Footprint"
+				"LED_THT:LED_D3.0mm-3"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property
+				"Datasheet"
+				""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property
+				"Description"
+				"LED bicolore ad anodo comune: giallo = verde + rosso"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol
+				"LED_BICOLORE_CA_0_1"
+				(rectangle
+					(start -12.7 5.08)
+					(end 12.7 -5.08)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+			)
+			(symbol
+				"LED_BICOLORE_CA_1_1"
+				(pin
+					passive
+					line
+					(at -17.78 2.54 0)
+					(length 5.08)
+					(name
+						"K_VERDE"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					passive
+					line
+					(at -17.78 0 0)
+					(length 5.08)
+					(name
+						"A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					passive
+					line
+					(at 17.78 2.54 180)
+					(length 5.08)
+					(name
+						"K_ROSSO"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol
+			"power:+15V"
+			(power global)
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property
+				"Reference"
+				"#PWR"
+				(at 0 -3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Value"
+				"+15V"
+				(at 0 3.556 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Footprint"
+				""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Datasheet"
+				""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Description"
+				"Power symbol creates a global label with name \"+15V\""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"ki_keywords"
+				"global power"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol
+				"+15V_0_1"
+				(polyline
+					(pts
+						(xy -0.762 1.27)
+						(xy 0 2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 2.54)
+						(xy 0.762 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 0)
+						(xy 0 2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol
+				"+15V_1_1"
+				(pin
+					power_in
+					line
+					(at 0 0 90)
+					(length 0)
+					(name
+						""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol
+			"power:PWR_FLAG"
+			(power global)
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property
+				"Reference"
+				"#FLG"
+				(at 0 1.905 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Value"
+				"PWR_FLAG"
+				(at 0 3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Footprint"
+				""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Datasheet"
+				""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Description"
+				"Special symbol for telling ERC where power comes from"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"ki_keywords"
+				"flag power"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol
+				"PWR_FLAG_0_0"
+				(pin
+					power_out
+					line
+					(at 0 0 90)
+					(length 0)
+					(name
+						""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol
+				"PWR_FLAG_0_1"
+				(polyline
+					(pts
+						(xy 0 0)
+						(xy 0 1.27)
+						(xy -1.016 1.905)
+						(xy 0 2.54)
+						(xy 1.016 1.905)
+						(xy 0 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+	)
+	(text
+		"LEVEL LEDS of the 5 ways (two-colour LED, yellow = green + red)"
+		(exclude_from_sim no)
+		(at 15.24 21.59 0)
+		(effects
+			(font
+				(size 4 4)
+				(bold yes)
+			)
+			(justify left bottom)
+		)
+		(uuid "0a6d0642-5f69-569d-9d8f-24653e921903")
+	)
+	(symbol
+		(lib_id "maelcum:LED_BICOLORE_CA")
+		(at 48.26 40.64 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2bca01fd-a02c-5546-a9ab-1516a5476eb6")
+		(property
+			"Reference"
+			"D1"
+			(at 45.72 35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"two-colour LED VR 3 mm"
+			(at 45.72 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"LED_THT:LED_D3.0mm-3"
+			(at 48.26 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 48.26 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"LED di livello della via SUB (dec. 176-177); NOTA: un LED bicolore al centro (giallo = verde + rosso); il render mostra tre punti a passo 4 mm"
+			(at 48.26 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "dba99d1c-8ad1-5f96-ac7a-fd9817187f1c")
+		)
+		(pin
+			"2"
+			(uuid "52a6deb2-78be-5fc8-8ba6-9c467d17153e")
+		)
+		(pin
+			"3"
+			(uuid "02b3346a-de0b-5abc-b069-e7640a4cc0ba")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/90688af1-8dee-57e8-a5f8-aa216d087fa1"
+					(reference "D1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 30.48 40.64)
+			(xy 27.94 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "50a026fb-dced-547a-9a22-d6480c95be93")
+	)
+	(wire
+		(pts
+			(xy 27.94 40.64)
+			(xy 27.94 48.26)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ef931c34-20c9-5463-abd1-596f2e6a6bed")
+	)
+	(wire
+		(pts
+			(xy 25.4 48.26)
+			(xy 27.94 48.26)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "20daa4ec-153d-5f99-aa43-e9c26f81ccab")
+	)
+	(symbol
+		(lib_id "power:+15V")
+		(at 25.4 48.26 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f8322c8b-a084-5176-be65-ab6ad661f1c5")
+		(property
+			"Reference"
+			"#PWR001"
+			(at 25.4 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"+5VF"
+			(at 25.4 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 25.4 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 25.4 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "c7b42772-85ec-540a-b450-04d7d3421099")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/90688af1-8dee-57e8-a5f8-aa216d087fa1"
+					(reference "#PWR001")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "maelcum:LED_BICOLORE_CA")
+		(at 48.26 68.58 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "20404bc1-b4d6-5560-a39b-92e33330e33d")
+		(property
+			"Reference"
+			"D2"
+			(at 45.72 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"two-colour LED VR 3 mm"
+			(at 45.72 71.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"LED_THT:LED_D3.0mm-3"
+			(at 48.26 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 48.26 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"LED di livello della via KICK (dec. 176-177); NOTA: un LED bicolore al centro (giallo = verde + rosso); il render mostra tre punti a passo 4 mm"
+			(at 48.26 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "94c80f9c-10c2-5d51-9430-6f076d26f807")
+		)
+		(pin
+			"2"
+			(uuid "5530fd44-3686-5ff4-8b2d-b8a2f8659eca")
+		)
+		(pin
+			"3"
+			(uuid "ea581d94-1c4a-586b-9375-e81d26bc1192")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/90688af1-8dee-57e8-a5f8-aa216d087fa1"
+					(reference "D2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 30.48 68.58)
+			(xy 27.94 68.58)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4ca47bdb-481a-5b0d-94ba-64e12afdbec9")
+	)
+	(wire
+		(pts
+			(xy 27.94 68.58)
+			(xy 27.94 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0ca25468-f752-5375-b2b3-8a37ed029557")
+	)
+	(wire
+		(pts
+			(xy 25.4 76.2)
+			(xy 27.94 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c2d840c2-73b6-5e38-a871-ea4cc5103250")
+	)
+	(symbol
+		(lib_id "power:+15V")
+		(at 25.4 76.2 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a9d0ac7e-c467-5965-8e06-cf00f89569b8")
+		(property
+			"Reference"
+			"#PWR002"
+			(at 25.4 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"+5VF"
+			(at 25.4 71.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 25.4 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 25.4 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "19fd9e84-3532-5aee-93cd-f8cf8ac4280a")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/90688af1-8dee-57e8-a5f8-aa216d087fa1"
+					(reference "#PWR002")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "maelcum:LED_BICOLORE_CA")
+		(at 48.26 93.98 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "08c1b4a7-45be-58e2-b35a-7813e0c17593")
+		(property
+			"Reference"
+			"D3"
+			(at 45.72 88.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"two-colour LED VR 3 mm"
+			(at 45.72 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"LED_THT:LED_D3.0mm-3"
+			(at 48.26 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 48.26 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"LED di livello della via MID (dec. 176-177); NOTA: un LED bicolore al centro (giallo = verde + rosso); il render mostra tre punti a passo 4 mm"
+			(at 48.26 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "eaef4913-061b-514d-ab67-26eea0b92d79")
+		)
+		(pin
+			"2"
+			(uuid "8a105cce-c3c5-5a4c-97d1-29353e2c81c9")
+		)
+		(pin
+			"3"
+			(uuid "25ef6b8f-e351-540c-b19e-b7fdefcfdbcc")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/90688af1-8dee-57e8-a5f8-aa216d087fa1"
+					(reference "D3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 30.48 93.98)
+			(xy 27.94 93.98)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9b4a6032-f0ea-5aaa-ae0d-4e53feab0b85")
+	)
+	(wire
+		(pts
+			(xy 27.94 93.98)
+			(xy 27.94 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d9b80230-cb20-5637-aedc-9e324fb8d006")
+	)
+	(wire
+		(pts
+			(xy 25.4 101.6)
+			(xy 27.94 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3c0ca701-cb7a-5419-bb20-64bd30924b1c")
+	)
+	(symbol
+		(lib_id "power:+15V")
+		(at 25.4 101.6 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "eca7740e-dffb-59fa-b552-176fe696118d")
+		(property
+			"Reference"
+			"#PWR003"
+			(at 25.4 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"+5VF"
+			(at 25.4 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 25.4 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 25.4 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "d01c44b6-4f88-5ee2-899a-f2c2979d3dbd")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/90688af1-8dee-57e8-a5f8-aa216d087fa1"
+					(reference "#PWR003")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "maelcum:LED_BICOLORE_CA")
+		(at 48.26 121.92 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "26b204dc-7486-5ff0-b38c-0e2cb36fffca")
+		(property
+			"Reference"
+			"D4"
+			(at 45.72 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"two-colour LED VR 3 mm"
+			(at 45.72 124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"LED_THT:LED_D3.0mm-3"
+			(at 48.26 121.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 48.26 121.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"LED di livello della via HIGH (dec. 176-177); NOTA: un LED bicolore al centro (giallo = verde + rosso); il render mostra tre punti a passo 4 mm"
+			(at 48.26 121.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "a345b1b8-cb40-5444-a1d0-89fb8d4dd676")
+		)
+		(pin
+			"2"
+			(uuid "2a7f5cc7-2423-55dd-b22a-b1128083ebcd")
+		)
+		(pin
+			"3"
+			(uuid "cdbc2e11-76e5-5126-8dd2-6f2887112545")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/90688af1-8dee-57e8-a5f8-aa216d087fa1"
+					(reference "D4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 30.48 121.92)
+			(xy 27.94 121.92)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8900526c-eee0-52f4-8a81-0a015018742f")
+	)
+	(wire
+		(pts
+			(xy 27.94 121.92)
+			(xy 27.94 129.54)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d32b2a8f-0e13-5450-be8b-df652dc09a6d")
+	)
+	(wire
+		(pts
+			(xy 25.4 129.54)
+			(xy 27.94 129.54)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ddf72c57-366b-5be6-bc48-c6fce9c9020d")
+	)
+	(symbol
+		(lib_id "power:+15V")
+		(at 25.4 129.54 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "53201570-6642-55d6-b8e8-5a21126425d4")
+		(property
+			"Reference"
+			"#PWR004"
+			(at 25.4 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"+5VF"
+			(at 25.4 124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 25.4 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 25.4 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "f5f9395c-5162-5dd7-a034-8bbd540cc9c8")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/90688af1-8dee-57e8-a5f8-aa216d087fa1"
+					(reference "#PWR004")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "maelcum:LED_BICOLORE_CA")
+		(at 48.26 147.32 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "cdef53cb-caa5-5638-84d5-04565464eb80")
+		(property
+			"Reference"
+			"D5"
+			(at 45.72 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"two-colour LED VR 3 mm"
+			(at 45.72 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"LED_THT:LED_D3.0mm-3"
+			(at 48.26 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 48.26 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"LED di livello della via SUPER (dec. 176-177); NOTA: un LED bicolore al centro (giallo = verde + rosso); il render mostra tre punti a passo 4 mm"
+			(at 48.26 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "616b7915-b598-5201-bfd1-13b1c60d68a5")
+		)
+		(pin
+			"2"
+			(uuid "c2430f13-bb98-5e18-8310-aeb7a2eaf48b")
+		)
+		(pin
+			"3"
+			(uuid "9df9f362-3d35-5a18-a06b-2f0450cf0e3e")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/90688af1-8dee-57e8-a5f8-aa216d087fa1"
+					(reference "D5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 30.48 147.32)
+			(xy 27.94 147.32)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5c9424cc-1527-551a-8dc3-cffe6b07eb0f")
+	)
+	(wire
+		(pts
+			(xy 27.94 147.32)
+			(xy 27.94 154.94)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f7168624-9330-5894-8f67-7d4cc0ddf873")
+	)
+	(wire
+		(pts
+			(xy 25.4 154.94)
+			(xy 27.94 154.94)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "bdf2b0dd-9c86-5d21-8e2f-613d9bccef78")
+	)
+	(symbol
+		(lib_id "power:+15V")
+		(at 25.4 154.94 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "ab5c3e8b-faf4-5f8a-b875-9b991daeb371")
+		(property
+			"Reference"
+			"#PWR005"
+			(at 25.4 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"+5VF"
+			(at 25.4 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 25.4 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 25.4 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "4170118c-4cbd-57b6-9a48-fe002e416d68")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/90688af1-8dee-57e8-a5f8-aa216d087fa1"
+					(reference "#PWR005")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(text
+		"PWR_FLAG (for the ERC check only)"
+		(exclude_from_sim no)
+		(at 15.24 165.1 0)
+		(effects
+			(font
+				(size 2 2)
+				(bold yes)
+			)
+			(justify left bottom)
+		)
+		(uuid "c2990728-ee81-5551-a7f7-4302b898f725")
+	)
+	(symbol
+		(lib_id "power:PWR_FLAG")
+		(at 20.32 171.45 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "e1b2a514-5eea-5b1b-b807-d2e7ca43f129")
+		(property
+			"Reference"
+			"#FLG02"
+			(at 20.32 166.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"PWR_FLAG"
+			(at 20.32 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 20.32 171.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 20.32 171.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "032b6a3c-862a-5b39-a9f5-b26a0420f206")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/90688af1-8dee-57e8-a5f8-aa216d087fa1"
+					(reference "#FLG02")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+15V")
+		(at 20.32 171.45 180)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8828703e-213d-51f0-a640-740fffc428d7")
+		(property
+			"Reference"
+			"#PWR006"
+			(at 20.32 171.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"+5VF"
+			(at 20.32 176.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 20.32 171.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 20.32 171.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "94352021-c402-5a1d-a1d6-31d5c9ca9dad")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/90688af1-8dee-57e8-a5f8-aa216d087fa1"
+					(reference "#PWR006")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(global_label
+		"LEDG1"
+		(shape passive)
+		(at 30.48 38.1 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "3c8ada7e-28f0-572b-8970-ce337e75ad03")
+	)
+	(global_label
+		"LEDR1"
+		(shape passive)
+		(at 66.04 38.1 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "769e802c-06b8-5546-babf-663a445bb91f")
+	)
+	(global_label
+		"LEDG2"
+		(shape passive)
+		(at 30.48 66.04 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "bba9190f-485b-5489-a20a-3d2322f30e0b")
+	)
+	(global_label
+		"LEDR2"
+		(shape passive)
+		(at 66.04 66.04 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "fb25af5a-fb7d-5fe4-bca9-e8aa48a276cf")
+	)
+	(global_label
+		"LEDG3"
+		(shape passive)
+		(at 30.48 91.44 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "17d651ec-356e-5c15-acfb-123de75d0be9")
+	)
+	(global_label
+		"LEDR3"
+		(shape passive)
+		(at 66.04 91.44 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "b7ead955-05a8-5b7e-8ffc-bdbc89841bb1")
+	)
+	(global_label
+		"LEDG4"
+		(shape passive)
+		(at 30.48 119.38 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "90214933-fb3b-5f2f-b8c3-0d78f81e4893")
+	)
+	(global_label
+		"LEDR4"
+		(shape passive)
+		(at 66.04 119.38 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "cc803db5-a91b-5b8b-be86-f01a8b3382f1")
+	)
+	(global_label
+		"LEDG5"
+		(shape passive)
+		(at 30.48 144.78 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "c372c99f-6832-51ab-af46-3bf006d128ed")
+	)
+	(global_label
+		"LEDR5"
+		(shape passive)
+		(at 66.04 144.78 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "167d7647-f4af-509e-969b-1645376ec3ef")
+	)
+)

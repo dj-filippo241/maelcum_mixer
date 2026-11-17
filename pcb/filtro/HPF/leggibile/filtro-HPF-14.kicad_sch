@@ -1,0 +1,8832 @@
+(kicad_sch
+	(version 20260101)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "24cea437-680c-5b9b-9da1-3055e7baa50d")
+	(paper "A3")
+	(title_block
+		(title "OVERDRIVE v0.2 with DRIVE on a dual pot and DC servo (§5ter, od2-pot-tran.cir, od2-servo-dc.cir)")
+		(rev "0.1-draft")
+		(comment 1 "maelcum FILTER signal board HPF: 4-pole core a', CV, RES, overdrive, mute (v0.2) - draft v0.1 - readable schematic")
+		(comment 2 "Page 14")
+	)
+	(lib_symbols
+		(symbol
+			"Amplifier_Operational:TL074"
+			(pin_names
+				(offset 0.127)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property
+				"Reference"
+				"U"
+				(at 0 5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property
+				"Value"
+				"TL074"
+				(at 0 -5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property
+				"Footprint"
+				""
+				(at -1.27 2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Datasheet"
+				"http://www.ti.com/lit/ds/symlink/tl071.pdf"
+				(at 1.27 5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Description"
+				"Quad Low-Noise JFET-Input Operational Amplifiers, DIP-14/SOIC-14"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"ki_locked"
+				""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"ki_keywords"
+				"quad opamp"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"ki_fp_filters"
+				"SOIC*3.9x8.7mm*P1.27mm* DIP*W7.62mm* TSSOP*4.4x5mm*P0.65mm* SSOP*5.3x6.2mm*P0.65mm* MSOP*3x3mm*P0.5mm*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol
+				"TL074_1_1"
+				(polyline
+					(pts
+						(xy -5.08 5.08)
+						(xy 5.08 0)
+						(xy -5.08 -5.08)
+						(xy -5.08 5.08)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin
+					output
+					line
+					(at 7.62 0 180)
+					(length 2.54)
+					(name
+						""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					input
+					line
+					(at -7.62 -2.54 0)
+					(length 2.54)
+					(name
+						"-"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					input
+					line
+					(at -7.62 2.54 0)
+					(length 2.54)
+					(name
+						"+"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol
+				"TL074_2_1"
+				(polyline
+					(pts
+						(xy -5.08 5.08)
+						(xy 5.08 0)
+						(xy -5.08 -5.08)
+						(xy -5.08 5.08)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin
+					input
+					line
+					(at -7.62 2.54 0)
+					(length 2.54)
+					(name
+						"+"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					input
+					line
+					(at -7.62 -2.54 0)
+					(length 2.54)
+					(name
+						"-"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					output
+					line
+					(at 7.62 0 180)
+					(length 2.54)
+					(name
+						""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol
+				"TL074_3_1"
+				(polyline
+					(pts
+						(xy -5.08 5.08)
+						(xy 5.08 0)
+						(xy -5.08 -5.08)
+						(xy -5.08 5.08)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin
+					output
+					line
+					(at 7.62 0 180)
+					(length 2.54)
+					(name
+						""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					input
+					line
+					(at -7.62 -2.54 0)
+					(length 2.54)
+					(name
+						"-"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"9"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					input
+					line
+					(at -7.62 2.54 0)
+					(length 2.54)
+					(name
+						"+"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"10"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol
+				"TL074_4_1"
+				(polyline
+					(pts
+						(xy -5.08 5.08)
+						(xy 5.08 0)
+						(xy -5.08 -5.08)
+						(xy -5.08 5.08)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin
+					input
+					line
+					(at -7.62 2.54 0)
+					(length 2.54)
+					(name
+						"+"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"12"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					input
+					line
+					(at -7.62 -2.54 0)
+					(length 2.54)
+					(name
+						"-"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"13"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					output
+					line
+					(at 7.62 0 180)
+					(length 2.54)
+					(name
+						""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"14"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol
+				"TL074_5_1"
+				(pin
+					power_in
+					line
+					(at -2.54 7.62 270)
+					(length 3.81)
+					(name
+						"V+"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					power_in
+					line
+					(at -2.54 -7.62 90)
+					(length 3.81)
+					(name
+						"V-"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"11"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol
+			"Device:R"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property
+				"Reference"
+				"R"
+				(at 2.032 0 90)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Value"
+				"R"
+				(at 0 0 90)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Footprint"
+				""
+				(at -1.778 0 90)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Datasheet"
+				""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Description"
+				"Resistor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"ki_keywords"
+				"R res resistor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"ki_fp_filters"
+				"R_*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol
+				"R_0_1"
+				(rectangle
+					(start -1.016 -2.54)
+					(end 1.016 2.54)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol
+				"R_1_1"
+				(pin
+					passive
+					line
+					(at 0 3.81 270)
+					(length 1.27)
+					(name
+						""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					passive
+					line
+					(at 0 -3.81 90)
+					(length 1.27)
+					(name
+						""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol
+			"power:GND"
+			(power global)
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property
+				"Reference"
+				"#PWR"
+				(at 0 -6.35 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Value"
+				"GND"
+				(at 0 -3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Footprint"
+				""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Datasheet"
+				""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Description"
+				"Power symbol creates a global label with name \"GND\" , ground"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"ki_keywords"
+				"global power"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol
+				"GND_0_1"
+				(polyline
+					(pts
+						(xy 0 0)
+						(xy 0 -1.27)
+						(xy 1.27 -1.27)
+						(xy 0 -2.54)
+						(xy -1.27 -1.27)
+						(xy 0 -1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol
+				"GND_1_1"
+				(pin
+					power_in
+					line
+					(at 0 0 270)
+					(length 0)
+					(name
+						""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol
+			"Device:C"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0.254)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property
+				"Reference"
+				"C"
+				(at 0.635 2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property
+				"Value"
+				"C"
+				(at 0.635 -2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property
+				"Footprint"
+				""
+				(at 0.9652 -3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Datasheet"
+				""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Description"
+				"Unpolarized capacitor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"ki_keywords"
+				"cap capacitor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"ki_fp_filters"
+				"C_*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol
+				"C_0_1"
+				(polyline
+					(pts
+						(xy -2.032 0.762)
+						(xy 2.032 0.762)
+					)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -2.032 -0.762)
+						(xy 2.032 -0.762)
+					)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol
+				"C_1_1"
+				(pin
+					passive
+					line
+					(at 0 3.81 270)
+					(length 2.794)
+					(name
+						""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					passive
+					line
+					(at 0 -3.81 90)
+					(length 2.794)
+					(name
+						""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol
+			"Amplifier_Operational:OPA1612AxD"
+			(pin_names
+				(offset 0.127)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property
+				"Reference"
+				"U"
+				(at 0 5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property
+				"Value"
+				"OPA1612AxD"
+				(at 0 -5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property
+				"Footprint"
+				""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Datasheet"
+				"http://www.ti.com/lit/ds/symlink/opa1612.pdf"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Description"
+				"Dual SoundPlus High Performance, Bipolar-Input Audio Operational Amplifiers, SOIC-8"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"ki_locked"
+				""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"ki_keywords"
+				"dual opamp"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"ki_fp_filters"
+				"SOIC*3.9x4.9mm*P1.27mm* DIP*W7.62mm* TO*99* OnSemi*Micro8* TSSOP*3x3mm*P0.65mm* TSSOP*4.4x3mm*P0.65mm* MSOP*3x3mm*P0.65mm* SSOP*3.9x4.9mm*P0.635mm* LFCSP*2x2mm*P0.5mm* *SIP* SOIC*5.3x6.2mm*P1.27mm*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol
+				"OPA1612AxD_1_1"
+				(polyline
+					(pts
+						(xy -5.08 5.08)
+						(xy 5.08 0)
+						(xy -5.08 -5.08)
+						(xy -5.08 5.08)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin
+					output
+					line
+					(at 7.62 0 180)
+					(length 2.54)
+					(name
+						""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					input
+					line
+					(at -7.62 -2.54 0)
+					(length 2.54)
+					(name
+						"-"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					input
+					line
+					(at -7.62 2.54 0)
+					(length 2.54)
+					(name
+						"+"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol
+				"OPA1612AxD_2_1"
+				(polyline
+					(pts
+						(xy -5.08 5.08)
+						(xy 5.08 0)
+						(xy -5.08 -5.08)
+						(xy -5.08 5.08)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin
+					input
+					line
+					(at -7.62 2.54 0)
+					(length 2.54)
+					(name
+						"+"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					input
+					line
+					(at -7.62 -2.54 0)
+					(length 2.54)
+					(name
+						"-"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					output
+					line
+					(at 7.62 0 180)
+					(length 2.54)
+					(name
+						""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol
+				"OPA1612AxD_3_1"
+				(pin
+					power_in
+					line
+					(at -2.54 -7.62 90)
+					(length 3.81)
+					(name
+						"V-"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					power_in
+					line
+					(at -2.54 7.62 270)
+					(length 3.81)
+					(name
+						"V+"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol
+			"Diode:1N4148W"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property
+				"Reference"
+				"D"
+				(at 0 2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Value"
+				"1N4148W"
+				(at 0 -2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Footprint"
+				"Diode_SMD:D_SOD-123"
+				(at 0 -4.445 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Datasheet"
+				"https://www.vishay.com/docs/85748/1n4148w.pdf"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Description"
+				"75V 0.15A Fast Switching Diode, SOD-123"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Sim.Device"
+				"D"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Sim.Pins"
+				"1=K 2=A"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"ki_keywords"
+				"diode"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"ki_fp_filters"
+				"D*SOD?123*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol
+				"1N4148W_0_1"
+				(polyline
+					(pts
+						(xy -1.27 1.27)
+						(xy -1.27 -1.27)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 1.27)
+						(xy 1.27 -1.27)
+						(xy -1.27 0)
+						(xy 1.27 1.27)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 0)
+						(xy -1.27 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol
+				"1N4148W_1_1"
+				(pin
+					passive
+					line
+					(at -3.81 0 0)
+					(length 2.54)
+					(name
+						"K"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					passive
+					line
+					(at 3.81 0 180)
+					(length 2.54)
+					(name
+						"A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+	)
+	(text
+		"OVERDRIVE v0.2 with DRIVE on a dual pot and DC servo (§5ter, od2-pot-tran.cir, od2-servo-dc.cir)"
+		(exclude_from_sim no)
+		(at 15.24 21.59 0)
+		(effects
+			(font
+				(size 4 4)
+				(bold yes)
+			)
+			(justify left bottom)
+		)
+		(uuid "067144c3-f62a-5dcb-a8dc-66162fb537fd")
+	)
+	(symbol
+		(lib_id "Amplifier_Operational:TL074")
+		(at 68.58 40.64 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e5fe856e-81e7-5a9c-b570-da6b97165e7a")
+		(property
+			"Reference"
+			"U22"
+			(at 66.04 35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"OPA1654AIDR"
+			(at 66.04 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
+			(at 68.58 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 68.58 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"overdrive: x2, buffer del tosatore, differenza, buffer del cursore, I/V"
+			(at 68.58 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "ecbf54c6-38d0-508c-93ce-9b96fd96fa53")
+		)
+		(pin
+			"2"
+			(uuid "8c55a8f1-0c16-5986-a15d-5f367c5a90dc")
+		)
+		(pin
+			"3"
+			(uuid "8c393f33-d4b8-505a-8b5b-2252711d190c")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "U22")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 76.2 40.64)
+			(xy 78.74 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "279a74e8-9a20-5b15-b52e-0b2a2996940c")
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 83.82 46.99 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "fd6877c6-cd4f-5e93-ae7f-885e8c4d790e")
+		(property
+			"Reference"
+			"R86"
+			(at 86.36 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"2k2"
+			(at 86.36 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 83.82 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 83.82 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"tosatore: 2+2 1N4148 a massa"
+			(at 83.82 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "4722452d-5c00-5f44-b17d-a4318dcf9f2a")
+		)
+		(pin
+			"2"
+			(uuid "80d75192-ef1c-51ea-b43f-5b3073a27a22")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R86")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 92.71 40.64 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "3c4467ea-b7ad-5abb-ba53-a2c65666001c")
+		(property
+			"Reference"
+			"R85"
+			(at 92.71 38.1 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"20k 0.1%"
+			(at 92.71 43.18 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 92.71 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 92.71 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "10600c7e-1442-5b26-bf73-45c5469c49e3")
+		)
+		(pin
+			"2"
+			(uuid "0094d04d-6825-5b07-af50-a49b86995a8a")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R85")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 78.74 40.64)
+			(xy 83.82 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b90f7bff-d443-5e2f-b03b-d55c0186037a")
+	)
+	(wire
+		(pts
+			(xy 83.82 40.64)
+			(xy 83.82 43.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6d3ee3ac-b992-5104-ac16-2ed44f16b107")
+	)
+	(wire
+		(pts
+			(xy 83.82 40.64)
+			(xy 88.9 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3d642c72-23e2-5f64-9947-943840464c06")
+	)
+	(junction
+		(at 83.82 40.64)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "35d37aa7-d772-5fb8-bee3-562845c47029")
+	)
+	(wire
+		(pts
+			(xy 60.96 38.1)
+			(xy 58.42 38.1)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c764251a-eddb-59a0-8b6a-a578acab39a5")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 58.42 38.1 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "3513ced5-337a-524a-9703-d9bebbe898bb")
+		(property
+			"Reference"
+			"#PWR001"
+			(at 58.42 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"AGND"
+			(at 58.42 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 58.42 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 58.42 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "19235536-5b9d-59a8-86db-443b1c805f1c")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "#PWR001")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 60.96 43.18)
+			(xy 58.42 43.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1824066c-6b93-55d2-9fc9-49964cc20d14")
+	)
+	(wire
+		(pts
+			(xy 58.42 43.18)
+			(xy 58.42 52.07)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8e8d4ddd-6846-54d9-8f98-b1b3f7ce154e")
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 49.53 52.07 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f8c0884c-c0de-5fe0-bc3f-a26dafa4c507")
+		(property
+			"Reference"
+			"R84"
+			(at 49.53 49.53 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"10k 0.1%"
+			(at 49.53 54.61 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 49.53 52.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 49.53 52.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "fddc0dfe-d125-5aa4-a1ba-caf09714f18e")
+		)
+		(pin
+			"2"
+			(uuid "0223039a-78ce-5786-9eab-0f7b3544c536")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R84")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 40.64 58.42 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "dc7a0f03-a802-51c5-8498-252be8cecde5")
+		(property
+			"Reference"
+			"R92"
+			(at 43.18 57.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"10k 0.1%"
+			(at 43.18 59.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 40.64 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 40.64 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "7d7de155-3cce-53ea-9d94-936fc458d4d8")
+		)
+		(pin
+			"2"
+			(uuid "2662a162-8a3a-57e0-a375-116511fc8a7c")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R92")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 26.67 52.07 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "258350f4-8e77-56ed-80c9-f6bccd1c678e")
+		(property
+			"Reference"
+			"R87"
+			(at 26.67 49.53 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"10k 0.1%"
+			(at 26.67 54.61 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 26.67 52.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 26.67 52.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "e19f0244-c2a4-5ae5-ac62-a6282dedc839")
+		)
+		(pin
+			"2"
+			(uuid "8e6e24af-45bb-5f4f-ad36-e1e9c6bf81f6")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R87")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 58.42 52.07)
+			(xy 53.34 52.07)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4024aa1d-4569-5993-b871-431adede0de4")
+	)
+	(wire
+		(pts
+			(xy 45.72 52.07)
+			(xy 40.64 52.07)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "99af2aa9-7372-53b2-af83-a37bf9d463d4")
+	)
+	(wire
+		(pts
+			(xy 40.64 52.07)
+			(xy 40.64 54.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a902170c-0da6-5178-aae5-42902f3c67b1")
+	)
+	(wire
+		(pts
+			(xy 40.64 52.07)
+			(xy 30.48 52.07)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "85c7f815-97ac-5add-9274-9d37db846d63")
+	)
+	(junction
+		(at 40.64 52.07)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "bb91fdfc-33cc-55ac-a60e-feb088c6c2e9")
+	)
+	(symbol
+		(lib_id "Amplifier_Operational:TL074")
+		(at 157.48 43.18 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "c9b5dc1d-5deb-5e07-83c8-122ea75daade")
+		(property
+			"Reference"
+			"U23"
+			(at 154.94 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"OPA1654AIDR"
+			(at 154.94 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
+			(at 157.48 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 157.48 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"overdrive: x2, buffer del tosatore, differenza, buffer del cursore, I/V"
+			(at 157.48 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "ee028ef7-443e-5a2b-abd6-0eb0ef4c26b0")
+		)
+		(pin
+			"2"
+			(uuid "5969ae72-2d40-5a91-8a7d-6760668fcd4d")
+		)
+		(pin
+			"3"
+			(uuid "c22e1fc1-a603-5edc-bf5c-ccc8f319381a")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "U23")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 165.1 43.18)
+			(xy 167.64 43.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b34ebb65-7664-5a4d-acd1-6c9a1b6a2f86")
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 172.72 49.53 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "4613ce82-d23f-5117-a779-7f763b8a9eb8")
+		(property
+			"Reference"
+			"R94"
+			(at 175.26 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"1M"
+			(at 175.26 50.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 172.72 49.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 172.72 49.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"servo DC: integratore 1M / 47n, polo 0,05 Hz"
+			(at 172.72 49.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "623ba971-ad7e-58a0-a078-89260bcfef20")
+		)
+		(pin
+			"2"
+			(uuid "75feb912-7161-5cb2-b802-30ce4ac0f1bf")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R94")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 181.61 43.18 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "dee08230-fdb7-585a-8f4f-53ca94f61c72")
+		(property
+			"Reference"
+			"R93"
+			(at 181.61 40.64 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"10k 0.1%"
+			(at 181.61 45.72 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 181.61 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 181.61 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"y = -(x + m d)"
+			(at 181.61 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "a1870368-ed64-5db8-91d0-bb43100443d2")
+		)
+		(pin
+			"2"
+			(uuid "8833c2a1-616e-5439-95ad-1b26b573d297")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R93")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 167.64 43.18)
+			(xy 172.72 43.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "984a5406-99a4-522f-b19d-21850845ef44")
+	)
+	(wire
+		(pts
+			(xy 172.72 43.18)
+			(xy 172.72 45.72)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2f37b7b7-520a-5f44-b249-ac06be13d889")
+	)
+	(wire
+		(pts
+			(xy 172.72 43.18)
+			(xy 177.8 43.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "15a3ce37-9fa9-5c14-a200-f5c4eaf1eea3")
+	)
+	(junction
+		(at 172.72 43.18)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "3df1413e-f547-547d-80be-b23e448bb97b")
+	)
+	(wire
+		(pts
+			(xy 149.86 40.64)
+			(xy 144.78 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "534acb84-3ffa-58ed-8df1-8b2a9ffc2aa2")
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 139.7 46.99 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8e01de09-b6e7-5d70-893a-231a13894ce7")
+		(property
+			"Reference"
+			"R96"
+			(at 142.24 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"1k"
+			(at 142.24 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 139.7 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 139.7 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "68b640f3-b799-56ef-a999-8140bb4891f3")
+		)
+		(pin
+			"2"
+			(uuid "39b9d203-ef6d-5e9e-81ec-21b30387431a")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R96")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 130.81 40.64 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "fd940650-e02a-537f-b9da-e706c677d89c")
+		(property
+			"Reference"
+			"R95"
+			(at 130.81 38.1 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"100k"
+			(at 130.81 43.18 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 130.81 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 130.81 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "2bff6227-1474-5b20-bea7-16211491ad26")
+		)
+		(pin
+			"2"
+			(uuid "de674665-6f8a-53bf-b435-3ebca678027d")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R95")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 144.78 40.64)
+			(xy 139.7 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4605d103-d38b-5375-83b0-4c53fa524ac3")
+	)
+	(wire
+		(pts
+			(xy 139.7 40.64)
+			(xy 139.7 43.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f4b40153-c135-52d6-9ecf-f77260879e4a")
+	)
+	(wire
+		(pts
+			(xy 139.7 40.64)
+			(xy 134.62 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3c895a07-bcd7-5298-b573-90c13a3e5e1b")
+	)
+	(junction
+		(at 139.7 40.64)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "5add8d34-f1e4-5e09-a3bc-a78ba1eb33c6")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 139.7 50.8 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2aa922b3-bae6-53c1-9bc0-e9f9e7dbee16")
+		(property
+			"Reference"
+			"#PWR002"
+			(at 139.7 50.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"AGND"
+			(at 139.7 55.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 139.7 50.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 139.7 50.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "4fffbe7a-6218-5c9b-8dd6-52db9ddd098d")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "#PWR002")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 149.86 45.72)
+			(xy 147.32 45.72)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "56db3146-7fa2-5e54-8603-dd3e42e34966")
+	)
+	(wire
+		(pts
+			(xy 147.32 45.72)
+			(xy 147.32 62.23)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "445ecf67-fa56-59d0-8a10-69d79fb777c2")
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 138.43 62.23 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "cded1ae2-54e7-590d-921e-921f25a1dbb5")
+		(property
+			"Reference"
+			"R91"
+			(at 138.43 59.69 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"10k 0.1%"
+			(at 138.43 64.77 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 138.43 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 138.43 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "c2d81bda-14e8-56e1-94d5-e9f0294ec04f")
+		)
+		(pin
+			"2"
+			(uuid "96c623d5-8bfb-5b88-bb64-8718fc1466f7")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R91")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 147.32 62.23)
+			(xy 142.24 62.23)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d0240526-371b-5e89-a917-aca350de9269")
+	)
+	(symbol
+		(lib_id "Amplifier_Operational:TL074")
+		(at 241.3 43.18 0)
+		(unit 4)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a2b26d25-4ede-5901-ac54-aeab0ccda0e5")
+		(property
+			"Reference"
+			"U22"
+			(at 238.76 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"OPA1654AIDR"
+			(at 238.76 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
+			(at 241.3 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 241.3 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"overdrive: x2, buffer del tosatore, differenza, buffer del cursore, I/V"
+			(at 241.3 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"12"
+			(uuid "f75d6af8-2581-524c-a943-679072141fc4")
+		)
+		(pin
+			"13"
+			(uuid "a48dea48-ba90-5d91-bee2-8af7e90705de")
+		)
+		(pin
+			"14"
+			(uuid "f6d85c52-7efb-5e0b-88a4-a033dfa997d2")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "U22")
+					(unit 4)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 233.68 40.64)
+			(xy 228.6 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0877388d-8f08-5634-95a8-3bb07595b609")
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 219.71 40.64 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a990d1c4-a3d1-5917-809c-443c378bd3d3")
+		(property
+			"Reference"
+			"R90"
+			(at 219.71 38.1 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"1M"
+			(at 219.71 43.18 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 219.71 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 219.71 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"pot staccato = DRIVE a zero"
+			(at 219.71 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "3e01da1c-89e2-5a3f-bf7b-7742e8da6e78")
+		)
+		(pin
+			"2"
+			(uuid "b9249f90-13d2-503f-aae2-3f8672ed9bf9")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R90")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 228.6 40.64)
+			(xy 223.52 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "435833dc-c493-55f3-a1b9-70d29fc5fa3c")
+	)
+	(wire
+		(pts
+			(xy 215.9 40.64)
+			(xy 213.36 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "199b1f53-64a3-5870-b3cd-863fb470439e")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 213.36 40.64 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "cee5c87d-d515-5f19-af26-3f89d13fe5f1")
+		(property
+			"Reference"
+			"#PWR003"
+			(at 213.36 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"AGND"
+			(at 213.36 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 213.36 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 213.36 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "8d7c8da1-80f9-5b32-a687-745815ac0906")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "#PWR003")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 233.68 45.72)
+			(xy 231.14 45.72)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e30b73e7-3d25-5d57-894d-d01d23c3d001")
+	)
+	(wire
+		(pts
+			(xy 231.14 45.72)
+			(xy 231.14 48.26)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ff1f4dd3-6adc-5a7b-b9de-8e319420c981")
+	)
+	(symbol
+		(lib_id "Amplifier_Operational:TL074")
+		(at 307.34 40.64 0)
+		(unit 3)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2e6b2c22-2e29-55f8-85f5-f16cfae97d60")
+		(property
+			"Reference"
+			"U22"
+			(at 304.8 35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"OPA1654AIDR"
+			(at 304.8 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
+			(at 307.34 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 307.34 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"overdrive: x2, buffer del tosatore, differenza, buffer del cursore, I/V"
+			(at 307.34 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"8"
+			(uuid "ba9d6d74-04ce-5e1a-b8cb-ba9f7ad4fe94")
+		)
+		(pin
+			"9"
+			(uuid "d65cc93e-508b-55a7-8c2b-5f437186b77b")
+		)
+		(pin
+			"10"
+			(uuid "75c8787d-7a51-5f1b-b96e-91d9a1dd17c2")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "U22")
+					(unit 3)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 314.96 40.64)
+			(xy 317.5 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1e68401a-6dcf-5447-a81f-b00d1cabdcc3")
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 322.58 46.99 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "64b41570-6067-55d1-a37a-663773a94ce2")
+		(property
+			"Reference"
+			"C73"
+			(at 325.12 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"22u NP"
+			(at 325.12 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Capacitor_THT:CP_Radial_D6.3mm_P2.50mm"
+			(at 322.58 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 322.58 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"niente continua sul pot (taglio 0,7 Hz)"
+			(at 322.58 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "79465d0d-62bf-5dd4-9d21-6676b2e665a3")
+		)
+		(pin
+			"2"
+			(uuid "e56cd404-5642-51cb-8b49-7bf6494690d9")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "C73")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 336.55 40.64 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "0f162dd1-7ae5-5b33-a3bb-0c77777e85fc")
+		(property
+			"Reference"
+			"R89"
+			(at 336.55 38.1 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"10k 0.1%"
+			(at 336.55 43.18 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 336.55 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 336.55 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "97ae004c-9a0a-5ee8-86c0-b51ade6e0b50")
+		)
+		(pin
+			"2"
+			(uuid "199359a9-f178-5c3f-83f7-cf27f3ec3c90")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R89")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 317.5 40.64)
+			(xy 322.58 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ce3a4270-385a-5989-8516-d420eacad0bb")
+	)
+	(wire
+		(pts
+			(xy 322.58 40.64)
+			(xy 322.58 43.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1193bf90-4037-5c84-9c42-9b2cfd3aeb21")
+	)
+	(wire
+		(pts
+			(xy 322.58 40.64)
+			(xy 332.74 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c34962c6-0d89-5095-adbe-12d31f62d0c1")
+	)
+	(junction
+		(at 322.58 40.64)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "4d7910e8-571d-57ef-828c-fe7a969ccbcb")
+	)
+	(wire
+		(pts
+			(xy 299.72 38.1)
+			(xy 297.18 38.1)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "06fabf1b-e695-56c8-97ce-a0ebfe546473")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 297.18 38.1 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "1eecb26b-2ede-5ca6-a43e-da9e0d9c2ad5")
+		(property
+			"Reference"
+			"#PWR004"
+			(at 297.18 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"AGND"
+			(at 297.18 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 297.18 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 297.18 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "0d72f232-43ff-5219-877a-49dae325d0a5")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "#PWR004")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 299.72 43.18)
+			(xy 297.18 43.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "85549676-635a-591d-9bff-58a643ae6228")
+	)
+	(wire
+		(pts
+			(xy 297.18 43.18)
+			(xy 297.18 52.07)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "99216b78-c356-52bc-870e-d726b7be4b4c")
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 288.29 52.07 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "55b2dc31-a457-571d-90a2-ff9c028c4f0f")
+		(property
+			"Reference"
+			"R88"
+			(at 288.29 49.53 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"8k56 0.1%"
+			(at 288.29 54.61 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 288.29 52.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 288.29 52.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"10k/k, k 1,171 (E192 8,56k: k 1,168)"
+			(at 288.29 52.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "4641c045-2116-5629-8936-8b6b75f1fad0")
+		)
+		(pin
+			"2"
+			(uuid "00fe9a0b-ebf0-54e5-978d-10d8a149f466")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R88")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 297.18 52.07)
+			(xy 292.1 52.07)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "274bc042-52cc-5881-9d91-4475fece1478")
+	)
+	(symbol
+		(lib_id "Amplifier_Operational:OPA1612AxD")
+		(at 35.56 93.98 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "889e78b1-a2a4-510d-b611-ddfe8db585cf")
+		(property
+			"Reference"
+			"U25"
+			(at 33.02 88.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"OPA1642AIDR"
+			(at 33.02 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
+			(at 35.56 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 35.56 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"servo DC dell'overdrive (FET)"
+			(at 35.56 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "85805265-c374-5255-a915-1ab489e12255")
+		)
+		(pin
+			"2"
+			(uuid "dbece424-90b7-538d-bd6a-5ffd96030485")
+		)
+		(pin
+			"3"
+			(uuid "ff8bcfdd-e3b5-52ab-b38a-58ce8eaccfac")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "U25")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 43.18 93.98)
+			(xy 45.72 93.98)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9c946a2b-dfd2-513d-ac02-73d57ddd0e2e")
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 54.61 93.98 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a052890f-eb0d-54c9-ab86-76fe8339e482")
+		(property
+			"Reference"
+			"C74"
+			(at 54.61 91.44 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"47n film"
+			(at 54.61 96.52 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Capacitor_SMD:C_1812_4532Metric"
+			(at 54.61 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 54.61 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "575475fb-dc0a-588f-a628-4a41f866a666")
+		)
+		(pin
+			"2"
+			(uuid "bddd8b01-1324-5e61-9b36-ed9f526fe144")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "C74")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 45.72 93.98)
+			(xy 50.8 93.98)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e42da259-8994-533a-8eed-b80be71d65e5")
+	)
+	(wire
+		(pts
+			(xy 25.4 91.44)
+			(xy 27.94 91.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b9940b3a-5740-5933-8845-3660814d5c97")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 25.4 91.44 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "379288a5-6688-552d-bde1-0f54573dd2df")
+		(property
+			"Reference"
+			"#PWR005"
+			(at 25.4 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"AGND"
+			(at 25.4 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 25.4 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 25.4 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "19261a4e-61a2-5287-ac2b-26de4a94e03c")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "#PWR005")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 27.94 96.52)
+			(xy 25.4 96.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "da3f4b92-1158-5c20-8ef0-7145852ff04b")
+	)
+	(wire
+		(pts
+			(xy 25.4 96.52)
+			(xy 25.4 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "435785b9-933e-5c1e-8e2b-54f72384f9f1")
+	)
+	(symbol
+		(lib_id "Amplifier_Operational:TL074")
+		(at 137.16 93.98 0)
+		(unit 2)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "c65bb489-e38f-5535-ae7a-aa9d58a8989e")
+		(property
+			"Reference"
+			"U22"
+			(at 134.62 88.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"OPA1654AIDR"
+			(at 134.62 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
+			(at 137.16 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 137.16 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"overdrive: x2, buffer del tosatore, differenza, buffer del cursore, I/V"
+			(at 137.16 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"5"
+			(uuid "316d731d-95ca-569e-83a2-5e7af1059360")
+		)
+		(pin
+			"6"
+			(uuid "4393f56f-427e-5f21-a81b-be697a9023eb")
+		)
+		(pin
+			"7"
+			(uuid "385b8e09-e6f4-56a3-9695-853c9d974f15")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "U22")
+					(unit 2)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 129.54 91.44)
+			(xy 124.46 91.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "45710885-d382-522a-b256-8ddea3704d02")
+	)
+	(symbol
+		(lib_id "Diode:1N4148W")
+		(at 119.38 97.79 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "9c897479-dd5b-576c-9f19-a7b17b90cacc")
+		(property
+			"Reference"
+			"D26"
+			(at 121.92 96.52 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"1N4148W"
+			(at 121.92 99.06 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Diode_SMD:D_SOD-123"
+			(at 119.38 97.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 119.38 97.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "a07d792d-c5c5-5c06-94ff-89c6d3da7176")
+		)
+		(pin
+			"2"
+			(uuid "498cd9cb-a453-5d2a-bbcc-fae45ac2cad7")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "D26")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Diode:1N4148W")
+		(at 105.41 91.44 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "4331f5fa-2d8d-5bb5-ac3c-8e5383cedf9c")
+		(property
+			"Reference"
+			"D23"
+			(at 105.41 88.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"1N4148W"
+			(at 105.41 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Diode_SMD:D_SOD-123"
+			(at 105.41 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 105.41 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "a9560fcb-b39e-577f-944e-715390372308")
+		)
+		(pin
+			"2"
+			(uuid "c19a76ec-8419-55c0-9b59-e6a7e20aa76d")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "D23")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Diode:1N4148W")
+		(at 92.71 91.44 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "d950ce00-1e79-57bf-bb8a-1c0e82c6cf70")
+		(property
+			"Reference"
+			"D24"
+			(at 92.71 88.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"1N4148W"
+			(at 92.71 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Diode_SMD:D_SOD-123"
+			(at 92.71 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 92.71 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "e4365c43-fbbc-5e84-be87-0300d679170b")
+		)
+		(pin
+			"2"
+			(uuid "42e4e83f-bd0d-5398-9be1-ef188f25785b")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "D24")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 124.46 91.44)
+			(xy 119.38 91.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "885e6606-44a4-54b0-a645-6f248e1f2f8e")
+	)
+	(wire
+		(pts
+			(xy 119.38 91.44)
+			(xy 119.38 93.98)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "13cc77fb-bb00-5102-86f4-b5eeb12615db")
+	)
+	(wire
+		(pts
+			(xy 119.38 91.44)
+			(xy 109.22 91.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "44b2d614-ad85-5e30-9f9f-0474461359cf")
+	)
+	(wire
+		(pts
+			(xy 101.6 91.44)
+			(xy 96.52 91.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8438648e-38ec-5514-adea-bbaecae669ee")
+	)
+	(junction
+		(at 119.38 91.44)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "0f253425-a57a-5410-a1ab-22704b6e05d9")
+	)
+	(wire
+		(pts
+			(xy 88.9 91.44)
+			(xy 86.36 91.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fdf4dfb7-9820-53ff-9da4-548d5414ef53")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 86.36 91.44 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f8640124-2d16-59fd-9d32-9e02ba36ebf4")
+		(property
+			"Reference"
+			"#PWR006"
+			(at 86.36 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"AGND"
+			(at 86.36 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 86.36 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 86.36 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "11e4573b-fbc8-5001-877e-55705c0d0dde")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "#PWR006")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 129.54 96.52)
+			(xy 127 96.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8f34c4b6-ede7-5ceb-a6d7-9bc550fea40e")
+	)
+	(wire
+		(pts
+			(xy 127 101.6)
+			(xy 127 96.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "193d8392-35de-5596-bd91-1c932818e47a")
+	)
+	(symbol
+		(lib_id "Amplifier_Operational:TL074")
+		(at 78.74 134.62 0)
+		(unit 2)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "69bdf8ea-8279-5683-8555-70b0e02a77f5")
+		(property
+			"Reference"
+			"U23"
+			(at 76.2 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"OPA1654AIDR"
+			(at 76.2 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
+			(at 78.74 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 78.74 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"overdrive: x2, buffer del tosatore, differenza, buffer del cursore, I/V"
+			(at 78.74 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"5"
+			(uuid "3b49a8f9-73d3-53b9-97ef-7cea2c348aaf")
+		)
+		(pin
+			"6"
+			(uuid "a232f660-45ec-59aa-9673-8e867fe03a61")
+		)
+		(pin
+			"7"
+			(uuid "92a632f4-142c-575c-91a2-f3ef0d81b532")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "U23")
+					(unit 2)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 71.12 132.08)
+			(xy 68.58 132.08)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5970ef22-e037-520b-92e3-66a1837287b9")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 68.58 132.08 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "3b9a4acd-aa92-52fd-a9dc-c50314c99acf")
+		(property
+			"Reference"
+			"#PWR007"
+			(at 68.58 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"AGND"
+			(at 68.58 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 68.58 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 68.58 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "f47e0ad4-cd4a-524e-9c2a-6f13780aa47a")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "#PWR007")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 71.12 137.16)
+			(xy 68.58 137.16)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4b463dad-a24b-575c-88fc-ab9fc33aeafb")
+	)
+	(wire
+		(pts
+			(xy 68.58 137.16)
+			(xy 68.58 146.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4f9b792d-1f17-5bc4-a00d-ea819d57c1a4")
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 63.5 152.4 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5eebc7b2-3c34-5338-ad5c-88d13d48fcb4")
+		(property
+			"Reference"
+			"R98"
+			(at 66.04 151.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"20k 0.1%"
+			(at 66.04 153.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 63.5 152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 63.5 152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "a012c3e9-d22c-5d71-a10d-a140151707b3")
+		)
+		(pin
+			"2"
+			(uuid "775d8a87-42bb-57b1-b717-c130a1236f02")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R98")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 49.53 146.05 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "915db868-2c54-50b3-b6d1-504557ac0525")
+		(property
+			"Reference"
+			"R97"
+			(at 49.53 143.51 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"10k 0.1%"
+			(at 49.53 148.59 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 49.53 146.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 49.53 146.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "e5fc4789-7a57-5e9d-8015-f673919563a8")
+		)
+		(pin
+			"2"
+			(uuid "73e76086-dee3-53b6-90bf-0aca81115194")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R97")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 40.64 152.4 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "bede7510-30b2-5b49-9aa7-5a6b2fa19650")
+		(property
+			"Reference"
+			"R105"
+			(at 43.18 151.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"10k 0.1%"
+			(at 43.18 153.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 40.64 152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 40.64 152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "bf8b2b3d-863d-57e3-b33d-6d7879114df3")
+		)
+		(pin
+			"2"
+			(uuid "59eb971d-8d1f-586e-be66-506d3c12e619")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R105")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 26.67 146.05 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "cdac17c3-5842-5486-ae96-412a835dae6b")
+		(property
+			"Reference"
+			"R100"
+			(at 26.67 143.51 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"10k 0.1%"
+			(at 26.67 148.59 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 26.67 146.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 26.67 146.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "a5498e7e-6cf7-5aed-bbf5-5fe0dd7b6eae")
+		)
+		(pin
+			"2"
+			(uuid "3875b980-1371-5c6e-8c42-a1c089ace034")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R100")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 68.58 146.05)
+			(xy 63.5 146.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c4ca19e1-2c15-5ceb-af68-e975186d3c02")
+	)
+	(wire
+		(pts
+			(xy 63.5 146.05)
+			(xy 63.5 148.59)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a6a6c89a-c3eb-5114-80d5-5e6f373d2519")
+	)
+	(wire
+		(pts
+			(xy 63.5 146.05)
+			(xy 53.34 146.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4be5d9fa-d866-53db-9e71-d10df1ad4d50")
+	)
+	(wire
+		(pts
+			(xy 45.72 146.05)
+			(xy 40.64 146.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b9ab2911-df42-56c9-980c-3a3671c663c9")
+	)
+	(wire
+		(pts
+			(xy 40.64 146.05)
+			(xy 40.64 148.59)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2b967e7f-3be6-5911-9b10-1bbfbf09d7b3")
+	)
+	(wire
+		(pts
+			(xy 40.64 146.05)
+			(xy 30.48 146.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e2b7fbed-8219-519e-a09d-bc5f174ffab4")
+	)
+	(junction
+		(at 63.5 146.05)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "0fc476c9-2eca-5f8f-ac27-aef8c28d773e")
+	)
+	(junction
+		(at 40.64 146.05)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "3f10e923-e60e-5b81-b202-c029ff488fcb")
+	)
+	(wire
+		(pts
+			(xy 86.36 134.62)
+			(xy 88.9 134.62)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a29d016a-9832-51da-b0a0-f6e0552bca28")
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 97.79 134.62 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7f533f96-6e8f-54ed-9dcd-8f1a8dac52a8")
+		(property
+			"Reference"
+			"R99"
+			(at 97.79 132.08 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"2k2"
+			(at 97.79 137.16 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 97.79 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 97.79 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"tosatore: 2+2 1N4148 a massa"
+			(at 97.79 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "d6bd6e8f-acd5-5a7a-846b-a1c0321f7baf")
+		)
+		(pin
+			"2"
+			(uuid "0a2be4ee-9a8d-5d09-9b3b-d579363132c3")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R99")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 88.9 134.62)
+			(xy 93.98 134.62)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "90e983d6-90c1-5851-8686-3d5201fb96a3")
+	)
+	(symbol
+		(lib_id "Amplifier_Operational:TL074")
+		(at 165.1 134.62 0)
+		(unit 4)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7fab015c-ec9b-55e4-bae5-2e74f9bc0b27")
+		(property
+			"Reference"
+			"U23"
+			(at 162.56 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"OPA1654AIDR"
+			(at 162.56 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
+			(at 165.1 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 165.1 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"overdrive: x2, buffer del tosatore, differenza, buffer del cursore, I/V"
+			(at 165.1 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"12"
+			(uuid "f68bc103-4157-5b1b-8da0-0634425abe68")
+		)
+		(pin
+			"13"
+			(uuid "fee0e011-f4aa-5366-a1d3-3dab573767ea")
+		)
+		(pin
+			"14"
+			(uuid "e5d19ee1-9c78-5f03-93a3-3516ba596f59")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "U23")
+					(unit 4)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 157.48 132.08)
+			(xy 154.94 132.08)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "be155fb3-bfbd-587a-b752-a4db831c7acb")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 154.94 132.08 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "20c48d1a-88d0-5bbd-96a3-1ab80c0204a9")
+		(property
+			"Reference"
+			"#PWR008"
+			(at 154.94 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"AGND"
+			(at 154.94 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 154.94 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 154.94 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "2b97c626-8d6b-5c7b-ae6a-206016454e77")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "#PWR008")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 157.48 137.16)
+			(xy 154.94 137.16)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fbf38237-68f2-5214-810a-b7f713484bc7")
+	)
+	(wire
+		(pts
+			(xy 154.94 137.16)
+			(xy 154.94 146.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "568a56ba-6144-573c-a009-8a34acda613e")
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 149.86 152.4 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8942c173-b533-57ce-991b-b8af14a417c1")
+		(property
+			"Reference"
+			"R102"
+			(at 152.4 151.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"10k 0.1%"
+			(at 152.4 153.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 149.86 152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 149.86 152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "794575fa-f657-5f6a-a9c1-9467af2098f3")
+		)
+		(pin
+			"2"
+			(uuid "5e45d569-0000-58cf-b63e-1e7f3393f5f0")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R102")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 135.89 146.05 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "79a04ce6-5b4b-5b74-bc46-ad01a1bf8c83")
+		(property
+			"Reference"
+			"R101"
+			(at 135.89 143.51 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"8k56 0.1%"
+			(at 135.89 148.59 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 135.89 146.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 135.89 146.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"10k/k, k 1,171 (E192 8,56k: k 1,168)"
+			(at 135.89 146.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "1f57c70e-eb05-52e1-8969-fc16855ab73f")
+		)
+		(pin
+			"2"
+			(uuid "71082648-ca1c-57b1-89ce-c10e939834b1")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R101")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 154.94 146.05)
+			(xy 149.86 146.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "31450f6c-8b23-5445-aae5-7bf9ac2978e4")
+	)
+	(wire
+		(pts
+			(xy 149.86 146.05)
+			(xy 149.86 148.59)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b286374a-fc7a-52e6-9861-3c4615cf99a2")
+	)
+	(wire
+		(pts
+			(xy 149.86 146.05)
+			(xy 139.7 146.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d21601af-4d66-5662-ae4f-1beb5ef23c3f")
+	)
+	(junction
+		(at 149.86 146.05)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "e06c5cc5-4100-545e-861a-d449ede03143")
+	)
+	(wire
+		(pts
+			(xy 172.72 134.62)
+			(xy 175.26 134.62)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "817690f1-d3d4-54e1-819b-4ff0c23fa60a")
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 184.15 134.62 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "d8982f81-4db4-5a5c-bb34-aa0b7146a6ee")
+		(property
+			"Reference"
+			"C75"
+			(at 184.15 132.08 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"22u NP"
+			(at 184.15 137.16 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Capacitor_THT:CP_Radial_D6.3mm_P2.50mm"
+			(at 184.15 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 184.15 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"niente continua sul pot (taglio 0,7 Hz)"
+			(at 184.15 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "461f7e24-caf9-5db5-a765-ea42fa9833c8")
+		)
+		(pin
+			"2"
+			(uuid "c61787b6-d251-5cea-8e84-90255d80c12d")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "C75")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 175.26 134.62)
+			(xy 180.34 134.62)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7f118dbe-1ce8-51f0-a66b-6e74908929b2")
+	)
+	(symbol
+		(lib_id "Amplifier_Operational:OPA1612AxD")
+		(at 254 134.62 0)
+		(unit 2)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8d1df2f1-15f3-5b4c-97b5-621ebf274a82")
+		(property
+			"Reference"
+			"U25"
+			(at 251.46 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"OPA1642AIDR"
+			(at 251.46 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
+			(at 254 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 254 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"servo DC dell'overdrive (FET)"
+			(at 254 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"5"
+			(uuid "411824f9-caee-5f3e-a192-e9d0399636f9")
+		)
+		(pin
+			"6"
+			(uuid "2f4ae442-7cc5-5351-b630-d01300680869")
+		)
+		(pin
+			"7"
+			(uuid "cda72385-1f95-59e4-95ed-7bf8cb752224")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "U25")
+					(unit 2)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 246.38 132.08)
+			(xy 243.84 132.08)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "109ed362-6bd0-5772-9c42-9ea5dcc6a4ea")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 243.84 132.08 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a772b726-0cec-5f9f-8ba9-7fc67656ae84")
+		(property
+			"Reference"
+			"#PWR009"
+			(at 243.84 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"AGND"
+			(at 243.84 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 243.84 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 243.84 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "cad5ae67-3fcf-59ee-9c8e-5eb1a8c4ae08")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "#PWR009")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 246.38 137.16)
+			(xy 243.84 137.16)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e56f34a8-91d7-578a-86f5-38221837b168")
+	)
+	(wire
+		(pts
+			(xy 243.84 137.16)
+			(xy 243.84 146.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8f980a80-3191-5782-bd5e-81e24f85a506")
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 238.76 152.4 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "280d1f31-cb09-563e-9f28-5aebb2da0858")
+		(property
+			"Reference"
+			"C76"
+			(at 241.3 151.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"47n film"
+			(at 241.3 153.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Capacitor_SMD:C_1812_4532Metric"
+			(at 238.76 152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 238.76 152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "e6a28c54-653f-57d3-ae9c-1efe7d9542ad")
+		)
+		(pin
+			"2"
+			(uuid "70d5316d-3b35-5ee6-a9f1-afb29f6d1888")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "C76")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 224.79 146.05 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7b12edd1-de8f-5e0b-98d9-d4a9960d51da")
+		(property
+			"Reference"
+			"R107"
+			(at 224.79 143.51 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"1M"
+			(at 224.79 148.59 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 224.79 146.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 224.79 146.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"servo DC: integratore 1M / 47n, polo 0,05 Hz"
+			(at 224.79 146.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "99ab3981-7439-5112-88f4-a8a09fbd92e5")
+		)
+		(pin
+			"2"
+			(uuid "26569062-6437-5432-b63a-34096e8631cb")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R107")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 243.84 146.05)
+			(xy 238.76 146.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7f9ef5d3-fc6e-5459-9f59-52ffc52d18cd")
+	)
+	(wire
+		(pts
+			(xy 238.76 146.05)
+			(xy 238.76 148.59)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cdc6f522-5c24-5ebf-b752-4186770eb97c")
+	)
+	(wire
+		(pts
+			(xy 238.76 146.05)
+			(xy 228.6 146.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cda09f6c-8d09-5786-9d1a-3ca8b687d059")
+	)
+	(junction
+		(at 238.76 146.05)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "fab361e2-fa27-5fe8-904e-03c14ac67397")
+	)
+	(wire
+		(pts
+			(xy 261.62 134.62)
+			(xy 264.16 134.62)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c6520504-f617-5034-9b51-b7140c9e6ffd")
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 273.05 134.62 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "d11524d2-e18d-5818-bfcb-9602abaa18d0")
+		(property
+			"Reference"
+			"R108"
+			(at 273.05 132.08 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"100k"
+			(at 273.05 137.16 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 273.05 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 273.05 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "279251e6-0c86-5fea-b814-5938256951d1")
+		)
+		(pin
+			"2"
+			(uuid "3b66bcff-7e61-54dd-853f-c9cb8a5fae5b")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R108")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 264.16 134.62)
+			(xy 269.24 134.62)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ce98e72e-c77e-5a72-89fd-6623ca0bfd25")
+	)
+	(symbol
+		(lib_id "Amplifier_Operational:TL074")
+		(at 332.74 137.16 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "79f1da22-ac55-57e2-b60b-f33683c69969")
+		(property
+			"Reference"
+			"U24"
+			(at 330.2 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"OPA1654AIDR"
+			(at 330.2 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
+			(at 332.74 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 332.74 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"overdrive: x2, buffer del tosatore, differenza, buffer del cursore, I/V"
+			(at 332.74 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "aa9d7b9e-67cf-5721-895d-6fc9b27d2415")
+		)
+		(pin
+			"2"
+			(uuid "01ff8590-9b8a-5a33-a3ca-6fa7c69b3cb8")
+		)
+		(pin
+			"3"
+			(uuid "209c091c-085b-5b14-b6a4-ffbfd5199be9")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "U24")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 340.36 137.16)
+			(xy 342.9 137.16)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2909d983-6f16-5eb5-8a8e-282ce0fe5f8b")
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 351.79 137.16 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e1ac023c-db4d-51ec-a1b6-0ff6f71a8e54")
+		(property
+			"Reference"
+			"R104"
+			(at 351.79 134.62 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"10k 0.1%"
+			(at 351.79 139.7 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 351.79 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 351.79 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "68ca53ea-4c90-59e1-abcc-8c2b39471908")
+		)
+		(pin
+			"2"
+			(uuid "b3c43789-6294-5c4e-ad15-b0715ba02eaf")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R104")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 342.9 137.16)
+			(xy 347.98 137.16)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c4a9d366-34fe-5e29-8bc5-eab5c5cb2788")
+	)
+	(wire
+		(pts
+			(xy 325.12 134.62)
+			(xy 320.04 134.62)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5891af53-0d1f-5827-8672-591d65d8776f")
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 311.15 134.62 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "188303f2-2f83-5370-850e-be1a6f8c4f14")
+		(property
+			"Reference"
+			"R103"
+			(at 311.15 132.08 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"1M"
+			(at 311.15 137.16 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 311.15 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 311.15 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"pot staccato = DRIVE a zero"
+			(at 311.15 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "792051aa-7599-50e7-a3bd-07c374626fdd")
+		)
+		(pin
+			"2"
+			(uuid "a523c3ae-bafb-5d6a-9fa8-42736a4fb649")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R103")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 320.04 134.62)
+			(xy 314.96 134.62)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5d05c836-3ea6-558e-a1bb-630d4e63b7fc")
+	)
+	(wire
+		(pts
+			(xy 304.8 134.62)
+			(xy 307.34 134.62)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "81ee2395-7bd9-5e11-bf5a-bedd9b9ed283")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 304.8 134.62 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "91d141cd-cc18-5956-b58c-0028fccc4f35")
+		(property
+			"Reference"
+			"#PWR010"
+			(at 304.8 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"AGND"
+			(at 304.8 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 304.8 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 304.8 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "7e1d6e48-856f-5c2d-ae72-417efd29ef71")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "#PWR010")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 325.12 139.7)
+			(xy 322.58 139.7)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e5a0598d-4036-53b1-aa1c-32fa34967919")
+	)
+	(wire
+		(pts
+			(xy 322.58 139.7)
+			(xy 322.58 142.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b3d09a14-1c0e-54ce-8c7d-aa383da5e2a1")
+	)
+	(symbol
+		(lib_id "Amplifier_Operational:TL074")
+		(at 68.58 187.96 0)
+		(unit 3)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "560090ec-d082-5e1b-9786-831552ef0391")
+		(property
+			"Reference"
+			"U23"
+			(at 66.04 182.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"OPA1654AIDR"
+			(at 66.04 193.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
+			(at 68.58 187.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 68.58 187.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"overdrive: x2, buffer del tosatore, differenza, buffer del cursore, I/V"
+			(at 68.58 187.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"8"
+			(uuid "4b1195c5-4669-5052-8857-b0d33af1ac2c")
+		)
+		(pin
+			"9"
+			(uuid "36f80503-1a6f-59d1-9162-4cadb35a62dd")
+		)
+		(pin
+			"10"
+			(uuid "a201acad-2efc-505b-97f1-d1dc911319ec")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "U23")
+					(unit 3)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 60.96 185.42)
+			(xy 55.88 185.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ab80cf29-1df8-5a1c-9245-1ebbd482d0c9")
+	)
+	(symbol
+		(lib_id "Diode:1N4148W")
+		(at 50.8 191.77 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "131727fb-8bc6-5eed-bbf5-2300b4c28ba7")
+		(property
+			"Reference"
+			"D30"
+			(at 53.34 190.5 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"1N4148W"
+			(at 53.34 193.04 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Diode_SMD:D_SOD-123"
+			(at 50.8 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 50.8 191.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "00fdaafd-2f29-5fca-8b9d-c6f25f36dee5")
+		)
+		(pin
+			"2"
+			(uuid "3fa35a91-1a72-5463-8b83-930689abd733")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "D30")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Diode:1N4148W")
+		(at 36.83 185.42 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "a0c0d499-967b-5c9d-b415-4ab1f5819bc8")
+		(property
+			"Reference"
+			"D27"
+			(at 36.83 182.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"1N4148W"
+			(at 36.83 187.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Diode_SMD:D_SOD-123"
+			(at 36.83 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 36.83 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "fb6ab2e0-b5b5-5925-9010-a1b4cb33a0b7")
+		)
+		(pin
+			"2"
+			(uuid "5bd7f908-963a-5d16-af54-c42d4887b122")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "D27")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Diode:1N4148W")
+		(at 24.13 185.42 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "0a2905ca-ce5e-513a-90af-f666368572a5")
+		(property
+			"Reference"
+			"D28"
+			(at 24.13 182.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"1N4148W"
+			(at 24.13 187.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Diode_SMD:D_SOD-123"
+			(at 24.13 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 24.13 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "4139d6b2-fb3b-5a00-95a3-3685b20347b4")
+		)
+		(pin
+			"2"
+			(uuid "36283144-efdc-5f79-9816-07aee9bf8d6a")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "D28")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 55.88 185.42)
+			(xy 50.8 185.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5a90dc34-dcbb-5a55-b852-d48685e2ce39")
+	)
+	(wire
+		(pts
+			(xy 50.8 185.42)
+			(xy 50.8 187.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5417b781-3c82-51d7-abed-99c38d5b3e32")
+	)
+	(wire
+		(pts
+			(xy 50.8 185.42)
+			(xy 40.64 185.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b7f72859-c2ba-596a-ab3b-6dfec98b9dbf")
+	)
+	(wire
+		(pts
+			(xy 33.02 185.42)
+			(xy 27.94 185.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6de3d344-e59d-58e6-939b-43bd80c36a2c")
+	)
+	(junction
+		(at 50.8 185.42)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "afb2d34b-b30f-5b02-84f0-5a329bfaa38c")
+	)
+	(wire
+		(pts
+			(xy 20.32 185.42)
+			(xy 17.78 185.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "55991cb8-788a-5b7a-afad-cf3535e91321")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 17.78 185.42 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "96e68499-a1e9-5150-87dc-9e3086362a6b")
+		(property
+			"Reference"
+			"#PWR011"
+			(at 17.78 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"AGND"
+			(at 17.78 190.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 17.78 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 17.78 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "75311473-2cf7-5cbd-a783-d298a8b02493")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "#PWR011")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 60.96 190.5)
+			(xy 58.42 190.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e0445a9a-e907-59aa-abee-8b3590137a52")
+	)
+	(wire
+		(pts
+			(xy 58.42 195.58)
+			(xy 58.42 190.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c4fa1377-fc9d-501f-85f2-a2b44c4c0ca7")
+	)
+	(symbol
+		(lib_id "Amplifier_Operational:TL074")
+		(at 137.16 187.96 0)
+		(unit 2)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "df597f3b-9e79-5bbc-8111-924990d43c04")
+		(property
+			"Reference"
+			"U24"
+			(at 134.62 182.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"OPA1654AIDR"
+			(at 134.62 193.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
+			(at 137.16 187.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 137.16 187.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"overdrive: x2, buffer del tosatore, differenza, buffer del cursore, I/V"
+			(at 137.16 187.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"5"
+			(uuid "bb9d03b5-6069-51d1-82e2-6d3caccab2d6")
+		)
+		(pin
+			"6"
+			(uuid "727de8ac-786d-55c4-9e82-b483bfacc6f6")
+		)
+		(pin
+			"7"
+			(uuid "9ad032d6-53a7-5988-89ab-b9d1a51a5809")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "U24")
+					(unit 2)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 129.54 185.42)
+			(xy 124.46 185.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "364fed97-3c3c-5eb2-9ff4-d1d8ed60314d")
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 115.57 185.42 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "154d855e-37c0-55ce-a5c0-0620a23be98b")
+		(property
+			"Reference"
+			"R109"
+			(at 115.57 182.88 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"1k"
+			(at 115.57 187.96 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 115.57 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 115.57 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "55752467-2a26-5262-9216-f3c67ae6fe10")
+		)
+		(pin
+			"2"
+			(uuid "d5633f3e-0c1d-517f-96d1-4c68668b13c6")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R109")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 124.46 185.42)
+			(xy 119.38 185.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2aaf7b77-57a3-5589-83ab-6a8ddd25dffa")
+	)
+	(wire
+		(pts
+			(xy 111.76 185.42)
+			(xy 109.22 185.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2cfdc76b-30b6-5e2a-bae8-6c0b0705efad")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 109.22 185.42 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8c639106-eb4c-5335-8a8f-6f811b8e9774")
+		(property
+			"Reference"
+			"#PWR012"
+			(at 109.22 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"AGND"
+			(at 109.22 190.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 109.22 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 109.22 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "de3e2e9b-f17d-5cbf-a936-3a61882f03c2")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "#PWR012")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 129.54 190.5)
+			(xy 127 190.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ff3d3c9d-2e82-53cc-998c-eeb72f920f72")
+	)
+	(wire
+		(pts
+			(xy 127 190.5)
+			(xy 127 196.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b77c6111-c018-5044-b7fb-a23ee03bab83")
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 118.11 196.85 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "d60c5526-a893-5f36-b38a-bec0d0796ad6")
+		(property
+			"Reference"
+			"R106"
+			(at 118.11 194.31 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"10k 0.1%"
+			(at 118.11 199.39 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_SMD:R_0805_2012Metric"
+			(at 118.11 196.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 118.11 196.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"y = -(x + m d)"
+			(at 118.11 196.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "96984b23-56a0-5bea-a75f-3573e88e5fd1")
+		)
+		(pin
+			"2"
+			(uuid "8ec3f4a2-cc81-5e9b-9f2b-a629469b9ab1")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "R106")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 127 196.85)
+			(xy 121.92 196.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "43c7d1d2-670c-5296-b896-1668d7febf55")
+	)
+	(symbol
+		(lib_id "Diode:1N4148W")
+		(at 36.83 223.52 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "ac80ebd5-bc14-541b-b6e1-c2cbd2aa315a")
+		(property
+			"Reference"
+			"D25"
+			(at 36.83 220.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"1N4148W"
+			(at 36.83 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Diode_SMD:D_SOD-123"
+			(at 36.83 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 36.83 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "3d9c14f5-030d-5bb3-af00-d2d2c45c802d")
+		)
+		(pin
+			"2"
+			(uuid "b8af7900-a2c0-59e9-8b49-f99462d66b10")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "D25")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 40.64 223.52)
+			(xy 43.18 223.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c600f044-84ef-54c6-9d96-32223f94cf58")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 43.18 223.52 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7c0ac64e-b9f7-5e60-8b77-9bfeda8e637b")
+		(property
+			"Reference"
+			"#PWR013"
+			(at 43.18 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"AGND"
+			(at 43.18 228.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 43.18 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 43.18 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "cf6ae219-3471-5945-8062-5690a1b71823")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "#PWR013")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Diode:1N4148W")
+		(at 72.39 223.52 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "1cf31445-d113-5fe2-b166-36e6af5247ab")
+		(property
+			"Reference"
+			"D29"
+			(at 72.39 220.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"1N4148W"
+			(at 72.39 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Diode_SMD:D_SOD-123"
+			(at 72.39 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 72.39 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "785699c2-40be-522f-8c4d-b0811ddd7250")
+		)
+		(pin
+			"2"
+			(uuid "e10eb628-d244-5165-b651-b21816789451")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "D29")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 63.5 223.52)
+			(xy 68.58 223.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f53a2b31-5613-591e-9caf-e352ce8fdf67")
+	)
+	(wire
+		(pts
+			(xy 78.74 223.52)
+			(xy 76.2 223.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "704d1a68-81f7-570f-ba4d-ec0de3e27cdc")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 78.74 223.52 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "aed76926-a606-5cee-a0d5-a765a4d0ee28")
+		(property
+			"Reference"
+			"#PWR014"
+			(at 78.74 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"AGND"
+			(at 78.74 228.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 78.74 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 78.74 223.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "5253fac0-6975-5786-9bea-108f5e21d2e0")
+		)
+		(instances
+			(project
+				"filtro-HPF"
+				(path
+					"/7a3f7285-eb38-561d-91e0-6ac4030fed34/2395259e-71fc-5865-9cf4-963865507a0e"
+					(reference "#PWR014")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 342.9 137.16)
+			(xy 342.9 144.78)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "61e3b0bc-7a39-5a78-af47-56420b7c5ebf")
+	)
+	(wire
+		(pts
+			(xy 342.9 144.78)
+			(xy 322.58 144.78)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d6980ef8-26fa-597d-8a09-f29b78eb9c0e")
+	)
+	(wire
+		(pts
+			(xy 322.58 144.78)
+			(xy 322.58 142.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "85f1b71d-88e6-5aa5-9043-4e909feb89c7")
+	)
+	(wire
+		(pts
+			(xy 63.5 223.52)
+			(xy 50.8 223.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "bb1c0701-8236-5c2f-863d-1503ad491242")
+	)
+	(wire
+		(pts
+			(xy 50.8 223.52)
+			(xy 50.8 195.58)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ff2573f4-641e-53bc-9729-b5e6b47c286e")
+	)
+	(wire
+		(pts
+			(xy 88.9 134.62)
+			(xy 88.9 156.21)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a916cf8a-098a-579c-8790-8e0124ca2a1b")
+	)
+	(wire
+		(pts
+			(xy 88.9 156.21)
+			(xy 63.5 156.21)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1f349805-d81e-5dfa-a465-cda88e26f935")
+	)
+	(wire
+		(pts
+			(xy 264.16 134.62)
+			(xy 264.16 156.21)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4a4f228f-a842-52ca-b6ed-f0e66bfe7065")
+	)
+	(wire
+		(pts
+			(xy 264.16 156.21)
+			(xy 238.76 156.21)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d8f049c5-d1ed-5551-9fbb-2be7d53cc418")
+	)
+	(wire
+		(pts
+			(xy 175.26 134.62)
+			(xy 175.26 156.21)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "86c7a59b-ecad-554f-9d37-87e6c131f928")
+	)
+	(wire
+		(pts
+			(xy 175.26 156.21)
+			(xy 149.86 156.21)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "41212261-9544-5414-bdf0-92831cd026ac")
+	)
+	(wire
+		(pts
+			(xy 58.42 52.07)
+			(xy 58.42 54.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "24bc5487-64a6-598a-8c9c-2beb7131e093")
+	)
+	(wire
+		(pts
+			(xy 58.42 54.61)
+			(xy 96.52 54.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b4414ab1-7660-5929-8631-b4229a0ce71a")
+	)
+	(wire
+		(pts
+			(xy 96.52 54.61)
+			(xy 96.52 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "329014fb-2193-5343-aa90-436abb4ca108")
+	)
+	(wire
+		(pts
+			(xy 109.22 91.44)
+			(xy 109.22 50.8)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "dc2338e0-9209-5077-84d4-12ae55d821c0")
+	)
+	(wire
+		(pts
+			(xy 109.22 50.8)
+			(xy 83.82 50.8)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5e10973a-b1e9-5dee-9f19-3f1a8b897e5c")
+	)
+	(wire
+		(pts
+			(xy 60.96 185.42)
+			(xy 60.96 160.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ae937220-d1b2-5b49-b2b4-5ca4cb3a6e9b")
+	)
+	(wire
+		(pts
+			(xy 60.96 160.02)
+			(xy 101.6 160.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "371cea2f-9838-576c-a76f-06079b8567d6")
+	)
+	(wire
+		(pts
+			(xy 101.6 160.02)
+			(xy 101.6 134.62)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "eb78786c-70c4-59ab-8f57-d72215618b2b")
+	)
+	(wire
+		(pts
+			(xy 58.42 195.58)
+			(xy 78.74 195.58)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "561e5379-ac49-5d7d-8eca-0954ce3a2ae7")
+	)
+	(wire
+		(pts
+			(xy 78.74 195.58)
+			(xy 78.74 187.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cd65d230-ea74-5d10-8987-c8cfc539962f")
+	)
+	(wire
+		(pts
+			(xy 78.74 187.96)
+			(xy 76.2 187.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "45647f05-0a8e-5af1-86c1-3d0733926e73")
+	)
+	(wire
+		(pts
+			(xy 78.74 187.96)
+			(xy 106.68 187.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "76e77a50-6374-58f6-b6ea-090824b0ff40")
+	)
+	(wire
+		(pts
+			(xy 106.68 187.96)
+			(xy 106.68 146.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ad80a19f-d9b8-5a41-85c8-60afef4a615d")
+	)
+	(wire
+		(pts
+			(xy 106.68 146.05)
+			(xy 132.08 146.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8997c55e-ad43-5ffe-99d1-dd5271d24250")
+	)
+	(wire
+		(pts
+			(xy 233.68 45.72)
+			(xy 233.68 50.8)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9ae859e7-3158-5aa0-9b11-0dfab5a37d68")
+	)
+	(wire
+		(pts
+			(xy 233.68 50.8)
+			(xy 251.46 50.8)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c9eee012-61fa-545b-8c90-bd100675319d")
+	)
+	(wire
+		(pts
+			(xy 251.46 50.8)
+			(xy 251.46 43.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d7ad14e3-dde2-58c8-b694-dc3b4688eaca")
+	)
+	(wire
+		(pts
+			(xy 251.46 43.18)
+			(xy 248.92 43.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "be175271-b262-5da4-b13c-bfaaca175890")
+	)
+	(wire
+		(pts
+			(xy 231.14 48.26)
+			(xy 231.14 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d3766f6e-44d3-5d8f-aa36-0954d0b47c11")
+	)
+	(wire
+		(pts
+			(xy 231.14 69.85)
+			(xy 134.62 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "38276938-5c58-5556-b8b0-852157de97d6")
+	)
+	(wire
+		(pts
+			(xy 134.62 69.85)
+			(xy 134.62 62.23)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a2519e03-49e8-540d-a414-5d0ff158ebc4")
+	)
+	(wire
+		(pts
+			(xy 50.8 93.98)
+			(xy 50.8 62.23)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "dc49a252-f794-54e5-a5f0-ae3d310c4509")
+	)
+	(wire
+		(pts
+			(xy 50.8 62.23)
+			(xy 127 62.23)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7afbb832-9c8e-587b-9d8e-f0012db3a824")
+	)
+	(wire
+		(pts
+			(xy 127 62.23)
+			(xy 127 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5a014827-34b3-52aa-8035-9363babc83c9")
+	)
+	(wire
+		(pts
+			(xy 139.7 146.05)
+			(xy 139.7 127)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "16c15f63-d05b-55d5-92f9-acaabb58c37b")
+	)
+	(wire
+		(pts
+			(xy 139.7 127)
+			(xy 22.86 127)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9cda9349-3f18-5b01-b586-73f953383412")
+	)
+	(wire
+		(pts
+			(xy 22.86 127)
+			(xy 22.86 146.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a3b3f8c2-ae01-5636-b458-4b2da0d2b120")
+	)
+	(wire
+		(pts
+			(xy 147.32 58.42)
+			(xy 185.42 58.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7db9a94c-c255-50dd-a917-98e879c240a1")
+	)
+	(wire
+		(pts
+			(xy 185.42 58.42)
+			(xy 185.42 43.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "58ea7708-785d-5cfc-a2bc-4cb07b3b506a")
+	)
+	(wire
+		(pts
+			(xy 147.32 57.15)
+			(xy 128.27 57.15)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "862443ac-9a49-5833-9391-6df1047a3f5c")
+	)
+	(wire
+		(pts
+			(xy 128.27 57.15)
+			(xy 128.27 63.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c64f2db4-6548-5994-acc2-e5a11d832a4a")
+	)
+	(wire
+		(pts
+			(xy 128.27 63.5)
+			(xy 40.64 63.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cf1eea34-087a-52ac-95d5-7478b38638bd")
+	)
+	(wire
+		(pts
+			(xy 40.64 63.5)
+			(xy 40.64 62.23)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f32e6f9c-9d46-5dd6-803d-c9ae63d45b47")
+	)
+	(wire
+		(pts
+			(xy 25.4 101.6)
+			(xy 58.42 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "913a9179-dc69-522d-b61a-99ee0d2c480c")
+	)
+	(wire
+		(pts
+			(xy 58.42 101.6)
+			(xy 58.42 93.98)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "54fd204a-6815-5d2e-8491-ef47f72610b4")
+	)
+	(wire
+		(pts
+			(xy 58.42 93.98)
+			(xy 58.42 71.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "259f4c3f-4a6e-5bab-9e61-5a93cb0a35f4")
+	)
+	(wire
+		(pts
+			(xy 58.42 71.12)
+			(xy 172.72 71.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "79c6809f-e60e-5dbe-9710-e9d97f048e93")
+	)
+	(wire
+		(pts
+			(xy 172.72 71.12)
+			(xy 172.72 53.34)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3d08054f-e8ac-5825-8f03-b667eab2f7bb")
+	)
+	(wire
+		(pts
+			(xy 129.54 185.42)
+			(xy 129.54 161.29)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "356666c0-6c4a-574e-b882-8e25c8cc39c2")
+	)
+	(wire
+		(pts
+			(xy 129.54 161.29)
+			(xy 276.86 161.29)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1cc2e019-c52e-508a-a8e7-3b82298a73cb")
+	)
+	(wire
+		(pts
+			(xy 276.86 161.29)
+			(xy 276.86 134.62)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "56b880e8-1ede-5f9c-bdde-7c42bcdae842")
+	)
+	(wire
+		(pts
+			(xy 33.02 223.52)
+			(xy 33.02 204.47)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cf6697b3-a89a-5545-ac04-0a9c33443365")
+	)
+	(wire
+		(pts
+			(xy 33.02 204.47)
+			(xy 105.41 204.47)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6cc5c308-adbb-51c1-ba11-69a4134fe2fd")
+	)
+	(wire
+		(pts
+			(xy 105.41 204.47)
+			(xy 105.41 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "08a532f0-cb20-5ea7-9bd6-a5bdd044f01f")
+	)
+	(wire
+		(pts
+			(xy 105.41 101.6)
+			(xy 119.38 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0f5465a8-9e83-5f8d-8b6a-3d05c5cf531e")
+	)
+	(wire
+		(pts
+			(xy 127 101.6)
+			(xy 147.32 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6e096799-1929-5e51-8559-85b0ac871d66")
+	)
+	(wire
+		(pts
+			(xy 147.32 101.6)
+			(xy 147.32 93.98)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c735b5f4-edd9-5aaf-a790-08372d409720")
+	)
+	(wire
+		(pts
+			(xy 147.32 93.98)
+			(xy 144.78 93.98)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5746c35b-8899-5f27-a9ee-8ac3ab9fd604")
+	)
+	(wire
+		(pts
+			(xy 147.32 93.98)
+			(xy 284.48 93.98)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "06827a26-5bd9-5bcf-a09c-d79926ab527d")
+	)
+	(wire
+		(pts
+			(xy 284.48 93.98)
+			(xy 284.48 52.07)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9ff13636-9207-5612-996a-b0812e6506f7")
+	)
+	(wire
+		(pts
+			(xy 297.18 52.07)
+			(xy 297.18 58.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d3265279-d145-54a2-9881-46b463bff562")
+	)
+	(wire
+		(pts
+			(xy 297.18 58.42)
+			(xy 340.36 58.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8862e900-a5f2-57cc-8ef1-08b7caaaeb3e")
+	)
+	(wire
+		(pts
+			(xy 340.36 58.42)
+			(xy 340.36 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "58061948-0ecc-5a91-8fca-6fa74d0c9db1")
+	)
+	(wire
+		(pts
+			(xy 292.1 52.07)
+			(xy 292.1 33.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7b04f940-450b-5008-b475-3b3fa11e4aa3")
+	)
+	(wire
+		(pts
+			(xy 292.1 33.02)
+			(xy 22.86 33.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7415f3e1-a640-5265-a4fd-42e5a2928d11")
+	)
+	(wire
+		(pts
+			(xy 22.86 33.02)
+			(xy 22.86 52.07)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ccb125cf-b240-5caf-8971-728bd2f77fc5")
+	)
+	(wire
+		(pts
+			(xy 127 190.5)
+			(xy 127 161.29)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "538c3a10-3a43-5330-bf1c-9a8c9d6fea10")
+	)
+	(wire
+		(pts
+			(xy 127 161.29)
+			(xy 40.64 161.29)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e37aa908-7672-54e0-ba08-41fd58df8338")
+	)
+	(wire
+		(pts
+			(xy 40.64 161.29)
+			(xy 40.64 156.21)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8e3bcdb4-5092-540a-9e2d-f45eae2f8481")
+	)
+	(wire
+		(pts
+			(xy 127 162.56)
+			(xy 355.6 162.56)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "16897df6-088b-53e8-9d22-48e8aad90618")
+	)
+	(wire
+		(pts
+			(xy 355.6 162.56)
+			(xy 355.6 137.16)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cb8765e3-47e2-5b03-8ffd-0494a5b704f3")
+	)
+	(wire
+		(pts
+			(xy 144.78 187.96)
+			(xy 147.32 187.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2a78fac6-3658-5081-a740-54a7218ee73e")
+	)
+	(wire
+		(pts
+			(xy 147.32 187.96)
+			(xy 147.32 204.47)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "76c4d5d6-6027-53d0-af1b-adb43170fe20")
+	)
+	(wire
+		(pts
+			(xy 147.32 204.47)
+			(xy 114.3 204.47)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "854d346e-05c1-5c3a-ba1a-4505e3c6dcae")
+	)
+	(wire
+		(pts
+			(xy 114.3 204.47)
+			(xy 114.3 196.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2522759d-d882-56c0-90e6-03613a746ceb")
+	)
+	(wire
+		(pts
+			(xy 147.32 187.96)
+			(xy 220.98 187.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9b53517b-88f8-5db7-8031-2edd31dcd727")
+	)
+	(wire
+		(pts
+			(xy 220.98 187.96)
+			(xy 220.98 146.05)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0098ff2e-1145-5e4f-9957-b47f6d1ec926")
+	)
+	(junction
+		(at 50.8 93.98)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "3615e248-778a-5f35-b72d-0fda2dcdde2c")
+	)
+	(junction
+		(at 88.9 134.62)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "9abc3e0b-8cb5-5872-827c-2a9e443f80c5")
+	)
+	(junction
+		(at 297.18 52.07)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "646ccd42-7b00-50ea-9564-4c9d35278ab6")
+	)
+	(junction
+		(at 292.1 52.07)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "e877764c-1146-5ff0-bf51-ab11b254362a")
+	)
+	(junction
+		(at 233.68 45.72)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "278fbde6-9087-5296-bbca-5ba9b44f4c9d")
+	)
+	(junction
+		(at 58.42 52.07)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "1b695019-1a70-5b83-b68c-6614f3ed4268")
+	)
+	(junction
+		(at 129.54 185.42)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "56ad96a7-7e54-5603-8adc-db24bc4e4fc5")
+	)
+	(junction
+		(at 147.32 57.15)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "336a75d9-02c0-5156-9843-3a89fdacc278")
+	)
+	(junction
+		(at 147.32 58.42)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "b55f5648-0fd9-5912-9ed3-72437754c9a5")
+	)
+	(junction
+		(at 60.96 185.42)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "1ee32ff9-b796-5c94-bba8-4b25be734d79")
+	)
+	(junction
+		(at 175.26 134.62)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "93293231-0c8f-5cab-9d7f-d5e5ff3bc098")
+	)
+	(junction
+		(at 109.22 91.44)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "510fe9eb-25cc-58f6-99b6-11245816663c")
+	)
+	(junction
+		(at 58.42 93.98)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "d13f077e-ae55-5cb6-8234-e69527efb939")
+	)
+	(junction
+		(at 139.7 146.05)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "1a815a84-6198-5916-8846-b1a2022047c1")
+	)
+	(junction
+		(at 147.32 93.98)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "ba80f283-03f0-5883-9aed-ac2cacea054a")
+	)
+	(junction
+		(at 147.32 187.96)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "1c61cf66-c73a-5f06-a9f5-3b6f346170fa")
+	)
+	(junction
+		(at 264.16 134.62)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "0b7c9d39-c570-5605-8c13-ca19fa612590")
+	)
+	(junction
+		(at 127 190.5)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "461fc319-46d7-5d96-a61f-41fcc617a248")
+	)
+	(junction
+		(at 127 162.56)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "38ed4913-aeb2-511b-b9bf-97d3bb431ec3")
+	)
+	(junction
+		(at 78.74 187.96)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "4521ff1f-6173-5ff2-82b3-d8afc8d2feff")
+	)
+	(junction
+		(at 342.9 137.16)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "403b6c28-584b-572e-b584-fdd04ada813f")
+	)
+	(global_label
+		"HPL2"
+		(shape passive)
+		(at 45.72 52.07 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "065fbaac-0dc2-5edf-b952-009ed29e2065")
+	)
+	(global_label
+		"YL"
+		(shape passive)
+		(at 167.64 43.18 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "4c77d027-adbf-5a54-8a1b-9e85d033d4bc")
+	)
+	(global_label
+		"DWL"
+		(shape passive)
+		(at 228.6 40.64 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "7a824326-651f-5da8-9507-1637190471b7")
+	)
+	(global_label
+		"PTL"
+		(shape passive)
+		(at 322.58 50.8 270)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "4784ee31-4142-52e3-bb4e-3482419aeba7")
+	)
+	(global_label
+		"HPR2"
+		(shape passive)
+		(at 45.72 146.05 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "e0d33557-9cad-52ee-844b-2f23b88f4683")
+	)
+	(global_label
+		"PTR"
+		(shape passive)
+		(at 187.96 134.62 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "4e2535ad-9553-5005-a323-328bbacf05c8")
+	)
+	(global_label
+		"YR"
+		(shape passive)
+		(at 220.98 146.05 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "1e49c599-61b3-580c-bbfa-134597c1834a")
+	)
+	(global_label
+		"DWR"
+		(shape passive)
+		(at 320.04 134.62 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "8c05a868-0357-59ad-86e2-896c64b6a473")
+	)
+)

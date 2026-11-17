@@ -21,12 +21,15 @@ import json, math, os, runpy, subprocess, sys, xml.etree.ElementTree as ET
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import pcbgen
 import leggibile_en as en
+import instrada
 from pcbgen import libsym, uid, uid_seed, _uuid, Q, CLI, dump
 
 MISSING = []      # testi senza traduzione inglese: fermano il giro
 
 
 def t_block(b):
+    if b == DECOUP:
+        return "POWER DECOUPLING: supply pins of the chips, bypass capacitors, unused op-amp units"
     e = en.block(b)
     if e is None:
         MISSING.append("blocco: " + b)
@@ -42,6 +45,10 @@ def t_value(v):
     return e
 
 G = 2.54
+UNIT_BLOCK = {}    # (ref, unità) -> blocco del disegno, se diverso da quello del pezzo
+DECOUP = "POWER DECOUPLING"
+BUDGET = 225      # altezza utile di una pagina A3 sotto il titolo
+BANDW = 370       # larghezza di una fascia di stadi: una pagina A3 coi margini
 FONT = 1.27
 CH = 1.05          # larghezza stimata di un carattere a 1,27 mm
 
@@ -103,6 +110,24 @@ class Sheet:
         self.segs = []          # (x1, y1, x2, y2, rete)
         self.labels = []        # (x, y, rete, globale, direzione)
         self.npwr = 0
+        self.R = instrada.Router()
+        self.juncs = set()
+        self.wireitems = []
+        self.kept = []          # (x, y) delle etichette rimaste
+
+    def tbox(self, s, x, y, just, ang=0, size=FONT):
+        """Ingombro di un testo, come ostacolo per i fili."""
+        w, hh = len(s) * CH * size / FONT, 0.8 * size / FONT
+        if just == "left":
+            a, b = 0, w
+        elif just == "right":
+            a, b = -w, 0
+        else:
+            a, b = -w / 2, w / 2
+        if ang == 90:
+            self.R.box(x - hh, y - b, x + hh, y - a)
+        else:
+            self.R.box(x + a, y - hh, x + b, y + hh)
 
     def symbol(self, p, u, x, y, r, refpos=None):
         self.libs[p.sym.lib_id] = p.sym.sexpr
@@ -124,18 +149,26 @@ class Sheet:
         s.append(["instances", ["project", Q(self.d.name),
                                 ["path", Q("/" + self.root), ["reference", Q(p.ref)], ["unit", u]]]])
         self.items.append(s)
+        self.R.symbol(p.sym, u, x, y, r, rotv)
+        self.tbox(p.ref, rx, ry, rj, fa)
+        self.tbox(t_value(p.value), vx, vy, vj, fa)
         for q in p.sym.units[u]:
             px, py = pin_at(x, y, r, q)
             self.points.append((px, py, p.nets.get(q["num"])))
+            self.R.point(px, py, p.nets.get(q["num"]))
 
     def wire(self, a, b, net):
         if a == b:
             return
-        self.items.append(["wire", ["pts", ["xy", a[0], a[1]], ["xy", b[0], b[1]]],
-                           ["stroke", ["width", 0], ["type", "default"]], ["uuid", uid()]])
+        it = ["wire", ["pts", ["xy", a[0], a[1]], ["xy", b[0], b[1]]],
+              ["stroke", ["width", 0], ["type", "default"]], ["uuid", uid()]]
+        self.items.append(it)
+        self.wireitems.append(it)
         self.segs.append((a[0], a[1], b[0], b[1], net))
+        self.R.seg(a[0], a[1], b[0], b[1], net)
 
     def junction(self, a):
+        self.juncs.add((sn(a[0]), sn(a[1])))
         self.items.append(["junction", ["at", a[0], a[1]], ["diameter", 0],
                            ["color", 0, 0, 0, 0], ["uuid", uid()]])
 
@@ -177,8 +210,17 @@ class Sheet:
                            ["instances", ["project", Q(self.d.name),
                                           ["path", Q("/" + self.root), ["reference", Q(ref)], ["unit", 1]]]]])
         self.points.append((sn(x), sn(y), net))
+        self.R.point(sn(x), sn(y), net)
+        self.R.box(x, y, x + body[0] * 3.8 + (1.3 if body[0] == 0 else 0), y + body[1] * 3.8 + (1.3 if body[1] == 0 else 0))
+        self.R.box(x - (1.3 if body[0] == 0 else 0), y - (1.3 if body[1] == 0 else 0), x, y)
+        self.tbox(net, vx, vy, vj, FIELD_ANGLE.get(r, 0))
+
+    def nc(self, pt):
+        self.items.append(["no_connect", ["at", pt[0], pt[1]], ["uuid", uid()]])
+        self.R.point(pt[0], pt[1], None)
 
     def text(self, s, x, y, size=3):
+        self.R.box(x, y - size, x + len(s) * size * 0.9, y)
         self.items.append(["text", Q(s), ["exclude_from_sim", "no"], ["at", sn(x), sn(y), 0],
                            ["effects", ["font", ["size", size, size], ["bold", "yes"]], ["justify", "left", "bottom"]],
                            ["uuid", uid()]])
@@ -355,20 +397,118 @@ def emit(sh, g, f, fd):
 
 def close_end(sh, pt, net, out, power, local, sideways=False):
     if net is None:
-        sh.items.append(["no_connect", ["at", pt[0], pt[1]], ["uuid", uid()]])
+        sh.nc(pt)
     elif net in power:
         sh.power(pt, net, out, sideways)
     else:
         sh.label(pt, net, out, net not in local)
 
 
+# ------------------------------------------------------------ ordine del segnale
+def pin_role(q):
+    nm = str(q["name"]).upper()
+    if q["type"] in ("output", "tri_state") or nm.startswith("OUT") or nm in ("~", "Q", "VOUT", "EO"):
+        return "out"
+    if q["type"] == "input" or nm in ("+", "-") or nm.startswith(("IN", "+IN", "-IN", "EC", "SIG")):
+        return "in"
+    return None
+
+
+def signal_columns(d, block, anchors, power):
+    """Colonna e ordine di ogni unità: dall'ingresso all'uscita, seguendo i passivi in serie."""
+    par = {}
+
+    def find(a):
+        while par.setdefault(a, a) != a:
+            par[a] = par[par[a]]
+            a = par[a]
+        return a
+
+    for p in d.parts:
+        if p.block == block and two_pin(p):
+            ns = [n for n in p.nets.values() if n and n not in power]
+            if len(ns) == 2:
+                par[find(ns[0])] = find(ns[1])
+    keys = [(p.ref, u) for p, u in anchors]
+    outs, ins = {}, {}
+    for p, u in anchors:
+        for q in p.sym.units[u]:
+            n = p.nets.get(q["num"])
+            if not n or n in power:
+                continue
+            r = pin_role(q)
+            if r == "out":
+                outs.setdefault(find(n), set()).add((p.ref, u))
+            elif r == "in":
+                ins.setdefault(find(n), set()).add((p.ref, u))
+    succ = {k: [] for k in keys}
+    for c, ss in outs.items():
+        for s_ in ss:
+            for t in ins.get(c, ()):
+                if t != s_ and t not in succ[s_]:
+                    succ[s_].append(t)
+    # archi all'indietro (retroazioni fra unità) tolti con una visita in profondità
+    state, dag = {}, {k: [] for k in keys}
+
+    def visit(k):
+        state[k] = 1
+        for t in succ[k]:
+            if state.get(t) == 1:
+                continue
+            dag[k].append(t)
+            if t not in state:
+                visit(t)
+        state[k] = 2
+
+    roots = [k for k in keys if not any(k in v for v in succ.values())] + keys
+    for k in roots:
+        if k not in state:
+            visit(k)
+    col = {k: 0 for k in keys}
+    for _ in range(len(keys)):
+        ch = False
+        for k in keys:
+            for t in dag[k]:
+                if col[t] < col[k] + 1:
+                    col[t], ch = col[k] + 1, True
+        if not ch:
+            break
+    linked = {k for k in keys if succ[k]} | {t for v in succ.values() for t in v}
+    # catene indipendenti (lato L, lato R ...): ognuna nella sua fascia
+    cp = {k: k for k in keys}
+
+    def cf(a):
+        while cp[a] != a:
+            cp[a] = cp[cp[a]]
+            a = cp[a]
+        return a
+
+    for k in keys:
+        for t in succ[k]:
+            cp[cf(k)] = cf(t)
+    first = {}
+    for k in keys:
+        first.setdefault(cf(k) if k in linked else None, keys.index(k))
+    comp = {k: (first[cf(k)] if k in linked else 10 ** 6) for k in keys}
+    return col, succ, comp
+
+
 # ------------------------------------------------------------ disegno di un blocco
-def draw_block(sh, d, block, power, local_of, used, x0, y0):
-    """Disegna il blocco con l'angolo in alto a sinistra in (x0, y0). Rende (larghezza, altezza)."""
+def draw_block(sh, d, block, power, local_of, used, x0, y0, only=None, rest_too=True, budget=1e9):
+    """Disegna il blocco con l'angolo in alto a sinistra in (x0, y0). Rende (larghezza, altezza, altro):
+    only = le unità da disegnare (None: tutte); rest_too = anche i passivi rimasti, finché l'altezza
+    resta sotto budget; altro = True se ne restano per una pagina dopo."""
+    more = False
     parts = [p for p in d.parts if p.block == block]
     local = local_of[block]
     lay = Layout(d, block, local, power, used)
-    anchors = [(p, u) for p in parts if not two_pin(p) and len(p.sym.pins()) > 1 for u in sorted(p.sym.units)]
+    anchors = [(p, u) for p in d.parts if not two_pin(p) and len(p.sym.pins()) > 1 for u in sorted(p.sym.units)
+               if UNIT_BLOCK.get((p.ref, u), p.block) == block]
+    col, succ, comp = signal_columns(d, block, anchors, power)
+    if only is not None:
+        anchors = [a for a in anchors if (a[0].ref, a[1]) in only]
+    idx = {(p.ref, u): i for i, (p, u) in enumerate(anchors)}
+    anchors.sort(key=lambda a: (comp[(a[0].ref, a[1])], col[(a[0].ref, a[1])], idx[(a[0].ref, a[1])]))
     for p, u in anchors:
         for q in p.sym.units[u]:
             if p.nets.get(q["num"]):
@@ -386,7 +526,7 @@ def draw_block(sh, d, block, power, local_of, used, x0, y0):
             key = (lambda q: -q["y"]) if side[1] == 0 else (lambda q: q["x"])
             qs = sorted(qs, key=key)
             groups = []
-            dense = len(qs) > 3
+            dense = len(qs) > 3 and (p.ref.startswith("J") or len(qs) > 12)
             for q in qs:
                 net = p.nets.get(q["num"])
                 g = Group()
@@ -453,13 +593,69 @@ def draw_block(sh, d, block, power, local_of, used, x0, y0):
         ext["T"] = max(ext["T"], -min(ys) + 5)
         ext["B"] = max(ext["B"], max(ys) + 5)
         w, h = ext["L"] + ext["R"], ext["T"] + ext["B"]
-        if cx + w > x0 + 420 and cx > x0:
-            cx, rowy, rowh = x0, rowy + rowh + 8, 0
-        ax, ay = sn(cx + ext["L"], G), sn(rowy + ext["T"], G)
-        placed.append((unit, lanes, ax, ay))
-        cx += w + 10
-        rowh = max(rowh, h)
-        maxw = max(maxw, cx - x0)
+        placed.append([unit, lanes, ext, w, h])
+    # colonne nell'ordine del segnale; in colonna, l'ordine dei predecessori
+    groups = {}
+    for it in placed:
+        k = (it[0]["p"].ref, it[0]["u"])
+        groups.setdefault(comp[k], {}).setdefault(col[k] if comp[k] < 10 ** 6 else 0, []).append(it)
+    rowof = {}
+    cx, bottom, band = x0, y0 + 8, y0 + 8
+    seq = []
+    for g_ in sorted(groups):
+        for c in sorted(groups[g_]):
+            seq.append((g_, c, groups[g_][c]))
+    lastg = None
+    sh.bands = []           # [chiavi delle unità, altezza] di ogni fascia, per l'impaginazione
+    cur = None
+
+    def close_band():
+        if cur and cur[0]:
+            cur[1] = bottom - cur[2]
+            sh.bands.append(cur)
+
+    for g_, c, its in seq:
+        if lastg is not None and g_ != lastg:
+            close_band()
+            cx, band = x0, bottom + 6
+            cur = None
+        lastg = g_
+        def key(it):
+            k = (it[0]["p"].ref, it[0]["u"])
+            ps = [rowof[s_] for s_ in rowof if k in succ.get(s_, [])]
+            return (sum(ps) / len(ps) if ps else 1e9, idx[k])
+        its.sort(key=key)
+        # una colonna più alta di una pagina continua a destra
+        subs, sub, hh = [], [], 0
+        for it in its:
+            if sub and hh + it[4] > BUDGET - 20:
+                subs.append(sub)
+                sub, hh = [], 0
+            sub.append(it)
+            hh += it[4] + 10
+        subs.append(sub)
+        for sub in subs:
+            cw = max(it[3] for it in sub)
+            if cx + cw > x0 + BANDW and cx > x0:
+                # fascia nuova sotto: il segnale riprende da sinistra
+                close_band()
+                cx, band = x0, bottom + 6
+                cur = None
+            if cur is None:
+                cur = [[], 0, band]
+            cy = band
+            for n, it in enumerate(sub):
+                unit, lanes, ext, w, h = it
+                ax, ay = sn(cx + ext["L"], G), sn(cy + ext["T"], G)
+                it[:] = [unit, lanes, ax, ay]
+                rowof[(unit["p"].ref, unit["u"])] = n
+                cur[0].append((unit["p"].ref, unit["u"]))
+                cy += h + 10
+            bottom = max(bottom, cy)
+            cx += cw + 18
+            maxw = max(maxw, cx - x0)
+    close_band()
+    rowy, rowh = bottom - 10, 0
     for unit, lanes, ax, ay in placed:
         p, u = unit["p"], unit["u"]
         if p.ref.startswith("J") and len(p.sym.pins()) > 20:
@@ -510,7 +706,10 @@ def draw_block(sh, d, block, power, local_of, used, x0, y0):
     # 3. i passivi rimasti (fra due alimentazioni, fra due reti senza integrato): in fila, in verticale
     ry = rowy + rowh + 10 if placed else y0 + 12
     gx, gy, gh = x0 + 5, ry, 0
-    while True:
+    while rest_too:
+        if gy - y0 > budget:
+            more = True
+            break
         free = [p for p in parts if two_pin(p) and p.ref not in used
                 and any(n and n not in power for n in p.nets.values())]
         if not free:
@@ -522,7 +721,7 @@ def draw_block(sh, d, block, power, local_of, used, x0, y0):
         lab = len(net) * CH + 5
         amax = max([e[0][0] for e in g.ends] + [g.box[1]]) + 8
         w, h = lab + amax, (g.box[3] - g.box[2]) + 8
-        if gx + w > x0 + 420 and gx > x0 + 5:
+        if gx + w > x0 + BANDW and gx > x0 + 5:
             gx, gy, gh = x0 + 5, gy + gh + 6, 0
         o = (sn(gx + lab, G), sn(gy - g.box[2] + 4, G))
         f, fd = transform((1, 0), o)
@@ -537,10 +736,14 @@ def draw_block(sh, d, block, power, local_of, used, x0, y0):
         maxw = max(maxw, gx - x0)
     if gy != ry or gx != x0 + 5:
         ry = gy + gh + 10
-    rest = [p for p in parts if (two_pin(p) or len(p.sym.pins()) == 1) and p.ref not in used]
+    rest = [p for p in parts if (two_pin(p) or len(p.sym.pins()) == 1) and p.ref not in used] \
+        if rest_too and not more else []
     rx = x0 + 5
     ry0 = ry
     for p in rest:
+        if ry - y0 > budget:
+            more = True
+            break
         used.add(p.ref)
         nums = sorted(p.nets) if len(p.nets) == 2 else list(p.sym.pins())
         if len(p.sym.pins()) == 1:
@@ -567,17 +770,18 @@ def draw_block(sh, d, block, power, local_of, used, x0, y0):
         close_end(sh, pt_bot, p.nets.get(bot), (0, 1), power, local)
         lw = max(len(p.nets.get(top) or ""), len(p.nets.get(bot) or ""), len(p.value) + 4) * CH
         rx += max(12.7, lw + 5)
-        if rx > x0 + 420:
+        if rx > x0 + BANDW:
             rx, ry = x0 + 5, ry + 30
     height = (ry + 30 if rest else ry) - y0
-    width = max(maxw, (rx - x0) if not rest or ry == ry0 else 420) + 5
+    width = max(maxw, (rx - x0) if not rest or ry == ry0 else BANDW) + 5
     if rest:
-        width = max(width, min(rx - x0, 430))
-    return max(width, 60), max(height, 30)
+        width = max(width, min(rx - x0, BANDW + 10))
+    return max(width, 60), max(height, 30), more
 
 
-# ------------------------------------------------------------ etichette, con le reti tutte a filo tolte
-def finish_labels(sh):
+# ------------------------------------------------------------ fili al posto delle etichette
+def components(sh, net):
+    """Pezzi della rete net sulla pagina: insiemi di celle unite da fili, pin ed etichette."""
     par = {}
 
     def find(a):
@@ -586,28 +790,194 @@ def finish_labels(sh):
             a = par[a]
         return a
 
-    def union(a, b):
-        par[find(a)] = find(b)
-
+    cells = set()
     for x1, y1, x2, y2, n in sh.segs:
-        union((x1, y1), (x2, y2))
-    comps = {}
+        if n != net:
+            continue
+        a, b = instrada.cell(x1, y1), instrada.cell(x2, y2)
+        line = [(i, a[1]) for i in range(min(a[0], b[0]), max(a[0], b[0]) + 1)] if a[1] == b[1] else \
+               [(a[0], j) for j in range(min(a[1], b[1]), max(a[1], b[1]) + 1)]
+        for c in line:
+            par[find(c)] = find(line[0])
+            cells.add(c)
     for x, y, n in sh.points:
-        if n:
-            comps.setdefault(n, set()).add(find((x, y)))
+        if n == net:
+            cells.add(instrada.cell(x, y))
+    labs = {}
+    for i, (x, y, n, glob, out) in enumerate(sh.labels):
+        if n == net:
+            c = instrada.cell(x, y)
+            cells.add(c)
+            labs.setdefault(c, []).append(i)
+    groups = {}
+    for c in cells:
+        groups.setdefault(find(c), set()).add(c)
+    return list(groups.values()), labs
+
+
+def label_cells(sh, i):
+    x, y, n, glob, out = sh.labels[i]
+    w = len(n) * CH + (3 if glob else 1)
+    ex, ey = x + out[0] * w, y + out[1] * w
+    if out[1] == 0:
+        return (min(x, ex), y - (1.6 if not glob else 0.9), max(x, ex), y + (0 if not glob else 0.9))
+    return (x - (1.6 if not glob else 0.9), min(y, ey), x + (0 if not glob else 0.9), max(y, ey))
+
+
+def route_sheet(sh):
+    """Collega con fili i pezzi delle reti che hanno etichette, dove il percorso è corto e libero."""
+    R = sh.R
+    for i, (x, y, n, glob, out) in enumerate(sh.labels):
+        x1, y1, x2, y2 = label_cells(sh, i)
+        c0 = instrada.cell(x, y)
+        R.box(x1, y1, x2, y2, net=n)
+        R.labtext.get(c0, set()).discard(n)
+    nets = []
     for x, y, n, glob, out in sh.labels:
-        comps.setdefault(n, set()).add(find((x, y)))
+        if (n, glob) not in nets:
+            nets.append((n, glob))
+    order = []
+    for n, glob in nets:
+        comps, _ = components(sh, n)
+        if len(comps) < 2:
+            continue
+        cs = [c for g in comps for c in g]
+        spread = (max(c[0] for c in cs) - min(c[0] for c in cs)) + (max(c[1] for c in cs) - min(c[1] for c in cs))
+        order.append((glob, spread, n))
+    order.sort()
+    done = 0
+    for glob, spread, n in order:
+        tried = set()
+        while True:
+            comps, _ = components(sh, n)
+            if len(comps) < 2:
+                break
+            comps.sort(key=len, reverse=True)
+            ok = False
+            for k, tree in enumerate(comps):
+                if k in tried:
+                    continue
+                goals = [c for j, g in enumerate(comps) if j != k for c in g]
+                d0 = min(abs(a[0] - b[0]) + abs(a[1] - b[1]) for a in list(tree)[:200] for b in goals[:200])
+                path = R.route(n, list(tree), goals, 1.5 * d0 + 40)
+                if path:
+                    for a, b in instrada.segments(path):
+                        sh.wire((sn(a[0] * G / 2), sn(a[1] * G / 2)), (sn(b[0] * G / 2), sn(b[1] * G / 2)), n)
+                    ok = True
+                    done += 1
+                    tried = set()
+                    break
+                tried.add(k)
+            if not ok:
+                break
+    # giunzioni: dove un estremo di filo cade su un altro filo o su un pin già collegato
+    for net in {n for *_, n in sh.segs}:
+        deg = {}
+        for x1, y1, x2, y2, n in sh.segs:
+            if n != net:
+                continue
+            a, b = instrada.cell(x1, y1), instrada.cell(x2, y2)
+            deg[a] = deg.get(a, 0) + 1
+            deg[b] = deg.get(b, 0) + 1
+            line = [(i, a[1]) for i in range(min(a[0], b[0]) + 1, max(a[0], b[0]))] if a[1] == b[1] else \
+                   [(a[0], j) for j in range(min(a[1], b[1]) + 1, max(a[1], b[1]))]
+            for c in line:
+                deg[c] = deg.get(c, 0) + 2
+        ends = {instrada.cell(x, y) for x1, y1, x2, y2, n in sh.segs if n == net for x, y in ((x1, y1), (x2, y2))}
+        for x, y, n in sh.points:
+            if n == net:
+                c = instrada.cell(x, y)
+                deg[c] = deg.get(c, 0) + 1
+        for c in ends:
+            if deg.get(c, 0) >= 3:
+                pt = (sn(c[0] * G / 2), sn(c[1] * G / 2))
+                if pt not in sh.juncs:
+                    sh.junction(pt)
+    return done
+
+
+def prune(sh):
+    """Toglie i pezzi di filo rimasti appesi (portavano un'etichetta che non serve più)."""
+    while True:
+        anchors = {}
+        for x, y, n in sh.points:
+            anchors[(x, y)] = anchors.get((x, y), 0) + 1
+        for xy in sh.kept:
+            anchors[xy] = anchors.get(xy, 0) + 1
+        ends = {}
+        for x1, y1, x2, y2, n in sh.segs:
+            for xy in ((x1, y1), (x2, y2)):
+                ends[xy] = ends.get(xy, 0) + 1
+        changed = False
+        for i, (x1, y1, x2, y2, n) in enumerate(sh.segs):
+            for a, b in (((x1, y1), (x2, y2)), ((x2, y2), (x1, y1))):
+                if ends[a] > 1 or a in anchors or a in sh.juncs:
+                    continue
+                # punto più vicino ad a, lungo il filo, dove c'è qualcosa
+                def on(pt):
+                    return min(a[0], b[0]) - 1e-6 <= pt[0] <= max(a[0], b[0]) + 1e-6 and \
+                           min(a[1], b[1]) - 1e-6 <= pt[1] <= max(a[1], b[1]) + 1e-6 and pt != a
+                stops = [pt for pt in list(anchors) + list(sh.juncs) + list(ends) if on(pt)]
+                stops = [pt for pt in stops if pt != b or ends[b] > 1 or b in anchors or b in sh.juncs]
+                it = sh.wireitems[i]
+                if not stops:
+                    sh.items.remove(it)
+                    del sh.wireitems[i], sh.segs[i]
+                else:
+                    c = min(stops, key=lambda pt: abs(pt[0] - a[0]) + abs(pt[1] - a[1]))
+                    sh.segs[i] = (c[0], c[1], b[0], b[1], n)
+                    it[1] = ["pts", ["xy", c[0], c[1]], ["xy", b[0], b[1]]]
+                    if c == b:
+                        sh.items.remove(it)
+                        del sh.wireitems[i], sh.segs[i]
+                changed = True
+                break
+            if changed:
+                break
+        if not changed:
+            break
+    # giunzioni con meno di tre rami
+    deg = {}
+    for x1, y1, x2, y2, n in sh.segs:
+        for xy in ((x1, y1), (x2, y2)):
+            deg[xy] = deg.get(xy, 0) + 1
+        for j in list(sh.juncs):
+            if j not in ((x1, y1), (x2, y2)) and min(x1, x2) <= j[0] <= max(x1, x2) and min(y1, y2) <= j[1] <= max(y1, y2):
+                deg[j] = deg.get(j, 0) + 2
+    for x, y, n in sh.points:
+        deg[(x, y)] = deg.get((x, y), 0) + 1
+    for it in [it for it in sh.items if it[0] == "junction"]:
+        j = (it[1][1], it[1][2])
+        if deg.get(j, 0) < 3:
+            sh.items.remove(it)
+            sh.juncs.discard(j)
+
+
+def finish_labels(sh):
+    """Un'etichetta per pezzo di rete; nessuna se la rete locale è tutta a filo."""
+    nets = []
     for x, y, n, glob, out in sh.labels:
-        if len(comps.get(n, ())) <= 1:
-            continue      # rete tutta a filo in un pezzo: l'etichetta non serve
-        la = ang_of(out)
-        just = "right" if la in (180, 270) else "left"
-        if glob:
-            sh.items.append(["global_label", Q(n), ["shape", "passive"], ["at", x, y, la], ["fields_autoplaced", "yes"],
-                             ["effects", ["font", ["size", 1.0, 1.0]], ["justify", just]], ["uuid", uid()]])
-        else:
-            sh.items.append(["label", Q(n), ["at", x, y, la], ["fields_autoplaced", "yes"],
-                             ["effects", ["font", ["size", FONT, FONT]], ["justify", just, "bottom"]], ["uuid", uid()]])
+        if n not in nets:
+            nets.append(n)
+    for n in nets:
+        comps, labs = components(sh, n)
+        glob = any(l[2] == n and l[3] for l in sh.labels)
+        if len(comps) <= 1 and not glob:
+            continue
+        for g in comps:
+            idx = sorted(i for c in g for i in labs.get(c, []))
+            if not idx:
+                continue
+            x, y, n, glob, out = sh.labels[idx[0]]
+            sh.kept.append((x, y))
+            la = ang_of(out)
+            just = "right" if la in (180, 270) else "left"
+            if glob:
+                sh.items.append(["global_label", Q(n), ["shape", "passive"], ["at", x, y, la], ["fields_autoplaced", "yes"],
+                                 ["effects", ["font", ["size", 1.0, 1.0]], ["justify", just]], ["uuid", uid()]])
+            else:
+                sh.items.append(["label", Q(n), ["at", x, y, la], ["fields_autoplaced", "yes"],
+                                 ["effects", ["font", ["size", FONT, FONT]], ["justify", just, "bottom"]], ["uuid", uid()]])
 
 
 def check_overlaps(sh):
@@ -627,8 +997,28 @@ def check_overlaps(sh):
 
 
 # ------------------------------------------------------------ schema intero
+PAPERS = (("A4", 297, 210), ("A3", 420, 297), ("A2", 594, 420), ("A1", 841, 594))
+
+
+def paper_for(w, h):
+    for name, pw, ph in PAPERS:
+        if w + 30 <= pw and h + 50 <= ph:
+            return name, pw, ph
+    return "User", sn(w + 40, 10), sn(h + 60, 10)
+
+
+def sheet_file(d, sh, paper, title, page, comment):
+    pp = [Q(paper[0])] if paper[0] != "User" else [Q("User"), paper[1], paper[2]]
+    return ["kicad_sch", ["version", 20260101], ["generator", Q("eeschema")], ["generator_version", Q("10.0")],
+            ["uuid", Q(sh.fileuuid)], ["paper"] + pp,
+            ["title_block", ["title", Q(title)], ["rev", Q(en.rev(d.rev))], ["comment", 1, Q(comment)],
+             ["comment", 2, Q("Page %d" % page)]],
+            ["lib_symbols"] + list(sh.libs.values())] + sh.items
+
+
 def build(modpath):
-    """modpath = file del modulo; «file.py:L» passa L come argomento (master-uscita.py:L)."""
+    """modpath = file del modulo; «file.py:L» passa L come argomento (master-uscita.py:L).
+    Esce uno schema gerarchico: la pagina 1 è l'indice dei blocchi, poi una pagina per blocco."""
     modpath, _, arg = modpath.partition(":")
     sys.path.insert(0, os.path.dirname(os.path.abspath(modpath)))
     argv = sys.argv
@@ -641,69 +1031,187 @@ def build(modpath):
     d = g["d"]
     out = os.path.join(d.outdir, "leggibile")
     os.makedirs(out, exist_ok=True)
+    for f in os.listdir(out):
+        if f.endswith(".kicad_sch"):
+            os.remove(os.path.join(out, f))
     uid_seed(d.name + "/leggibile")
-    sh = Sheet(d)
-    sh.root = _uuid()
+    root = _uuid()
     power = set(d.power) | set(d.masse)
+    # disaccoppiamento: condensatori fra due alimentazioni e unità di sola alimentazione, su una pagina
+    for p in d.parts:
+        if two_pin(p) and p.nets and all(n in power for n in p.nets.values() if n) and \
+                any(n and kind_of(n, d.masse) == "gnd" for n in p.nets.values()) and p.ref.startswith("C"):
+            p.block = DECOUP
+        if len(p.sym.units) > 1:
+            for u, qs in p.sym.units.items():
+                if qs and all(q["type"] in ("power_in", "power_out") for q in qs) and \
+                        len({q["num"] for q in qs}) < len(p.sym.pins()):
+                    UNIT_BLOCK[(p.ref, u)] = DECOUP
+    # unità non usate (ingressi a massa, uscita sull'ingresso -): stanno col disaccoppiamento
+    nm = d.netmap()
+    for p in d.parts:
+        if len(p.sym.units) < 2:
+            continue
+        for u, qs in p.sym.units.items():
+            mine = {q["num"] for q in qs}
+            sig = [p.nets.get(q["num"]) for q in qs if q["type"] not in ("power_in", "power_out")]
+            if sig and all(n is None or n in power or all(r == p.ref and k in mine for r, k in nm.get(n, []))
+                           for n in sig) and (p.ref, u) not in UNIT_BLOCK:
+                UNIT_BLOCK[(p.ref, u)] = DECOUP
     blocks = []
     for p in d.parts:
-        if p.block not in blocks:
+        if p.block not in blocks and p.block != DECOUP:
             blocks.append(p.block)
+    if any(p.block == DECOUP for p in d.parts) or UNIT_BLOCK:
+        blocks.append(DECOUP)
     netblocks = {}
     for p in d.parts:
-        for n in p.nets.values():
-            if n:
-                netblocks.setdefault(n, set()).add(p.block)
+        for u, qs in p.sym.units.items():
+            b = UNIT_BLOCK.get((p.ref, u), p.block)
+            for q in qs:
+                n = p.nets.get(q["num"])
+                if n:
+                    netblocks.setdefault(n, set()).add(b)
     local_of = {b: {n for n, bs in netblocks.items() if bs == {b}} for b in blocks}
     used = set()
-    sizes, tused = {}, set()
-    st = dict(pcbgen._uidstate)
-    for b in blocks:
-        trial = Sheet(d)
-        trial.root = sh.root
-        w, h = draw_block(trial, d, b, power, local_of, tused, 0, 0)
-        sizes[b] = (max(w, len(t_block(b)) * 2.8 + 10), h)
-    pcbgen._uidstate.update(st)
-    area = sum(w * h for w, h in sizes.values())
-    pagew = sn(max(max(w for w, h in sizes.values()) + 40, math.sqrt(area * 1.6)), 10)
-    x, y, rowh = 20.0, 30.0, 0
-    for b in blocks:
-        w, h = sizes[b]
-        if x + w > pagew and x > 20:
-            x, y, rowh = 20.0, y + rowh + 15, 0
-        sh.text(t_block(b), x, y + 4)
-        draw_block(sh, d, b, power, local_of, used, x, y + 6)
-        h += 6
-        sh.rect(x - 4, y - 2, x + w, y + h)
-        x += w + 15
-        rowh = max(rowh, h)
-    # PWR_FLAG sulle alimentazioni che nessun pin guida, come nello schema del generatore
+    bad, pages, nroute = [], [], 0
     flag = libsym("power:PWR_FLAG")
     driven = {p.nets.get(q["num"]) for p in d.parts for ps in p.sym.units.values()
               for q in ps if q["type"] == "power_out"}
-    fy = y + rowh + 25
-    sh.text("PWR_FLAG (for the ERC check only)", 20, fy - 6, 2)
-    for i, net in enumerate(sorted((d.power | {d.gnd}) - driven)):
-        if net not in {n for p in d.parts for n in p.nets.values()}:
+    allnets = {n for p in d.parts for n in p.nets.values()}
+    flagpage = {}
+    for n in sorted((d.power | {d.gnd}) - driven):
+        if n in allnets:
+            flagpage[n] = next(b for b in blocks if b in netblocks.get(n, ()))
+    def new_sheet(b, part):
+        sh = Sheet(d)
+        sh.sheetuuid = _uuid()
+        sh.fileuuid = _uuid()
+        sh.root = root + "/" + sh.sheetuuid
+        sh.block = b
+        sh.title = t_block(b) + ("" if part == 1 else "  (continued, %d)" % part)
+        sh.text(sh.title, 15, 22, 4)
+        return sh
+
+    # 1. disegno: un blocco su una o più pagine A3, spezzato fra le catene indipendenti
+    sheets = []
+    for b in blocks:
+        anchors = [(p, u) for p in d.parts if not two_pin(p) and len(p.sym.pins()) > 1
+                   for u in sorted(p.sym.units) if UNIT_BLOCK.get((p.ref, u), p.block) == b]
+        # fasce del blocco disegnato per intero su una pagina di prova, poi messe in pagine A3
+        st = dict(pcbgen._uidstate)
+        trial = Sheet(d)
+        trial.root = root
+        draw_block(trial, d, b, power, local_of, set(used), 0, 0, rest_too=False)
+        pcbgen._uidstate.update(st)
+        packs, cur, curh = [], [], 0
+        for ks, hh, _ in trial.bands:
+            if cur and curh + hh > BUDGET:
+                packs.append(cur)
+                cur, curh = [], 0
+            cur += ks
+            curh += hh + 6
+        packs.append(cur)
+        part = 1
+        for j, ks in enumerate(packs):
+            sh = new_sheet(b, part)
+            last = j == len(packs) - 1
+            w, h, more = draw_block(sh, d, b, power, local_of, used, 15, 26, only=set(ks), rest_too=last, budget=BUDGET)
+            sheets.append(sh)
+            part += 1
+            while last and more:
+                sh = new_sheet(b, part)
+                w, h, more = draw_block(sh, d, b, power, local_of, used, 15, 26, only=set(), budget=BUDGET)
+                sheets.append(sh)
+                part += 1
+    # 2. reti presenti su più pagine: le loro etichette sono globali
+    netpages = {}
+    for i, sh in enumerate(sheets):
+        for x, y, n in sh.points:
+            if n:
+                netpages.setdefault(n, set()).add(i)
+        for x, y, n, glob, o_ in sh.labels:
+            netpages.setdefault(n, set()).add(i)
+    for i, sh in enumerate(sheets):
+        sh.labels = [(x, y, n, len(netpages[n]) > 1, o_) for x, y, n, glob, o_ in sh.labels]
+    # PWR_FLAG sulle alimentazioni che nessun pin guida, sulla prima pagina che le usa:
+    # l'ERC di KiCad conta il flag collegato solo con un altro simbolo della rete sulla pagina
+    flagnets = [n for n in sorted((d.power | {d.gnd}) - driven) if n in allnets]
+    for i, sh in enumerate(sheets):
+        mine = [n for n in flagnets if min(netpages.get(n, {i})) == i]
+        if not mine:
             continue
-        fx = 25 + (i % 12) * 30
-        fyy = fy + (i // 12) * 20
-        fake = pcbgen.Part("#FLG%02d" % (i + 1), flag, "PWR_FLAG", "", {"1": net}, "")
-        sh.symbol(fake, 1, fx, fyy, 0, ((fx, fyy - 4, "center"), (fx, fyy - 6, "center")))
-        q = flag.units[1][0]
-        sh.power(pin_at(fx, fyy, 0, q), net, pin_out(0, q))
-    finish_labels(sh)
-    bad = check_overlaps(sh)
-    paper_h = max(420, sn(fy + 60))
-    sch = ["kicad_sch", ["version", 20260101], ["generator", Q("eeschema")], ["generator_version", Q("10.0")],
-           ["uuid", Q(sh.root)], ["paper", Q("User"), pagew + 40, paper_h],
-           ["title_block", ["title", Q(en.title(d.title) + " - readable schematic")], ["rev", Q(en.rev(d.rev))],
-            ["comment", 1, Q("Generated by pcb/tools/leggibile.py from the same netlist as the PCB: do not edit by hand")]],
-           ["lib_symbols"] + list(sh.libs.values())] + sh.items + \
-          [["sheet_instances", ["path", Q("/"), ["page", Q("1")]]], ["embedded_fonts", "no"]]
+        fy = sh.R.bbox[3] * 1.27 + 16
+        sh.text("PWR_FLAG (for the ERC check only)", 15, fy - 6, 2)
+        for k, net in enumerate(mine):
+            fx = 20 + (k % 12) * 30
+            fyy = fy + (k // 12) * 20
+            fake = pcbgen.Part("#FLG%02d" % (flagnets.index(net) + 1), flag, "PWR_FLAG", "", {"1": net}, "")
+            sh.symbol(fake, 1, fx, fyy, 0, ((fx, fyy - 4, "center"), (fx, fyy - 6, "center")))
+            q = flag.units[1][0]
+            sh.power(pin_at(fx, fyy, 0, q), net, pin_out(0, q))
+    # 3. fili, etichette, file
+    for i, sh in enumerate(sheets):
+        nroute += route_sheet(sh)
+        finish_labels(sh)
+        prune(sh)
+        bad += ["%s: %s" % (sh.title, e) for e in check_overlaps(sh)]
+        bb = sh.R.bbox
+        w = max(bb[2] * 1.27 - 15, len(sh.title) * 3.6)
+        h = bb[3] * 1.27 - 26
+        paper = paper_for(w + 15, h + 26)
+        fname = "%s-%02d.kicad_sch" % (d.name, i + 2)
+        with open(os.path.join(out, fname), "w") as f:
+            f.write(dump(sheet_file(d, sh, paper, sh.title, i + 2,
+                                    en.title(d.title) + " - readable schematic")) + "\n")
+        pages.append((sh.block, sh, fname))
+    # PWR_FLAG sulle alimentazioni che nessun pin guida, sulla pagina dell'indice
+    top = Sheet(d)
+    top.root = root
+    top.fileuuid = root
+    flag = libsym("power:PWR_FLAG")
+    driven = {p.nets.get(q["num"]) for p in d.parts for ps in p.sym.units.values()
+              for q in ps if q["type"] == "power_out"}
+    allnets = {n for p in d.parts for n in p.nets.values()}
+    top.text(en.title(d.title), 15, 25, 5)
+    top.text("Readable schematic: one or more pages per functional block, in signal order. Page 1 is this index.", 15, 33, 2.5)
+    top.text("Generated by pcb/tools/leggibile.py from the same netlist as the PCB and checked against it.", 15, 38, 2.5)
+    cols, bw, bh = 3, 118, 13
+    first = {}
+    for i, (b, sh, fname) in enumerate(pages):
+        first.setdefault(b, i + 2)
+    for i, (b, sh, fname) in enumerate(pages):
+        x, y = 15 + (i % cols) * (bw + 12), 52 + (i // cols) * (bh + 9)
+        name = "p.%d  %s" % (i + 2, sh.title)
+        others = sorted({ob for n in netblocks for ob in netblocks[n] if b in netblocks[n] and ob != b
+                         and n not in power}, key=blocks.index)
+        top.items.append(["sheet", ["at", x, y], ["size", bw, bh], ["exclude_from_sim", "no"], ["in_bom", "yes"],
+                          ["on_board", "yes"], ["dnp", "no"], ["stroke", ["width", 0.3], ["type", "solid"]],
+                          ["fill", ["color", 0, 0, 0, 0.0]], ["uuid", Q(sh.sheetuuid)],
+                          ["property", Q("Sheetname"), Q(name[:95]), ["at", x, y - 0.7, 0],
+                           ["effects", ["font", ["size", 1.4, 1.4], ["bold", "yes"]], ["justify", "left", "bottom"]]],
+                          ["property", Q("Sheetfile"), Q(fname), ["at", x, y + bh + 0.6, 0],
+                           ["effects", ["font", ["size", 1.27, 1.27]], ["justify", "left", "top"], ["hide", "yes"]]],
+                          ["instances", ["project", Q(d.name), ["path", Q("/" + root), ["page", Q(str(i + 2))]]]]])
+        lines, cur = [], "linked to:"
+        for ob in others:
+            nm = "p.%d" % first[ob]
+            if len(cur) + len(nm) > 60:
+                lines.append(cur)
+                cur = ""
+            cur += " " + nm
+        lines.append(cur)
+        for k, l in enumerate(lines[:2]):
+            top.text(l.strip(), x + 3, y + 5.5 + k * 4.5, 1.8)
+    fy = 52 + ((len(pages) - 1) // cols + 1) * (bh + 9)
+    paper = paper_for(cols * (bw + 12) - 30, fy + 20)
+    sch = sheet_file(d, top, paper, en.title(d.title) + " - readable schematic", 1,
+                     "Generated by pcb/tools/leggibile.py from the same netlist as the PCB: do not edit by hand")
+    sch += [["sheet_instances", ["path", Q("/"), ["page", Q("1")]]], ["embedded_fonts", "no"]]
     path = os.path.join(out, d.name + ".kicad_sch")
     with open(path, "w") as f:
         f.write(dump(sch) + "\n")
+    print("  fili aggiunti dall'instradatore: %d" % nroute)
     # progetto minimo e tabella dei simboli: i simboli maelcum stanno nella cartella della scheda
     with open(os.path.join(out, d.name + ".kicad_pro"), "w") as f:
         json.dump({"meta": {"filename": d.name + ".kicad_pro", "version": 3}}, f, indent=2)
@@ -765,26 +1273,32 @@ def document(mods, dest="pcb/schematics-readable.pdf"):
                ["justify", "left", "bottom"]]
         items.append(["text", Q(s), ["exclude_from_sim", "no"], ["at", x, y, 0], eff, ["uuid", uid()]])
 
+    npages = []
+    for i in infos:
+        out = subprocess.run(["/opt/homebrew/bin/pdfinfo", i["pdf"]], capture_output=True, text=True).stdout
+        npages.append(int([l.split()[-1] for l in out.splitlines() if l.startswith("Pages:")][0]))
     txt("maelcum mixer - readable schematics of the generated boards", 25, 40, 6, True)
-    txt("One page per board. Each drawing is generated from the same netlist as the board's PCB", 25, 52, 3)
-    txt("and checked against it in both directions (pcb/tools/leggibile.py). Values are PROVISIONAL drafts.", 25, 58, 3)
-    txt("Page  Board", 25, 74, 3.5, True)
+    txt("Each board opens with an index page, then one page per functional block, in signal order. Each drawing", 25, 52, 3)
+    txt("is generated from the same netlist as the board's PCB and checked against it in both directions", 25, 58, 3)
+    txt("(pcb/tools/leggibile.py). Values are PROVISIONAL drafts.", 25, 64, 3)
+    txt("Page  Board", 25, 76, 3.5, True)
+    page = 2
     for i, (m, info) in enumerate(zip(mods, infos)):
-        txt("%2d    %s  (%d parts, rev. %s)" % (i + 2, info["title"], info["parts"], info["rev"]), 25, 82 + i * 7, 3)
-    y = 82 + len(mods) * 7 + 12
+        txt("%3d   %s  (%d parts, %d pages)" % (page, info["title"], info["parts"], npages[i]), 25, 83 + i * 5.6, 2.6)
+        page += npages[i]
+    y = 83 + len(mods) * 5.6 + 10
     txt("How to read the drawings", 25, y, 3.5, True)
     legend = [
+        "Signal flows from left to right; long chains wrap into bands, one under the other, and resume on the left.",
         "Arrow and ground symbols are power rails and grounds; the name under the symbol is the rail (AGND, +18V, -15SW ...).",
-        "Resistors and capacitors are wired to the op-amp pin they touch: in series along the pin, shunt towards the rail.",
-        "A plain name on a wire is a net that continues elsewhere in the same block.",
-        "A name in a box is a net that goes to another block on the same board, or to a connector.",
-        "Connectors and many-pin chips (C96, LM339, ADG1434) carry only names; their parts are drawn in chains below them.",
-        "Dashed frames are the functional blocks of the board, in signal order. Net names are the PCB identifiers.",
+        "A plain name on a wire is a net that continues elsewhere on the same page; a name in a box goes to another page.",
+        "Bypass capacitors, chip supply pins and unused op-amp units are collected on the POWER DECOUPLING page.",
+        "Connectors and many-pin chips (C96, LM339, ADG1434) carry only names. Net names are the PCB identifiers.",
     ]
     for i, l in enumerate(legend):
         txt("- " + l, 25, y + 9 + i * 6.5, 2.6)
     sch = ["kicad_sch", ["version", 20260101], ["generator", Q("eeschema")], ["generator_version", Q("10.0")],
-           ["uuid", Q(root)], ["paper", Q("A3")],
+           ["uuid", Q(root)], ["paper", Q("A3"), "portrait"],
            ["title_block", ["title", Q("maelcum mixer - readable schematics")],
             ["comment", 1, Q("Generated by pcb/tools/leggibile.py")]],
            ["lib_symbols"]] + items + [["sheet_instances", ["path", Q("/"), ["page", Q("1")]]], ["embedded_fonts", "no"]]

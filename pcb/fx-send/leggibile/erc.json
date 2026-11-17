@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.kicad.org/erc.v1.json",
     "coordinate_units": "mm",
-    "date": "2026-11-12T00:41:02",
+    "date": "2026-11-17T13:03:23",
     "ignored_checks": [
         {
             "description": "Global label only appears once in the schematic",
@@ -30,17 +30,57 @@
         {
             "path": "/",
             "uuid_path": "/aba666c3-d135-51f3-a3f2-971c4aa84210",
+            "violations": []
+        },
+        {
+            "path": "/p.2  BACKPLANE C96 (FX-SEND class)/",
+            "uuid_path": "/aba666c3-d135-51f3-a3f2-971c4aa84210/329b8a74-0517-544a-bbe0-ad67d7b59b93",
+            "violations": []
+        },
+        {
+            "path": "/p.3  POWER +-18 audio, +-15 switch, +5/",
+            "uuid_path": "/aba666c3-d135-51f3-a3f2-971c4aa84210/b84d4aad-5e1e-546f-a614-4c10daf68392",
+            "violations": []
+        },
+        {
+            "path": "/p.4  INPUT BUFFER (OPA1612)/",
+            "uuid_path": "/aba666c3-d135-51f3-a3f2-971c4aa84210/712367ea-ff13-5b0d-bc22-3b92e7066adf",
+            "violations": []
+        },
+        {
+            "path": "/p.5  EQ2 left side (LOW 120 Hz + HIGH 4.5 kHz, fx-eq2-pot10k.cir)/",
+            "uuid_path": "/aba666c3-d135-51f3-a3f2-971c4aa84210/e46679cc-febf-5d8d-baed-440ad89407cd",
+            "violations": []
+        },
+        {
+            "path": "/p.6  INJECTION left side (OPA1654 + 10k to the buses)/",
+            "uuid_path": "/aba666c3-d135-51f3-a3f2-971c4aa84210/a3d564a2-94b8-5b86-848d-039ca22da6be",
+            "violations": []
+        },
+        {
+            "path": "/p.7  EQ2 right side (LOW 120 Hz + HIGH 4.5 kHz, fx-eq2-pot10k.cir)/",
+            "uuid_path": "/aba666c3-d135-51f3-a3f2-971c4aa84210/9a7255d0-867b-5322-a77d-c995a114122f",
+            "violations": []
+        },
+        {
+            "path": "/p.8  INJECTION right side (OPA1654 + 10k to the buses)/",
+            "uuid_path": "/aba666c3-d135-51f3-a3f2-971c4aa84210/a6532c20-0a29-5911-ac9f-21f7c4455921",
+            "violations": []
+        },
+        {
+            "path": "/p.9  ASSIGN S1-S4 (ADG1434 pi SPDT, 1 ms soft switch, global mute)/",
+            "uuid_path": "/aba666c3-d135-51f3-a3f2-971c4aa84210/ca17c756-39f4-554d-9e55-6b7e3aca65df",
             "violations": [
                 {
                     "description": "Pin VSS not connected to ground net",
                     "items": [
                         {
-                            "description": "Symbol U6 Pin 5 [VSS, Power input, Line]",
+                            "description": "Symbol U7 Pin 5 [VSS, Power input, Line]",
                             "pos": {
-                                "x": 53.34,
-                                "y": 782.32
+                                "x": 48.26,
+                                "y": 160.02
                             },
-                            "uuid": "39fbe701-89c5-51b5-88e0-358fb9c2bd34"
+                            "uuid": "262924f1-51ba-59ed-ba37-94c1bccdc09b"
                         }
                     ],
                     "severity": "warning",
@@ -50,18 +90,28 @@
                     "description": "Pin VSS not connected to ground net",
                     "items": [
                         {
-                            "description": "Symbol U7 Pin 5 [VSS, Power input, Line]",
+                            "description": "Symbol U6 Pin 5 [VSS, Power input, Line]",
                             "pos": {
-                                "x": 167.64,
-                                "y": 782.32
+                                "x": 86.36,
+                                "y": 50.8
                             },
-                            "uuid": "5d21538f-87b6-580d-b904-4a8445fa8fbb"
+                            "uuid": "8a90a1aa-bf24-51c6-b0d3-c61465210a22"
                         }
                     ],
                     "severity": "warning",
                     "type": "ground_pin_not_ground"
                 }
             ]
+        },
+        {
+            "path": "/p.10  CONTROL BOARD CABLE (J2) and ASSIGN BUTTONS (J3)/",
+            "uuid_path": "/aba666c3-d135-51f3-a3f2-971c4aa84210/0dd178ea-a7f8-5241-8d25-315aafd14055",
+            "violations": []
+        },
+        {
+            "path": "/p.11  POWER DECOUPLING: supply pins of the chips, bypass capacitors, unused op-amp units/",
+            "uuid_path": "/aba666c3-d135-51f3-a3f2-971c4aa84210/14d2e8c6-9b36-5ff4-987e-50ec923b734c",
+            "violations": []
         }
     ],
     "source": "fx-send.kicad_sch"

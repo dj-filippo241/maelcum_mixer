@@ -1,0 +1,2744 @@
+(kicad_sch
+	(version 20260101)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "7abdb8a4-e71c-5141-a075-e14f79027fb7")
+	(paper "A2")
+	(title_block
+		(title "POTS: GAIN (dual), EQ2 (dual), REROUTE (single, centre detent)")
+		(rev "0.1-draft")
+		(comment 1 "maelcum FX-RET control board - draft v0.1 - readable schematic")
+		(comment 2 "Page 2")
+	)
+	(lib_symbols
+		(symbol
+			"maelcum:POT_DUAL"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property
+				"Reference"
+				"RV"
+				(at 0 8.89 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Value"
+				"POT_DUAL"
+				(at 0 -8.89 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Footprint"
+				"Potentiometer_THT:Potentiometer_Alps_RK09L_Double_Vertical"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property
+				"Datasheet"
+				""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property
+				"Description"
+				"Pot doppio, Alps RK09L verticale; MP = staffe, a massa telaio attraverso il pannello"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol
+				"POT_DUAL_0_1"
+				(rectangle
+					(start -12.7 5.08)
+					(end 12.7 -5.08)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+			)
+			(symbol
+				"POT_DUAL_1_1"
+				(pin
+					passive
+					line
+					(at -17.78 2.54 0)
+					(length 5.08)
+					(name
+						"A_CCW"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					passive
+					line
+					(at -17.78 0 0)
+					(length 5.08)
+					(name
+						"A_W"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					passive
+					line
+					(at -17.78 -2.54 0)
+					(length 5.08)
+					(name
+						"A_CW"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					passive
+					line
+					(at -17.78 -5.08 0)
+					(length 5.08)
+					(name
+						"MP"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"MP"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					passive
+					line
+					(at 17.78 2.54 180)
+					(length 5.08)
+					(name
+						"B_CCW"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					passive
+					line
+					(at 17.78 0 180)
+					(length 5.08)
+					(name
+						"B_W"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					passive
+					line
+					(at 17.78 -2.54 180)
+					(length 5.08)
+					(name
+						"B_CW"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol
+			"maelcum:POT_SINGLE"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property
+				"Reference"
+				"RV"
+				(at 0 7.62 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Value"
+				"POT_SINGLE"
+				(at 0 -7.62 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Footprint"
+				"Potentiometer_THT:Potentiometer_Alps_RK09L_Single_Vertical"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property
+				"Datasheet"
+				""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property
+				"Description"
+				"Pot singolo, Alps RK09L verticale; MP = staffe, a massa telaio attraverso il pannello"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol
+				"POT_SINGLE_0_1"
+				(rectangle
+					(start -12.7 5.08)
+					(end 12.7 -5.08)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+			)
+			(symbol
+				"POT_SINGLE_1_1"
+				(pin
+					passive
+					line
+					(at -17.78 2.54 0)
+					(length 5.08)
+					(name
+						"CCW"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					passive
+					line
+					(at -17.78 0 0)
+					(length 5.08)
+					(name
+						"W"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					passive
+					line
+					(at -17.78 -2.54 0)
+					(length 5.08)
+					(name
+						"CW"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					passive
+					line
+					(at 17.78 2.54 180)
+					(length 5.08)
+					(name
+						"MP"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"MP"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol
+			"power:GND"
+			(power global)
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property
+				"Reference"
+				"#PWR"
+				(at 0 -6.35 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Value"
+				"GND"
+				(at 0 -3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Footprint"
+				""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Datasheet"
+				""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Description"
+				"Power symbol creates a global label with name \"GND\" , ground"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"ki_keywords"
+				"global power"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol
+				"GND_0_1"
+				(polyline
+					(pts
+						(xy 0 0)
+						(xy 0 -1.27)
+						(xy 1.27 -1.27)
+						(xy 0 -2.54)
+						(xy -1.27 -1.27)
+						(xy 0 -1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol
+				"GND_1_1"
+				(pin
+					power_in
+					line
+					(at 0 0 270)
+					(length 0)
+					(name
+						""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol
+			"power:PWR_FLAG"
+			(power global)
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property
+				"Reference"
+				"#FLG"
+				(at 0 1.905 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Value"
+				"PWR_FLAG"
+				(at 0 3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Footprint"
+				""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Datasheet"
+				""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Description"
+				"Special symbol for telling ERC where power comes from"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"ki_keywords"
+				"flag power"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol
+				"PWR_FLAG_0_0"
+				(pin
+					power_out
+					line
+					(at 0 0 90)
+					(length 0)
+					(name
+						""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol
+				"PWR_FLAG_0_1"
+				(polyline
+					(pts
+						(xy 0 0)
+						(xy 0 1.27)
+						(xy -1.016 1.905)
+						(xy 0 2.54)
+						(xy 1.016 1.905)
+						(xy 0 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+	)
+	(text
+		"POTS: GAIN (dual), EQ2 (dual), REROUTE (single, centre detent)"
+		(exclude_from_sim no)
+		(at 15.24 21.59 0)
+		(effects
+			(font
+				(size 4 4)
+				(bold yes)
+			)
+			(justify left bottom)
+		)
+		(uuid "d0afea95-5b2b-5885-9c20-93c67bffb58f")
+	)
+	(symbol
+		(lib_id "maelcum:POT_DUAL")
+		(at 53.34 40.64 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "55acddb5-f51c-5914-8ce8-021fdd44972f")
+		(property
+			"Reference"
+			"RV1"
+			(at 50.8 35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"10k lin dual, matched"
+			(at 50.8 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Potentiometer_THT:Potentiometer_Alps_RK09L_Double_Vertical"
+			(at 53.34 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 53.34 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"GAIN T2 (dec. 162): antiorario = silenzio; pot selezionato per il tracking L/R; manopola GAIN, pot di classe 14 mm, cappuccio 15.0 mm"
+			(at 53.34 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "3d6622b4-38a1-5025-aef7-109f15d913db")
+		)
+		(pin
+			"2"
+			(uuid "3e16fcec-3995-59e5-a40a-d0d8801d9396")
+		)
+		(pin
+			"3"
+			(uuid "06a9828c-955d-5651-b238-c8cc168b5eec")
+		)
+		(pin
+			"MP"
+			(uuid "5ff07aa6-3eb6-5b9e-af19-34c8f32269f9")
+		)
+		(pin
+			"4"
+			(uuid "61d82283-4712-553d-a384-bd6df078023c")
+		)
+		(pin
+			"5"
+			(uuid "a9d911fb-2e34-5de4-ad97-61498f318922")
+		)
+		(pin
+			"6"
+			(uuid "8da757fc-3f62-5a4a-9a13-1834bc008186")
+		)
+		(instances
+			(project
+				"fx-ret-comandi"
+				(path
+					"/98a1ab3a-1169-5542-a25f-c364f981c8a1/c5b30997-372d-59de-9641-6d16508e2092"
+					(reference "RV1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 35.56 40.64)
+			(xy 27.94 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f355c4c8-b6a2-56e3-b763-1a9b04bf1188")
+	)
+	(wire
+		(pts
+			(xy 27.94 40.64)
+			(xy 27.94 41.91)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3a00fcdf-e30b-5c3f-b239-d74a8b74c7dc")
+	)
+	(wire
+		(pts
+			(xy 35.56 43.18)
+			(xy 30.48 43.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a3419b23-9caf-5c89-82e8-71091f9dc3fd")
+	)
+	(wire
+		(pts
+			(xy 30.48 43.18)
+			(xy 30.48 45.72)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "070bfa45-5e5f-52ed-86c6-77fe4f1da00c")
+	)
+	(no_connect
+		(at 35.56 45.72)
+		(uuid "6d69e918-b7cd-5bf6-81c7-6c8b6b732a85")
+	)
+	(wire
+		(pts
+			(xy 71.12 40.64)
+			(xy 76.2 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a489c461-06d6-53ed-901a-1d2e7939da11")
+	)
+	(wire
+		(pts
+			(xy 76.2 40.64)
+			(xy 76.2 41.91)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b371ffe1-4f02-545d-8664-a31a1b43fd96")
+	)
+	(wire
+		(pts
+			(xy 71.12 43.18)
+			(xy 73.66 43.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b4c334a7-bc77-55b4-b805-87859053f776")
+	)
+	(wire
+		(pts
+			(xy 73.66 43.18)
+			(xy 73.66 45.72)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2404bae5-170c-5f04-a5c6-cc729b79ba04")
+	)
+	(symbol
+		(lib_id "maelcum:POT_DUAL")
+		(at 53.34 68.58 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8b4b94b4-eee0-5d06-8a9f-923d0e06c99a")
+		(property
+			"Reference"
+			"RV2"
+			(at 50.8 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"10k dual"
+			(at 50.8 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Potentiometer_THT:Potentiometer_Alps_RK09L_Double_Vertical"
+			(at 53.34 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 53.34 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"EQ HIGH: tutto antiorario = kill (come il FX-SEND); manopola EQ HIGH, pot di classe 9 mm, cappuccio 11.0 mm"
+			(at 53.34 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "db998d5d-81d1-558e-8ff6-1f27ce13ebc7")
+		)
+		(pin
+			"2"
+			(uuid "fbfa1dc0-bcd5-5577-b8e8-e4d92fbb92d6")
+		)
+		(pin
+			"3"
+			(uuid "7eb02fd3-77e2-5df1-862c-2fd2d73c0a3f")
+		)
+		(pin
+			"MP"
+			(uuid "d5de6961-50f8-5041-9595-32b39cca4536")
+		)
+		(pin
+			"4"
+			(uuid "25706b89-38f0-5c3d-873c-5f8d051760ab")
+		)
+		(pin
+			"5"
+			(uuid "0ce6756f-6dad-5396-a169-217b9b7b9973")
+		)
+		(pin
+			"6"
+			(uuid "9f35745a-d30b-58bb-b378-591a9795d2f2")
+		)
+		(instances
+			(project
+				"fx-ret-comandi"
+				(path
+					"/98a1ab3a-1169-5542-a25f-c364f981c8a1/c5b30997-372d-59de-9641-6d16508e2092"
+					(reference "RV2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 35.56 68.58)
+			(xy 27.94 68.58)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a0f9d55f-9d3b-5208-849f-ae7e8ff9d6bb")
+	)
+	(wire
+		(pts
+			(xy 27.94 68.58)
+			(xy 27.94 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "91e9ccc3-f973-5b93-87cb-cf1476feea19")
+	)
+	(wire
+		(pts
+			(xy 35.56 71.12)
+			(xy 30.48 71.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "53b3fb43-9c26-500b-ae94-907de3b33132")
+	)
+	(wire
+		(pts
+			(xy 30.48 71.12)
+			(xy 30.48 73.66)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fcd4b169-2fbe-5c6b-bc18-a327807b9bf6")
+	)
+	(no_connect
+		(at 35.56 73.66)
+		(uuid "0972cdfe-1306-58dc-b169-8057d06f45dc")
+	)
+	(wire
+		(pts
+			(xy 71.12 68.58)
+			(xy 76.2 68.58)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "dd4ac64b-094c-5315-ba88-bb4f8bca60eb")
+	)
+	(wire
+		(pts
+			(xy 76.2 68.58)
+			(xy 76.2 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5e95fac3-7827-589d-ae1b-9af60f5322a0")
+	)
+	(wire
+		(pts
+			(xy 71.12 71.12)
+			(xy 73.66 71.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6ce7be85-fe25-55e7-b3a5-19ef42ce6601")
+	)
+	(wire
+		(pts
+			(xy 73.66 71.12)
+			(xy 73.66 73.66)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "217f9967-087b-588d-be53-6b0f34b626af")
+	)
+	(symbol
+		(lib_id "maelcum:POT_DUAL")
+		(at 50.8 96.52 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "0a0eee2c-e9f4-5622-87d9-707f2579e5bf")
+		(property
+			"Reference"
+			"RV3"
+			(at 48.26 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"10k dual"
+			(at 48.26 104.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Potentiometer_THT:Potentiometer_Alps_RK09L_Double_Vertical"
+			(at 50.8 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 50.8 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"EQ LOW Baxandall: tutto antiorario = kill, cursore = massa virtuale; manopola EQ LOW, pot di classe 9 mm, cappuccio 11.0 mm"
+			(at 50.8 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "4561b3e7-958d-5d73-ba40-c6319bd68746")
+		)
+		(pin
+			"2"
+			(uuid "9a03c10a-4c06-56ae-be16-0afb3f27450a")
+		)
+		(pin
+			"3"
+			(uuid "8aee47be-ca04-5795-9a9f-216086116c52")
+		)
+		(pin
+			"MP"
+			(uuid "eca3e55b-6e40-5c1f-9c87-768ba62caa06")
+		)
+		(pin
+			"4"
+			(uuid "3f09f377-18a6-56b9-8ef2-a861ea99ff31")
+		)
+		(pin
+			"5"
+			(uuid "5825f66d-cadc-5f53-adf0-73efc82de5a2")
+		)
+		(pin
+			"6"
+			(uuid "e0997dea-e036-59dc-8178-60c57d4a2538")
+		)
+		(instances
+			(project
+				"fx-ret-comandi"
+				(path
+					"/98a1ab3a-1169-5542-a25f-c364f981c8a1/c5b30997-372d-59de-9641-6d16508e2092"
+					(reference "RV3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 33.02 96.52)
+			(xy 25.4 96.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "69dcdcc4-a8da-5129-84d3-0e90e9d9b73c")
+	)
+	(wire
+		(pts
+			(xy 25.4 96.52)
+			(xy 25.4 97.79)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e4866d8f-e52c-59fd-8d43-a6492f9d610c")
+	)
+	(wire
+		(pts
+			(xy 33.02 99.06)
+			(xy 27.94 99.06)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4183e4f4-67b1-522a-b42e-8c5ba7407ac8")
+	)
+	(wire
+		(pts
+			(xy 27.94 99.06)
+			(xy 27.94 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2bd9868e-4cd3-51db-8cbb-b1f37ec90e0a")
+	)
+	(no_connect
+		(at 33.02 101.6)
+		(uuid "1a05665c-5378-5f1b-b1e7-0050311978a0")
+	)
+	(wire
+		(pts
+			(xy 68.58 96.52)
+			(xy 73.66 96.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "093a1b69-c81f-5690-b1aa-264524bd2f71")
+	)
+	(wire
+		(pts
+			(xy 73.66 96.52)
+			(xy 73.66 97.79)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "58954b93-2fa5-5180-8732-8a5bbb71707b")
+	)
+	(wire
+		(pts
+			(xy 68.58 99.06)
+			(xy 71.12 99.06)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "26346bb8-20c8-5263-bc40-41811747920d")
+	)
+	(wire
+		(pts
+			(xy 71.12 99.06)
+			(xy 71.12 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f061b651-f04e-5486-9297-c8bb0e60d075")
+	)
+	(symbol
+		(lib_id "maelcum:POT_SINGLE")
+		(at 50.8 124.46 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "54acaba4-2452-572d-896a-cc044dda277a")
+		(property
+			"Reference"
+			"RV4"
+			(at 48.26 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"10k lin, centre detent"
+			(at 48.26 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Potentiometer_THT:Potentiometer_Alps_RK09L_Single_Vertical"
+			(at 50.8 124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 50.8 124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"REROUTE 1 verso il bus S1 (SELF sul ritorno FX1, SELF sul ritorno FX1); manopola rovescia: antiorario = +REF5; manopola SELF, pot di classe 14 mm, cappuccio 12.0 mm"
+			(at 50.8 124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "b2ce6570-02f7-58a8-819c-e7ef1f27619b")
+		)
+		(pin
+			"2"
+			(uuid "6f1a59eb-72cd-5b8b-a94b-fa6a46491c98")
+		)
+		(pin
+			"3"
+			(uuid "d88dec42-ae4f-5c47-9c41-8590b0ca47f3")
+		)
+		(pin
+			"MP"
+			(uuid "733ccbc4-30e7-54f9-b2aa-1999901ccf4d")
+		)
+		(instances
+			(project
+				"fx-ret-comandi"
+				(path
+					"/98a1ab3a-1169-5542-a25f-c364f981c8a1/c5b30997-372d-59de-9641-6d16508e2092"
+					(reference "RV4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 33.02 124.46)
+			(xy 27.94 124.46)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8d4aea7c-c1db-5b25-a124-33d2cfcd9933")
+	)
+	(wire
+		(pts
+			(xy 27.94 124.46)
+			(xy 27.94 125.73)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b4162e7a-d700-5859-931e-d4fdccf572b2")
+	)
+	(wire
+		(pts
+			(xy 33.02 127)
+			(xy 30.48 127)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f2bd6e9a-7540-5b0a-b35d-75fa3a2398fd")
+	)
+	(wire
+		(pts
+			(xy 30.48 127)
+			(xy 30.48 129.54)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8eb0afbd-5470-5447-a78d-0c1d553ab32e")
+	)
+	(wire
+		(pts
+			(xy 30.48 129.54)
+			(xy 27.94 129.54)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b7f63882-5488-5e7f-8ed9-178bc464f3b5")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 27.94 129.54 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "ba83cfaa-da58-5f65-a383-fbd29a0ff62f")
+		(property
+			"Reference"
+			"#PWR001"
+			(at 27.94 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"AGND"
+			(at 27.94 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 27.94 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 27.94 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "fe69476c-aada-5635-b534-47e47a2362ee")
+		)
+		(instances
+			(project
+				"fx-ret-comandi"
+				(path
+					"/98a1ab3a-1169-5542-a25f-c364f981c8a1/c5b30997-372d-59de-9641-6d16508e2092"
+					(reference "#PWR001")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(no_connect
+		(at 68.58 121.92)
+		(uuid "62f8a3b8-af12-5013-acff-c9060590a746")
+	)
+	(symbol
+		(lib_id "maelcum:POT_SINGLE")
+		(at 50.8 157.48 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7e59ec72-4cf6-52c2-ab83-9763ba43c4a4")
+		(property
+			"Reference"
+			"RV5"
+			(at 48.26 152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"10k lin, centre detent"
+			(at 48.26 162.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Potentiometer_THT:Potentiometer_Alps_RK09L_Single_Vertical"
+			(at 50.8 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 50.8 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"REROUTE 2 verso il bus S2 (> FX2 sul ritorno FX1, SELF sul ritorno FX2); manopola rovescia: antiorario = +REF5; manopola > FX2, pot di classe 14 mm, cappuccio 12.0 mm"
+			(at 50.8 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "e84f5cd4-ecef-5a8d-b0fe-abd7369df25a")
+		)
+		(pin
+			"2"
+			(uuid "13619913-de20-5c66-87ad-e7b16def9f73")
+		)
+		(pin
+			"3"
+			(uuid "ace8ee14-023b-5468-b6c8-9727c47b5f6d")
+		)
+		(pin
+			"MP"
+			(uuid "b43576a7-f920-5ec5-aa4f-8b17e03af484")
+		)
+		(instances
+			(project
+				"fx-ret-comandi"
+				(path
+					"/98a1ab3a-1169-5542-a25f-c364f981c8a1/c5b30997-372d-59de-9641-6d16508e2092"
+					(reference "RV5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 33.02 157.48)
+			(xy 27.94 157.48)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "61562cc6-dac3-5c62-a5e0-7b82aef7b2a5")
+	)
+	(wire
+		(pts
+			(xy 27.94 157.48)
+			(xy 27.94 158.75)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b846a9a1-37d9-51d9-bb23-6ba4819e4b52")
+	)
+	(wire
+		(pts
+			(xy 33.02 160.02)
+			(xy 30.48 160.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e170dc83-19e8-5cf1-bbce-115098001451")
+	)
+	(wire
+		(pts
+			(xy 30.48 160.02)
+			(xy 30.48 162.56)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "46d66c05-08e3-50dc-a955-c0081cc00e84")
+	)
+	(wire
+		(pts
+			(xy 30.48 162.56)
+			(xy 27.94 162.56)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "af792303-65b4-5ec8-a8b6-2db86c09271d")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 27.94 162.56 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "4fbe7631-ca0d-5341-9695-f47f2c6dca27")
+		(property
+			"Reference"
+			"#PWR002"
+			(at 27.94 162.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"AGND"
+			(at 27.94 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 27.94 162.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 27.94 162.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "dd9b79b3-b97a-5d7f-bcbf-d0708e88e09f")
+		)
+		(instances
+			(project
+				"fx-ret-comandi"
+				(path
+					"/98a1ab3a-1169-5542-a25f-c364f981c8a1/c5b30997-372d-59de-9641-6d16508e2092"
+					(reference "#PWR002")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(no_connect
+		(at 68.58 154.94)
+		(uuid "9338d548-a7e6-5733-a915-100ce472bba8")
+	)
+	(symbol
+		(lib_id "maelcum:POT_SINGLE")
+		(at 50.8 187.96 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e0bd89a6-607b-51c5-800c-7bfe6866300c")
+		(property
+			"Reference"
+			"RV6"
+			(at 48.26 182.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"10k lin, centre detent"
+			(at 48.26 193.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Potentiometer_THT:Potentiometer_Alps_RK09L_Single_Vertical"
+			(at 50.8 187.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 50.8 187.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"REROUTE 3 verso il bus S3 (> FX3 sul ritorno FX1, SELF sul ritorno FX3); manopola rovescia: antiorario = +REF5; manopola > FX3, pot di classe 14 mm, cappuccio 12.0 mm"
+			(at 50.8 187.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "0313b121-4fbd-5023-b628-db0d14bd0368")
+		)
+		(pin
+			"2"
+			(uuid "49323019-7b77-5436-8d92-30c39dfa17ff")
+		)
+		(pin
+			"3"
+			(uuid "cfb8894e-2de3-5ee3-b7f0-6850106ed56a")
+		)
+		(pin
+			"MP"
+			(uuid "d8c515ea-893e-5785-8953-92d897119924")
+		)
+		(instances
+			(project
+				"fx-ret-comandi"
+				(path
+					"/98a1ab3a-1169-5542-a25f-c364f981c8a1/c5b30997-372d-59de-9641-6d16508e2092"
+					(reference "RV6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 33.02 187.96)
+			(xy 27.94 187.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b8db96fd-9c9d-589b-8045-95ac2e866c34")
+	)
+	(wire
+		(pts
+			(xy 27.94 187.96)
+			(xy 27.94 189.23)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d9644139-2ac0-5c2a-b1f6-1cc935d0c7d9")
+	)
+	(wire
+		(pts
+			(xy 33.02 190.5)
+			(xy 30.48 190.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "30222406-34d3-592b-9d7e-14f45089af30")
+	)
+	(wire
+		(pts
+			(xy 30.48 190.5)
+			(xy 30.48 193.04)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f5945f5c-f96c-5d42-8f8b-ef7cb6a43eee")
+	)
+	(wire
+		(pts
+			(xy 30.48 193.04)
+			(xy 27.94 193.04)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ddda4a16-c90f-50c7-8b49-53e7f9558c31")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 27.94 193.04 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e5642019-8d8d-54c9-913b-60eb72e9be1a")
+		(property
+			"Reference"
+			"#PWR003"
+			(at 27.94 193.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"AGND"
+			(at 27.94 198.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 27.94 193.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 27.94 193.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "2da60d63-3256-58b5-a3ff-8e5ed3ccd473")
+		)
+		(instances
+			(project
+				"fx-ret-comandi"
+				(path
+					"/98a1ab3a-1169-5542-a25f-c364f981c8a1/c5b30997-372d-59de-9641-6d16508e2092"
+					(reference "#PWR003")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(no_connect
+		(at 68.58 185.42)
+		(uuid "93675f79-b125-5a6a-be47-42777cbea0a3")
+	)
+	(symbol
+		(lib_id "maelcum:POT_SINGLE")
+		(at 50.8 220.98 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "069f665e-48d4-512b-8624-83c928667607")
+		(property
+			"Reference"
+			"RV7"
+			(at 48.26 215.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"10k lin, centre detent"
+			(at 48.26 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Potentiometer_THT:Potentiometer_Alps_RK09L_Single_Vertical"
+			(at 50.8 220.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 50.8 220.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"REROUTE 4 verso il bus S4 (> FX4 sul ritorno FX1, SELF sul ritorno FX4); manopola rovescia: antiorario = +REF5; manopola > FX4, pot di classe 14 mm, cappuccio 12.0 mm"
+			(at 50.8 220.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "873af9a7-3c1e-5f26-aa01-4058b5cce762")
+		)
+		(pin
+			"2"
+			(uuid "9d947f37-9fca-5678-a155-628cd96895e1")
+		)
+		(pin
+			"3"
+			(uuid "32d3f710-f94c-5217-8e1a-b1578a6b3bdb")
+		)
+		(pin
+			"MP"
+			(uuid "a8abd869-6a2b-59a0-b933-984ce10a06fb")
+		)
+		(instances
+			(project
+				"fx-ret-comandi"
+				(path
+					"/98a1ab3a-1169-5542-a25f-c364f981c8a1/c5b30997-372d-59de-9641-6d16508e2092"
+					(reference "RV7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 33.02 220.98)
+			(xy 27.94 220.98)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9d9a7ee4-f6fd-581c-80f4-43dc5a40fa1a")
+	)
+	(wire
+		(pts
+			(xy 27.94 220.98)
+			(xy 27.94 222.25)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3fe88e71-d80c-5d19-8587-5d0cbedb6924")
+	)
+	(wire
+		(pts
+			(xy 33.02 223.52)
+			(xy 30.48 223.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5622d2ef-5096-53c5-9d8e-24d84bae85c6")
+	)
+	(wire
+		(pts
+			(xy 30.48 223.52)
+			(xy 30.48 226.06)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d04c202a-b644-50d0-ae3b-2072e625ce57")
+	)
+	(wire
+		(pts
+			(xy 30.48 226.06)
+			(xy 27.94 226.06)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "89288e0b-0c1d-5a8f-809c-5bf84c005860")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 27.94 226.06 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "6b40599a-9c31-5f50-a01c-ee00f489e790")
+		(property
+			"Reference"
+			"#PWR004"
+			(at 27.94 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"AGND"
+			(at 27.94 231.14 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 27.94 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 27.94 226.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "081b8110-2afb-5272-b0ca-d597dbd525a5")
+		)
+		(instances
+			(project
+				"fx-ret-comandi"
+				(path
+					"/98a1ab3a-1169-5542-a25f-c364f981c8a1/c5b30997-372d-59de-9641-6d16508e2092"
+					(reference "#PWR004")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(no_connect
+		(at 68.58 218.44)
+		(uuid "b000eee6-e614-559f-9aee-0583178f0161")
+	)
+	(text
+		"PWR_FLAG (for the ERC check only)"
+		(exclude_from_sim no)
+		(at 15.24 241.3 0)
+		(effects
+			(font
+				(size 2 2)
+				(bold yes)
+			)
+			(justify left bottom)
+		)
+		(uuid "3e9f43fc-1436-5241-b9cb-5a701be9ea81")
+	)
+	(symbol
+		(lib_id "power:PWR_FLAG")
+		(at 20.32 247.65 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "92bc21a4-37a3-5482-9577-2ee22499d001")
+		(property
+			"Reference"
+			"#FLG02"
+			(at 20.32 242.57 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"PWR_FLAG"
+			(at 20.32 241.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 20.32 247.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 20.32 247.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "98550093-3a7c-57db-9620-af663ff4c5be")
+		)
+		(instances
+			(project
+				"fx-ret-comandi"
+				(path
+					"/98a1ab3a-1169-5542-a25f-c364f981c8a1/c5b30997-372d-59de-9641-6d16508e2092"
+					(reference "#FLG02")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 20.32 247.65 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "14ab4fd8-0035-55e4-8909-a7dfdf8d0e94")
+		(property
+			"Reference"
+			"#PWR005"
+			(at 20.32 247.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"AGND"
+			(at 20.32 252.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 20.32 247.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 20.32 247.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "842eb48b-1546-5bae-94c8-a1f595848250")
+		)
+		(instances
+			(project
+				"fx-ret-comandi"
+				(path
+					"/98a1ab3a-1169-5542-a25f-c364f981c8a1/c5b30997-372d-59de-9641-6d16508e2092"
+					(reference "#PWR005")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 33.02 154.94)
+			(xy 31.75 154.94)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "34ae667e-719c-537a-b0cc-6df1ea980080")
+	)
+	(wire
+		(pts
+			(xy 31.75 154.94)
+			(xy 31.75 185.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "81e30999-ebca-5203-ae8f-ab3c93fef6e5")
+	)
+	(wire
+		(pts
+			(xy 31.75 185.42)
+			(xy 33.02 185.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0c55fcdb-17bd-570a-91a0-6a8696d40d93")
+	)
+	(wire
+		(pts
+			(xy 31.75 154.94)
+			(xy 31.75 121.92)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b7c53d4b-c5ef-56fc-9c75-d9bda6e26e8f")
+	)
+	(wire
+		(pts
+			(xy 31.75 121.92)
+			(xy 33.02 121.92)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "43ff0382-cf80-5132-ad44-ed108f4a7c51")
+	)
+	(wire
+		(pts
+			(xy 31.75 185.42)
+			(xy 31.75 218.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1d8ba073-b326-53e9-a78a-711ee70e5028")
+	)
+	(wire
+		(pts
+			(xy 31.75 218.44)
+			(xy 33.02 218.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3cd65426-07bb-547e-8fa2-92f84d884afb")
+	)
+	(junction
+		(at 31.75 154.94)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "60e98d3f-df30-576a-a024-0a6fb73b5aaa")
+	)
+	(junction
+		(at 31.75 185.42)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "9bac1455-7ec3-5c51-b555-409639c92bc4")
+	)
+	(global_label
+		"O2A_L"
+		(shape passive)
+		(at 35.56 38.1 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "5a7a21a7-9bbb-5a8c-8abe-f3348e04191a")
+	)
+	(global_label
+		"GW_L"
+		(shape passive)
+		(at 27.94 41.91 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "13043c2f-25d2-5b75-b3ff-d1d9d56e876d")
+	)
+	(global_label
+		"GA_L"
+		(shape passive)
+		(at 30.48 45.72 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "29eade1b-cea7-53a5-a051-745cee1df1c9")
+	)
+	(global_label
+		"O2A_R"
+		(shape passive)
+		(at 71.12 38.1 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "5fb96d4a-67f9-572c-995a-9054a455cf24")
+	)
+	(global_label
+		"GW_R"
+		(shape passive)
+		(at 76.2 41.91 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "6537c2e1-29af-5d9c-b6e4-7c2866d8df4f")
+	)
+	(global_label
+		"GA_R"
+		(shape passive)
+		(at 73.66 45.72 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "92979cea-8e9e-5b17-90da-58d0d2a12e81")
+	)
+	(global_label
+		"VHN_L"
+		(shape passive)
+		(at 35.56 66.04 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "c887a4bc-5da4-58e1-969e-51638c973d04")
+	)
+	(global_label
+		"WPH_L"
+		(shape passive)
+		(at 27.94 69.85 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "be597459-290a-58f4-bb53-59d456714f21")
+	)
+	(global_label
+		"VHP_L"
+		(shape passive)
+		(at 30.48 73.66 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "c9fec4e8-a472-538e-8064-1480adc7aedd")
+	)
+	(global_label
+		"VHN_R"
+		(shape passive)
+		(at 71.12 66.04 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "e94c5524-63d8-530e-abfe-5b4a7f9f269e")
+	)
+	(global_label
+		"WPH_R"
+		(shape passive)
+		(at 76.2 69.85 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "ddb494af-4fc3-5de4-9bf5-82bb4ab9c114")
+	)
+	(global_label
+		"VHP_R"
+		(shape passive)
+		(at 73.66 73.66 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "7431f25a-d9cb-5f98-ba11-753c41ec5555")
+	)
+	(global_label
+		"NC_L"
+		(shape passive)
+		(at 33.02 93.98 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "75a1bbdb-ea36-54d4-9107-16588be3f23b")
+	)
+	(global_label
+		"NB_L"
+		(shape passive)
+		(at 25.4 97.79 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "079d9c6b-7b80-544f-aa18-6b9ac01ff0dc")
+	)
+	(global_label
+		"NA_L"
+		(shape passive)
+		(at 27.94 101.6 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "c2d7481e-9777-5a64-9277-042bc43a612c")
+	)
+	(global_label
+		"NC_R"
+		(shape passive)
+		(at 68.58 93.98 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "031147a2-f092-5054-8d17-564e24847e32")
+	)
+	(global_label
+		"NB_R"
+		(shape passive)
+		(at 73.66 97.79 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "47cba118-9e65-514d-b79b-7d6e5979e558")
+	)
+	(global_label
+		"NA_R"
+		(shape passive)
+		(at 71.12 101.6 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "74a2bc8c-3e9b-507b-a684-3e384b928fcf")
+	)
+	(global_label
+		"+REF5"
+		(shape passive)
+		(at 33.02 121.92 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "d169548c-791d-54c8-a4c5-0ae48389cea5")
+	)
+	(global_label
+		"POT_R1"
+		(shape passive)
+		(at 27.94 125.73 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "2ffafee3-8325-5afe-be09-7af1399fa614")
+	)
+	(global_label
+		"POT_R2"
+		(shape passive)
+		(at 27.94 158.75 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "6a964114-626a-524c-99a2-12ec32720b26")
+	)
+	(global_label
+		"POT_R3"
+		(shape passive)
+		(at 27.94 189.23 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "49c6ce02-be5c-5e61-afa8-3b7a0fa9d812")
+	)
+	(global_label
+		"POT_R4"
+		(shape passive)
+		(at 27.94 222.25 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "bb0496cb-0df8-5dbf-9641-fd7f85db2c91")
+	)
+)

@@ -228,9 +228,33 @@ BLOCKS = {
         "METER: one LM3915, 10 LEDs (5-way zone, g = 0.576, RHI = +REF5 of LB)",
     "CAVI: J1 LB, J2 RB, J3 LA, J4 RA (ordine da five-way.py, fili_cavo)":
         "CABLES: J1 LB, J2 RB, J3 LA, J4 RA (wire order from five-way.py, fili_cavo)",
+    # filtro (HPF e LPF)
+    "BACKPLANE C96 (classe FILTRO, sistema-backplane §4, dec. 159)":
+        "BACKPLANE C96 (FILTER class, sistema-backplane §4, dec. 159)",
+    "ALIMENTAZIONE +-18 audio, +-15 switch, +5, +-15 LN (core e CV), +-5 riferimento":
+        "POWER +-18 audio, +-15 switch, +5, +-15 LN (core and CV), +-5 reference",
+    "FREQ: buffer del pot, shaper (sistema-shaper §3), offset, partitore tempco (RISULTATI-conv-that320)":
+        "FREQ: pot buffer, shaper (sistema-shaper §3), offset, tempco divider (RISULTATI-conv-that320)",
+    "CONVERTER ESPONENZIALI: THAT 320 + LM334 PTAT, uno per sezione 2 poli (RISULTATI-conv-that320)":
+        "EXPONENTIAL CONVERTERS: THAT 320 + LM334 PTAT, one per 2-pole section (RISULTATI-conv-that320)",
+    "RES dec. 153: shaper gpos, raddrizzatore gneg, sorgenti P e N (filter-module §5, shaper-res.cir)":
+        "RES dec. 153: gpos shaper, gneg rectifier, P and N sources (filter-module §5, shaper-res.cir)",
+    "RICEVITORE del bus e CORE (a') 4 poli, lato L (d5c-sum-pass-hp.cir)":
+        "BUS RECEIVER and 4-pole CORE (a'), left side (d5c-sum-pass-hp.cir)",
+    "RICEVITORE del bus e CORE (a') 4 poli, lato R (d5c-sum-pass-hp.cir)":
+        "BUS RECEIVER and 4-pole CORE (a'), right side (d5c-sum-pass-hp.cir)",
+    "RICEVITORE del bus e CORE (a') 4 poli, lato L (d5c-sum-pass.cir)":
+        "BUS RECEIVER and 4-pole CORE (a'), left side (d5c-sum-pass.cir)",
+    "RICEVITORE del bus e CORE (a') 4 poli, lato R (d5c-sum-pass.cir)":
+        "BUS RECEIVER and 4-pole CORE (a'), right side (d5c-sum-pass.cir)",
+    "OVERDRIVE v0.2 col DRIVE a pot doppio e servo DC (§5ter, od2-pot-tran.cir, od2-servo-dc.cir)":
+        "OVERDRIVE v0.2 with DRIVE on a dual pot and DC servo (§5ter, od2-pot-tran.cir, od2-servo-dc.cir)",
+    "MUTO della sezione (bit FILT_MODE, §2bis) e driver verso il DJ bus":
+        "SECTION MUTE (FILT_MODE bits, §2bis) and driver to the DJ bus",
 }
 
 VALUES = {
+    "2x6 cavo piatto": "2x6 ribbon cable",
     "1x5 ingressi": "1x5 inputs",
     "2u2 film": "2u2 film",
     "2x18 cavo piatto": "2x18 ribbon cable",
@@ -317,6 +341,7 @@ TITLE = [
     (r"\(cuffie:", "(headphones:"),
     (r"\(destra:", "(right:"),
     (r"\bbozza\b", "draft"),
+    (r"core a' 4 poli, CV, RES, overdrive, muto", "4-pole core a', CV, RES, overdrive, mute"),
     (r"parte A: ricevitore, banca, kill", "part A: receiver, band split, kill"),
     (r"parte B: celle, GROWL, NASTRO, uscita", "part B: cells, GROWL, NASTRO, output"),
 ]

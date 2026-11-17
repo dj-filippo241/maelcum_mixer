@@ -1,0 +1,4938 @@
+(kicad_sch
+	(version 20260101)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "878e5a44-0927-5eae-ad1e-7e83b69d8057")
+	(paper "A3")
+	(title_block
+		(title "GAIN, POSITION, WIDTH of the 5 ways (dual pots: section A = L, B = R)")
+		(rev "0.1-draft")
+		(comment 1 "maelcum 5-WAY control board - draft v0.1 - readable schematic")
+		(comment 2 "Page 2")
+	)
+	(lib_symbols
+		(symbol
+			"maelcum:POT_DUAL"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property
+				"Reference"
+				"RV"
+				(at 0 8.89 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Value"
+				"POT_DUAL"
+				(at 0 -8.89 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Footprint"
+				"Potentiometer_THT:Potentiometer_Alps_RK09L_Double_Vertical"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property
+				"Datasheet"
+				""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property
+				"Description"
+				"Pot doppio, Alps RK09L verticale; MP = staffe, a massa telaio attraverso il pannello"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol
+				"POT_DUAL_0_1"
+				(rectangle
+					(start -12.7 5.08)
+					(end 12.7 -5.08)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+			)
+			(symbol
+				"POT_DUAL_1_1"
+				(pin
+					passive
+					line
+					(at -17.78 2.54 0)
+					(length 5.08)
+					(name
+						"A_CCW"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					passive
+					line
+					(at -17.78 0 0)
+					(length 5.08)
+					(name
+						"A_W"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					passive
+					line
+					(at -17.78 -2.54 0)
+					(length 5.08)
+					(name
+						"A_CW"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					passive
+					line
+					(at -17.78 -5.08 0)
+					(length 5.08)
+					(name
+						"MP"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"MP"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					passive
+					line
+					(at 17.78 2.54 180)
+					(length 5.08)
+					(name
+						"B_CCW"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					passive
+					line
+					(at 17.78 0 180)
+					(length 5.08)
+					(name
+						"B_W"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					passive
+					line
+					(at 17.78 -2.54 180)
+					(length 5.08)
+					(name
+						"B_CW"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol
+			"maelcum:POT_SINGLE"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property
+				"Reference"
+				"RV"
+				(at 0 7.62 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Value"
+				"POT_SINGLE"
+				(at 0 -7.62 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Footprint"
+				"Potentiometer_THT:Potentiometer_Alps_RK09L_Single_Vertical"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property
+				"Datasheet"
+				""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property
+				"Description"
+				"Pot singolo, Alps RK09L verticale; MP = staffe, a massa telaio attraverso il pannello"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol
+				"POT_SINGLE_0_1"
+				(rectangle
+					(start -12.7 5.08)
+					(end 12.7 -5.08)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+			)
+			(symbol
+				"POT_SINGLE_1_1"
+				(pin
+					passive
+					line
+					(at -17.78 2.54 0)
+					(length 5.08)
+					(name
+						"CCW"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					passive
+					line
+					(at -17.78 0 0)
+					(length 5.08)
+					(name
+						"W"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					passive
+					line
+					(at -17.78 -2.54 0)
+					(length 5.08)
+					(name
+						"CW"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin
+					passive
+					line
+					(at 17.78 2.54 180)
+					(length 5.08)
+					(name
+						"MP"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"MP"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol
+			"power:GND"
+			(power global)
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property
+				"Reference"
+				"#PWR"
+				(at 0 -6.35 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Value"
+				"GND"
+				(at 0 -3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Footprint"
+				""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Datasheet"
+				""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Description"
+				"Power symbol creates a global label with name \"GND\" , ground"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"ki_keywords"
+				"global power"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol
+				"GND_0_1"
+				(polyline
+					(pts
+						(xy 0 0)
+						(xy 0 -1.27)
+						(xy 1.27 -1.27)
+						(xy 0 -2.54)
+						(xy -1.27 -1.27)
+						(xy 0 -1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol
+				"GND_1_1"
+				(pin
+					power_in
+					line
+					(at 0 0 270)
+					(length 0)
+					(name
+						""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol
+			"power:PWR_FLAG"
+			(power global)
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property
+				"Reference"
+				"#FLG"
+				(at 0 1.905 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Value"
+				"PWR_FLAG"
+				(at 0 3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Footprint"
+				""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Datasheet"
+				""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"Description"
+				"Special symbol for telling ERC where power comes from"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property
+				"ki_keywords"
+				"flag power"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol
+				"PWR_FLAG_0_0"
+				(pin
+					power_out
+					line
+					(at 0 0 90)
+					(length 0)
+					(name
+						""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number
+						"1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol
+				"PWR_FLAG_0_1"
+				(polyline
+					(pts
+						(xy 0 0)
+						(xy 0 1.27)
+						(xy -1.016 1.905)
+						(xy 0 2.54)
+						(xy 1.016 1.905)
+						(xy 0 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+	)
+	(text
+		"GAIN, POSITION, WIDTH of the 5 ways (dual pots: section A = L, B = R)"
+		(exclude_from_sim no)
+		(at 15.24 21.59 0)
+		(effects
+			(font
+				(size 4 4)
+				(bold yes)
+			)
+			(justify left bottom)
+		)
+		(uuid "1bf94906-e78d-5245-b29e-47ebb15cfb72")
+	)
+	(symbol
+		(lib_id "maelcum:POT_DUAL")
+		(at 50.8 40.64 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "49e11ac4-24a5-5754-976c-58377b00a050")
+		(property
+			"Reference"
+			"RV1"
+			(at 48.26 35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"10k lin dual, centre detent"
+			(at 48.26 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Potentiometer_THT:Potentiometer_Alps_RK09L_Double_Vertical"
+			(at 50.8 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 50.8 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"GAIN SUB: antiorario = notch (NDQ), centro = piatto, orario = +15 dB (DQ); NOTA: resistenze di legge dopo l'ascolto (todo 132); manopola GAIN SUB, pot di classe 14 mm, cappuccio 24.0 mm"
+			(at 50.8 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "cab2a182-bbf9-5164-9cda-265b7c35f5b3")
+		)
+		(pin
+			"2"
+			(uuid "b4e0c1e4-b377-593c-8d59-673632b7c2c2")
+		)
+		(pin
+			"3"
+			(uuid "10bf0878-4330-5ef5-ad78-753b66afd948")
+		)
+		(pin
+			"MP"
+			(uuid "7863ed13-c2f6-53e0-82a8-360a29a0dc16")
+		)
+		(pin
+			"4"
+			(uuid "e96c593e-375c-5580-b9f5-4e3ade9b39d4")
+		)
+		(pin
+			"5"
+			(uuid "f5925d48-acd5-57a4-b668-92affe9ce3cf")
+		)
+		(pin
+			"6"
+			(uuid "7ae614ac-3d67-5d92-83bf-66e7fa49ecfd")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/7bb37a5a-5e20-5205-9bf0-fa3b58a62f42"
+					(reference "RV1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 33.02 40.64)
+			(xy 25.4 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ca1d7273-4d13-576f-8723-c8d08d3b22f5")
+	)
+	(wire
+		(pts
+			(xy 25.4 40.64)
+			(xy 25.4 41.91)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a9d64780-12e3-552c-b612-49d111bec9c4")
+	)
+	(wire
+		(pts
+			(xy 33.02 43.18)
+			(xy 27.94 43.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cc116172-8ad9-5570-8e6e-bbc19b757e22")
+	)
+	(wire
+		(pts
+			(xy 27.94 43.18)
+			(xy 27.94 45.72)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "540e3b97-c249-5829-b70e-56273147f38a")
+	)
+	(no_connect
+		(at 33.02 45.72)
+		(uuid "e72d663c-a65c-5b0f-8e6d-bf0e6c73a2d2")
+	)
+	(wire
+		(pts
+			(xy 68.58 40.64)
+			(xy 73.66 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "03d2c242-51e5-5815-98bd-298437751933")
+	)
+	(wire
+		(pts
+			(xy 73.66 40.64)
+			(xy 73.66 41.91)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "bbadb5b8-a838-5175-9cba-8de967b3a1f1")
+	)
+	(wire
+		(pts
+			(xy 68.58 43.18)
+			(xy 71.12 43.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fcb9bed4-2642-5472-ae6e-50a78dc704c4")
+	)
+	(wire
+		(pts
+			(xy 71.12 43.18)
+			(xy 71.12 45.72)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "84b5a097-e5bb-5773-8ee0-0f68aaafe2da")
+	)
+	(symbol
+		(lib_id "maelcum:POT_SINGLE")
+		(at 48.26 68.58 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "cdd8528b-cd8c-5524-a4b5-df706fdf0d05")
+		(property
+			"Reference"
+			"RV2"
+			(at 45.72 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"10k lin"
+			(at 45.72 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Potentiometer_THT:Potentiometer_Alps_RK09L_Single_Vertical"
+			(at 48.26 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 48.26 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"POSITION SUB: antiorario = frequenza bassa, orario = alta; cursore alle due schede B; manopola POSITION SUB, pot di classe 14 mm, cappuccio 15.0 mm"
+			(at 48.26 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "de66a651-6ae9-5ecb-8bd5-d93c46d9d134")
+		)
+		(pin
+			"2"
+			(uuid "a7454473-e677-5891-a745-3e53811cdfb6")
+		)
+		(pin
+			"3"
+			(uuid "5ed49df6-fe50-5c76-9335-d07f1626036b")
+		)
+		(pin
+			"MP"
+			(uuid "3013aea9-190d-5ec5-a6c2-4d3dea8717a8")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/7bb37a5a-5e20-5205-9bf0-fa3b58a62f42"
+					(reference "RV2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 30.48 66.04)
+			(xy 27.94 66.04)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8fe59539-a3cd-5eed-a5d1-a5abf6dd54e8")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 27.94 66.04 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "dd91d202-8510-5ffd-95dd-58286533cf49")
+		(property
+			"Reference"
+			"#PWR001"
+			(at 27.94 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"AGND"
+			(at 27.94 71.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 27.94 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 27.94 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "40c484c2-f394-5fb4-ab7b-5ccdfb3da223")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/7bb37a5a-5e20-5205-9bf0-fa3b58a62f42"
+					(reference "#PWR001")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 30.48 68.58)
+			(xy 25.4 68.58)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "734d6fa3-2c00-5454-842e-8d27569f713d")
+	)
+	(wire
+		(pts
+			(xy 25.4 68.58)
+			(xy 25.4 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "63bf7413-83f0-5252-abe0-574918b5f4ec")
+	)
+	(wire
+		(pts
+			(xy 30.48 71.12)
+			(xy 27.94 71.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c3768a1c-2d25-5150-ae96-daa40190a149")
+	)
+	(wire
+		(pts
+			(xy 27.94 71.12)
+			(xy 27.94 80.01)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "eb885d3f-fa04-5249-aed5-690804de5989")
+	)
+	(no_connect
+		(at 66.04 66.04)
+		(uuid "936cad8e-1143-58ed-82be-c54bfb73ed67")
+	)
+	(symbol
+		(lib_id "maelcum:POT_DUAL")
+		(at 50.8 99.06 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5d721993-bfd3-56b2-87fd-9a5fc6dc307b")
+		(property
+			"Reference"
+			"RV3"
+			(at 48.26 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"1k log dual"
+			(at 48.26 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Potentiometer_THT:Potentiometer_Alps_RK09L_Double_Vertical"
+			(at 50.8 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 50.8 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"WIDTH SUB: antiorario = stretto (Q3), orario = largo (Q0,3), §4.3; NOTA: doppio 1k da trovare, taper log 10 o 20 % da scegliere (dec. 117); manopola WIDTH SUB, pot di classe 14 mm, cappuccio 15.0 mm"
+			(at 50.8 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "d702a534-6145-5dc4-9625-cfe02b14b3a0")
+		)
+		(pin
+			"2"
+			(uuid "1e875c6d-1ca1-5acb-9352-313fd81da353")
+		)
+		(pin
+			"3"
+			(uuid "a721f61a-abbc-54ad-b9bf-8b5480c6a0a2")
+		)
+		(pin
+			"MP"
+			(uuid "b14da390-2301-5773-bfab-6522e60c0108")
+		)
+		(pin
+			"4"
+			(uuid "5fd20201-2f48-5ad0-b28b-ecd0a911c9d9")
+		)
+		(pin
+			"5"
+			(uuid "bf37ea56-aa4a-5255-9dfb-dbda51321cac")
+		)
+		(pin
+			"6"
+			(uuid "ae1ae780-d33c-5fee-b1ac-fcc90850019a")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/7bb37a5a-5e20-5205-9bf0-fa3b58a62f42"
+					(reference "RV3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 33.02 99.06)
+			(xy 25.4 99.06)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3f94cf91-cb28-5ff9-9870-3c079674e8bd")
+	)
+	(wire
+		(pts
+			(xy 25.4 99.06)
+			(xy 25.4 100.33)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ae1d9d05-5dff-585b-a578-f142eeaeb524")
+	)
+	(wire
+		(pts
+			(xy 33.02 101.6)
+			(xy 27.94 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7982b3c7-cb2d-5805-b4b4-d6cf070657b6")
+	)
+	(wire
+		(pts
+			(xy 27.94 101.6)
+			(xy 27.94 104.14)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d9666d1f-c51f-50a0-9dd8-98bed7627716")
+	)
+	(no_connect
+		(at 33.02 104.14)
+		(uuid "4994bf80-4600-56c5-885e-1f45025894ae")
+	)
+	(wire
+		(pts
+			(xy 68.58 99.06)
+			(xy 73.66 99.06)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2919b28d-69e9-59f4-b7d1-71685962b1e4")
+	)
+	(wire
+		(pts
+			(xy 73.66 99.06)
+			(xy 73.66 100.33)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5a272690-fd24-5104-9d20-031c428eaabb")
+	)
+	(wire
+		(pts
+			(xy 68.58 101.6)
+			(xy 71.12 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "10ea6326-19cd-5a5a-8d1c-cc04d025c1a6")
+	)
+	(wire
+		(pts
+			(xy 71.12 101.6)
+			(xy 71.12 104.14)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "68c8d73b-c680-5f4a-9cb3-0fb427255b01")
+	)
+	(symbol
+		(lib_id "maelcum:POT_DUAL")
+		(at 50.8 127 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "9b8f46d6-ec0f-574b-a103-8fb0313a79c9")
+		(property
+			"Reference"
+			"RV4"
+			(at 48.26 121.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"10k lin dual, centre detent"
+			(at 48.26 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Potentiometer_THT:Potentiometer_Alps_RK09L_Double_Vertical"
+			(at 50.8 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 50.8 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"GAIN KICK: antiorario = notch (NDQ), centro = piatto, orario = +15 dB (DQ); NOTA: resistenze di legge dopo l'ascolto (todo 132); manopola GAIN KICK, pot di classe 14 mm, cappuccio 24.0 mm"
+			(at 50.8 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "831b1db5-4288-56aa-9b48-b7317b4bf51c")
+		)
+		(pin
+			"2"
+			(uuid "dcbd468e-664c-55f4-80ae-1fff68468639")
+		)
+		(pin
+			"3"
+			(uuid "d3713669-a3d8-5257-b88e-cca56f6caa16")
+		)
+		(pin
+			"MP"
+			(uuid "71c76290-df83-5a07-a855-c09133559432")
+		)
+		(pin
+			"4"
+			(uuid "e360bc22-a2a2-54f3-ad50-c20b19ab7f0c")
+		)
+		(pin
+			"5"
+			(uuid "57af8082-e003-5c26-805e-55a5720e2703")
+		)
+		(pin
+			"6"
+			(uuid "3dccf107-68e2-5a13-83d3-0d3d675800a3")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/7bb37a5a-5e20-5205-9bf0-fa3b58a62f42"
+					(reference "RV4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 33.02 127)
+			(xy 25.4 127)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6a0d5077-5111-5ebb-b2b0-4a511df8dd12")
+	)
+	(wire
+		(pts
+			(xy 25.4 127)
+			(xy 25.4 128.27)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0a4d26aa-b705-5263-bccf-fb45817a8652")
+	)
+	(wire
+		(pts
+			(xy 33.02 129.54)
+			(xy 27.94 129.54)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "45caf0e1-8573-55b6-b537-320724c5c74b")
+	)
+	(wire
+		(pts
+			(xy 27.94 129.54)
+			(xy 27.94 132.08)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e10eae63-da5d-5514-96c8-4011061d3fd2")
+	)
+	(no_connect
+		(at 33.02 132.08)
+		(uuid "42c46093-bdb6-5c2e-9dbc-fee9891680cb")
+	)
+	(wire
+		(pts
+			(xy 68.58 127)
+			(xy 73.66 127)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "480c511c-b05f-58ea-b536-78f14f3ca32a")
+	)
+	(wire
+		(pts
+			(xy 73.66 127)
+			(xy 73.66 128.27)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b5f8d07c-86e5-5626-b98d-5d379f5236f4")
+	)
+	(wire
+		(pts
+			(xy 68.58 129.54)
+			(xy 71.12 129.54)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c582c953-5d91-519a-8565-3d2fe847159c")
+	)
+	(wire
+		(pts
+			(xy 71.12 129.54)
+			(xy 71.12 132.08)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8a0c7f2e-d4f8-5da4-8c70-5cac07074b04")
+	)
+	(symbol
+		(lib_id "maelcum:POT_SINGLE")
+		(at 48.26 154.94 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5d7908a8-1eb1-5aaa-82b7-0c81f6f3ae7c")
+		(property
+			"Reference"
+			"RV5"
+			(at 45.72 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"10k lin"
+			(at 45.72 160.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Potentiometer_THT:Potentiometer_Alps_RK09L_Single_Vertical"
+			(at 48.26 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 48.26 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"POSITION KICK: antiorario = frequenza bassa, orario = alta; cursore alle due schede B; manopola POSITION KICK, pot di classe 14 mm, cappuccio 15.0 mm"
+			(at 48.26 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "f7b0839e-32f9-541f-a40b-44aef72ec4a1")
+		)
+		(pin
+			"2"
+			(uuid "352e20a9-7718-543d-a9d6-de690ca5f95e")
+		)
+		(pin
+			"3"
+			(uuid "226ef6cc-32d2-53ff-8b6b-2c696cec1ab0")
+		)
+		(pin
+			"MP"
+			(uuid "f47eabc8-0282-58a2-b89b-becc4c540231")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/7bb37a5a-5e20-5205-9bf0-fa3b58a62f42"
+					(reference "RV5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 30.48 152.4)
+			(xy 27.94 152.4)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "81fd7e74-11c8-593d-8033-907c21c64190")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 27.94 152.4 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "bed53085-f6fd-502a-834f-04476f6aea27")
+		(property
+			"Reference"
+			"#PWR002"
+			(at 27.94 152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"AGND"
+			(at 27.94 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 27.94 152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 27.94 152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "df036694-0fd9-5e4a-a51f-d1ead5199e67")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/7bb37a5a-5e20-5205-9bf0-fa3b58a62f42"
+					(reference "#PWR002")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 30.48 154.94)
+			(xy 25.4 154.94)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "af8396b6-3de0-567a-bbf8-0056de7f4799")
+	)
+	(wire
+		(pts
+			(xy 25.4 154.94)
+			(xy 25.4 162.56)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6eed6aab-578e-54d8-a450-48295a7772cd")
+	)
+	(wire
+		(pts
+			(xy 30.48 157.48)
+			(xy 27.94 157.48)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e9dd434a-9a2f-5eb7-bb83-fc7d917cb43b")
+	)
+	(wire
+		(pts
+			(xy 27.94 158.75)
+			(xy 27.94 157.48)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2be6a433-a288-5bb8-b91d-8b9f19ba13f3")
+	)
+	(no_connect
+		(at 66.04 152.4)
+		(uuid "3928666f-541c-5caa-8670-7a78b96c928f")
+	)
+	(symbol
+		(lib_id "maelcum:POT_DUAL")
+		(at 50.8 185.42 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "0c164647-bce5-5f50-b53a-03681380b2f0")
+		(property
+			"Reference"
+			"RV6"
+			(at 48.26 180.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"1k log dual"
+			(at 48.26 193.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Potentiometer_THT:Potentiometer_Alps_RK09L_Double_Vertical"
+			(at 50.8 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 50.8 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"WIDTH KICK: antiorario = stretto (Q3), orario = largo (Q0,3), §4.3; NOTA: doppio 1k da trovare, taper log 10 o 20 % da scegliere (dec. 117); manopola WIDTH KICK, pot di classe 14 mm, cappuccio 15.0 mm"
+			(at 50.8 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "e0ccb2b0-dc36-59d1-add6-70c8d4b3afee")
+		)
+		(pin
+			"2"
+			(uuid "1e9ec16e-b6df-5981-9016-636053245aba")
+		)
+		(pin
+			"3"
+			(uuid "240b6a9c-409f-5e2a-8112-c48022d5e396")
+		)
+		(pin
+			"MP"
+			(uuid "0057420a-8125-57d1-b32a-9c7e078a8b81")
+		)
+		(pin
+			"4"
+			(uuid "44d1f05c-539c-599c-bc94-08401ccc1a04")
+		)
+		(pin
+			"5"
+			(uuid "376124c5-32fa-5b7a-8a22-5f788f93e6f9")
+		)
+		(pin
+			"6"
+			(uuid "e0956dcc-0759-508f-a9a2-1f22f7a60c44")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/7bb37a5a-5e20-5205-9bf0-fa3b58a62f42"
+					(reference "RV6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 33.02 185.42)
+			(xy 25.4 185.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "66f626d1-a98c-5d83-b67f-f359a25f0a43")
+	)
+	(wire
+		(pts
+			(xy 25.4 185.42)
+			(xy 25.4 186.69)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e1de976e-6987-59d7-a9ff-6e6c74afa63c")
+	)
+	(wire
+		(pts
+			(xy 33.02 187.96)
+			(xy 27.94 187.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "95ce1519-edff-5455-bce4-e0d8f69b2aa7")
+	)
+	(wire
+		(pts
+			(xy 27.94 187.96)
+			(xy 27.94 190.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3a26c81b-2ca3-51bf-b6d6-80383eca8756")
+	)
+	(no_connect
+		(at 33.02 190.5)
+		(uuid "247803a2-288d-56e3-b751-593cc058a0aa")
+	)
+	(wire
+		(pts
+			(xy 68.58 185.42)
+			(xy 73.66 185.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5b8b063a-ae2f-5f34-a76d-3f6f29247a1d")
+	)
+	(wire
+		(pts
+			(xy 73.66 185.42)
+			(xy 73.66 186.69)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9a5e4ae3-8749-591c-98dc-7f35f09a4d86")
+	)
+	(wire
+		(pts
+			(xy 68.58 187.96)
+			(xy 71.12 187.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "675feed8-b672-540f-8c76-512387e7215e")
+	)
+	(wire
+		(pts
+			(xy 71.12 187.96)
+			(xy 71.12 190.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2c55fc8f-7c10-5b1d-9802-5be9b8b2bf87")
+	)
+	(symbol
+		(lib_id "maelcum:POT_DUAL")
+		(at 50.8 213.36 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5e7310c4-30d9-5b7a-8f4e-b51643ea5b5f")
+		(property
+			"Reference"
+			"RV7"
+			(at 48.26 208.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"10k lin dual, centre detent"
+			(at 48.26 220.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Potentiometer_THT:Potentiometer_Alps_RK09L_Double_Vertical"
+			(at 50.8 213.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 50.8 213.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"GAIN MID: antiorario = notch (NDQ), centro = piatto, orario = +15 dB (DQ); NOTA: resistenze di legge dopo l'ascolto (todo 132); manopola GAIN MID, pot di classe 14 mm, cappuccio 24.0 mm"
+			(at 50.8 213.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "978d4082-9a0e-5e6a-89af-0cb2f0322793")
+		)
+		(pin
+			"2"
+			(uuid "4fea96bd-75ec-5116-a106-094cfc1e8b81")
+		)
+		(pin
+			"3"
+			(uuid "5974b9ce-3c1c-5d0e-bbaf-5da987a5ab12")
+		)
+		(pin
+			"MP"
+			(uuid "6ed675e4-6a7d-584c-8c0d-a497a482bcb9")
+		)
+		(pin
+			"4"
+			(uuid "786ca151-7987-5c67-a1ad-7091b162cd98")
+		)
+		(pin
+			"5"
+			(uuid "d546cd89-1611-5d53-bc1e-3319a65cd04a")
+		)
+		(pin
+			"6"
+			(uuid "9bb13dae-3771-5181-ada2-17e609a59c79")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/7bb37a5a-5e20-5205-9bf0-fa3b58a62f42"
+					(reference "RV7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 33.02 213.36)
+			(xy 25.4 213.36)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "34d59418-006c-588d-aeb6-a28acd9e2888")
+	)
+	(wire
+		(pts
+			(xy 25.4 213.36)
+			(xy 25.4 214.63)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1d835683-d485-5299-a7ac-36fc3d4ff221")
+	)
+	(wire
+		(pts
+			(xy 33.02 215.9)
+			(xy 27.94 215.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5e22c85b-9cbb-5814-86a7-8300e9509eb8")
+	)
+	(wire
+		(pts
+			(xy 27.94 215.9)
+			(xy 27.94 218.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0f0d5379-69d6-58b4-80bc-3abe1e089b06")
+	)
+	(no_connect
+		(at 33.02 218.44)
+		(uuid "53420730-7d5d-5906-9783-79e5a44bf613")
+	)
+	(wire
+		(pts
+			(xy 68.58 213.36)
+			(xy 73.66 213.36)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "dfda69f2-dc6d-5308-96b6-a6798f01ef1c")
+	)
+	(wire
+		(pts
+			(xy 73.66 213.36)
+			(xy 73.66 214.63)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fc46eaa0-ebd7-542a-8526-c1e7790f1ac6")
+	)
+	(wire
+		(pts
+			(xy 68.58 215.9)
+			(xy 71.12 215.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4e769878-d22b-53da-aa4f-3b23bce0b4b2")
+	)
+	(wire
+		(pts
+			(xy 71.12 215.9)
+			(xy 71.12 218.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8461635b-f272-5132-822c-ad8edad90897")
+	)
+	(symbol
+		(lib_id "maelcum:POT_SINGLE")
+		(at 137.16 40.64 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "c86424b2-c9e1-5d17-a3c4-7cf3b75477a5")
+		(property
+			"Reference"
+			"RV8"
+			(at 134.62 35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"10k lin"
+			(at 134.62 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Potentiometer_THT:Potentiometer_Alps_RK09L_Single_Vertical"
+			(at 137.16 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 137.16 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"POSITION MID: antiorario = frequenza bassa, orario = alta; cursore alle due schede B; manopola POSITION MID, pot di classe 14 mm, cappuccio 15.0 mm"
+			(at 137.16 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "298fc276-610a-5fb9-87e3-0912041cfaf4")
+		)
+		(pin
+			"2"
+			(uuid "d98c2e16-30d6-535c-bbf0-140dd6663db8")
+		)
+		(pin
+			"3"
+			(uuid "aeab0f01-af33-5566-a3c2-feaa063a9bbd")
+		)
+		(pin
+			"MP"
+			(uuid "c3471ec1-fbb3-534d-ab17-59818a0df0b6")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/7bb37a5a-5e20-5205-9bf0-fa3b58a62f42"
+					(reference "RV8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 116.84 38.1)
+			(xy 119.38 38.1)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "eefd6d4d-f644-5b60-b482-290c44f66494")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 116.84 38.1 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "4076b25b-face-56a8-9c32-10c1ccfd54f9")
+		(property
+			"Reference"
+			"#PWR003"
+			(at 116.84 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"AGND"
+			(at 116.84 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 116.84 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 116.84 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "c177e914-a91d-577a-9cc2-798a04d45868")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/7bb37a5a-5e20-5205-9bf0-fa3b58a62f42"
+					(reference "#PWR003")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 119.38 40.64)
+			(xy 114.3 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "efd0e91e-ec14-5f1b-95fa-897f953b2bae")
+	)
+	(wire
+		(pts
+			(xy 114.3 40.64)
+			(xy 114.3 48.26)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "993a3edd-50c1-52ab-9377-e01011acc0a8")
+	)
+	(wire
+		(pts
+			(xy 119.38 43.18)
+			(xy 116.84 43.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "47b5c8fa-0013-509d-adc9-6049b9b8e782")
+	)
+	(wire
+		(pts
+			(xy 116.84 43.18)
+			(xy 116.84 52.07)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5629d5f8-8bfb-5cf1-99a8-7a93b002afd5")
+	)
+	(no_connect
+		(at 154.94 38.1)
+		(uuid "f5119d85-2ab1-5e6b-b925-da3eaace8d04")
+	)
+	(symbol
+		(lib_id "maelcum:POT_DUAL")
+		(at 139.7 71.12 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f64e395a-4415-5c87-a82d-1834ad194d80")
+		(property
+			"Reference"
+			"RV9"
+			(at 137.16 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"1k log dual"
+			(at 137.16 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Potentiometer_THT:Potentiometer_Alps_RK09L_Double_Vertical"
+			(at 139.7 71.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 139.7 71.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"WIDTH MID: antiorario = stretto (Q3), orario = largo (Q0,3), §4.3; NOTA: doppio 1k da trovare, taper log 10 o 20 % da scegliere (dec. 117); manopola WIDTH MID, pot di classe 14 mm, cappuccio 15.0 mm"
+			(at 139.7 71.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "96aece0d-769e-51e4-9eb4-8bf18e291e73")
+		)
+		(pin
+			"2"
+			(uuid "cb0b1c72-231c-5f20-bef3-0dcb6ddec242")
+		)
+		(pin
+			"3"
+			(uuid "d6514adb-588a-53c7-9759-1d47b4caeb0b")
+		)
+		(pin
+			"MP"
+			(uuid "434f0cea-ec32-5e99-b073-2eeea3985382")
+		)
+		(pin
+			"4"
+			(uuid "ff26ae27-e901-5cd7-9c44-5ff90a942802")
+		)
+		(pin
+			"5"
+			(uuid "d363591e-2fd8-59e1-8a46-26fb84da425e")
+		)
+		(pin
+			"6"
+			(uuid "2ddd6c53-7147-5722-ace3-2e30593fc82d")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/7bb37a5a-5e20-5205-9bf0-fa3b58a62f42"
+					(reference "RV9")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 121.92 71.12)
+			(xy 114.3 71.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4a8ac2e9-4c12-5b6f-b31e-14e30a451525")
+	)
+	(wire
+		(pts
+			(xy 114.3 71.12)
+			(xy 114.3 72.39)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8116c1c2-b26f-5fde-bda8-488e7b7c65a4")
+	)
+	(wire
+		(pts
+			(xy 121.92 73.66)
+			(xy 116.84 73.66)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3e637538-5319-50cd-89f6-898a2e6d924f")
+	)
+	(wire
+		(pts
+			(xy 116.84 73.66)
+			(xy 116.84 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1f51d43b-ddbd-5327-8655-93fe77a6e450")
+	)
+	(no_connect
+		(at 121.92 76.2)
+		(uuid "e0594a9a-b2c8-5276-a926-4556767ff4f9")
+	)
+	(wire
+		(pts
+			(xy 157.48 71.12)
+			(xy 162.56 71.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "25ef9c66-f568-5461-98dc-676703629f06")
+	)
+	(wire
+		(pts
+			(xy 162.56 71.12)
+			(xy 162.56 72.39)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "efaa3eca-9f46-5f55-b2f9-70241a27e925")
+	)
+	(wire
+		(pts
+			(xy 157.48 73.66)
+			(xy 160.02 73.66)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8f60488c-5c06-5964-a62e-b46709a5ed49")
+	)
+	(wire
+		(pts
+			(xy 160.02 73.66)
+			(xy 160.02 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3a976792-d772-5063-8d08-2e6e7580518e")
+	)
+	(symbol
+		(lib_id "maelcum:POT_DUAL")
+		(at 139.7 99.06 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "c362bd4b-650d-52bc-a8f3-5cd467c1c4a4")
+		(property
+			"Reference"
+			"RV10"
+			(at 137.16 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"10k lin dual, centre detent"
+			(at 137.16 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Potentiometer_THT:Potentiometer_Alps_RK09L_Double_Vertical"
+			(at 139.7 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 139.7 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"GAIN HIGH: antiorario = notch (NDQ), centro = piatto, orario = +15 dB (DQ); NOTA: resistenze di legge dopo l'ascolto (todo 132); manopola GAIN HIGH, pot di classe 14 mm, cappuccio 24.0 mm"
+			(at 139.7 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "2ac8fc9e-9421-5112-b1d1-3fbe99b18ca1")
+		)
+		(pin
+			"2"
+			(uuid "1502f02d-d5be-5f01-b474-133ac3e111d7")
+		)
+		(pin
+			"3"
+			(uuid "27555dca-0171-5772-995b-850964e3c09c")
+		)
+		(pin
+			"MP"
+			(uuid "17baf43e-5d95-54e6-bb45-1c9f7a319bf6")
+		)
+		(pin
+			"4"
+			(uuid "7604ad1f-edf8-5b81-a543-30d95cc3a3fd")
+		)
+		(pin
+			"5"
+			(uuid "bddd9321-1e4a-50d7-9fed-cba867471a9d")
+		)
+		(pin
+			"6"
+			(uuid "7d7bb31e-bc11-5502-9cc1-8e5542e4b37b")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/7bb37a5a-5e20-5205-9bf0-fa3b58a62f42"
+					(reference "RV10")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 121.92 99.06)
+			(xy 114.3 99.06)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f49615fb-5e22-57ab-9104-71bf888e4a0a")
+	)
+	(wire
+		(pts
+			(xy 114.3 99.06)
+			(xy 114.3 100.33)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d8e08339-cdc8-5095-aeb6-d89680b4170c")
+	)
+	(wire
+		(pts
+			(xy 121.92 101.6)
+			(xy 116.84 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8bee3105-0e4d-58ef-a19b-4aafa2b278a5")
+	)
+	(wire
+		(pts
+			(xy 116.84 101.6)
+			(xy 116.84 104.14)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "49a2269b-c9bb-5e2a-978c-6192633af44c")
+	)
+	(no_connect
+		(at 121.92 104.14)
+		(uuid "05afa88d-dcc3-5356-b720-3095e8a36e6d")
+	)
+	(wire
+		(pts
+			(xy 157.48 99.06)
+			(xy 162.56 99.06)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e80a9412-5ae5-541f-9234-943ad54fa2e0")
+	)
+	(wire
+		(pts
+			(xy 162.56 99.06)
+			(xy 162.56 100.33)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0c1d1d0e-acc3-5304-ab30-a16a77917233")
+	)
+	(wire
+		(pts
+			(xy 157.48 101.6)
+			(xy 160.02 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2d326eee-fa20-57c8-9cdc-64676006d79c")
+	)
+	(wire
+		(pts
+			(xy 160.02 101.6)
+			(xy 160.02 104.14)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "da89eed4-2083-5065-ac8f-56d2a789d1e5")
+	)
+	(symbol
+		(lib_id "maelcum:POT_SINGLE")
+		(at 137.16 127 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "9757d788-d434-5d34-b4e3-1603a5eb2136")
+		(property
+			"Reference"
+			"RV11"
+			(at 134.62 121.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"10k lin"
+			(at 134.62 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Potentiometer_THT:Potentiometer_Alps_RK09L_Single_Vertical"
+			(at 137.16 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 137.16 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"POSITION HIGH: antiorario = frequenza bassa, orario = alta; cursore alle due schede B; manopola POSITION HIGH, pot di classe 14 mm, cappuccio 15.0 mm"
+			(at 137.16 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "01f88bea-c2b4-5085-ad1f-8b57a01d43c1")
+		)
+		(pin
+			"2"
+			(uuid "ac0e75bb-782b-5b06-b1eb-b07c92effe8b")
+		)
+		(pin
+			"3"
+			(uuid "6f52a53c-774e-5867-9e02-9236eb41a825")
+		)
+		(pin
+			"MP"
+			(uuid "656d3d4e-1871-5543-b387-594cfbc69b14")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/7bb37a5a-5e20-5205-9bf0-fa3b58a62f42"
+					(reference "RV11")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 116.84 124.46)
+			(xy 119.38 124.46)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0606d9ee-81b4-5e74-807e-365d73e71a11")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 116.84 124.46 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e39c3d0b-8326-5b52-ad7c-b7ef84b34b6c")
+		(property
+			"Reference"
+			"#PWR004"
+			(at 116.84 124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"AGND"
+			(at 116.84 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 116.84 124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 116.84 124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "bcefe2ee-1eaf-52fb-812a-6151df5e9dfd")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/7bb37a5a-5e20-5205-9bf0-fa3b58a62f42"
+					(reference "#PWR004")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 119.38 127)
+			(xy 114.3 127)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "aa400cc0-2eb7-56aa-98e2-b548aed831e1")
+	)
+	(wire
+		(pts
+			(xy 114.3 127)
+			(xy 114.3 134.62)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fab773d5-1f17-5090-b935-2ee50f63cabe")
+	)
+	(wire
+		(pts
+			(xy 119.38 129.54)
+			(xy 116.84 129.54)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cf9e99c9-2d6d-5c12-862f-429e302f5e6f")
+	)
+	(wire
+		(pts
+			(xy 116.84 137.16)
+			(xy 116.84 129.54)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d6f5e75f-981f-5ce9-9b6a-f80c62af7a2b")
+	)
+	(no_connect
+		(at 154.94 124.46)
+		(uuid "b5ec721b-51fa-5a5d-8fdb-e5947a734846")
+	)
+	(symbol
+		(lib_id "maelcum:POT_DUAL")
+		(at 139.7 157.48 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "ef4b9dc0-937b-5a86-991e-b8aeed5be312")
+		(property
+			"Reference"
+			"RV12"
+			(at 137.16 152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"1k log dual"
+			(at 137.16 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Potentiometer_THT:Potentiometer_Alps_RK09L_Double_Vertical"
+			(at 139.7 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 139.7 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"WIDTH HIGH: antiorario = stretto (Q3), orario = largo (Q0,3), §4.3; NOTA: doppio 1k da trovare, taper log 10 o 20 % da scegliere (dec. 117); manopola WIDTH HIGH, pot di classe 14 mm, cappuccio 15.0 mm"
+			(at 139.7 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "a8be580f-f884-5091-bf02-ee3d1f0a6b43")
+		)
+		(pin
+			"2"
+			(uuid "a12c6f04-b42f-5668-8467-06da866ce0cf")
+		)
+		(pin
+			"3"
+			(uuid "62023bc9-de6a-5f35-bfa0-d91a2566fac9")
+		)
+		(pin
+			"MP"
+			(uuid "c142c174-aad9-517a-a132-a2813e1d5ef4")
+		)
+		(pin
+			"4"
+			(uuid "c2fa5bbb-71fd-5990-be49-48d7c6e38aa4")
+		)
+		(pin
+			"5"
+			(uuid "e90c2d8b-6b1d-5125-9d81-ceec130e5cb8")
+		)
+		(pin
+			"6"
+			(uuid "ccfaf29b-2fe0-5b5d-a122-6b32940ecc42")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/7bb37a5a-5e20-5205-9bf0-fa3b58a62f42"
+					(reference "RV12")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 121.92 157.48)
+			(xy 114.3 157.48)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b7590335-b7e0-58a5-8484-1140453292af")
+	)
+	(wire
+		(pts
+			(xy 114.3 157.48)
+			(xy 114.3 158.75)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7b011490-246c-5542-ba65-0c463da74c79")
+	)
+	(wire
+		(pts
+			(xy 121.92 160.02)
+			(xy 116.84 160.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0bc1d662-568d-5d67-9abd-d08821f37375")
+	)
+	(wire
+		(pts
+			(xy 116.84 160.02)
+			(xy 116.84 162.56)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5fae4031-4c4e-573c-a976-bd1a13e1c933")
+	)
+	(no_connect
+		(at 121.92 162.56)
+		(uuid "5290d737-3282-582b-8306-149b10bf97bb")
+	)
+	(wire
+		(pts
+			(xy 157.48 157.48)
+			(xy 162.56 157.48)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "24eae5ad-daa0-5f33-9905-eef47ec2935f")
+	)
+	(wire
+		(pts
+			(xy 162.56 157.48)
+			(xy 162.56 158.75)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f1624c63-c71f-5eca-bd7b-36984809ded7")
+	)
+	(wire
+		(pts
+			(xy 157.48 160.02)
+			(xy 160.02 160.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a688909b-f71c-59d7-bf33-2f0d0ea2713c")
+	)
+	(wire
+		(pts
+			(xy 160.02 160.02)
+			(xy 160.02 162.56)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "09c0c671-1612-5bc1-a9b8-cc96ac43e88d")
+	)
+	(symbol
+		(lib_id "maelcum:POT_DUAL")
+		(at 139.7 185.42 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "bee8f820-f13d-544e-9b80-4902ae9b5a09")
+		(property
+			"Reference"
+			"RV13"
+			(at 137.16 180.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"10k lin dual, centre detent"
+			(at 137.16 193.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Potentiometer_THT:Potentiometer_Alps_RK09L_Double_Vertical"
+			(at 139.7 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 139.7 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"GAIN SUPER: antiorario = notch (NDQ), centro = piatto, orario = +15 dB (DQ); NOTA: resistenze di legge dopo l'ascolto (todo 132); manopola GAIN SUPER, pot di classe 14 mm, cappuccio 24.0 mm"
+			(at 139.7 185.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "6195f88a-946c-5813-aa08-ad2217344f3f")
+		)
+		(pin
+			"2"
+			(uuid "4ad3b535-d37c-554f-85b5-8b055cb573c2")
+		)
+		(pin
+			"3"
+			(uuid "38bb1189-91f5-5e6e-a386-c6d5f76161cc")
+		)
+		(pin
+			"MP"
+			(uuid "690a9ef4-2ad8-5771-92bb-e619d5353673")
+		)
+		(pin
+			"4"
+			(uuid "89483bab-725f-53c1-aa4f-a005d414e717")
+		)
+		(pin
+			"5"
+			(uuid "024d5667-b1a1-5e6a-a500-0a88fe838820")
+		)
+		(pin
+			"6"
+			(uuid "846916eb-3785-59a0-856d-2a9f4d309e06")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/7bb37a5a-5e20-5205-9bf0-fa3b58a62f42"
+					(reference "RV13")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 121.92 185.42)
+			(xy 114.3 185.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e5d11733-0eeb-5c9e-bfe8-abb5707fd889")
+	)
+	(wire
+		(pts
+			(xy 114.3 185.42)
+			(xy 114.3 186.69)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "17ec7d28-8339-54b5-b63f-7deac8e3e4f9")
+	)
+	(wire
+		(pts
+			(xy 121.92 187.96)
+			(xy 116.84 187.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9ffc2d98-c24c-59a4-945f-edfc579d7169")
+	)
+	(wire
+		(pts
+			(xy 116.84 187.96)
+			(xy 116.84 190.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ee11c69e-25fa-53ac-bda0-b10be7fe33ce")
+	)
+	(no_connect
+		(at 121.92 190.5)
+		(uuid "b78a2bc0-feb0-52aa-bb07-ee9d334cb0bb")
+	)
+	(wire
+		(pts
+			(xy 157.48 185.42)
+			(xy 162.56 185.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5e720ea0-66a5-562e-9f7d-9c5dfedf6416")
+	)
+	(wire
+		(pts
+			(xy 162.56 185.42)
+			(xy 162.56 186.69)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "df524d6c-b439-5de4-b50a-95033df85ce1")
+	)
+	(wire
+		(pts
+			(xy 157.48 187.96)
+			(xy 160.02 187.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d7d15d69-01f2-5fa6-bf6f-00261226d221")
+	)
+	(wire
+		(pts
+			(xy 160.02 187.96)
+			(xy 160.02 190.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1268449f-6a8e-5192-bfac-8d9023b644ef")
+	)
+	(symbol
+		(lib_id "maelcum:POT_SINGLE")
+		(at 137.16 213.36 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "622febe6-3977-54f8-815c-49889dd428a8")
+		(property
+			"Reference"
+			"RV14"
+			(at 134.62 208.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"10k lin"
+			(at 134.62 218.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Potentiometer_THT:Potentiometer_Alps_RK09L_Single_Vertical"
+			(at 137.16 213.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 137.16 213.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"POSITION SUPER: antiorario = frequenza bassa, orario = alta; cursore alle due schede B; manopola POSITION SUPER, pot di classe 14 mm, cappuccio 15.0 mm"
+			(at 137.16 213.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "f536254d-e552-5ffa-9060-2565770e1abb")
+		)
+		(pin
+			"2"
+			(uuid "9b0f6737-fabc-52f6-bdd3-be71d99e04f1")
+		)
+		(pin
+			"3"
+			(uuid "9f0cddfc-95e7-572a-b8e9-a25f6234c776")
+		)
+		(pin
+			"MP"
+			(uuid "d4c96724-0a45-5631-b2f7-e10e384ad568")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/7bb37a5a-5e20-5205-9bf0-fa3b58a62f42"
+					(reference "RV14")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 116.84 210.82)
+			(xy 119.38 210.82)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8ca6dfc3-55d2-520d-b6a2-0f9a0392c9c4")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 116.84 210.82 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "c6fa2252-8a53-5484-941f-8cc6cae41554")
+		(property
+			"Reference"
+			"#PWR005"
+			(at 116.84 210.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"AGND"
+			(at 116.84 215.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 116.84 210.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 116.84 210.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "5c04669d-fdd3-5322-bb0c-d8952b346646")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/7bb37a5a-5e20-5205-9bf0-fa3b58a62f42"
+					(reference "#PWR005")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 119.38 213.36)
+			(xy 114.3 213.36)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b207c937-335c-5a11-862e-f823e733a243")
+	)
+	(wire
+		(pts
+			(xy 114.3 213.36)
+			(xy 114.3 220.98)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1cf2deec-e05a-504a-a1f5-56736a0b115f")
+	)
+	(wire
+		(pts
+			(xy 119.38 215.9)
+			(xy 116.84 215.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fa39eafc-f024-5c6f-8de9-a985de81508e")
+	)
+	(wire
+		(pts
+			(xy 116.84 217.17)
+			(xy 116.84 215.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "42a8a215-7f50-52d5-9e58-c890fe4f80bc")
+	)
+	(no_connect
+		(at 154.94 210.82)
+		(uuid "db86d31c-79b9-5e51-96ff-2682efbab124")
+	)
+	(symbol
+		(lib_id "maelcum:POT_DUAL")
+		(at 228.6 40.64 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5153bdff-271e-54b3-9298-bab63e3d803d")
+		(property
+			"Reference"
+			"RV15"
+			(at 226.06 35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Value"
+			"1k log dual"
+			(at 226.06 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property
+			"Footprint"
+			"Potentiometer_THT:Potentiometer_Alps_RK09L_Double_Vertical"
+			(at 228.6 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 228.6 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Nota"
+			"WIDTH SUPER: antiorario = stretto (Q3), orario = largo (Q0,3), §4.3; NOTA: doppio 1k da trovare, taper log 10 o 20 % da scegliere (dec. 117); manopola WIDTH SUPER, pot di classe 14 mm, cappuccio 15.0 mm"
+			(at 228.6 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "c6049601-3852-5d0c-b425-c60b1855ee60")
+		)
+		(pin
+			"2"
+			(uuid "f3f0707f-a426-58ea-aa5a-0279b6b3de6d")
+		)
+		(pin
+			"3"
+			(uuid "0b3dab66-5b36-5b21-8970-c9ed061aee06")
+		)
+		(pin
+			"MP"
+			(uuid "b47d97dd-13fd-575e-acf5-7a22462d5d2c")
+		)
+		(pin
+			"4"
+			(uuid "a1f58fa8-7ebc-5d37-83d0-dd35de9403e2")
+		)
+		(pin
+			"5"
+			(uuid "f157fb37-a33a-527e-8d24-1e36eabd4834")
+		)
+		(pin
+			"6"
+			(uuid "d9cdba2f-10ec-5587-8971-d57b119adfa5")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/7bb37a5a-5e20-5205-9bf0-fa3b58a62f42"
+					(reference "RV15")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 210.82 40.64)
+			(xy 203.2 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2e02bcdf-3e5b-5187-b470-5a0be89435f3")
+	)
+	(wire
+		(pts
+			(xy 203.2 40.64)
+			(xy 203.2 41.91)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "533efb51-cfa7-5bd6-aab1-fa9a018ec56b")
+	)
+	(wire
+		(pts
+			(xy 210.82 43.18)
+			(xy 205.74 43.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b81eb3d6-9292-59e3-a02b-8e22b73c14b5")
+	)
+	(wire
+		(pts
+			(xy 205.74 43.18)
+			(xy 205.74 45.72)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e03189c8-da89-510d-8cf6-e986a8096d15")
+	)
+	(no_connect
+		(at 210.82 45.72)
+		(uuid "f84c1f8d-eb96-55f8-8127-b523ddb3e005")
+	)
+	(wire
+		(pts
+			(xy 246.38 40.64)
+			(xy 251.46 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0ace0c43-a011-52ec-9164-b67558f918aa")
+	)
+	(wire
+		(pts
+			(xy 251.46 40.64)
+			(xy 251.46 41.91)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b934021e-1fa8-5c5e-ac1a-0ffe359cc107")
+	)
+	(wire
+		(pts
+			(xy 246.38 43.18)
+			(xy 248.92 43.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "939f677a-cb29-53ec-b65d-c703d4d2f773")
+	)
+	(wire
+		(pts
+			(xy 248.92 43.18)
+			(xy 248.92 45.72)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1ef5c93a-8f06-5ce1-afb5-0882fcf9d140")
+	)
+	(text
+		"PWR_FLAG (for the ERC check only)"
+		(exclude_from_sim no)
+		(at 15.24 234.95 0)
+		(effects
+			(font
+				(size 2 2)
+				(bold yes)
+			)
+			(justify left bottom)
+		)
+		(uuid "aa08dfd9-4306-5c4a-a71c-fa1ba11fdfbe")
+	)
+	(symbol
+		(lib_id "power:PWR_FLAG")
+		(at 20.32 241.3 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "35cbcdb8-b292-5de7-85f6-23acddaec51b")
+		(property
+			"Reference"
+			"#FLG04"
+			(at 20.32 236.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"PWR_FLAG"
+			(at 20.32 234.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 20.32 241.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 20.32 241.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "b42a906c-4376-5a20-8e79-2d0c79ef23f9")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/7bb37a5a-5e20-5205-9bf0-fa3b58a62f42"
+					(reference "#FLG04")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 20.32 241.3 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "b46154fe-d62a-53aa-b787-6c4d803ab7dc")
+		(property
+			"Reference"
+			"#PWR006"
+			(at 20.32 241.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Value"
+			"AGND"
+			(at 20.32 246.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			""
+			(at 20.32 241.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property
+			"Datasheet"
+			""
+			(at 20.32 241.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(pin
+			"1"
+			(uuid "8950db41-b66d-5fd7-ab04-cd05ac289765")
+		)
+		(instances
+			(project
+				"five-way-comandi"
+				(path
+					"/9694062d-94c1-5962-9742-90a1fd157bb7/7bb37a5a-5e20-5205-9bf0-fa3b58a62f42"
+					(reference "#PWR006")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 27.94 80.01)
+			(xy 17.78 80.01)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3f128bd0-6734-51a4-9c06-ab5d827dcc71")
+	)
+	(wire
+		(pts
+			(xy 17.78 80.01)
+			(xy 17.78 158.75)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "dc166072-0ba9-5437-8db6-dfc6e67a19ed")
+	)
+	(wire
+		(pts
+			(xy 17.78 158.75)
+			(xy 27.94 158.75)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6fb577c0-fd55-5f15-aabd-690146c44712")
+	)
+	(wire
+		(pts
+			(xy 17.78 137.16)
+			(xy 116.84 137.16)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "53a851f2-a9dd-5ac0-ba8e-9a5aac4492c2")
+	)
+	(wire
+		(pts
+			(xy 105.41 137.16)
+			(xy 105.41 52.07)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "986dc66b-c555-5a20-be6f-047022237025")
+	)
+	(wire
+		(pts
+			(xy 105.41 52.07)
+			(xy 116.84 52.07)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b2369ca1-cec4-5259-a0ab-d03b0d003d7d")
+	)
+	(wire
+		(pts
+			(xy 106.68 137.16)
+			(xy 106.68 217.17)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3d0b7169-29fd-5b97-98ab-bfcf2282e57d")
+	)
+	(wire
+		(pts
+			(xy 106.68 217.17)
+			(xy 116.84 217.17)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d464bf49-a928-5828-9c32-3bf4d86e2b23")
+	)
+	(junction
+		(at 106.68 137.16)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "5221589b-64a8-5d80-8e90-8bd9703a9165")
+	)
+	(junction
+		(at 105.41 137.16)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "3d91b085-a0b2-5b39-a87a-b35490be3171")
+	)
+	(junction
+		(at 17.78 137.16)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "64419d4e-5456-5b27-9d1e-9303739bcbdc")
+	)
+	(global_label
+		"NDQ1"
+		(shape passive)
+		(at 33.02 38.1 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "2ac6e852-73e2-5836-b9b8-1c88dfb97205")
+	)
+	(global_label
+		"GW1"
+		(shape passive)
+		(at 25.4 41.91 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "89e6735e-6924-5d37-872a-efc3d635a7fe")
+	)
+	(global_label
+		"DQ1"
+		(shape passive)
+		(at 27.94 45.72 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "9fbc47e2-2a09-5a62-b20b-09c45475ee23")
+	)
+	(global_label
+		"NDQ1R"
+		(shape passive)
+		(at 68.58 38.1 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "aed63e8e-075d-523d-af03-c93606b60d7a")
+	)
+	(global_label
+		"GW1R"
+		(shape passive)
+		(at 73.66 41.91 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "9e939ec4-e99c-552c-9220-4460f367c1db")
+	)
+	(global_label
+		"DQ1R"
+		(shape passive)
+		(at 71.12 45.72 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "29a71e26-3f75-5fdc-9692-b50bf09f1205")
+	)
+	(global_label
+		"POSW1"
+		(shape passive)
+		(at 25.4 76.2 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "d9e7a37b-8e9b-5df4-8c52-3381d0a1d190")
+	)
+	(global_label
+		"+REF5"
+		(shape passive)
+		(at 27.94 80.01 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "675545c9-780e-5fff-832f-e91c5e7cec11")
+	)
+	(global_label
+		"WB1"
+		(shape passive)
+		(at 33.02 96.52 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "627bc63e-56ac-51a3-853d-bf8d422e7613")
+	)
+	(global_label
+		"WW1"
+		(shape passive)
+		(at 25.4 100.33 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "a84c6a91-ed2b-58ac-ba0a-3dd6a8ac1120")
+	)
+	(global_label
+		"BPB1"
+		(shape passive)
+		(at 27.94 104.14 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "4de5be04-1491-5a2f-aecc-03d46d12d3b3")
+	)
+	(global_label
+		"WB1R"
+		(shape passive)
+		(at 68.58 96.52 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "8c79a925-db63-5743-8b4d-bc2af7bcaa2e")
+	)
+	(global_label
+		"WW1R"
+		(shape passive)
+		(at 73.66 100.33 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "96f97831-2719-57c8-842a-5b71632f0c8f")
+	)
+	(global_label
+		"BPB1R"
+		(shape passive)
+		(at 71.12 104.14 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "85af8358-17e9-52bc-ab9f-b7687327a6b0")
+	)
+	(global_label
+		"NDQ2"
+		(shape passive)
+		(at 33.02 124.46 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "32413a0a-095f-504d-8e4a-8f9b6ec5bbf6")
+	)
+	(global_label
+		"GW2"
+		(shape passive)
+		(at 25.4 128.27 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "fd9e7c8b-ce52-536f-a35f-e0f52a3fab73")
+	)
+	(global_label
+		"DQ2"
+		(shape passive)
+		(at 27.94 132.08 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "25d07151-c0b0-5a60-8362-730bafdd6fb2")
+	)
+	(global_label
+		"NDQ2R"
+		(shape passive)
+		(at 68.58 124.46 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "f374ae34-8340-51bb-9c34-70d361d330da")
+	)
+	(global_label
+		"GW2R"
+		(shape passive)
+		(at 73.66 128.27 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "e581bd6b-7246-5fba-bbac-87564308d08a")
+	)
+	(global_label
+		"DQ2R"
+		(shape passive)
+		(at 71.12 132.08 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "f006d2d0-76bd-5ac4-a07d-26a0ad21ef15")
+	)
+	(global_label
+		"POSW2"
+		(shape passive)
+		(at 25.4 162.56 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "b767214b-824a-510f-906a-7e1660de29a7")
+	)
+	(global_label
+		"WB2"
+		(shape passive)
+		(at 33.02 182.88 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "be0c72a2-2aa6-56ee-b201-3894e601ef1a")
+	)
+	(global_label
+		"WW2"
+		(shape passive)
+		(at 25.4 186.69 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "da2b4b67-787e-5e4e-90a2-3c9b9e8954f8")
+	)
+	(global_label
+		"BPB2"
+		(shape passive)
+		(at 27.94 190.5 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "29d9574c-28ff-544d-9c6b-e4a5bbb8ae89")
+	)
+	(global_label
+		"WB2R"
+		(shape passive)
+		(at 68.58 182.88 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "1da46fe6-9fa3-554d-a8e3-9c8e9026aa77")
+	)
+	(global_label
+		"WW2R"
+		(shape passive)
+		(at 73.66 186.69 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "69244a71-92cd-51ed-9fda-46a265eb3d6c")
+	)
+	(global_label
+		"BPB2R"
+		(shape passive)
+		(at 71.12 190.5 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "85b27775-3a88-543d-a7db-7e98e75004ea")
+	)
+	(global_label
+		"NDQ3"
+		(shape passive)
+		(at 33.02 210.82 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "be756bac-d492-5f32-a7e6-61041d98128f")
+	)
+	(global_label
+		"GW3"
+		(shape passive)
+		(at 25.4 214.63 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "f1bc6643-2059-5b00-a581-1fea845a3ce7")
+	)
+	(global_label
+		"DQ3"
+		(shape passive)
+		(at 27.94 218.44 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "3d2f8814-b679-5303-a357-d32ad9afd60f")
+	)
+	(global_label
+		"NDQ3R"
+		(shape passive)
+		(at 68.58 210.82 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "721390a5-6819-5e1a-8d89-6893ada8fb25")
+	)
+	(global_label
+		"GW3R"
+		(shape passive)
+		(at 73.66 214.63 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "12599e1f-1a67-59a7-9b84-cbae7721c21f")
+	)
+	(global_label
+		"DQ3R"
+		(shape passive)
+		(at 71.12 218.44 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "2056e5bf-ae69-51d4-8d14-cd4ebc6df8a6")
+	)
+	(global_label
+		"POSW3"
+		(shape passive)
+		(at 114.3 48.26 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "70034146-ffc8-531d-bead-1e8d62e4802d")
+	)
+	(global_label
+		"WB3"
+		(shape passive)
+		(at 121.92 68.58 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "11e6215b-4a6e-56dc-9fc6-8156ec216f39")
+	)
+	(global_label
+		"WW3"
+		(shape passive)
+		(at 114.3 72.39 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "fd0c9461-4d56-52ec-b6de-cbacec82a1aa")
+	)
+	(global_label
+		"BPB3"
+		(shape passive)
+		(at 116.84 76.2 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "1e7cecb8-265a-5732-af0c-02ff70e7b9fb")
+	)
+	(global_label
+		"WB3R"
+		(shape passive)
+		(at 157.48 68.58 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "a58b91f8-7bcb-5be3-8993-a20db3a308c7")
+	)
+	(global_label
+		"WW3R"
+		(shape passive)
+		(at 162.56 72.39 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "82989ba1-f4ae-5e8b-b03f-4204a6c0c8bd")
+	)
+	(global_label
+		"BPB3R"
+		(shape passive)
+		(at 160.02 76.2 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "759298fd-dd1e-556d-a843-94b05b5102e0")
+	)
+	(global_label
+		"NDQ4"
+		(shape passive)
+		(at 121.92 96.52 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "b6011980-daec-5c09-abe5-c879a7c3621c")
+	)
+	(global_label
+		"GW4"
+		(shape passive)
+		(at 114.3 100.33 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "4f761665-ca96-59d8-ab3f-5fc5af867f29")
+	)
+	(global_label
+		"DQ4"
+		(shape passive)
+		(at 116.84 104.14 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "fac22d87-7f7f-5dba-9627-abb83a4c506d")
+	)
+	(global_label
+		"NDQ4R"
+		(shape passive)
+		(at 157.48 96.52 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "2f4b3870-52cb-5d26-af2e-a4e44aac0ae3")
+	)
+	(global_label
+		"GW4R"
+		(shape passive)
+		(at 162.56 100.33 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "befad263-6a08-5d47-9d11-f88b15b17953")
+	)
+	(global_label
+		"DQ4R"
+		(shape passive)
+		(at 160.02 104.14 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "1c109d46-c931-5497-a037-14f346633d85")
+	)
+	(global_label
+		"POSW4"
+		(shape passive)
+		(at 114.3 134.62 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "cd6a10ec-4e68-525e-bea2-fd64c0e15e00")
+	)
+	(global_label
+		"WB4"
+		(shape passive)
+		(at 121.92 154.94 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "153a51b2-e95a-561d-af0f-7c6ecf6c67fe")
+	)
+	(global_label
+		"WW4"
+		(shape passive)
+		(at 114.3 158.75 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "5695fa87-5e5e-5b32-9733-bc5ccaed059b")
+	)
+	(global_label
+		"BPB4"
+		(shape passive)
+		(at 116.84 162.56 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "08d5a1ae-5d1d-59bc-86b4-dd7bb521ca2f")
+	)
+	(global_label
+		"WB4R"
+		(shape passive)
+		(at 157.48 154.94 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "620689b7-1678-57f5-a2a4-0bec4a707b7a")
+	)
+	(global_label
+		"WW4R"
+		(shape passive)
+		(at 162.56 158.75 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "e0ba60b4-fa4e-5017-b4f4-a69edf93a70c")
+	)
+	(global_label
+		"BPB4R"
+		(shape passive)
+		(at 160.02 162.56 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "6599812a-4bb2-5353-8cbe-74054397f976")
+	)
+	(global_label
+		"NDQ5"
+		(shape passive)
+		(at 121.92 182.88 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "db791915-820e-5a54-957e-6b6fb7c7066f")
+	)
+	(global_label
+		"GW5"
+		(shape passive)
+		(at 114.3 186.69 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "b0ec7b69-2835-5cac-a827-80edbe8a8b2a")
+	)
+	(global_label
+		"DQ5"
+		(shape passive)
+		(at 116.84 190.5 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "08be7a57-40dd-5679-b291-43887e756e79")
+	)
+	(global_label
+		"NDQ5R"
+		(shape passive)
+		(at 157.48 182.88 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "a0ccb746-fcfb-5cf2-b54d-27ba77ad4d9f")
+	)
+	(global_label
+		"GW5R"
+		(shape passive)
+		(at 162.56 186.69 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "4180a77e-8d12-5f4a-a6bf-5f44adcd6d3b")
+	)
+	(global_label
+		"DQ5R"
+		(shape passive)
+		(at 160.02 190.5 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "7349fd68-5f69-501b-99c5-8bfe6a513762")
+	)
+	(global_label
+		"POSW5"
+		(shape passive)
+		(at 114.3 220.98 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "af55c853-1224-50e2-be66-ca96eef9eea9")
+	)
+	(global_label
+		"WB5"
+		(shape passive)
+		(at 210.82 38.1 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "566e0b86-102b-5b96-ac51-c0f0156dd7f4")
+	)
+	(global_label
+		"WW5"
+		(shape passive)
+		(at 203.2 41.91 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "3fa11b00-c083-55e5-af45-12e771686261")
+	)
+	(global_label
+		"BPB5"
+		(shape passive)
+		(at 205.74 45.72 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify right)
+		)
+		(uuid "42ba6196-9473-5368-b2bb-e11bd4f7e8f4")
+	)
+	(global_label
+		"WB5R"
+		(shape passive)
+		(at 246.38 38.1 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "87ccdc07-7df1-5fcc-b477-59c710b0fc1f")
+	)
+	(global_label
+		"WW5R"
+		(shape passive)
+		(at 251.46 41.91 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "55a9c664-7548-5d00-a84c-7816489baf8b")
+	)
+	(global_label
+		"BPB5R"
+		(shape passive)
+		(at 248.92 45.72 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "2c47e8a8-4bc8-50a2-a3f5-d6d4b45107ee")
+	)
+)
