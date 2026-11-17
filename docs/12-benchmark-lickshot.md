@@ -78,9 +78,9 @@ LFO (TROMBA/LASER). Le gamme le ha scelte Claude. Fa parte della famiglia A.
 |---|---|---|---|
 | Altezza | FREQUENCY (fine) + TONE (3 frequenze base) | PITCH | sì (d) |
 | Velocità dell'LFO | LFO RATE | LFO SPEED | sì (d, «si cambia») |
-| Tipo di colpo | LFO ON/OFF (laser o tono fisso) | MODULATION, 3 posizioni | nessun deviatore |
+| Tipo di colpo | LFO ON/OFF (laser o tono fisso) | MODULATION, 3 posizioni | **col bottone** (Filippo, 17/11) |
 | Volume | VOLUME | VOLUME | sì (d) |
-| Quarta manopola | — | — | ? (profondità della caduta o delay: d) |
+| Quarta manopola | — | — | ? |
 | Tasto | TRIGGER, suona finché è premuto | TRIGGER | tasto rosso |
 | LED | non dichiarato | LFO LED | sì |
 | Eco | fuori | fuori | dentro, in alcune versioni |
@@ -89,8 +89,8 @@ LFO (TROMBA/LASER). Le gamme le ha scelte Claude. Fa parte della famiglia A.
 
 Il nucleo comune è altezza, velocità dell'LFO, volume, un tasto e il LED
 dell'LFO. Le tre macchine si separano sul modo di cambiare il colpo: Benidub con
-un interruttore, Klementz con un deviatore a 3 posizioni, Mr Law con una
-manopola. Klementz scrive nel manuale «la dub siren (la LICKSHOT è una di
+un interruttore, Klementz con un deviatore a 3 posizioni, Mr Law col bottone
+(Filippo, 17/11). Klementz scrive nel manuale «la dub siren (la LICKSHOT è una di
 queste)»: il costruttore la classifica come sirena. La guida di sound-system.fr
 (giugno 2026) non distingue lickshot e sirena, e non è una fonte affidabile:
 attribuisce lo stesso Lickshot una volta a Klementz e una volta a Benidub.
