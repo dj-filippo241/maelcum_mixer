@@ -381,3 +381,5 @@ Filippo ha suonato il libretto `proto-max/tutorial-live.html` dopo la Prova 0 pa
 ## Decisioni del 2026-11-17
 
 179. **[F — 2026-11-17, «1»; benchmark `docs/12-benchmark-lickshot.md`] Lickshot machine in rack, da abbinare al mixer: famiglia A, analogica dedicata.** Un oscillatore piegato da un LFO, poche manopole, un tasto che spara finché è premuto: il laser classico, plasmato a mano a ogni colpo. Niente campioni e niente synth drum col rumore. Punto di partenza tecnico: il nucleo aperto LFO CD4069 → VCO CD4046 (Nold 2016, Orald-0 2026), da verificare come topologia prima di fissare valori (regola 3). Solo lickshot, niente sirena (correzione di Filippo, 17/11). Restano aperti: numero di voci, eco dentro o fuori, trigger esterno, comandi, ingresso nel mixer.
+
+180. **[F — 2026-11-17, «1»; precisa la dec. 179] Lickshot: una voce sola.** Un laser, un tasto, come Benidub e Klementz. Il pannello del rack resta semplice.
