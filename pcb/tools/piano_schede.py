@@ -94,7 +94,9 @@ SCHEDE_F = {
     # reroute e il PSU-IN (x 350-450, piano_f.py)
     "5-way": [("five-way.py LB (celle, GROWL, NASTRO)", 440, "vero", 300.0), ("five-way.py RB", 440, "vero", 300.0),
               ("five-way.py LA (ricevitore, banca, kill)", 322, "vero"), ("five-way.py RA", 322, "vero")],
-    "filtro": [("filtro (da scrivere)", 450, "stima +-30 %")],
+    # filtro: una scheda per sezione (filtro.py HPF / LPF, todo 337, 2026-11-16), lunghezze fisse:
+    # le schede sono state generate con 149 e 151 mm (SMD sui due lati, core e RES sul retro)
+    "filtro": [("filtro.py HPF", 291, "vero", 149.0), ("filtro.py LPF", 294, "vero", 151.0)],
     # CUE: 157 impronte ma tante grandi (TO-220, TO-126, 1000 uF, relè, R da 2 W): 177 mm non bastava
     # (giro 1, 113 aperti); lunghezza fissa 196 mm, tutto il pannello da 200 meno 2 mm per lato
     "cue": [("cue.py", 157, "vero", 196.0)],
@@ -158,8 +160,7 @@ def piano_f():
     lungo_x("MASTER", y["mas"], y["five"], W, SCHEDE_F["master"])
     lungo_x("5-WAY + REROUTE", y["five"], y["five"] + m["five"].h, W,
             SCHEDE_F["5-way"] + SCHEDE_F["reroute"] * 4)
-    lungo_x("FILTRO", y["fil"], y["can"], wc, [("filtro, parte %d (da scrivere)" % (i + 1), 225, "stima +-30 %")
-                                               for i in range(2)])
+    lungo_x("FILTRO", y["fil"], y["can"], wc, SCHEDE_F["filtro"])
     lungo_y("CANALE + FX SEND", 4, y["can"], y["cue"], d["ws"], SCHEDE_F["canale"] + SCHEDE_F["fx-send"])
     lungo_x("CUE", y["cue"], L, wc, SCHEDE_F["cue"])
     lungo_y("MIC", 1, y["mm"], y["ret"], wl / 4, SCHEDE_F["mic"])
@@ -185,8 +186,8 @@ def piano_f():
     out += ["## Avvisi", ""] + (["- " + a for a in avvisi] or ["- Nessuno: ogni scheda ha il suo posto entro il 70 %."])
     out += ["", "## Aperto", "",
             "- Backplane: quattro tratti, uno per zona (pcb/backplane/PIANO.md, todo 269). PSU-IN nella fila 4 sotto il 5-way.",
-            "- 5-way: quattro schede vere (A 322, B 440 per lato, 2026-11-15); filtro: stima +-30 %. Fila 4: due reroute e il PSU-IN a x 350-450.",
-            "- Schede comandi da disegnare: 5-way (coi LED di livello delle 5 vie), filtro."]
+            "- 5-way: quattro schede vere (A 322, B 440 per lato, 2026-11-15); filtro: due schede vere (HPF 291, LPF 294, 2026-11-16). Fila 4: due reroute e il PSU-IN a x 350-450.",
+            "- Scheda comandi da disegnare: filtro (todo 270; ordine del cavo in filtro.py, fili_cavo)."]
     path = os.path.join(qui, "..", "PIANO-SCHEDE-F.md")   # PIANO-schede.md è il piano del 31/10 (macOS: maiuscole = minuscole)
     open(path, "w", encoding="utf-8").write("\n".join(out) + "\n")
     print("\n".join(out))

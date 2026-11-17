@@ -1,0 +1,65 @@
+* =====================================================================
+* FILTRO — converter esponenziale a componenti per la PCB (todo 337, 2026-11-16)
+* Il §4 di filter-module aveva il converter solo come sorgente B ideale (feas-svf.cir).
+* Qui la versione da montare, una per sezione 2 poli (2 OTA):
+*   - THAT 320 (4 PNP appaiati, Doc 600041 Rev 04): Q1 riferimento, Q2 e Q3 uscite.
+*     Le uscite PNP SPINGONO corrente nei pin Iabc dell'LM13700 (il pin la assorbe):
+*     niente mirror. Basi delle uscite a massa; il comando entra sulla base di Q1.
+*   - Iref da LM334 (PTAT per fisica: I = 67,7 mV/Rset a 25 C) che TIRA corrente dal
+*     collettore di Q1 (nodo cr, massa virtuale) verso -15 V.
+*   - op-amp d'anello (OPA1642): + a massa, - su cr, uscita -> 2,2k -> emettitori;
+*     1n fra uscita e cr; diodo da massa agli emettitori (protegge la giunzione E-B).
+*   - Comando: w = -(sh + 5,40 V) (sh = uscita dello shaper, 0,5 V/ottava, -5,40 V a
+*     35 kHz); partitore 26,7k / 1k tempco +3300 ppm/K; buffer; base di Q1 a w/27,7.
+*     Ic2 = Iref * exp(Vb1/VT): con la tempco Vb1/VT non dipende da T; Iref PTAT
+*     -> Iabc PTAT -> gm costante (filter-module §4, REV todo 50).
+* Misura: corrente nei pin Iabc lungo la corsa (sh da +0,5 a -5,4 V) a 20/35/50 C;
+* poi .tran con gradino di sh (stabilita' dell'anello).
+* =====================================================================
+.include ../lib/lm13700.inc
+.include ../lib/opamp-audio.inc
+.model QTHAT320 PNP(Is=2f Bf=75 Vaf=60 Rb=25 Re=2 Cje=6p Cjc=3p Tf=0.5n XTB=1.5)
+.model D4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+.param Rset=169
+Vcc vcc 0 DC 15
+Vee vee 0 DC -15
+Vsh sh 0 DC 0
+* --- offset + inversione: w = -(sh + 5,40) ---
+Vr5 ref5 0 DC 5
+Rsh sh nw 10k
+Roff ref5 nw 9.26k
+Rfw nw w 10k
+Xw 0 nw w vcc vee OP1612
+* --- partitore con tempco e buffer della base di Q1 ---
+Rtop w vb 26.7k
+Rtc vb 0 1k tc=3.3m
+Xb vb vb1 vb1 vcc vee OP1612
+* --- anello del riferimento ---
+Q1 cr vb1 ex QTHAT320
+* LM334: corrente PTAT da cr verso -15 V
+Bref cr vee I={67.7m/Rset*(temp+273.15)/298.15}
+Xl 0 cr ol vcc vee OP1612
+Cl ol cr 1n
+Rl ol ex 2.2k
+Dp 0 ex D4148
+* --- uscite verso i pin Iabc di due LM13700 ---
+Q2 ia2 0 ex QTHAT320
+Q3 ia3 0 ex QTHAT320
+Vm2 ia2 iab2 DC 0
+Vm3 ia3 iab3 DC 0
+X2 0 0 o2 iab2 d21 d22 vcc vee LM13700
+X3 0 0 o3 iab3 d31 d32 vcc vee LM13700
+Ro2 o2 0 10k
+Ro3 o3 0 10k
+.step temp list 20 35 50
+.dc Vsh 0.5 -5.4 -0.05
+.meas dc i_10hz FIND I(Vm2) AT 0.5
+.meas dc i_20hz FIND I(Vm2) AT 0
+.meas dc i_158 FIND I(Vm2) AT -1.5
+.meas dc i_1k FIND I(Vm2) AT -2.83
+.meas dc i_10k FIND I(Vm2) AT -4.49
+.meas dc i_35k FIND I(Vm2) AT -5.4
+.meas dc i3_1k FIND I(Vm3) AT -2.83
+.meas dc vex FIND V(ex) AT -5.4
+.meas dc vol FIND V(ol) AT -5.4
+.end

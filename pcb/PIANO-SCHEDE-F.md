@@ -21,8 +21,8 @@ da sinistra a destra; sotto le strisce (canali, MIC, MONO, ritorni) da dietro a 
 | 5-WAY + REROUTE | 1 | fx-ret-reroute.py | 225 | vero | sinistra-destra | 141 | 175 | fila 2 di 4, y 86 | 70 % |
 | 5-WAY + REROUTE | 1 | fx-ret-reroute.py | 225 | vero | sinistra-destra | 146 | 169 | fila 4 di 4, y 137 | 70 % |
 | 5-WAY + REROUTE | 1 | fx-ret-reroute.py | 225 | vero | sinistra-destra | 146 | 169 | fila 4 di 4, y 137 | 70 % |
-| FILTRO | 1 | filtro, parte 1 (da scrivere) | 225 | stima +-30 % | sinistra-destra | 149 | 166 | fila 1 di 2, y 163 | 70 % |
-| FILTRO | 1 | filtro, parte 2 (da scrivere) | 225 | stima +-30 % | sinistra-destra | 151 | 164 | fila 2 di 2, y 188 | 70 % |
+| FILTRO | 1 | filtro.py HPF | 291 | vero | sinistra-destra | 149 | 166 | fila 1 di 2, y 163 | 90 % |
+| FILTRO | 1 | filtro.py LPF | 294 | vero | sinistra-destra | 151 | 164 | fila 2 di 2, y 188 | 92 % |
 | CANALE + FX SEND | 4 | canale.py (una scheda, C96, dec. 173) | 380 | vero | dietro-davanti | 287 | 162-129 | posto 1 di 2, y 201-488 | 70 % |
 | CANALE + FX SEND | 4 | fx-send.py | 120 | vero | dietro-davanti | 100 | 162-151 | posto 2 di 2, y 201-301 | 59 % |
 | CUE | 1 | cue.py | 157 | vero | sinistra-destra | 196 | 124 | fila 1 di 2, y 531 | 50 % |
@@ -39,5 +39,5 @@ Schede in tutto: 30.
 ## Aperto
 
 - Backplane: quattro tratti, uno per zona (pcb/backplane/PIANO.md, todo 269). PSU-IN nella fila 4 sotto il 5-way.
-- 5-way: quattro schede vere (A 322, B 440 per lato, 2026-11-15); filtro: stima +-30 %. Fila 4: due reroute e il PSU-IN a x 350-450.
-- Schede comandi da disegnare: 5-way (coi LED di livello delle 5 vie), filtro.
+- 5-way: quattro schede vere (A 322, B 440 per lato, 2026-11-15); filtro: due schede vere (HPF 291, LPF 294, 2026-11-16). Fila 4: due reroute e il PSU-IN a x 350-450.
+- Scheda comandi da disegnare: filtro (todo 270; ordine del cavo in filtro.py, fili_cavo).

@@ -8,7 +8,7 @@ Fonti:
 - posizioni delle schede: pcb/tools/piano_schede.py --f (pcb/PIANO-SCHEDE-F.md) e
   docs/pannelli/proposta_f.py; x = 0 a sinistra del pannello, y = 0 dietro, y cresce verso chi suona;
 - pin del C96 di ogni scheda: il netlist vero, pcb/<modulo>/out/netlist.xml (J1); il filtro
-  non ha ancora una scheda: riga b da docs/fase3/sistema-backplane.md §4 (SINTETICO);
+  dal 2026-11-16 (pcb/filtro/HPF e LPF, todo 337);
 - reti per posizione: sistema-backplane.md §4-§5 e REV dec. 130 (il numero del bus di un FX-RET,
   i bit FILT_MODE e i net CUE di un canale li decide lo slot, non la scheda);
 - PTC per slot e per rail: sistema-psu-esterno.md §4.3.
@@ -26,7 +26,7 @@ import xml.etree.ElementTree as ET
 QUI = os.path.dirname(os.path.abspath(__file__))
 PCB = os.path.join(QUI, "..")
 sys.path.insert(0, os.path.join(PCB, "tools"))
-from backplane import c96, A_STANDARD, RIGA_A   # noqa: E402
+from backplane import RIGA_A   # noqa: E402,F401
 
 A1, A32 = 89.37, 10.63           # a1 e a32 dall'inizio della scheda di modulo (C96 a x = 50, ruotato 180)
 RAIL = ["RAW+27", "RAW-27", "RAW+22", "RAW-22", "RAW+26", "RAW-26", "+5V"]
@@ -81,15 +81,6 @@ def agnd_b(b):
         b["b%d" % (3 * s)] = "AGND"
     return b
 
-
-# SINTETICI: schede non ancora scritte (sistema-backplane.md §4). Filtro: slot 1-2 bus HPF e LPF
-# in, slot 3-4 uscite sul DJ bus, c1-c8 FILT_MODE; seconda scheda solo alimentazione.
-SINT = {
-    "fil1": c96(agnd_b({"b1": "BUS_HPF_L", "b2": "BUS_HPF_R", "b4": "BUS_LPF_L", "b5": "BUS_LPF_R",
-                        "b7": "HPF_OUT_L", "b8": "HPF_OUT_R", "b10": "LPF_OUT_L", "b11": "LPF_OUT_R"}),
-                c=["c%d" % k for k in range(1, 9)]),
-    "fil2": c96({}, a=A_STANDARD),
-}
 
 # PTC per slot e per rail: corrente di tenuta in A (psu-esterno §4.3, max di backplane §6).
 # NOTA: valori di classe; la PTC regge >= 33 V (raw +-27 a vuoto ~29 V).
@@ -158,11 +149,13 @@ def slots():
         for k in range(1, 5):
             rin.update({"S%d_OUT_L" % k: "S%d_L" % k, "S%d_OUT_R" % k: "S%d_R" % k})
         S.append(Slot("SEND%d" % n, "T2", "fx-send", fs, a1, a32, rin, PTC["fx-send"], "pcb/fx-send (netlist)"))
-    for k, y in enumerate(Y_FIL):
-        a1, a32 = lr(0.0, y)
-        rin = {"HPF_OUT_L": "DJBUS_L", "HPF_OUT_R": "DJBUS_R", "LPF_OUT_L": "DJBUS_L", "LPF_OUT_R": "DJBUS_R"}
-        S.append(Slot("FIL%d" % (k + 1), "T2", "filtro", SINT["fil%d" % (k + 1)], a1, a32, rin, PTC["filtro"],
-                      "SINTETICO (backplane §4, dec. 159)"))
+    # filtro: due schede, una per sezione (filtro.py, 2026-11-16): HPF fila 1 (149 mm), LPF fila 2
+    # (151 mm). C96 a L/2 ruotato di 180 gradi: a1 a L/2 + 39,37 dall'inizio della scheda.
+    rin = {"HPF_OUT_L": "DJBUS_L", "HPF_OUT_R": "DJBUS_R", "LPF_OUT_L": "DJBUS_L", "LPF_OUT_R": "DJBUS_R"}
+    for k, (sez, lung) in enumerate((("HPF", 149.0), ("LPF", 151.0))):
+        a1, a32 = lr(0.0, Y_FIL[k], lung / 2 + 39.37, lung / 2 - 39.37)
+        S.append(Slot("FIL%d" % (k + 1), "T2", "filtro", netlist_c96(os.path.join("filtro", sez)), a1, a32,
+                      rin, PTC["filtro"], "pcb/filtro/%s (netlist)" % sez))
     a1, a32 = lr(2.0, Y_CUE, A1 + 48.0, A32 + 48.0)       # CUE: C96 a L/2 = 98 su 196 mm (cue.py)
     S.append(Slot("CUE", "T3", "cue", netlist_c96("cue"), a1, a32, {"MON_L": "MON_L", "MON_R": "MON_R"},
                   PTC["cue"], "pcb/cue (netlist)"))

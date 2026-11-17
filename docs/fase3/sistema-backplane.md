@@ -137,7 +137,7 @@ margine ≥2,7× (≥4× sul tipico 0,9 A).
 |---|---|---|---|
 | CDJ CH1-4 | 4 | 1×C96 | out DJ bus, cue, send tap (→FX-SEND, dec. 91), out bus HPF e bus LPF + mode bit (dec. 159) |
 | FX-SEND | 4 | 1×C96 | micro-modulo send (dec. 91a): EQ2+level+assign di UN canale; bottoni via harness dal pannello canale |
-| FILTRO | 1 | 1×C96 | [dec. 159] bus HPF in, bus LPF in, 2 uscite sul DJ bus = 4 slot stereo, 8 mode bit in (muto della sezione) |
+| FILTRO | 2 schede (REV 2026-11-16) | 1×C96 cad. | [dec. 159] HPF: BUS_HPF in (b1/b2), HPF out → DJBUS (b7/b8), bit 0 del modo (c1, c3, c5, c7); LPF: BUS_LPF in (b4/b5), LPF out → DJBUS (b10/b11), bit 1 (c2, c4, c6, c8). Una scheda per sezione⁴ |
 | 5-WAY | 4 schede (REV 2026-11-16) | 1×C96 cad. | A: DJ bus in → 5W_SUM (b7/b8) verso B; B: 5W_SUM in → out MASTER SUM (b4/b5). Ogni scheda un lato solo |
 | FX | 1 | 1×C96 | 4 bus-net in (multidrop, dec. 91) + 4 return out = 8 slot stereo |
 | MASTER | 1 | 1×C96 | 7 contributori MASTER SUM + MON out verso CUE |
@@ -206,6 +206,11 @@ Semantica degli slot PER CLASSE (slot 1 = b1-b3, slot 2 = b4-b6, …):
 
 ³ **REV 2026-11-16 (todo 336)**: il 5-way sta su quattro schede, una per lato: la L usa il
 pin L dello slot (b1, b4, b7), la R il pin R (b2, b5, b8). 5W_SUM resta sul tratto T1.
+
+⁴ **REV 2026-11-16 (todo 337)**: il filtro sta su due schede, una per sezione
+(`pcb/filtro/filtro.py HPF|LPF`). Ogni scheda usa solo gli slot della sua sezione (HPF: slot
+1 e 3; LPF: slot 2 e 4) e i suoi bit di modo; nessun filo fra le due schede. FIL1 = HPF,
+FIL2 = LPF sul tratto T2 (`pcb/backplane/piano_f.py`).
 
 ² **REV dec. 159 (2026-10-31)**: il filtro lavora dopo il fader. I bus HPF e LPF sono net
 multidrop come il DJ bus: ogni canale inietta con R 10k lato sorgente sul net scelto dalla

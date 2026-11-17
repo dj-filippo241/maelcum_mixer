@@ -185,6 +185,18 @@ Sezione 2-poli, stato HP/BP/LP (solo HP e LP usati; BP serve alla risonanza):
 
 ## 4. Controllo di frequenza — converter esponenziale tempcompensato
 
+> **[REV 2026-11-16, todo 337 — converter a componenti per la PCB] [SIMULATO,
+> PROVVISORIO]** (`sim/filtro/RISULTATI-conv-that320.md`). Il converter qui
+> sotto era solo ideale, e il mirror bufferizzato NPN non può alimentare il
+> pin Iabc dell'LM13700, che assorbe corrente. Circuito della scheda: un
+> converter PNP per sezione 2 poli (THAT 320: Q1 riferimento, Q2 e Q3 spingono
+> la corrente nei due OTA), Iref da LM334 PTAT che tira dal collettore di Q1,
+> op-amp d'anello OPA1642; comando sulla base di Q1 da un partitore con
+> resistenza tempco +3300 ppm/K e buffer. Il mirror sparisce. Misure: ottave
+> esatte entro ±2,5 %, gm costante entro ±2 % da 20 a 50 °C. Quattro
+> converter per scheda, un trimmer di fondo scala ciascuno; zero e scala per
+> sezione. Schede: `pcb/filtro/NOTE.md`.
+
 > **[REV 2026-10-14, dec. 111, todo 49 — FINDING]** Il converter compensa
 > la sua coppia (ΔV scalato PTAT), ma non la gm degli OTA: nell'LM13700
 > reale gm = Iabc/2V_T, e a Iabc fissa scende dell'11,8 % da 25 a 65 °C
