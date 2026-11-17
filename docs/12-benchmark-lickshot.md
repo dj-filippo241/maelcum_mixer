@@ -44,7 +44,7 @@ tabella le tengo per la parte lickshot.
 | # | Modello | Paese, anno | Fam. | Motore del suono | Comandi | Trigger e uscite | Formato, alimentazione | Prezzo | Suoni |
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | **Benidub Lickshot** | Spagna, in vendita nel 2024 | A | 1 oscillatore, LFO; clone di una macchina giamaicana d'epoca | FREQUENCY (fine), TONE (3 frequenze base), LFO ON/OFF, LFO RATE, VOLUME | tasto TRIGGER momentaneo (suona finché è premuto); uscita jack 6,3 mm mono, bil. o sbil.; niente trigger esterno, MIDI o CV | pedale da 1 kg; 12 V DC, 100 mA | 185 € | laser, mitra; con LFO spento tono simile all'airhorn |
-| 2 | **Klementz Lickshot Box / Rack 1U** | Francia, archivio (esaurito) | A | analogico al 100 % | pitch, velocità di modulazione, tipo di modulazione (3), volume | non dichiarati | scatola o **rack 1U**, stesso circuito; alimentatore esterno a spina europea | 120 € (box) | laser, colpo di pistola |
+| 2 | **Klementz Lickshot Box / Rack 1U** | Francia, manuale 2019, archivio (esaurito) | A | analogico al 100 % | dal manuale: LFO SPEED, PITCH, VOLUME (pot), MODULATION (deviatore a 3 posizioni), TRIGGER (pulsante), LFO LED (lampeggia con l'LFO) | dietro: uscita jack 6,35 mm mono sbilanciata, livello di linea «relativamente alto»; niente trigger esterno | box 125 × 78 × 94 mm o **rack 1U**; 12 V DC, < 200 mA | 120 € (box) | laser, colpo di pistola |
 | 3 | **Common Ground Lickshot** | Spagna (Madrid), 2023 (dedotto) | A | analogico al 100 %; «reinterpretazione della classica lickshot» | velocità e profondità della modulazione, pitch; **6 combinazioni di modulazione** | non dichiarati; la demo passa da un delay esterno | scatola da 0,35 kg, ~145 × 115 × 75 mm | 120 €, tiratura limitata, esaurita | dalla sirena al laser più secco |
 | 4 | **LASE LS-100 / LS-200** | USA (paese dell'annuncio), produttore non identificato | A | non dichiarato | non letti (pagine bloccate) | tasto momentaneo (suona finché è premuto) | non letto | non letto | mitra e laser; la LS-200 aggiunge una sirena |
 | 5 | **Dub-Siren.com Dub Siren SEG** | Regno Unito (dedotto), in vendita nel 2026 | A | chip generatore di suoni di fine anni 70 da videogiochi, come le SEG d'epoca | pitch, rate, volume, levetta modulazione corta/lunga, **3 modi: beep, sirena, lickshot** | tasto; uscita jack 6,3 mm mono | scatola metallica 119 × 93 × 30 mm; 9 V DC da pedale | 105 £ | lickshot «classica anni 80», beep, sirena |
@@ -65,10 +65,40 @@ tabella le tengo per la parte lickshot.
 | 20 | **Roland SP-404MKII** | Giappone, in commercio | C | sampler con effetti; 16 pad; dalla v5 anche controller di Serato | 16 pad RGB, manopole degli effetti | pad; uscita stereo; USB | da tavolo | 499 € | qualunque campione; per i DJ: drop, airhorn |
 | 21 | **Serato Sampler** (software) | Nuova Zelanda, in uso | C | slot di campioni dentro il software DJ | tasti del controller | il controller DJ | software | con Serato DJ | Serato stesso: «quasi sempre airhorn o dub siren» |
 
+| 22 | **Mr Law, Lickshot machine** | costruttore artigiano; 7" «Siren Side / Lickshot Side» (Sonic Belligeranza, Bologna, 2020) | A | analogico (ascolto di Filippo dal disco) | dalle foto (4 esemplari, scatole diverse): **4 manopole, nessun deviatore**, 1 tasto rosso, 1 LED | 2 jack (uscita e alimentazione, oppure ingresso e uscita: d); alcune versioni hanno il **delay dentro** | scatole da tavolo e una da mano | usato 400-800 € (sound-system.fr) | dall'ascolto del disco (Filippo): il tono cade molto, colpi veloci con velocità regolabile, coda dal delay |
+
 Fuori conto: la **LICKSHOT del banco web** (`web/strumenti.js`, MONO 2). Ha un
 oscillatore quadro, due quando la levetta è su TROMBA. L'LFO a dente di sega
 fa cadere il tono di 3 ottave. Ha TONE, RATE, VOLUME, il tasto FIRE e la levetta
 LFO (TROMBA/LASER). Le gamme le ha scelte Claude. Fa parte della famiglia A.
+
+## I tre riferimenti di Filippo: Benidub, Klementz, Mr Law
+
+| Comando | Benidub Lickshot | Klementz Lickshot | Mr Law |
+|---|---|---|---|
+| Altezza | FREQUENCY (fine) + TONE (3 frequenze base) | PITCH | sì (d) |
+| Velocità dell'LFO | LFO RATE | LFO SPEED | sì (d, «si cambia») |
+| Tipo di colpo | LFO ON/OFF (laser o tono fisso) | MODULATION, 3 posizioni | nessun deviatore |
+| Volume | VOLUME | VOLUME | sì (d) |
+| Quarta manopola | — | — | ? (profondità della caduta o delay: d) |
+| Tasto | TRIGGER, suona finché è premuto | TRIGGER | tasto rosso |
+| LED | non dichiarato | LFO LED | sì |
+| Eco | fuori | fuori | dentro, in alcune versioni |
+| Uscita | jack mono, bil. o sbil. | jack mono sbil., linea alta | 2 jack (?) |
+| Alimentazione | 12 V, 100 mA | 12 V, < 200 mA | ? |
+
+Il nucleo comune è altezza, velocità dell'LFO, volume, un tasto e il LED
+dell'LFO. Le tre macchine si separano sul modo di cambiare il colpo: Benidub con
+un interruttore, Klementz con un deviatore a 3 posizioni, Mr Law con una
+manopola. Klementz scrive nel manuale «la dub siren (la LICKSHOT è una di
+queste)»: il costruttore la classifica come sirena. La guida di sound-system.fr
+(giugno 2026) non distingue lickshot e sirena, e non è una fonte affidabile:
+attribuisce lo stesso Lickshot una volta a Klementz e una volta a Benidub.
+
+Fonti: benidub.com/products/lickshot-dub-siren/ ; manuale Klementz «Lickshot
+Box - User Manual» 2019 (klementz.fr, allegato 27) ; foto mandate da Filippo il
+17/11 ; sound-system.fr/en/dub-siren-secrets-the-ultimate-guide-to-iconic-sound-system-fx/.
+La pagina Amazon (B0DQVJMYSN) non si apre (errore 503).
 
 ## Tabella 1bis: lickshot open source (aggiunta il 2026-11-17)
 
