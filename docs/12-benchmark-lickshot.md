@@ -70,6 +70,56 @@ oscillatore quadro, due quando la levetta è su TROMBA. L'LFO a dente di sega
 fa cadere il tono di 3 ottave. Ha TONE, RATE, VOLUME, il tasto FIRE e la levetta
 LFO (TROMBA/LASER). Le gamme le ha scelte Claude. Fa parte della famiglia A.
 
+## Tabella 1bis: lickshot open source (aggiunta il 2026-11-17)
+
+Richiesta di Filippo: concentrarsi sulle lickshot open source. Gli schemi
+pubblicati sono immagini: quelli letti qui sono stati aperti e letti a vista.
+
+| # | Progetto | Autore, anno | Cosa è pubblicato | Cuore del circuito | Comandi | Note |
+|---|---|---|---|---|---|---|
+| O1 | **Nold Lickshot** («Lickshot-I») | Nold, 11/04/2016 | schema (EAGLE, immagine) e PCB sul sito nold.in, oggi offline; copia dello schema su freedubcircuit («Digital Lickshot + Siren», 2017) | **LFO a CD4069** (IC1A e IC1B ad anello con R1 22k e C3 1 µF; i diodi D1 e D2 1N4148 col deviatore S1 rendono la rampa asimmetrica) → **VCO CD4046** (C1 100 nF, R2 10k + pot P3 sull'altezza). L'LFO entra nel VCOin da R8 10k; R9 22k col deviatore S2 sposta la gamma. Onda quadra in uscita (C5 1 µF, R7 1k, R6 100 Ω); LED dell'LFO col 2N3904 | P1 velocità dell'LFO (500k, con R4 22k), P3 altezza, S1 forma, S2 gamma | il forum Dubsounds segnala un errore: S2-b non cambia la gamma dell'LFO (corretto da «gab», 2024). Gab: «non è la tipica lickshot» |
+| O2 | **gab, «The Lickshot»** | gab (Dubsounds), 2023 | PCB, pannello e guida di montaggio; PCB in vendita sul forum | lo schema di Nold, modificato | non dichiarati | scatola Hammond 1590XX |
+| O3 | **Orald-0/lickshot_dub_siren** (GitHub) | Orald-0, 2026, licenza **MIT** | schema KiCad, PCB, Gerber, distinta | **lo stesso nucleo di Nold** (CD4069 + CD4046 + 2N3904 + LED, RV2 500k sull'LFO, RV1 50k sul VCO, SW1 e SW2 doppi deviatori) + **eco PT2399** con TL072; regolatore L7805 | 4 pot da 50k B in più per l'eco | è il solo progetto con file aperti e licenza chiara; la cartella dice che il progetto buono è «DA SBROGLIARE», il resto è vecchio |
+| O4 | **freedubcircuit, «UK Lickshot Gunshot Sound FX»** | blog di Viktor, 2017 | 11 pagine scansionate di un libro: capitolo «Single-chip synthesiser» | **TI SN76477**: un chip con VCO, LFO (0,1-30 Hz, f = 0,64/RC), rumore, inviluppo e VCA | resistenze e condensatori sui piedini | il blog lo chiama lickshot UK anni 80; schema non provato secondo il forum |
+| O5 | **DUBmatze, «Lickshotmaschine»** | DUBmatze, 2013-2014 (forum electro-music) | schema in immagine; il sito ora è offline | non leggibile | non leggibile | una richiesta di schema e distinta (2015) è rimasta senza risposta |
+| O6 | **Medusa** (lonesoulsurfer), strumento «Ray Gun» | Marcus, 2025, firmware **MIT**, hardware **CERN-OHL-S-2.0** | schema, Gerber, distinta, firmware, manuale | microcontrollore **RP2040** con display; suono sintetizzato in firmware | FREQ 200-4.000 Hz, SWEEP 0,1-20 Hz, RES 30-95 %, ECHO FEEDBACK 0-95 %; modi ZAP (sale), **LASER (scende, con un colpo di rumore)**, BLASTER (raffica corta), PHASER | modulo Eurorack o da tavolo; ingresso di sync |
+| O7 | **no-carrier Lickshot** (NES e Chrome) | Don Miller, 2009 e 2013 | codice | campioni: 4 sulla NES; nella versione Chrome beep, horn, laser, gunshot e rewind | tasti | già nella tabella 1 (riga 17) |
+| O8 | **Atari Punk Console** | Forrest Mims, 1980 | schema pubblico | un 556 | due pot | già nella tabella 1 (riga 12) |
+
+Cosa si ricava, con le deduzioni segnate (d):
+
+- **Il nucleo aperto più diffuso è uno solo: LFO a CD4069 → VCO CD4046.** Nold
+  (2016), gab (2023) e Orald-0 (2026) sono la stessa famiglia. L'onda quadra
+  del 4046 è il suono del laser. La rampa asimmetrica dei diodi fa cadere
+  il tono a ogni colpo (d).
+- **La strada a chip unico è l'SN76477.** Dub-Siren.com dice che le SEG d'epoca
+  usavano «un chip da videogiochi di fine anni 70». L'SN76477 è il chip dei
+  suoni di Space Invaders (1978): può darsi che sia quello (d, nessuna fonte lo
+  conferma). Il chip è fuori produzione (d).
+- **Nessun progetto aperto ha un trigger esterno o un'uscita bilanciata.** Il
+  colpo parte da un tasto o da un interruttore. Solo Medusa ha un ingresso di
+  sync.
+- **L'eco torna anche qui.** Orald-0 mette un PT2399 dentro la scatola, Medusa
+  ha l'eco in firmware.
+- **La LICKSHOT del banco web** ha la stessa struttura (un LFO a rampa che
+  piega un oscillatore quadro), ma i numeri li ha scelti Claude. Con lo schema
+  di Nold la si può ricalcolare sui valori veri (d).
+
+Fonti della tabella 1bis: forum.dubsounds.fr/t/diy-lickshot-schematic-pcb/5111 ;
+forum.dubsounds.fr/t/lickshot-siren-schematic/14380 ;
+forum.dubsounds.fr/t/diy-the-lickshot/13607 ;
+interruptor.ch/php5/dubboard/viewtopic.php?f=9&t=2681 ;
+freedubcircuit.blogspot.com/2017/12/digital-lickshot-siren.html (schema
+«Lickshot-I» del 11/04/16) ; freedubcircuit.blogspot.com/2017/12/lickshot-gunshsot-sound-fx.html ;
+github.com/Orald-0/lickshot_dub_siren (`lickshot_delay.pdf`, `lickshot_BOM.csv`) ;
+electro-music.org/forum/post-413817.html ;
+github.com/lonesoulsurfer/Medusa_Sound_Effects_Modular_Synth (`docs/MANUAL.md`) ;
+github.com/no-carrier/lickshot.
+
+Restano fuori, perché sono sirene: xioTechnologies/Dub-Siren (il banco web ne
+ha preso solo il comportamento del tasto), MITGameLab, Deep Field NJD,
+Ekoplazm e le altre «dub siren» di GitHub.
+
 ## Tabella 2: somiglianze e differenze
 
 Legenda: **sì** = lo dice la fonte; **no** = la fonte lo esclude; **?** = la
