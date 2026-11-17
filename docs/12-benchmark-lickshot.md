@@ -64,42 +64,41 @@ tabella le tengo per la parte lickshot.
 | 20 | **Roland SP-404MKII** | Giappone, in commercio | C | sampler con effetti; 16 pad; dalla v5 anche controller di Serato | 16 pad RGB, manopole degli effetti | pad; uscita stereo; USB | da tavolo | 499 € | qualunque campione; per i DJ: drop, airhorn |
 | 21 | **Serato Sampler** (software) | Nuova Zelanda, in uso | C | slot di campioni dentro il software DJ | tasti del controller | il controller DJ | software | con Serato DJ | Serato stesso: «quasi sempre airhorn o dub siren» |
 
-| 22 | **Mr Law, Lickshot machine** | costruttore artigiano; 7" «Siren Side / Lickshot Side» (Sonic Belligeranza, Bologna, 2020) | A | analogico (ascolto di Filippo dal disco) | dalle foto (4 esemplari, scatole diverse): **4 manopole, nessun deviatore**, 1 tasto rosso, 1 LED | 2 jack (uscita e alimentazione, oppure ingresso e uscita: d); alcune versioni hanno il **delay dentro** | scatole da tavolo e una da mano | usato 400-800 € (sound-system.fr) | dall'ascolto del disco (Filippo): il tono cade molto, colpi veloci con velocità regolabile, coda dal delay |
 
 Scartata il 17/11 (Filippo): **LASE LS-100 / LS-200**. Comandi (TONE a 3 frequenze, FREQUENCY, LFO RATE, VOLUME, LFO ON/OFF, TRIGGER) e alimentazione (12 V, 100 mA) uguali al Benidub Lickshot: un doppione. Circa 140 $, scatola di plastica, su Amazon (B0DQVJMYSN).
+
+Scartato il 17/11 (Filippo): **Mr Law, Lickshot machine** (costruttore artigiano; 7" «Siren Side / Lickshot Side», Sonic Belligeranza 2020). Dalle foto di Filippo: 4 manopole, un tasto rosso, un LED, delay dentro in alcune versioni; il colpo si cambia col bottone. Circuito e funzione delle manopole non pubblicati.
 
 Fuori conto: la **LICKSHOT del banco web** (`web/strumenti.js`, MONO 2). Ha un
 oscillatore quadro, due quando la levetta è su TROMBA. L'LFO a dente di sega
 fa cadere il tono di 3 ottave. Ha TONE, RATE, VOLUME, il tasto FIRE e la levetta
 LFO (TROMBA/LASER). Le gamme le ha scelte Claude. Fa parte della famiglia A.
 
-## I tre riferimenti di Filippo: Benidub, Klementz, Mr Law
+## Benidub e Klementz a confronto
 
-| Comando | Benidub Lickshot | Klementz Lickshot | Mr Law |
-|---|---|---|---|
-| Altezza | FREQUENCY (fine) + TONE (3 frequenze base) | PITCH | sì (d) |
-| Velocità dell'LFO | LFO RATE | LFO SPEED | sì (d, «si cambia») |
-| Tipo di colpo | LFO ON/OFF (laser o tono fisso) | MODULATION, 3 posizioni | **col bottone** (Filippo, 17/11) |
-| Volume | VOLUME | VOLUME | sì (d) |
-| Quarta manopola | — | — | ? |
-| Tasto | TRIGGER, suona finché è premuto | TRIGGER | tasto rosso |
-| LED | non dichiarato | LFO LED | sì |
-| Eco | fuori | fuori | dentro, in alcune versioni |
-| Uscita | jack mono, bil. o sbil. | jack mono sbil., linea alta | 2 jack (?) |
-| Alimentazione | 12 V, 100 mA | 12 V, < 200 mA | ? |
+| Comando | Benidub Lickshot | Klementz Lickshot |
+|---|---|---|
+| Altezza | FREQUENCY (fine) + TONE (3 frequenze base) | PITCH |
+| Velocità dell'LFO | LFO RATE | LFO SPEED |
+| Tipo di colpo | LFO ON/OFF (laser o tono fisso) | MODULATION, 3 posizioni |
+| Volume | VOLUME | VOLUME |
+| Tasto | TRIGGER, suona finché è premuto | TRIGGER |
+| LED | non dichiarato | LFO LED |
+| Eco | fuori | fuori |
+| Uscita | jack mono, bil. o sbil. | jack mono sbil., linea alta |
+| Alimentazione | 12 V, 100 mA | 12 V, < 200 mA |
 
-Il nucleo comune è altezza, velocità dell'LFO, volume, un tasto e il LED
-dell'LFO. Le tre macchine si separano sul modo di cambiare il colpo: Benidub con
-un interruttore, Klementz con un deviatore a 3 posizioni, Mr Law col bottone
-(Filippo, 17/11). Klementz scrive nel manuale «la dub siren (la LICKSHOT è una di
-queste)»: il costruttore la classifica come sirena. La guida di sound-system.fr
-(giugno 2026) non distingue lickshot e sirena, e non è una fonte affidabile:
-attribuisce lo stesso Lickshot una volta a Klementz e una volta a Benidub.
+Il nucleo comune è altezza, velocità dell'LFO, volume e un tasto. Le due
+macchine si separano sul modo di cambiare il colpo: Benidub con un interruttore,
+Klementz con un deviatore a 3 posizioni. Klementz scrive nel manuale «la dub
+siren (la LICKSHOT è una di queste)»: il costruttore la classifica come sirena.
+La guida di sound-system.fr (giugno 2026) non distingue lickshot e sirena, e non
+è una fonte affidabile: attribuisce lo stesso Lickshot una volta a Klementz e
+una volta a Benidub.
 
 Fonti: benidub.com/products/lickshot-dub-siren/ ; manuale Klementz «Lickshot
-Box - User Manual» 2019 (klementz.fr, allegato 27) ; foto mandate da Filippo il
-17/11 ; sound-system.fr/en/dub-siren-secrets-the-ultimate-guide-to-iconic-sound-system-fx/.
-La pagina Amazon (B0DQVJMYSN) non si apre (errore 503).
+Box - User Manual» 2019 (klementz.fr, allegato 27) ;
+sound-system.fr/en/dub-siren-secrets-the-ultimate-guide-to-iconic-sound-system-fx/.
 
 ## Tabella 1bis: lickshot open source (aggiunta il 2026-11-17)
 
