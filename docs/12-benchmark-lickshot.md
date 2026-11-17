@@ -27,7 +27,7 @@ macchine a campioni si aggiungono airhorn veri, bombe, voci e jingle.
 
 Perché le sirene restano fuori: la sirena è un tono che sale e scende piano e
 dura. La lickshot spara colpi corti a ripetizione, che partono e si fermano col
-tasto. Alcune macchine fanno tutte e due le cose (LASE LS-200, SEG, FX-ONE): in
+tasto. Alcune macchine fanno tutte e due le cose (SEG, FX-ONE): in
 tabella le tengo per la parte lickshot.
 
 ## Le tre famiglie
@@ -46,7 +46,6 @@ tabella le tengo per la parte lickshot.
 | 1 | **Benidub Lickshot** | Spagna, in vendita nel 2024 | A | 1 oscillatore, LFO; clone di una macchina giamaicana d'epoca | FREQUENCY (fine), TONE (3 frequenze base), LFO ON/OFF, LFO RATE, VOLUME | tasto TRIGGER momentaneo (suona finché è premuto); uscita jack 6,3 mm mono, bil. o sbil.; niente trigger esterno, MIDI o CV | pedale da 1 kg; 12 V DC, 100 mA | 185 € | laser, mitra; con LFO spento tono simile all'airhorn |
 | 2 | **Klementz Lickshot Box / Rack 1U** | Francia, manuale 2019, archivio (esaurito) | A | analogico al 100 % | dal manuale: LFO SPEED, PITCH, VOLUME (pot), MODULATION (deviatore a 3 posizioni), TRIGGER (pulsante), LFO LED (lampeggia con l'LFO) | dietro: uscita jack 6,35 mm mono sbilanciata, livello di linea «relativamente alto»; niente trigger esterno | box 125 × 78 × 94 mm o **rack 1U**; 12 V DC, < 200 mA | 120 € (box) | laser, colpo di pistola |
 | 3 | **Common Ground Lickshot** | Spagna (Madrid), 2023 (dedotto) | A | analogico al 100 %; «reinterpretazione della classica lickshot» | velocità e profondità della modulazione, pitch; **6 combinazioni di modulazione** | non dichiarati; la demo passa da un delay esterno | scatola da 0,35 kg, ~145 × 115 × 75 mm | 120 €, tiratura limitata, esaurita | dalla sirena al laser più secco |
-| 4 | **LASE LS-100 / LS-200** | USA (paese dell'annuncio), produttore non identificato; su Amazon (B0DQVJMYSN) | A | non dichiarato | dagli annunci (eBay, Amazon): TONE (3 frequenze base: bassa, media, alta), FREQUENCY (fine), LFO RATE, VOLUME, LFO ON/OFF: **gli stessi del Benidub** | TRIGGER momentaneo (suona finché è premuto); jack 6,3 mm mono, cavo verso 2 RCA incluso | scatola di plastica nera; 12 V DC, 100 mA, 2,1 × 5,5 mm centro positivo (come il Benidub) | ~140 $ (eBay) | laser e mitra; con LFO spento tono fisso; la LS-200 aggiunge una sirena. Comandi e alimentazione uguali al Benidub: forse una copia economica (d) |
 | 5 | **Dub-Siren.com Dub Siren SEG** | Regno Unito (dedotto), in vendita nel 2026 | A | chip generatore di suoni di fine anni 70 da videogiochi, come le SEG d'epoca | pitch, rate, volume, levetta modulazione corta/lunga, **3 modi: beep, sirena, lickshot** | tasto; uscita jack 6,3 mm mono | scatola metallica 119 × 93 × 30 mm; 9 V DC da pedale | 105 £ | lickshot «classica anni 80», beep, sirena |
 | 6 | **SEG1, H-SEG, Pro SEG** (d'epoca) | sound system, anni 80 (dedotto) | A | chip da videogiochi di fine anni 70 | non trovati | non trovati | unità da sound system | — | lickshot d'epoca |
 | 7 | **Benidub FX-ONE** | Spagna, 2026 | A | 4 generatori: Dub Siren, FM Square, **Lickshot**, Sonar (seno); eco dub integrata | per generatore: Gain, Tune, Rate, Sweep (inviluppo che sale su pitch e rate); eco: volume, feedback, delay | ingresso mic XLR bilanciato con compressore; un aux line o molla | da tavolo, 12 V | 1.199-1.399 € | laser, sirena, FM, sonar, con eco |
@@ -66,6 +65,8 @@ tabella le tengo per la parte lickshot.
 | 21 | **Serato Sampler** (software) | Nuova Zelanda, in uso | C | slot di campioni dentro il software DJ | tasti del controller | il controller DJ | software | con Serato DJ | Serato stesso: «quasi sempre airhorn o dub siren» |
 
 | 22 | **Mr Law, Lickshot machine** | costruttore artigiano; 7" «Siren Side / Lickshot Side» (Sonic Belligeranza, Bologna, 2020) | A | analogico (ascolto di Filippo dal disco) | dalle foto (4 esemplari, scatole diverse): **4 manopole, nessun deviatore**, 1 tasto rosso, 1 LED | 2 jack (uscita e alimentazione, oppure ingresso e uscita: d); alcune versioni hanno il **delay dentro** | scatole da tavolo e una da mano | usato 400-800 € (sound-system.fr) | dall'ascolto del disco (Filippo): il tono cade molto, colpi veloci con velocità regolabile, coda dal delay |
+
+Scartata il 17/11 (Filippo): **LASE LS-100 / LS-200**. Comandi (TONE a 3 frequenze, FREQUENCY, LFO RATE, VOLUME, LFO ON/OFF, TRIGGER) e alimentazione (12 V, 100 mA) uguali al Benidub Lickshot: un doppione. Circa 140 $, scatola di plastica, su Amazon (B0DQVJMYSN).
 
 Fuori conto: la **LICKSHOT del banco web** (`web/strumenti.js`, MONO 2). Ha un
 oscillatore quadro, due quando la levetta è su TROMBA. L'LFO a dente di sega
@@ -160,7 +161,6 @@ fonte non lo dice; **(d)** = deduzione mia.
 | 1 | Benidub Lickshot | sì (d) | no | sì | 3 toni + LFO on/off | sì | no | no | no | no |
 | 2 | Klementz Lickshot | sì | no | sì | 3 modulazioni | sì (d) | ? | no | **sì, 1U** | ? |
 | 3 | Common Ground | sì | no | sì | 6 combinazioni | sì (d) | ? | no | no | ? |
-| 4 | LASE LS-100/200 | ? | ? | sì (d) | LS-200: + sirena | sì | ? | ? | ? | ? |
 | 5 | Dub-Siren.com SEG | chip | no | sì | 3 (beep, sirena, lickshot) | sì | no | no | no | no |
 | 6 | SEG d'epoca | chip | no | ? | ? | ? | ? | ? | ? | ? |
 | 7 | Benidub FX-ONE | sì (d) | no | sì + sweep | 4 generatori | sì (d) | ? | **sì** | no | ? |
@@ -182,7 +182,7 @@ fonte non lo dice; **(d)** = deduzione mia.
 ## Cosa hanno in comune
 
 - **Un tasto grande che spara.** In tutte il gesto è premere e tenere: il suono
-  dura quanto il dito, e un tocco breve dà un colpo solo (Benidub, LASE, SEG).
+  dura quanto il dito, e un tocco breve dà un colpo solo (Benidub, SEG).
 - **Poche manopole.** Le analogiche ne hanno 3-5: pitch, velocità dell'LFO,
   tipo di modulazione, volume. Si suonano al buio, in mezzo alla dance.
 - **Uscita mono, livello da strumento.** Dove la fonte lo dice c'è un jack
