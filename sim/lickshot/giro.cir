@@ -1,0 +1,50 @@
+* Lickshot - giro dell'eco (dec. 182, 185, 186, 191), BBD come ritardo ideale.
+* Somma invertente -> attenuatore -> 2 x V3205D (linea senza perdite, Td)
+* -> make-up invertente -> passa-alto 150 Hz -> RIPETIZIONI (G fino a 1,1)
+* -> saturazione a diodi -> somma. Polarita del giro: (-) x (-) = +, come
+* nel modello (lickshot.py). Tensioni attorno al riferimento VDD/2 = 0 qui.
+* Op-amp ideali (E lineari): si misurano i picchi per confrontarli coi
+* rail (+-4,4 V a VDD 9 V) e col livello massimo d'ingresso del V3205D.
+.param ATT=0.25 TD=0.1 rip=1
+* colpo asciutto: 0 dBu sul plateau = 1,095 V di picco, 600 Hz, 0,2 s
+Bdry dry 0 V={1.095*sin(2*pi*600*time)*(time<0.2)}
+* somma invertente (asciutto + ritorno), guadagno -1 per ingresso
+R1 dry s 10k
+R2 fb s 10k
+Rf1 s sum 10k
+Esum sum 0 0 s 1e6
+* attenuatore verso i BBD (-12 dB con ATT 0,25) e buffer
+Ra1 sum a 30k
+Ra2 a 0 10k
+Ebbd bbd_in 0 a 0 1
+* due BBD in fila: ritardo ideale (linea terminata)
+Rt1 bbd_in l1 1k
+T1 l1 0 l2 0 Z0=1k Td={TD}
+Rt2 l2 0 1k
+Ebd bbd_out 0 l2 0 2
+* make-up invertente, guadagno -1/ATT
+R3 bbd_out m 10k
+R4 m post {10k/ATT}
+Emk post 0 0 m 1e6
+* passa-alto del giro 150 Hz (100 nF, 10,6k) e buffer
+Chp post h 100n
+Rhp h 0 10.6k
+Eh gy 0 h 0 1
+* RIPETIZIONI: guadagno 0...1,1 (pot + stadio)
+Erip rp 0 gy 0 {1.1*rip}
+* saturazione: partitore x0,4, diodi antiparallelo, guadagno 2,5
+R5 rp d 15k
+R6 d 0 10k
+D1 d 0 D1N4148
+D2 0 d D1N4148
+Esat fb 0 d 0 2.5
+.model D1N4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+.step param rip list 0.5 0.9 1
+.tran 0 1.5 0 20u
+.meas tran bbd_pk MAX abs(V(bbd_in)) FROM 0 TO 1.5
+.meas tran sum_pk MAX abs(V(sum)) FROM 0 TO 1.5
+.meas tran post_pk MAX abs(V(post)) FROM 0 TO 1.5
+.meas tran fb_pk MAX abs(V(fb)) FROM 0 TO 1.5
+.meas tran fb_coda MAX abs(V(fb)) FROM 1.3 TO 1.5
+.meas tran bbd_coda MAX abs(V(bbd_in)) FROM 1.3 TO 1.5
+.end

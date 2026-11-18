@@ -1,0 +1,32 @@
+* Lickshot - PROFONDITA (dec. 190): buffer della rampa, pot, non invertente
+* riferito a VDD/2, verso il VCOin del CD4046B. VDD 9 V regolati.
+* Op-amp TLC2272 (TI SLOS190H): uscita ai rail a carico leggero,
+* modo comune d'ingresso fino a VDD+ - 1,5 V = 7,5 V. Op-amp come E lineare
+* con limite di uscita 0,1...8,9 V (.dc, nessun anello non lineare).
+.param VDD=9 RG=10k RF=5.1k
+Vdd vdd 0 {VDD}
+* riferimento VDD/2: partitore + buffer
+Rr1 vdd ref0 10k
+Rr2 ref0 0 10k
+Eref ref 0 ref0 0 1
+* rampa dell'integratore del CD4069: soglie 6/22 e 16/22 di VDD
+Vramp ramp 0 4.5
+* buffer (inseguitore)
+Ebuf rb 0 value={limit(V(ramp),0.1,8.9)}
+* PROFONDITA: pot lineare 10k fra rampa bufferizzata e VDD/2, cursore a x
+.param x=1
+Rp1 rb cur {10k*(1-x)+1}
+Rp2 cur ref {10k*x+1}
+* non invertente riferito a VDD/2: G = 1 + RF/RG
+Rg inv ref {RG}
+Rf inv vco {RF}
+Evco vco 0 value={limit(1e5*(V(cur)-V(inv))+V(ref),0.1,8.9)}
+* R in serie al pin 9 (ingresso ad alta impedenza del CD4046B)
+Rs vco vcoin 10k
+Rpin vcoin 0 1e12
+.step param x list 0 0.5 1
+.dc Vramp 2.4545 6.5455 0.0409
+.meas dc vlo FIND V(vcoin) AT 2.4545
+.meas dc vhi FIND V(vcoin) AT 6.5455
+.meas dc curmax MAX V(cur)
+.end

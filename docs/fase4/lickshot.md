@@ -1,8 +1,11 @@
-# FASE 4 — Lickshot in rack 1U: architettura v0.1 (2026-11-18)
+# FASE 4 — Lickshot in rack 1U: architettura v0.2 (2026-11-18)
 
-> **Stato: v0.1 — requisiti e catena chiusi, topologia per blocchi
-> scelta, componenti [PROVVISORIO — regola 3], nessuna simulazione
-> LTspice ancora.** Metodo (regola 4): requisito → funzione di
+> **Stato: v0.2 — requisiti e catena chiusi, topologia per blocchi
+> scelta, componenti [PROVVISORIO — regola 3]. v0.2: datasheet del clock
+> (MN3102), op-amp TLC2272, un V3102 per BBD, rail dei BBD a 5 V,
+> attenuatore −14 dB; PROFONDITÀ e giro simulati in LTspice
+> (`sim/lickshot/RISULTATI-lickshot-v02.md`). Aperta per Filippo: la
+> legge di TEMPO (§3.6).** Metodo (regola 4): requisito → funzione di
 > trasferimento → topologia → componenti → simulazione → PCB. Questo
 > documento arriva alla topologia e alla prima scelta dei componenti.
 > Il modello che suona (banco web e MC-LICKSHOT) sta in
@@ -52,13 +55,23 @@ colpo da 0 a ~4 ottave secondo PROFONDITÀ (2 ottave a ~2/3), da 2 a
   audio a bassa tensione. Il nucleo di Nold gira a ~8,6 V (9 V di
   batteria meno il diodo): a 9 V regolati le frequenze salgono di ~5 %;
   `lickshot.py` va riallineato (VDD) quando la tensione è fissata.
-- **+7,5 V** (regolatore regolabile) per i due V3205D e il clock:
-  il V3205D lavora fra 4 e 8 V (datasheet, «Operating Condition»), il
-  valore assoluto massimo è 11 V.
+- **+5 V** (78L05) per i due V3205D e i due V3102 (v0.2; prima 7,5 V).
+  Tutte le caratteristiche del V3205D sono date a 5 V (datasheet,
+  «Electrical Characteristics»); il MN3102 garantisce i 200 mW solo
+  sotto 7 V (datasheet p. 108). Il V3205D lavora fra 4 e 8 V.
 - Riferimenti a metà alimentazione (partitore + buffer) per gli op-amp
   e per la polarizzazione degli ingressi dei BBD.
-- Op-amp: da scegliere con datasheet alla mano (ingresso e uscita
-  vicino ai rail a 9-12 V singoli). Candidati da verificare, non scelti.
+- **Op-amp: TLC2272** (doppio; TI SLOS190H, rev. marzo 2016) sui 9 V.
+  Alimentazione fino a 16 V, uscita fino ai rail, 9 nV/√Hz, 2,2 MHz.
+  Limite da rispettare: modo comune d'ingresso fra VDD− e VDD+ − 1,5 V
+  (7,5 V a 9 V). Gli stadi audio sono quindi **invertenti** (ingressi
+  fermi su VDD/2); i non invertenti solo dove l'ingresso resta sotto
+  7,5 V (buffer della rampa e PROFONDITÀ: massimo 6,55 V, simulato).
+  Piedini: 1 1OUT, 2 1IN−, 3 1IN+, 4 VDD−/GND, 5 2IN+, 6 2IN−, 7 2OUT,
+  8 VDD+ (SLOS190H, «Pin Configuration and Functions»).
+- Margine audio a 9 V: ±4,4 V attorno a VDD/2 = +12 dBu sopra lo
+  0 dBu nominale. Il picco più alto del giro dell'eco (2,09 V) lascia
+  6,5 dB.
 
 ### 3.2 LFO (Nold, sigle di Orald-0)
 
@@ -102,12 +115,25 @@ taglia il segnale, l'LFO gira sempre (ascoltato e accettato, dec. 190).
   VGG = 14/15 VDD da partitore. Uscite OUT1 e OUT2 sommate con trimmer
   (cancellazione del clock, schema d'applicazione del BL3102).
   Livello all'ingresso: il datasheet dà 0,36 V efficaci a THD 2,5 %;
-  il segnale di linea si attenua di ~12 dB prima dei BBD e si
-  recupera dopo.
-- **Clock**: V3102 (gemello del MN3102), 2 fasi, VGG interno. Comando
-  del TEMPO: da decidere fra RC interno col pot (legge 1/R) e un
-  secondo CD4046B come VCO esterno (legge esponenziale come nel modello,
-  più l'effetto «fionda» lisciando la tensione). [APERTO]
+  il segnale di linea si attenua di **14 dB** prima dei BBD e si
+  recupera dopo (v0.2: con −12 dB il giro a RIPETIZIONI tutto arriva a
+  0,52 V di picco, proprio al 2,5 %; con −14 dB a 0,42 V, simulato).
+- **Clock** (v0.2): **due V3102, uno per BBD**. Il MN3102 (gemello)
+  pilota direttamente fino a 4096 stadi (datasheet p. 105): due V3205D
+  sono 8192. Il primo V3102 oscilla con R e C fra OX1, OX2, OX3
+  (datasheet p. 107, «Example of Oscillation Circuit»); il secondo ha OX1
+  dall'OX3 del primo e OX2, OX3 aperti («separate excitation»). Ognuno
+  dà CP1, CP2 e VGG = 14/15 VDD al suo BBD. Scartato un V3102 + driver
+  TC4427: fronti uguali e lenti si incrociano a metà, il V3205D vuole
+  l'incrocio sotto 0,3 VCPH (`RISULTATI-lickshot-v02.md` §3). Da
+  verificare al prototipo: la fase del secondo divisore (deduzione mia:
+  innocua).
+- **TEMPO**: reostato nell'RC del primo V3102, C 100 pF. Fit sulla
+  Fig. 1 del MN3102: fcp ≈ 3,22e9 / (R + 7,4k), ritardo ∝ R + 7,4k.
+  Pot 250k + 22k fisso + trimmer 10k. La legge sulla corsa dipende dalla
+  curva del pot: lineare, logaritmica A, o un VCO esponenziale (più
+  parti). Tabella in `RISULTATI-lickshot-v02.md` §4. **[APERTO: scelta
+  di Filippo]** Il modello oggi è esponenziale.
 - **Filtri**: nessuno (dec. 191). Restano il trimmer di cancellazione
   del clock fra OUT1 e OUT2 e i condensatori di accoppiamento. Con
   TEMPO lungo (clock sotto ~18 kHz) il fischio del clock è udibile: il
@@ -129,10 +155,13 @@ taglia il segnale, l'LFO gira sempre (ascoltato e accettato, dec. 190).
 | CD4069UB | ingressi 1, 3, 5, 9, 11, 13; uscite 2, 4, 6, 8, 10, 12; VSS 7, VDD 14 | TI CD4069UB, «Pin Configuration and Functions» |
 | CD4046B | 1 phase pulses, 2 PC1 out, 3 comparator in, 4 VCO out, 5 inhibit, 6-7 C1, 8 VSS, 9 VCO in, 10 demod out, 11 R1, 12 R2, 13 PC2 out, 14 signal in, 15 zener, 16 VDD | TI SCHS043B (rev. luglio 2003), p. 1 «Terminal assignment» |
 | V3205D | 1 GND, 2 CP2, 3 OUT1, 4 OUT2, 5 VDD, 6 CP1, 7 IN, 8 VGG | CoolAudio V3205D/SD datasheet, «Pin Configuration» (copia cricklewoodelectronics.com) |
-| V3102 | **da verificare**: il datasheet CoolAudio non si scarica (errore 500). Il gemello Belling BL3102 dà 1 VDD, 2 CP1, 3 GND, 4 CP2, 5-7 OX3-OX1, 8 VGG | foglio Belling BL3102 (1 pagina, senza formula dell'oscillatore) |
+| V3102 | 1 VDD, 2 CP1, 3 GND, 4 CP2, 5 OX3, 6 OX2, 7 OX1, 8 VGG(out) | datasheet Panasonic MN3102 (gemello), p. 107 «Terminal Assignments» (copia experimentalistsanonymous.com/diy/Datasheets/MN3102.pdf, scansione 1998); coincide col foglio Belling BL3102 |
+| TLC2272 | 1 1OUT, 2 1IN−, 3 1IN+, 4 VDD−/GND, 5 2IN+, 6 2IN−, 7 2OUT, 8 VDD+ | TI SLOS190H, «Pin Configuration and Functions» |
 
-Il pinout del V3102 non entra in un simbolo finché non c'è il suo
-datasheet (lezione del LSK389, todo 339).
+Il datasheet CoolAudio del V3102 resta irraggiungibile (cdn.mediavalet.com:
+errore 500 anche il 18/11 sera). Il V3102 è venduto come equivalente del
+MN3102: prima del simbolo definitivo, controllare la piedinatura sul
+foglio CoolAudio o sul pezzo comprato (lezione del LSK389, todo 339).
 
 ## 5. Pannello e scheda [PROVVISORIO]
 
@@ -140,30 +169,35 @@ Rack 1U (44,45 mm), largo 19". Sul pannello: 7 pot, LED, FIRE.
 Dietro: jack d'uscita e ingresso DC. Una scheda orizzontale dietro il
 pannello coi pot a 90°, oppure pot a filo su una scheda verticale: lo
 decide la disposizione di Filippo (regola del pannello). Stima: ~5
-op-amp doppi, 1 CD4069UB, 1-2 CD4046B, 2 V3205D, 1 V3102, 2
-regolatori, 4 trimmer (polarizzazione e cancellazione del clock dei due
-BBD).
+op-amp doppi TLC2272, 1 CD4069UB, 1 CD4046B, 2 V3205D, 2 V3102, 2
+regolatori (78L09, 78L05), 5 trimmer (polarizzazione e cancellazione del
+clock dei due BBD, fondo scala di TEMPO).
 
 ## 6. Scarti fra modello e hardware
 
-1. VDD 8,6 V nel modello, 9 V regolati qui (§3.1).
+1. VDD 8,6 V nel modello, 9 V regolati qui (§3.1). A 9 V PROFONDITÀ
+   vuole G 1,51 (5,1k / 10k) per le stesse 4 ottave (simulato).
 2. Filtri dei BBD: nessuno, nel modello e qui (dec. 191). Il modello
    campiona e tiene al ritmo del clock (aliasing sì), ma non ha il fischio
    del clock.
 3. Il modello non ha il fruscio dei BBD (S/N 60 dB A per chip, datasheet).
 4. Legge di TEMPO: esponenziale nel modello, da fissare col circuito del
-   clock (§3.6).
+   clock (§3.6, scelta di Filippo).
+5. Saturazione del giro: tanh a 1,5 V nel modello, diodi 1N4148 qui. A
+   RIPETIZIONI tutto il giro si tiene a 0,90 V di picco contro ~0,8 V del
+   modello (simulato): ginocchio un po' più duro.
 
 ## 7. Prossimi passi
 
-1. Datasheet del V3102 (o scelta del BL3102 col suo datasheet).
-2. Op-amp scelti dal datasheet.
-3. Decisione aperta di ingegneria: circuito del clock del TEMPO. Se
-   cambia il suono, riallineare `lickshot.py`, il banco web e MC-LICKSHOT
-   e farli riascoltare a Filippo.
-4. Simulazione LTspice dei blocchi analogici (PROFONDITÀ, uscita, giro
-   dell'eco col BBD come ritardo ideale, saturazione) in `sim/lickshot/`.
+1. ~~Datasheet del clock~~: MN3102 (v0.2). Manca ancora il foglio
+   CoolAudio del V3102 per la conferma.
+2. ~~Op-amp~~: TLC2272 (v0.2).
+3. Legge di TEMPO: scelta di Filippo (§3.6). Se cambia rispetto al
+   modello, riallineare `lickshot.py`, il banco web e MC-LICKSHOT e farli
+   riascoltare.
+4. ~~Simulazione di PROFONDITÀ e del giro~~ (v0.2). Restano: stadio
+   d'uscita e mix (calcolo semplice), alimentazione.
 5. Scheda `pcb/lickshot/lickshot.py` col generatore, dopo la
-   disposizione del pannello.
+   disposizione del pannello di Filippo.
 
-Verificato in: Python (modello) sì / LTspice no / Live no.
+Verificato in: Python (modello) sì / LTspice sì (PROFONDITÀ, giro) / Live no.
