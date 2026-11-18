@@ -1,0 +1,103 @@
+// MC-LICKSHOT - lickshot in rack (dec. 179-189), modello lickshot.py.
+// GENERATO da proto-max/coefficienti/genera_lickshot.py: non modificare.
+// LFO CD4069 a dente di sega -> VCO CD4046 -> passa-alto 145 Hz -> FIRE
+// -> VOLUME -> eco a due BBD (anti-alias prima e dopo, nel giro passa-alto
+// e saturazione). in1, in2 ignorati.
+// out1 = out2 = uscita (1,0 = 4.3609 V); out3 = LED dell'LFO.
+
+Param alt(80, min=0, max=100);
+Param vel(50, min=0, max=100);
+Param lfo(1, min=0, max=1);
+Param vol(100, min=0, max=100);
+Param trig(0, min=0, max=1);
+Param tempo(60, min=0, max=100);
+Param rip(40, min=0, max=100);
+Param eco(40, min=0, max=100);
+History vi(4.3);
+History su(0);
+History fase(0);
+History hpx(0);
+History hpy(0);
+History gx(0);
+History gy(0);
+History pi1(0);
+History pi2(0);
+History qi1(0);
+History qi2(0);
+History td(7827.1054588182);
+Delay dl(48000);
+History s_alt(80.0);
+History s_vel(50.0);
+History s_vol(100.0);
+History s_tempo(60.0);
+History s_rip(40.0);
+History s_eco(40.0);
+t10 = exp(-1 / (0.010 * samplerate));
+s_alt = alt + t10 * (s_alt - alt);
+s_vel = vel + t10 * (s_vel - vel);
+s_vol = vol + t10 * (s_vol - vol);
+s_tempo = tempo + t10 * (s_tempo - tempo);
+s_rip = rip + t10 * (s_rip - rip);
+s_eco = eco + t10 * (s_eco - eco);
+// LFO: integratore fra le soglie del Schmitt, discesa lenta, risalita dal diodo
+rl = 22000.0 + (1 - s_vel / 100) * 500000.0;
+giu = 4.3 / (rl * 1e-06) / samplerate;
+sup = 7818.181818181819 / samplerate;
+lon = lfo > 0.5;
+vin = vi + su * sup - (1 - su) * giu;
+hhi = su * (vin >= 6.254545454545455);
+hlo = (1 - su) * (vin <= 2.3454545454545452);
+vin = min(max(vin, 2.3454545454545452), 6.254545454545455);
+su = lon * (su * (1 - hhi) + hlo) + (1 - lon) * su;
+vi = lon * vin + (1 - lon) * 4.3;
+// VCO: frequenza lineare col VCOin, f0 al centro (datasheet TI, Fig. 4)
+r1 = 10000.0 + (1 - s_alt / 100) * 50000.0;
+fz = 0.7 / (r1 * 1e-07);
+fq = fz * max(0, vi - 1.0) / 3.3;
+dt = max(fq / samplerate, 1e-9);
+// onda quadra con PolyBLEP
+ta = fase / dt;
+tc = (fase - 1) / dt;
+xq = (fase < 0.5) * 2 - 1 + (fase < dt) * (ta + ta - ta * ta - 1) + (fase > 1 - dt) * (tc * tc + tc + tc + 1);
+t2 = fase + 0.5 - (fase + 0.5 >= 1);
+tb = t2 / dt;
+te = (t2 - 1) / dt;
+xq = xq - (t2 < dt) * (tb + tb - tb * tb - 1) - (t2 > 1 - dt) * (te * te + te + te + 1);
+fase = fase + fq / samplerate;
+fase = fase - (fase >= 1);
+khp = 1 / (1 + 911.06186954104 / samplerate);
+hpy = khp * (hpy + xq - hpx);
+hpx = xq;
+vv = s_vol / 100;
+dry = hpy * (trig > 0.5) * 0.775 * vv * vv;
+// eco: due BBD in fila, tempo lisciato (fionda), anti-alias fclk/4
+tm = 0.04096 * pow(10.0, s_tempo / 100);
+td = td + (tm * samplerate - td) * (1 - exp(-1 / (0.05 * samplerate)));
+fcb = min(1024.0 / (td / samplerate), 8000.0);
+gb = tan(3.141592653589793 * fcb / samplerate);
+a1 = 1 / (1 + gb * (gb + 1.4142135623730951));
+a2 = gb * a1;
+a3 = gb * a2;
+rd = dl.read(td, interp="linear");
+// anti-alias dopo i BBD
+v3 = rd - qi2;
+v1 = a1 * qi1 + a2 * v3;
+post = qi2 + a2 * qi1 + a3 * v3;
+qi1 = 2 * v1 - qi1;
+qi2 = 2 * post - qi2;
+// giro: passa-alto e saturazione
+kg = 1 / (1 + 942.4777960769379 / samplerate);
+gy = kg * (gy + post - gx);
+gx = post;
+fb = 1.5 * tanh(1.1 * s_rip / 100 * gy / 1.5);
+// anti-alias prima dei BBD
+w3 = dry + fb - pi2;
+w1 = a1 * pi1 + a2 * w3;
+pre = pi2 + a2 * pi1 + a3 * w3;
+pi1 = 2 * w1 - pi1;
+pi2 = 2 * pre - pi2;
+dl.write(pre);
+ve = s_eco / 100;
+out1 = (dry + ve * ve * post) / 4.360865946243008;
+out2 = out1;
+out3 = min(max((vi - 2.4) / 3.854545454545455, 0), 1);

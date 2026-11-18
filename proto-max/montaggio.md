@@ -233,3 +233,22 @@ manopole in movimento e a fondo corsa: scarto 0 su 8 casi (picco fino a
 Attenzione al livello: GROWL LIBERO + NASTRO alti superano 0 dBFS (prova
 con picchi d'ingresso a circa +8 dBu: uscita +3,7 dBFS). Sopra 0 dBFS
 l'uscita della scheda taglia l'onda.
+
+## P5 - Lickshot (`MC-LICKSHOT`, 2026-11-18, dec. 179-189)
+
+1. Crea una traccia audio vuota e chiamala LICKSHOT. L'ingresso non serve.
+2. Trascina `MC-LICKSHOT.amxd` sulla traccia. Dopo, per sentirla come nel
+   mixer, trascina `MC-MONO.amxd`: la lickshot entra nel MONO (dec. 187).
+3. Comandi: ALTEZZA, VELOCITA, VOLUME, TEMPO, RIPETIZIONI, LIVELLO ECO,
+   LFO ON/OFF, FIRE e LED dell'LFO.
+4. FIRE e un interruttore: un clic lo accende e il secondo lo spegne. Per
+   suonarlo premi e tieni da un controller, mappalo su un CC (premi = 127,
+   lasci = 0). Una nota MIDI, in Live, fa solo da interruttore.
+
+Modello e numeri: `coefficienti/lickshot.py` (deduzioni scritte nel
+docstring). Generatore: `genera_lickshot.py`. Prova: `prova_lickshot.py`
+(gen~ tradotto contro il modello, scarto 4e-16 V; gamma del colpo, colpi
+al secondo, ritardo dell'eco 41-410 ms, eco limitata con RIPETIZIONI al
+massimo). Con `--web` confronta anche il banco web.
+
+Verificato in: Python sì / LTspice no / Live no.

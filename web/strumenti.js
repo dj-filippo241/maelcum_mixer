@@ -120,76 +120,96 @@ export class Njd {
   }
 }
 
-// LICKSHOT: nucleo di Nold («Lickshot-I», 2016), collegamenti letti nel KiCad di Orald-0
-// (github.com/Orald-0/lickshot_dub_siren, cartella «DA SBROGLIARE», sigle di Orald-0 qui sotto).
-// Comandi della dec. 184: ALTEZZA, VELOCITÀ, LFO ON/OFF, VOLUME, LED; il colpo parte dal tasto (dec. 183).
-//
-// Cosa viene dallo schema:
-//   alimentazione  9 V attraverso D4 1N5817 e R21 33 ohm: VDD ~8,6 V (caduta del diodo: deduzione mia)
-//   LFO   CD4069: U1A+U1B = trigger di Schmitt (R1 22k in reazione, R4 10k dall'integratore);
-//         U1C = integratore di Miller con C1 1 uF, corrente da R6 22k + RV2 500k (VELOCITÀ).
-//         Soglie del Schmitt: 6/22 e 16/22 di VDD (con la soglia della porta a VDD/2).
-//         Rampa lenta: T = 0,909 (R6 + RV2) C1 = 20 ms ... 0,47 s, cioè ~48 ... 2,1 colpi al secondo.
-//         I diodi D2/D3 col deviatore SW1 cortocircuitano R6+RV2 in un verso: dente di sega.
-//         Qui SW1 è fisso su D3 (FORMA scartata, dec. 184): risalita veloce, discesa lenta = il tono
-//         cade a ogni colpo. Risalita ~0,5 ms (resistenza d'uscita del 4069 ~500 ohm: deduzione mia).
-//   VCO   CD4046: l'uscita dell'integratore entra nel VCOin (R5 10k), R1 = R2 10k + RV1 50k
-//         (ALTEZZA), C1 = C2 100 nF, R2 al pin 12 aperta (fmin = 0). Frequenza al centro
-//         (VCOin = VDD/2): ~0,7 / (R1 C1) dalla Fig. 4 del datasheet TI SCHS043B (10k, 0,1 uF:
-//         ~700 Hz a 9-10 V; ±30 % fra un chip e l'altro). Legge lineare col VCOin, zero a ~1 V
-//         (soglia: deduzione mia). La rampa va da 2,3 a 6,3 V: il colpo copre ~2 ottave,
-//         da ~1,1 kHz a ~290 Hz con ALTEZZA al massimo, da ~190 a ~50 Hz al minimo.
-//   uscita onda quadra dal pin 4 -> C3 1 uF -> R9 1k su R8 100 ohm (passa-alto a 145 Hz) -> SW3:
-//         il tasto apre e chiude il segnale, l'LFO gira sempre (non riparte alla pressione).
-//   LED   inseguitore Q1 2N3904 sull'uscita dell'integratore, LED e R3 10k: si accende con la rampa.
-// Scelte mie, fuori dallo schema: LFO OFF ferma la rampa a VDD/2 (tono fisso al centro, dec. 184);
-// VOLUME = pot logaritmico; livello 0 dBu (0,775 V sul plateau) a VOLUME pieno (dec. 187).
-const VDD_L = 8.6;
-const LO_L = (6 / 22) * VDD_L, HI_L = (16 / 22) * VDD_L;
-const VOFF_L = 1.0;
+// LICKSHOT (dec. 179-189): copia di proto-max/coefficienti/lickshot.py, che è la fonte dei numeri
+// e il documento delle scelte (nucleo di Nold dal KiCad di Orald-0, CD4046 dal datasheet TI,
+// eco a due BBD). prova_lickshot.py --web confronta questa classe col modello campione per
+// campione (dump da web/tools/dump_lickshot.mjs). Uscita in volt al jack.
+const L = {
+  VDD: 8.6, VOFF: 1.0, K_F0: 0.7, C_VCO: 100e-9, R_VCO: 10e3, P_VCO: 50e3,
+  C_LFO: 1e-6, R_LFO: 22e3, P_LFO: 500e3, T_SU: 5e-4, F_HP_OUT: 145, V_NOM: 0.775, V_LED: 2.4,
+  N_BBD: 8192, K_FC: 0.25, FC_MAX: 8000, F_HP_GIRO: 150, V_SAT: 1.5, G_MAX: 1.1, T_LISCIO: 0.05,
+};
+L.LO = (6 / 22) * L.VDD;
+L.HI = (16 / 22) * L.VDD;
+L.T_MIN = L.N_BBD / (2 * 100e3);
+L.T_MAX = L.N_BBD / (2 * 10e3);
+const LISCI_L = ["alt", "vel", "vol", "tempo", "rip", "eco"];
+const tempoEco = (t) => L.T_MIN * Math.pow(L.T_MAX / L.T_MIN, t / 100);
 
 export class Lickshot {
   constructor(fs) {
     this.fs = fs;
-    this.p = { alt: 80, vel: 50, lfo: 1, vol: 100, trig: 0 };
-    this.vi = VDD_L / 2; // uscita dell'integratore (U1C) = VCOin
-    this.su = false; // true durante la risalita veloce
+    this.p = { alt: 80, vel: 50, lfo: 1, vol: 100, trig: 0, tempo: 60, rip: 40, eco: 40 };
+    this.s = {};
+    for (const k of LISCI_L) this.s[k] = this.p[k];
+    this.vi = L.VDD / 2; // uscita dell'integratore (U1C) = VCOin
+    this.su = false; // risalita veloce in corso
     this.fase = 0;
-    this.hpx = 0; this.hpy = 0;
+    this.hpx = 0; this.hpy = 0; this.gx = 0; this.gy = 0;
+    this.pi1 = 0; this.pi2 = 0; this.qi1 = 0; this.qi2 = 0; // anti-alias prima e dopo i BBD
+    this.n = Math.floor(0.5 * fs) + 4;
+    this.buf = new Float64Array(this.n);
+    this.w = 0;
+    this.td = tempoEco(this.p.tempo) * fs;
     this.led = 0;
   }
 
   set(k, v) { this.p[k] = v; }
 
   process(out, n) {
-    const p = this.p, fs = this.fs;
-    const r1 = 10e3 + (1 - p.alt / 100) * 50e3; // RV1 come reostato: a destra 10k
-    const f0 = 0.7 / (r1 * 100e-9);
-    const rl = 22e3 + (1 - p.vel / 100) * 500e3; // R6 + RV2
-    const giu = VDD_L / 2 / (rl * 1e-6) / fs; // volt per campione nella discesa
-    const su = (HI_L - LO_L) / 5e-4 / fs;
-    const kHp = 1 / (1 + 2 * Math.PI * 145 / fs);
-    const amp = 0.775 * (p.vol / 100) * (p.vol / 100);
-    const gate = p.trig ? 1 : 0;
+    const p = this.p, s = this.s, fs = this.fs;
+    const t10 = Math.exp(-1 / (0.010 * fs));
+    const khp = 1 / (1 + (2 * Math.PI * L.F_HP_OUT) / fs);
+    const kg = 1 / (1 + (2 * Math.PI * L.F_HP_GIRO) / fs);
+    const kt = 1 - Math.exp(-1 / (L.T_LISCIO * fs));
+    const su = (L.HI - L.LO) / L.T_SU / fs;
     let ledMax = 0;
     for (let k = 0; k < n; k++) {
-      if (p.lfo) {
+      for (const q of LISCI_L) s[q] = p[q] + t10 * (s[q] - p[q]);
+      const fz = L.K_F0 / ((L.R_VCO + (1 - s.alt / 100) * L.P_VCO) * L.C_VCO);
+      const giu = L.VDD / 2 / ((L.R_LFO + (1 - s.vel / 100) * L.P_LFO) * L.C_LFO) / fs;
+      if (p.lfo > 0.5) {
         if (this.su) {
           this.vi += su;
-          if (this.vi >= HI_L) { this.vi = HI_L; this.su = false; }
+          if (this.vi >= L.HI) { this.vi = L.HI; this.su = false; }
         } else {
           this.vi -= giu;
-          if (this.vi <= LO_L) { this.vi = LO_L; this.su = true; }
+          if (this.vi <= L.LO) { this.vi = L.LO; this.su = true; }
         }
-      } else this.vi = VDD_L / 2;
-      const f = (f0 * Math.max(0, this.vi - VOFF_L)) / (VDD_L / 2 - VOFF_L);
-      const x = quadra(this.fase, f / fs);
+      } else this.vi = L.VDD / 2;
+      const f = (fz * Math.max(0, this.vi - L.VOFF)) / (L.VDD / 2 - L.VOFF);
+      const x = quadra(this.fase, Math.max(f / fs, 1e-9));
       this.fase += f / fs;
       if (this.fase >= 1) this.fase -= 1;
-      this.hpy = kHp * (this.hpy + x - this.hpx); // C3 su R9 + R8
+      this.hpy = khp * (this.hpy + x - this.hpx); // C 1 uF su 1k + 100 ohm
       this.hpx = x;
-      out[k] = this.hpy * gate * amp;
-      const l = (this.vi - 2.4) / (HI_L - 2.4); // Q1 + LED: si accende sopra ~2,4 V
+      const vv = s.vol / 100;
+      const dry = this.hpy * (p.trig > 0.5 ? 1 : 0) * L.V_NOM * vv * vv;
+      // eco: due BBD in fila
+      this.td += (tempoEco(s.tempo) * fs - this.td) * kt;
+      const fc = Math.min((L.K_FC * L.N_BBD) / (2 * (this.td / fs)), L.FC_MAX);
+      const g = Math.tan((Math.PI * fc) / fs);
+      const a1 = 1 / (1 + g * (g + Math.SQRT2)), a2 = g * a1, a3 = g * a2;
+      let rpos = this.w - this.td;
+      while (rpos < 0) rpos += this.n;
+      const i0 = Math.floor(rpos), fr = rpos - i0;
+      const rd = this.buf[i0 % this.n] * (1 - fr) + this.buf[(i0 + 1) % this.n] * fr;
+      const v3 = rd - this.qi2, v1 = a1 * this.qi1 + a2 * v3;
+      const post = this.qi2 + a2 * this.qi1 + a3 * v3;
+      this.qi1 = 2 * v1 - this.qi1;
+      this.qi2 = 2 * post - this.qi2;
+      this.gy = kg * (this.gy + post - this.gx); // passa-alto nel giro
+      this.gx = post;
+      const fb = L.V_SAT * Math.tanh((L.G_MAX * (s.rip / 100) * this.gy) / L.V_SAT); // saturazione
+      const w3 = dry + fb - this.pi2, w1 = a1 * this.pi1 + a2 * w3;
+      const pre = this.pi2 + a2 * this.pi1 + a3 * w3;
+      this.pi1 = 2 * w1 - this.pi1;
+      this.pi2 = 2 * pre - this.pi2;
+      this.buf[this.w] = pre;
+      this.w = (this.w + 1) % this.n;
+      const ve = s.eco / 100;
+      out[k] = dry + ve * ve * post;
+      const l = (this.vi - L.V_LED) / (L.HI - L.V_LED); // Q1 + LED
       if (l > ledMax) ledMax = l;
     }
     this.led = Math.max(this.led, Math.min(1, Math.max(0, ledMax)));
@@ -217,5 +237,6 @@ export const STRUMENTI = [
   ], tasti: [["S1", "s1", "1"], ["S2", "s2", "2"]], levetta: ["POWER", "power", ["OFF", "ON"]] },
   { nome: "LICKSHOT", mono: 2, comandi: [
     ["ALTEZZA", "alt", 80], ["VELOCITÀ", "vel", 50], ["VOLUME", "vol", 100],
+    ["TEMPO", "tempo", 60], ["RIPETIZ.", "rip", 40], ["ECO", "eco", 40],
   ], tasti: [["FIRE", "trig", "3"]], levetta: ["LFO", "lfo", ["OFF", "ON"], 1] },
 ];

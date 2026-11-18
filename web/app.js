@@ -281,7 +281,10 @@ STRUMENTI.forEach((st, i) => {
   const lamp = el("circle", { cx: x + WP - 6, cy: y + 5, r: 1.8, class: "seg r", style: "opacity:0.15" }, g);
   comandi.push({ c: { tipo: "led", nome: "LED" }, b: { tipo: "ledStrum", i }, lampada: lamp });
   st.comandi.forEach(([eti, k, d, scatti], j) => {
-    const c = { tipo: "manopola", nome: eti, x: x + 14 + (j % 2) * 36, y: y + 24 + Math.floor(j / 2) * 26, cappuccio: 13, scatti };
+    const nc = st.comandi.length > 4 ? 3 : 2; // la LICKSHOT ha 6 manopole: tre colonne
+    const c = nc === 2
+      ? { tipo: "manopola", nome: eti, x: x + 14 + (j % 2) * 36, y: y + 24 + Math.floor(j / 2) * 26, cappuccio: 13, scatti }
+      : { tipo: "manopola", nome: eti, x: x + 11 + (j % 3) * 21, y: y + 24 + Math.floor(j / 3) * 26, cappuccio: 11, scatti };
     const gc = el("g", { class: "manopola comando" }, g);
     const v0 = scatti ? (Math.round((d / 100) * (scatti - 1)) * 100) / (scatti - 1) : d;
     const ctl = { c, b: { tipo: "strum", i, k, def: v0, scatti }, val: v0, g: gc, dove: st.nome };

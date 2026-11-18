@@ -30,11 +30,12 @@ con GROWL e NASTRO alzati il suono si interrompe.
 | `motore.js` | AudioWorklet: canali, mandate, levetta HPF/OFF/LPF, filtri sui bus, MIC, pedali, ritorni, master | a mano |
 | `five.worker.js` | il 5-way in due fili di calcolo a parte, uno per lato L e R (16 ms di ritardo, ritorni e mic allineati) | a mano |
 | `coi.js` | service worker: dà la memoria condivisa su GitHub Pages, che non manda le intestazioni | a mano |
-| `strumenti.js` | sirena NJD (dallo schema ridisegnato da Zen Instruments) e LICKSHOT (nucleo di Nold CD4069 + CD4046, valori dal KiCad di Orald-0 e dal datasheet TI) | a mano |
+| `strumenti.js` | sirena NJD (dallo schema ridisegnato da Zen Instruments) e LICKSHOT (dec. 179-189, copia di `proto-max/coefficienti/lickshot.py`: nucleo di Nold ed eco a due BBD) | a mano |
 | `ledvie.js` | LED di livello delle 5 vie (dec. 177) | a mano |
 | `costanti.js` | blocco, ritardo, anello e mappa della memoria condivisa, comuni a pagina, motore e Worker | a mano |
 | `pedali.js` | eco a nastro, eco ping-pong, molla, riverbero | dai pedali di Federico |
 | `tools/prova.mjs` | prova a banco in node: suono, numeri validi, peso | a mano |
+| `tools/dump_lickshot.mjs` | campioni della LICKSHOT per `prova_lickshot.py --web` (confronto col modello di MC-LICKSHOT) | a mano |
 
 Dopo un cambio in `proto-max` o nei pannelli:
 
@@ -84,3 +85,5 @@ Verificato in: node (prova a banco) sì / browser (Yab, la pagina suona, nessun 
 GROWL e NASTRO a metà) sì / ascolto di Filippo no.
 LICKSHOT ricalcolata sullo schema (2026-11-18): node (frequenze e colpi al secondo uguali al
 calcolo) sì / Chrome muto (pagina senza errori, LED e meter rispondono al tasto 3) sì / ascolto no.
+Eco BBD e 6 manopole (2026-11-18): node (uguale al modello, scarto 2,5e-15 V) sì / Chrome muto
+(nessun errore, riquadro disegnato) sì / ascolto no.
