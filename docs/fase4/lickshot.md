@@ -4,8 +4,8 @@
 > scelta, componenti [PROVVISORIO — regola 3]. v0.2: datasheet del clock
 > (MN3102), op-amp TLC2272, un V3102 per BBD, rail dei BBD a 5 V,
 > attenuatore −14 dB; PROFONDITÀ e giro simulati in LTspice
-> (`sim/lickshot/RISULTATI-lickshot-v02.md`). Aperta per Filippo: la
-> legge di TEMPO (§3.6).** Metodo (regola 4): requisito → funzione di
+> (`sim/lickshot/RISULTATI-lickshot-v02.md`). Legge di TEMPO: pot A
+> (dec. 192).** Metodo (regola 4): requisito → funzione di
 > trasferimento → topologia → componenti → simulazione → PCB. Questo
 > documento arriva alla topologia e alla prima scelta dei componenti.
 > Il modello che suona (banco web e MC-LICKSHOT) sta in
@@ -132,8 +132,11 @@ taglia il segnale, l'LFO gira sempre (ascoltato e accettato, dec. 190).
   Fig. 1 del MN3102: fcp ≈ 3,22e9 / (R + 7,4k), ritardo ∝ R + 7,4k.
   Pot 250k + 22k fisso + trimmer 10k. La legge sulla corsa dipende dalla
   curva del pot: lineare, logaritmica A, o un VCO esponenziale (più
-  parti). Tabella in `RISULTATI-lickshot-v02.md` §4. **[APERTO: scelta
-  di Filippo]** Il modello oggi è esponenziale.
+  parti). Tabella in `RISULTATI-lickshot-v02.md` §4. **Dec. 192: pot
+  logaritmico (A)**, 78-115 ms a metà corsa secondo la marca; la
+  percentuale si fissa col datasheet del pot [PROVVISORIO]. Il modello
+  oggi è ancora esponenziale (130 ms a metà): si riallinea con la curva
+  del pot scelto.
 - **Filtri**: nessuno (dec. 191). Restano il trimmer di cancellazione
   del clock fra OUT1 e OUT2 e i condensatori di accoppiamento. Con
   TEMPO lungo (clock sotto ~18 kHz) il fischio del clock è udibile: il
@@ -181,8 +184,8 @@ clock dei due BBD, fondo scala di TEMPO).
    campiona e tiene al ritmo del clock (aliasing sì), ma non ha il fischio
    del clock.
 3. Il modello non ha il fruscio dei BBD (S/N 60 dB A per chip, datasheet).
-4. Legge di TEMPO: esponenziale nel modello, da fissare col circuito del
-   clock (§3.6, scelta di Filippo).
+4. Legge di TEMPO: esponenziale nel modello, pot A nell'hardware
+   (dec. 192): da riallineare quando il pot è scelto.
 5. Saturazione del giro: tanh a 1,5 V nel modello, diodi 1N4148 qui. A
    RIPETIZIONI tutto il giro si tiene a 0,90 V di picco contro ~0,8 V del
    modello (simulato): ginocchio un po' più duro.
@@ -192,9 +195,8 @@ clock dei due BBD, fondo scala di TEMPO).
 1. ~~Datasheet del clock~~: MN3102 (v0.2). Manca ancora il foglio
    CoolAudio del V3102 per la conferma.
 2. ~~Op-amp~~: TLC2272 (v0.2).
-3. Legge di TEMPO: scelta di Filippo (§3.6). Se cambia rispetto al
-   modello, riallineare `lickshot.py`, il banco web e MC-LICKSHOT e farli
-   riascoltare.
+3. ~~Legge di TEMPO~~: pot A (dec. 192). Resta: scegliere il pot dal
+   datasheet, poi riallineare `lickshot.py`, il banco web e MC-LICKSHOT.
 4. ~~Simulazione di PROFONDITÀ e del giro~~ (v0.2). Restano: stadio
    d'uscita e mix (calcolo semplice), alimentazione.
 5. Scheda `pcb/lickshot/lickshot.py` col generatore, dopo la
