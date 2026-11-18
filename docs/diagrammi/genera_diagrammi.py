@@ -1043,7 +1043,63 @@ def metering():
     return d.save()
 
 
-DIAGRAMMI = (schema_totale, canale, fx, fx_send, master, five_way, filtro, cue, mic_mono, psu, metering)
+# ---------------------------------------------------------------- LICKSHOT
+def lickshot():
+    d = Diagram("lickshot", 1560, 940, "LICKSHOT IN RACK 1U (fuori dal mixer)",
+                "maelcum mixer — dec. 179-189: una voce, LFO che piega un oscillatore, eco a due BBD dentro la macchina · entra nel mixer da un modulo MONO",
+                "modello, non simulato", AMBER)
+    VEL = d.box(40, 100, 210, 58, "VELOCITÀ + LFO ON/OFF", ["pot 500k · interruttore"], "ctrl", tsize=11.5)
+    ALT = d.box(300, 100, 200, 58, "ALTEZZA", ["pot 50k"], "ctrl", tsize=11.5)
+    y = 200
+    LFO = d.box(40, y, 210, 100, "LFO CD4069", ["Schmitt + integratore 1 µF", "dente di sega 2-48 colpi/s",
+                                                "discesa lenta: il tono cade"])
+    VCO = d.box(300, y, 200, 100, "VCO CD4046", ["onda quadra", "f0 ≈ 0,7 / (R1·C1)", "colpo di ~2 ottave"])
+    HP = d.box(550, y, 170, 100, "PASSA-ALTO", ["1 µF su 1,1k", "145 Hz"])
+    FIRE = d.box(770, y, 180, 100, "FIRE", ["tasto: suona finché premuto", "l'LFO gira sempre"], "dark")
+    VOL = d.box(1000, y, 150, 100, "VOLUME", ["pot logaritmico"])
+    chain_h(d, [LFO, VCO, HP, FIRE, VOL])
+    d.arrow([VEL.b, (LFO.cx, LFO.y - 2)], "cv")
+    d.arrow([ALT.b, (VCO.cx, VCO.y - 2)], "cv")
+    LED = d.box(40, 340, 210, 58, "LED", ["Q1 sull'integratore"], "note", tsize=12)
+    d.arrow([LFO.b, (LED.cx, LED.y - 2)], "cv")
+    ye = 470
+    SOM = d.box(40, ye, 160, 90, "SOMMA", ["colpo + giro"])
+    AA1 = d.box(250, ye, 170, 90, "ANTI-ALIAS", ["2 poli, fclk/4", "max 8 kHz"])
+    B1 = d.box(470, ye, 170, 90, "BBD 1", ["4096 stadi"], "amber")
+    B2 = d.box(690, ye, 170, 90, "BBD 2", ["4096 stadi"], "amber")
+    AA2 = d.box(910, ye, 170, 90, "ANTI-ALIAS", ["2 poli, fclk/4", "ricostruzione"])
+    MIX = d.box(1150, ye, 170, 90, "MIX", ["asciutto + ECO", "LIVELLO ECO: pot log"])
+    chain_h(d, [SOM, AA1, B1, B2, AA2, MIX])
+    d.arrow([VOL.r, (1235, VOL.cy), (1235, MIX.y - 2)])
+    d.arrow([(1235, VOL.cy), (1235, 420), (SOM.cx, 420), (SOM.cx, SOM.y - 2)])
+    d.dot(1235, VOL.cy)
+    d.text(1245, 440, "asciutto", 10.5, AUDIO)
+    CLK = d.box(470, 340, 390, 70, "CLOCK DEI BBD = TEMPO", ["10-100 kHz → 41-410 ms (8192 stadi)"], "ctrl", tsize=12)
+    d.arrow([(B1.cx, CLK.y + CLK.h), (B1.cx, B1.y - 2)], "cv")
+    d.arrow([(B2.cx, CLK.y + CLK.h), (B2.cx, B2.y - 2)], "cv")
+    OUT = d.box(1360, ye, 160, 90, "USCITA", ["jack mono sbil.", "0 dBu"], "dark")
+    d.arrow([MIX.r, (OUT.x - 2, OUT.cy)])
+    MONO = d.box(1360, 610, 160, 80, "MODULO MONO", ["nel mixer (dec. 187)"], "dashed")
+    d.arrow([OUT.b, (MONO.cx, MONO.y - 2)])
+    yg = 640
+    HPG = d.box(910, yg, 170, 80, "PASSA-ALTO", ["150 Hz nel giro"], "purple")
+    SAT = d.box(690, yg, 170, 80, "SATURAZIONE", ["morbida, diodi"], "purple")
+    RIP = d.box(470, yg, 170, 80, "RIPETIZIONI", ["guadagno 0-1,1"], "purple")
+    d.arrow([(AA2.cx, AA2.y + AA2.h), (HPG.cx, HPG.y - 2)], "fb")
+    d.arrow([HPG.l, (SAT.x + SAT.w + 2, SAT.cy)], "fb")
+    d.arrow([SAT.l, (RIP.x + RIP.w + 2, RIP.cy)], "fb")
+    d.arrow([RIP.l, (SOM.cx, RIP.cy), (SOM.cx, SOM.y + SOM.h + 2)], "fb")
+    d.text(250, yg + 100, "oltre 1 l'eco si autoalimenta e la saturazione la tiene: ruggito, non rottura", 10.5, FB)
+    d.box(40, 780, 1480, 72, "",
+          ["rack 1U · alimentatore esterno a spina, DC, connettore con blocco (dec. 189) · 6 manopole, LFO ON/OFF, LED, FIRE (dec. 184-185, 188)",
+           "!numeri da proto-max/coefficienti/lickshot.py: VOFF, risalita, anti-alias, giro e saturazione sono deduzioni da simulare (regola 3)"],
+          "note", align="start", lsize=10.5)
+    d.legend(886, [("audio", "audio"), ("fb", "giro dell'eco"), ("cv", "comando / CV"), ("dashed", "nel mixer")])
+    d.footer("Fonte: docs/01 dec. 179-189 + docs/12-benchmark-lickshot.md + proto-max/coefficienti/lickshot.py (schema KiCad di Orald-0, datasheet TI CD4046B)", "2026-11-18")
+    return d.save()
+
+
+DIAGRAMMI = (schema_totale, canale, fx, fx_send, master, five_way, filtro, cue, mic_mono, psu, metering, lickshot)
 
 if __name__ == "__main__":
     lingue = [lg for lg in ("it", "en") if f"--{lg}" in sys.argv] or ["en"]
