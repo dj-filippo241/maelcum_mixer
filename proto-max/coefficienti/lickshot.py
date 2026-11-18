@@ -10,12 +10,14 @@ Nucleo di Nold («Lickshot-I», 2016), collegamenti dal KiCad di Orald-0
         C 1 uF, R = 22k + VELOCITA 500k. Soglie 6/22 e 16/22 di VDD.
         Discesa lenta T = 0,909 R C; risalita dal diodo (D3 fisso: il tono
         cade a ogni colpo, dec. 184 senza FORMA).
-  VCO   CD4046: R1 = 10k + ALTEZZA 50k, C1 100 nF, R2 aperta.
+  VCO   CD4046: R1 = 10k + ALTEZZA 100k a curva logaritmica (dec. 194:
+        ottave uguali sulla corsa, 64-700 Hz), C1 100 nF, R2 aperta.
         f0 (VCOin = VDD/2) ~ 0,7 / (R1 C1): Fig. 4 del datasheet TI
         SCHS043B. Legge lineare, zero a VOFF.
   PROFONDITA (dec. 190, al posto di LFO ON/OFF): pot fra la rampa e VDD/2,
         buffer con guadagno verso il VCOin; 0 = tono fisso, 100 = ~4 ottave.
-  uscita onda quadra -> C 1 uF su 1k + 100 ohm: passa-alto 145 Hz -> tasto.
+  uscita onda quadra -> C 10 uF su 1k + 100 ohm: passa-alto 14,5 Hz -> tasto
+        (dec. 194; Nold: 1 uF, 145 Hz).
 Eco (dec. 182, 185, 186, 191): due BBD da 4096 stadi in fila,
 T = 8192 / (2 fclk), senza filtri anti-alias ne di ricostruzione: i BBD
 campionano e tengono al ritmo del clock, l'aliasing esce da solo. Il
@@ -41,12 +43,12 @@ VOFF = 1.0
 K_F0 = 0.7
 C_VCO = 100e-9
 R_VCO = 10e3
-P_VCO = 50e3
+P_VCO = 100e3
 C_LFO = 1e-6
 R_LFO = 22e3
 P_LFO = 500e3
 T_SU = 5e-4
-F_HP_OUT = 145.0
+F_HP_OUT = 14.5
 V_NOM = 0.775
 V_LED = 2.4
 
@@ -61,12 +63,17 @@ T_LISCIO = 0.05
 # PROFONDITA (dec. 190): VCOin = VDD/2 + prof * A_MAX * rampa normalizzata;
 # A_MAX da 16 = (VDD/2 - VOFF + A) / (VDD/2 - VOFF - A): 4 ottave a fondo corsa.
 A_MAX = 15 / 17 * (VDD / 2 - VOFF)
-INIZIALI = {"alt": 80.0, "vel": 50.0, "prof": 67.0, "vol": 100.0, "trig": 0.0,
+INIZIALI = {"alt": 71.0, "vel": 50.0, "prof": 67.0, "vol": 100.0, "trig": 0.0,
             "tempo": 33.0, "rip": 40.0, "eco": 40.0}
 
 
+def r_alt(alt):
+    # dec. 194: pot logaritmico, resistenza esponenziale sulla corsa
+    return R_VCO * ((R_VCO + P_VCO) / R_VCO) ** (1 - alt / 100)
+
+
 def f0(alt):
-    return K_F0 / ((R_VCO + (1 - alt / 100) * P_VCO) * C_VCO)
+    return K_F0 / (r_alt(alt) * C_VCO)
 
 
 def periodo_lfo(vel):
@@ -109,7 +116,7 @@ class Lickshot:
         t10 = math.exp(-1 / (0.010 * fs))  # come lisci() di genera_fx
         for k in s:
             s[k] = p[k] + t10 * (s[k] - p[k])
-        r1 = R_VCO + (1 - s["alt"] / 100) * P_VCO
+        r1 = r_alt(s["alt"])
         fz = K_F0 / (r1 * C_VCO)
         rl = R_LFO + (1 - s["vel"] / 100) * P_LFO
         giu = VDD / 2 / (rl * C_LFO) / fs

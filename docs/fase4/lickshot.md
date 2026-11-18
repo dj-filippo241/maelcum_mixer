@@ -21,7 +21,7 @@
 | Voci | una | dec. 180 [F] |
 | Eco | dentro la macchina, BBD, due chip in fila (~400 ms) | dec. 181-182 [F] |
 | Trigger | solo il tasto FIRE sul pannello: suona finché è premuto | dec. 183 [F] |
-| Comandi | ALTEZZA, VELOCITÀ, PROFONDITÀ, VOLUME, TEMPO, RIPETIZIONI, LIVELLO ECO; LED dell'LFO; FIRE | dec. 184, 185, 190 [F] |
+| Comandi | ALTEZZA (64-700 Hz), VELOCITÀ, PROFONDITÀ, VOLUME, TEMPO, RIPETIZIONI, LIVELLO ECO; LED dell'LFO; FIRE | dec. 184, 185, 190, 194 [F] |
 | Giro dell'eco | passa-alto e saturazione fissi, senza comandi | dec. 186 [F] |
 | Filtri dei BBD | nessuno: niente anti-alias né ricostruzione | dec. 191 [F] |
 | Uscita | jack mono sbilanciato, 0 dBu nominale, verso un modulo MONO | dec. 187 [F] |
@@ -32,7 +32,7 @@
 
 ```
 FIRE ─┐
-LFO CD4069 ─► PROFONDITÀ ─► VCO CD4046 ─► passa-alto 145 Hz ─► FIRE ─► VOLUME ─┬─────────────► MIX ─► USCITA 0 dBu
+LFO CD4069 ─► PROFONDITÀ ─► VCO CD4046 ─► passa-alto 14,5 Hz ─► FIRE ─► VOLUME ─┬─────────────► MIX ─► USCITA 0 dBu
 (VELOCITÀ)    (pot + buffer)  (ALTEZZA)                                          │                ▲ (LIVELLO ECO)
    └─► LED                                                                       ▼                │
                                     SOMMA ─► attenuatore ─► BBD 1 ─► BBD 2 ─► make-up (niente filtri) ─┤
@@ -103,15 +103,17 @@ VDD 8,6 V.
 ### 3.4 VCO
 
 CD4046B usato solo come VCO: C1 100 nF film fra i pin 6 e 7, R1 = 10k
-+ ALTEZZA 50k (reostato) al pin 11, R2 (pin 12) aperta: fmin = 0.
++ ALTEZZA 100k logaritmico (reostato, dec. 194) al pin 11, R2 (pin 12)
+aperta: fmin = 0. ALTEZZA va da ~64 a 700 Hz (prima 117-700 Hz con
+50k lineare), ottave uguali sulla corsa.
 Inhibit (pin 5) a massa. Ingressi dei comparatori a massa. f0 ≈ 0,7 /
 (R1 C1) dalla Fig. 4 del datasheet; ±30 % fra un chip e l'altro: ALTEZZA
 copre la differenza.
 
 ### 3.5 Uscita del colpo e FIRE
 
-Onda quadra dal pin 4 → 1 µF → 1k su 100 Ω (passa-alto a 145 Hz, come
-Nold) → op-amp di guadagno fino a 0,775 V di plateau → FIRE → VOLUME
+Onda quadra dal pin 4 → 10 µF → 1k su 100 Ω (passa-alto a 14,5 Hz,
+dec. 194; Nold: 1 µF, 145 Hz) → op-amp di guadagno fino a 0,775 V di plateau → FIRE → VOLUME
 (pot log) → buffer. FIRE è un pulsante normalmente aperto a pannello:
 taglia il segnale, l'LFO gira sempre (ascoltato e accettato, dec. 190).
 

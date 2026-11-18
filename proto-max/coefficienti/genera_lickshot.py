@@ -33,7 +33,7 @@ def genexpr():
     r = g.r
     r("// MC-LICKSHOT - lickshot in rack (dec. 179-189), modello lickshot.py.")
     r("// GENERATO da proto-max/coefficienti/genera_lickshot.py: non modificare.")
-    r("// LFO CD4069 a dente di sega -> VCO CD4046 -> passa-alto 145 Hz -> FIRE")
+    r("// LFO CD4069 a dente di sega -> VCO CD4046 -> passa-alto 14,5 Hz -> FIRE")
     r("// -> VOLUME -> eco a due BBD senza filtri (nel giro passa-alto")
     r("// e saturazione). in1, in2 ignorati.")
     r(f"// out1 = out2 = uscita (1,0 = {fx.LIV:.4f} V); out3 = LED dell'LFO.")
@@ -60,7 +60,7 @@ def genexpr():
     r("// PROFONDITA (dec. 190): pot fra la rampa e VDD/2, buffer verso il VCOin")
     r(f"vco = {L.VDD / 2!r} + s_prof / 100 * {L.A_MAX!r} * (vi - {L.VDD / 2!r}) / {(L.HI - L.LO) / 2!r};")
     r("// VCO: frequenza lineare col VCOin, f0 al centro (datasheet TI, Fig. 4)")
-    r(f"r1 = {L.R_VCO!r} + (1 - s_alt / 100) * {L.P_VCO!r};")
+    r(f"r1 = {L.R_VCO!r} * pow({(L.R_VCO + L.P_VCO) / L.R_VCO!r}, 1 - s_alt / 100);")
     r(f"fz = {L.K_F0!r} / (r1 * {L.C_VCO!r});")
     r(f"fq = fz * max(0, vco - {L.VOFF!r}) / {L.VDD / 2 - L.VOFF!r};")
     r("dt = max(fq / samplerate, 1e-9);")

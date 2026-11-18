@@ -125,8 +125,8 @@ export class Njd {
 // eco a due BBD senza filtri, dec. 191). prova_lickshot.py --web confronta questa classe col modello campione per
 // campione (dump da web/tools/dump_lickshot.mjs). Uscita in volt al jack.
 const L = {
-  VDD: 8.6, VOFF: 1.0, K_F0: 0.7, C_VCO: 100e-9, R_VCO: 10e3, P_VCO: 50e3,
-  C_LFO: 1e-6, R_LFO: 22e3, P_LFO: 500e3, T_SU: 5e-4, F_HP_OUT: 145, V_NOM: 0.775, V_LED: 2.4,
+  VDD: 8.6, VOFF: 1.0, K_F0: 0.7, C_VCO: 100e-9, R_VCO: 10e3, P_VCO: 100e3,
+  C_LFO: 1e-6, R_LFO: 22e3, P_LFO: 500e3, T_SU: 5e-4, F_HP_OUT: 14.5, V_NOM: 0.775, V_LED: 2.4,
   N_BBD: 8192, F_HP_GIRO: 150, V_SAT: 1.5, G_MAX: 1.1, T_LISCIO: 0.05,
 };
 L.LO = (6 / 22) * L.VDD;
@@ -140,7 +140,7 @@ const tempoEco = (t) => L.T_MIN + (L.T_MAX - L.T_MIN) * t / 100; // dec. 193: po
 export class Lickshot {
   constructor(fs) {
     this.fs = fs;
-    this.p = { alt: 80, vel: 50, prof: 67, vol: 100, trig: 0, tempo: 33, rip: 40, eco: 40 };
+    this.p = { alt: 71, vel: 50, prof: 67, vol: 100, trig: 0, tempo: 33, rip: 40, eco: 40 };
     this.s = {};
     for (const k of LISCI_L) this.s[k] = this.p[k];
     this.vi = L.VDD / 2; // uscita dell'integratore (U1C) = VCOin
@@ -167,7 +167,7 @@ export class Lickshot {
     let ledMax = 0;
     for (let k = 0; k < n; k++) {
       for (const q of LISCI_L) s[q] = p[q] + t10 * (s[q] - p[q]);
-      const fz = L.K_F0 / ((L.R_VCO + (1 - s.alt / 100) * L.P_VCO) * L.C_VCO);
+      const fz = L.K_F0 / (L.R_VCO * Math.pow((L.R_VCO + L.P_VCO) / L.R_VCO, 1 - s.alt / 100) * L.C_VCO); // dec. 194
       const giu = L.VDD / 2 / ((L.R_LFO + (1 - s.vel / 100) * L.P_LFO) * L.C_LFO) / fs;
       if (this.su) {
         this.vi += su;
@@ -231,7 +231,7 @@ export const STRUMENTI = [
     ["LFO RATE", "lfo", 0, 4], ["MODULATION", "mod", 0, 4], ["OSC RATE", "osc", 25, 4], ["VOLUME", "vol", 100],
   ], tasti: [["S1", "s1", "1"], ["S2", "s2", "2"]], levetta: ["POWER", "power", ["OFF", "ON"]] },
   { nome: "LICKSHOT", mono: 2, comandi: [
-    ["ALTEZZA", "alt", 80], ["VELOCITÀ", "vel", 50], ["PROFOND.", "prof", 67],
+    ["ALTEZZA", "alt", 71], ["VELOCITÀ", "vel", 50], ["PROFOND.", "prof", 67],
     ["VOLUME", "vol", 100], ["TEMPO", "tempo", 33], ["RIPETIZ.", "rip", 40], ["ECO", "eco", 40],
   ], tasti: [["FIRE", "trig", "3"]] },
 ];
