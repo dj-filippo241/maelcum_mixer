@@ -1,0 +1,19 @@
+* Lickshot - guadagno del giro della scheda vera, anello aperto (.ac).
+* Si inietta 1 V AC al capo della reazione (fbx) e si legge FB: |V(fb)| a 1 kHz
+* = guadagno del giro. v0.2 (op-amp ideali, giro-att14.cir): 1,1 x rip.
+* Diodi a riposo (piccolo segnale): la saturazione non lavora.
+.param vol=1 rip=1 eco=0 tc=0.5 ilg=1 td=50m rbo=1k rlb=47k rmk=10k rmkf=49.9k
+.include scheda.inc
+Vvco vcoout 0 0
+.param hold=0
+Vt fbx vmid AC 1
+* carico della reazione: 10k verso la massa virtuale della somma
+Rfbl fb vmid 10k
+.step param rip list 0.25 0.5 0.75 1
+.step param tc list 0.05 0.5
+.ac dec 20 100 10k
+.meas ac g_giro FIND mag(V(fb)) AT 1k
+.meas ac g_bbd FIND mag(V(bbd2out)/V(att,vmid)) AT 1k
+.meas ac g_mk FIND mag(V(post,vmid)/V(sum,vmid)) AT 1k
+.meas ac g_rip FIND mag(V(fb,vmid)/V(gy,vmid)) AT 1k
+.end

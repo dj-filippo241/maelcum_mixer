@@ -112,8 +112,9 @@ copre la differenza.
 
 ### 3.5 Uscita del colpo e FIRE
 
-Onda quadra dal pin 4 → 10 µF → 1k su 100 Ω (passa-alto a 14,5 Hz,
-dec. 194; Nold: 1 µF, 145 Hz) → op-amp di guadagno fino a 0,775 V di plateau → FIRE → VOLUME
+Onda quadra dal pin 4 → 100 nF film → 110k nell'ingresso invertente,
+19,1k di reazione (passa-alto a 14,5 Hz, dec. 194; Nold: 1 µF, 145 Hz;
+0,78 V di plateau) → FIRE → VOLUME
 (pot log) → buffer. FIRE è un pulsante normalmente aperto a pannello:
 taglia il segnale, l'LFO gira sempre (ascoltato e accettato, dec. 190).
 
@@ -152,6 +153,11 @@ taglia il segnale, l'LFO gira sempre (ascoltato e accettato, dec. 190).
   anche nel giro; il passa-alto del giro non lo ferma (è un passa-alto).
   Da guardare in simulazione: che il fischio, ripetuto dal giro, non
   saturi la saturazione e non tolga spazio all'eco con RIPETIZIONI alto.
+- **Make-up** (2026-11-18, `sim/lickshot/RISULTATI-scheda.md` §2):
+  invertente, ingresso 47k, reazione 100k + trimmer 500k. Il trimmer
+  tara il giro: il V3205D ha −4…+4 dB d'inserzione per chip (datasheet),
+  con due chip il giro cadrebbe ovunque fra −8 e +8 dB. Uscite dei BBD
+  su 100k (RL del datasheet).
 - **Giro**: passa-alto RC 150 Hz, saturazione a diodi antiparallelo con
   R in serie (ginocchio ~0,5 V al livello dei BBD, ≈ V_SAT 1,5 V del
   modello al livello di linea), RIPETIZIONI pot lineare, somma invertente
@@ -214,11 +220,14 @@ clock dei due BBD, fondo scala di TEMPO).
 4. ~~Simulazione di PROFONDITÀ e del giro~~ (v0.2). ~~Stadio d'uscita,
    mix, alimentazione~~ (v0.3). Resta: IDD del V3205D dal datasheet.
 5. ~~Scheda~~: `pcb/lickshot/lickshot.py` a PASSA (2026-11-18): una
-   scheda orizzontale 280 x 80 mm coi pot RK09L a 90 gradi alle x della
+   scheda orizzontale 280 x 95 mm (80 fino al 2026-11-18) coi pot RK09L a 90 gradi alle x della
    dec. 196; FIRE, jack e DC coi fili. Scelte da confermare in
    `pcb/lickshot/NOTE.md` (scheda orizzontale, pot C di ALTEZZA,
    saturazione con un op-amp in meno, valori attorno ai BBD).
-6. Simulare gli stadi veri della scheda (op-amp TLC2272, partitore
-   12,7k/10k della saturazione, uscite dei BBD).
+6. ~~Stadi veri della scheda~~ (2026-11-18, `sim/lickshot/RISULTATI-scheda.md`):
+   tre difetti della bozza v0.1 corretti nel generatore (giro a −1,5…−2,9 dB
+   invece di +0,8 a RIPETIZIONI tutto; nessuna taratura per la dispersione
+   dei BBD; VDD/2 scosso dai fronti del VCO). Con le correzioni gli stadi
+   veri danno i numeri della v0.2.
 
-Verificato in: Python (modello) sì / LTspice sì (PROFONDITÀ, giro, mix) / Live no.
+Verificato in: Python (modello) sì / LTspice sì (PROFONDITÀ, giro, mix; stadi della scheda col TLC2272) / Live no.

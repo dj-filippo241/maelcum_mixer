@@ -1,0 +1,17 @@
+* Lickshot - taratura della macro TLC2272S sul modello TI (SLOJ080B).
+* Buffer invertente x2 a 9 V singolo, carico 10k verso VDD/2 (come nella scheda):
+* escursione d'uscita al clipping, poi slew rate su un gradino.
+.include ../lib/tlc2272.lib
+.param rl=10k
+Vdd vdd 0 9
+Vm vm 0 4.5
+Vin in 0 SINE(4.5 4 1k)
+Ri in n 10k
+Rf n out 20k
+Xu1 vm n vdd 0 out TLC2272
+Rl out vm {rl}
+.step param rl list 2k 5k 10k
+.tran 0 3m 0 0.2u
+.meas tran omax MAX V(out) FROM 1m TO 3m
+.meas tran omin MIN V(out) FROM 1m TO 3m
+.end

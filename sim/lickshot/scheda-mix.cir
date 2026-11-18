@@ -1,0 +1,26 @@
+* Lickshot - caso peggiore della scheda corretta (.tran), come mix-uscita.cir ma
+* con gli stadi veri: colpo dall'uscita quadra del CD4046 (0/9 V, 600 Hz) via
+* passa-alto e guadagno 1,91, FIRE tenuto 1 s, VOLUME e RIPETIZIONI tutto, LIVELLO ECO 0, 0,5, 1.
+* Make-up tarata (rmkf 280k: SUM -> POST = 0 dB, scheda-anello-47k.cir).
+.param vol=1 rip=1 eco=0 tc=0.5 ilg=1 td=50m rbo=1k rlb=100k rmk=47k rmkf=280k hold=1
+.include scheda.inc
+Vvco vcoout 0 PULSE(0 9 0 1u 1u 0.832m 1.6667m)
+Rlink fb fbx 1m
+.step param eco list 0 0.5 1
+.tran 0 1.5 0 20u
+.meas tran dry_pk MAX abs(V(dry)-V(vmid)) FROM 0.05 TO 0.2
+.meas tran bbd_pk MAX abs(V(bbd1in)-2.5) FROM 0.05 TO 1.5
+.meas tran sum_pk MAX abs(V(sum)-V(vmid)) FROM 0.05 TO 1.5
+.meas tran post_pk MAX abs(V(post)-V(vmid)) FROM 0.05 TO 1.5
+.meas tran fb_pk MAX abs(V(fb)-V(vmid)) FROM 0.05 TO 1.5
+.meas tran fb_coda MAX abs(V(fb)-V(vmid)) FROM 1.3 TO 1.5
+.meas tran sum_max MAX V(sum) FROM 0.05 TO 1.5
+.meas tran sum_min MIN V(sum) FROM 0.05 TO 1.5
+.meas tran mix_max MAX V(mix) FROM 0.05 TO 1.5
+.meas tran mix_min MIN V(mix) FROM 0.05 TO 1.5
+.meas tran post_max MAX V(post) FROM 0.05 TO 1.5
+.meas tran post_min MIN V(post) FROM 0.05 TO 1.5
+.meas tran fb_max MAX V(fb) FROM 0.05 TO 1.5
+.meas tran fb_min MIN V(fb) FROM 0.05 TO 1.5
+.meas tran jack_rms RMS V(jout) FROM 0.1 TO 0.15
+.end

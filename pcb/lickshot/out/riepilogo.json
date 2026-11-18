@@ -1,18 +1,20 @@
 {
  "modulo": "lickshot",
- "componenti": 108,
+ "componenti": 107,
  "reti": 71,
  "controllo_netlist": [],
  "erc": {},
  "reti_diverse_schema": [],
  "routing": {
   "ok": true,
-  "aperti": {},
-  "tentativi": 4
+  "aperti": {
+   "AGND": 10
+  },
+  "tentativi": 1
  },
  "drc": {
   "violations/warning/silk_edge_clearance": 36,
-  "violations/warning/silk_overlap": 4,
+  "violations/warning/silk_overlap": 5,
   "violations/warning/silk_over_copper": 4,
   "atteso/warning/net_conflict": 11
  },
@@ -28,38 +30,52 @@
     },
     {
      "regola": "A1",
+     "oggetto": "U10.1 (+9V)",
+     "misura": 14.53,
+     "soglia": 10.0,
+     "nota": "regolatore, C piu' vicino C3"
+    },
+    {
+     "regola": "A1",
      "oggetto": "U22.1 (+5V)",
      "misura": 9.65,
      "soglia": 3.0,
-     "nota": "pad-pad verso C23, pista 10.1 mm"
+     "nota": "pad-pad verso C23, pista 10.8 mm"
     }
    ],
    "A2": [
     {
      "regola": "A2",
      "oggetto": "HPN",
-     "misura": 39.85,
+     "misura": 35.13,
      "soglia": 25.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "SATD",
-     "misura": 61.76,
+     "misura": 49.46,
      "soglia": 25.0,
      "nota": "lunghezza di pista (mm)"
     },
     {
      "regola": "A2",
      "oggetto": "SATD",
-     "misura": 4,
+     "misura": 2,
      "soglia": 1,
      "nota": "numero di via"
     },
     {
      "regola": "A2",
      "oggetto": "SATN",
-     "misura": 2,
+     "misura": 33.49,
+     "soglia": 25.0,
+     "nota": "lunghezza di pista (mm)"
+    },
+    {
+     "regola": "A2",
+     "oggetto": "SATN",
+     "misura": 3,
      "soglia": 1,
      "nota": "numero di via"
     }
@@ -74,56 +90,56 @@
     },
     {
      "regola": "A3",
-     "oggetto": "R22.2 (BBD1IN)",
+     "oggetto": "R20.2 (BBD1IN)",
      "misura": 6.32,
      "soglia": 6.0,
      "nota": "dal pin U20.7, pista 10.4 mm"
     },
     {
      "regola": "A3",
-     "oggetto": "C20.2 (BBD2IN)",
-     "misura": 6.88,
+     "oggetto": "R23.2 (BBD2IN)",
+     "misura": 6.32,
      "soglia": 6.0,
-     "nota": "dal pin U21.7, pista 6.9 mm"
+     "nota": "dal pin U21.7, pista 7.8 mm"
     },
     {
      "regola": "A3",
-     "oggetto": "R25.2 (BBD2IN)",
-     "misura": 6.32,
+     "oggetto": "C20.2 (BBD2IN)",
+     "misura": 6.88,
      "soglia": 6.0,
-     "nota": "dal pin U21.7, pista 10.4 mm"
+     "nota": "dal pin U21.7, pista 8.0 mm"
     },
     {
      "regola": "A3",
      "oggetto": "C27.2 (HPN)",
      "misura": 29.97,
      "soglia": 6.0,
-     "nota": "dal pin U6.5, pista 35.6 mm"
+     "nota": "dal pin U6.5, pista 31.3 mm"
     },
     {
      "regola": "A3",
-     "oggetto": "R38.1 (MXN)",
+     "oggetto": "R36.1 (MXN)",
      "misura": 9.95,
      "soglia": 6.0,
-     "nota": "dal pin U7.6, pista 11.3 mm"
+     "nota": "dal pin U7.6, pista 11.7 mm"
     },
     {
      "regola": "A3",
-     "oggetto": "R33.1 (SATD)",
-     "misura": 20.97,
+     "oggetto": "R31.1 (SATD)",
+     "misura": 23.01,
      "soglia": 6.0,
-     "nota": "dal pin U7.3, pista 25.4 mm"
+     "nota": "dal pin U7.3, pista 38.3 mm"
     },
     {
      "regola": "A3",
-     "oggetto": "R34.1 (SATN)",
-     "misura": 16.72,
+     "oggetto": "R32.1 (SATN)",
+     "misura": 20.0,
      "soglia": 6.0,
-     "nota": "dal pin U7.2, pista 22.7 mm"
+     "nota": "dal pin U7.2, pista 31.6 mm"
     },
     {
      "regola": "A3",
-     "oggetto": "R17.2 (SUMN)",
+     "oggetto": "R15.2 (SUMN)",
      "misura": 10.37,
      "soglia": 6.0,
      "nota": "dal pin U5.6, pista 11.8 mm"
@@ -151,29 +167,29 @@
     "U23.1 (+5V) -> C25"
    ],
    "A2_lunghezza_max_mm": [
-    61.76,
+    49.46,
     "SATD"
    ],
    "A2_via_max": [
-    4,
-    "SATD"
+    3,
+    "SATN"
    ],
    "A3_distanza_max_mm": [
     29.97,
     "C27.2 -> U6.5 (HPN)"
    ],
    "A4_cm_max_pf": [
-    0.0033,
-    "BBD2IN"
+    0.0013,
+    "HPN"
    ],
    "A5_distanza_min_mm": [
-    41.56,
+    10.52,
     "SATD vicino a U10"
    ]
   },
   "conteggio": {
-   "A1": 2,
-   "A2": 4,
+   "A1": 3,
+   "A2": 5,
    "A3": 9,
    "A4": 0,
    "A5": 0
@@ -192,10 +208,10 @@
   "disaccoppiamento: U23 con C25",
   "disaccoppiamento: U6 con C28",
   "disaccoppiamento: U7 con C29",
-  "grappolo: U3 con 5 passivi",
+  "grappolo: U3 con 4 passivi",
   "grappolo: U1 con 4 passivi",
   "grappolo: U4 con 5 passivi",
-  "grappolo: U2 con 4 passivi",
+  "grappolo: U2 con 3 passivi",
   "grappolo: U5 con 5 passivi",
   "grappolo: U20 con 5 passivi",
   "grappolo: U21 con 5 passivi",
@@ -203,17 +219,20 @@
   "grappolo: U6 con 7 passivi",
   "grappolo: U7 con 6 passivi",
   "blocco «BUFFER DELLA RAMPA, VDD/2 e PROFONDITA (»: x 133-160, y 1-30, 7 pin di connettore",
-  "blocco «MAKE-UP x5, PASSA-ALTO 150 Hz, SATURAZIO»: x 160-214, y 13-32, 7 pin di connettore",
-  "blocco «MIX E USCITA 0 dBu (TLC2272)»: x 162-201, y 32-49, 6 pin di connettore",
+  "blocco «MAKE-UP x5, PASSA-ALTO 150 Hz, SATURAZIO»: x 160-201, y 13-44, 7 pin di connettore",
+  "blocco «MIX E USCITA 0 dBu (TLC2272)»: x 163-203, y 44-60, 6 pin di connettore",
   "blocco «VOLUME, SOMMA DEL GIRO, ATTENUATORE -14 »: x 133-160, y 30-47, 5 pin di connettore",
   "blocco «LFO CD4069UB: trigger di Schmitt + integ»: x 46-92, y 13-54, 4 pin di connettore",
-  "blocco «ECO: due V3205D, due V3102 (TEMPO)»: x 92-228, y 49-74, 3 pin di connettore",
+  "blocco «ECO: due V3205D, due V3102 (TEMPO)»: x 204-251, y 13-77, 3 pin di connettore",
   "blocco «VCO CD4046B (ALTEZZA)»: x 1-45, y 28-48, 1 pin di connettore",
-  "blocco «ALIMENTAZIONE 12 V -> +9 V e +5 V»: x 236-265, y 31-69, 1 pin di connettore",
+  "blocco «ALIMENTAZIONE 12 V -> +9 V e +5 V»: x 140-203, y 65-89, 1 pin di connettore",
   "fanout di massa: 34 via, 2 senza posto libero",
-  "Freerouting (lickshot, 4 tentativi al più): giro 1 (-mp 40): {'+5V': 1, 'RAMP': 1}, DRC 2 aperti, errori 0; giro 2 (-mp 20): {'+5V': 1}, DRC 1 aperti, errori {'clearance': 1}; giro 3 (-mp 30): {'VMID': 1}, DRC 1 aperti, errori 0; giro 4 (-mp 15): Freerouting chiuso, DRC 0 aperti, errori 0"
+  "piste fra pad gemelli: 3",
+  "Freerouting (lickshot, 6 tentativi al più): giro 1 (-mp 40): Freerouting chiuso, DRC 0 aperti, errori 0"
  ],
  "esito": "PASSA",
  "errori": [],
- "peggiorato": []
+ "peggiorato": [
+  "controllo audio A1: 2 -> 3"
+ ]
 }

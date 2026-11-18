@@ -13,19 +13,19 @@ Rigenerare (~4 minuti; con `--solo-schema` pochi secondi):
 
 ## Stato
 
-- **PASSA** (2026-11-18). ERC 0 errori. DRC 0 violazioni; avvisi: 36 silk_edge_clearance (le
-  serigrafie dei pot escono dal bordo davanti, voluto), 4 silk_overlap, 4 silk_over_copper,
-  11 net_conflict attesi. Freerouting chiuso al **4o tentativo** su 4 (giri 1-3: 1-2 reti aperte
-  fra +5V, RAMP, VMID): margine stretto, un giro nuovo può dare NON PASSA. Se succede, alzare
-  `d.route_tries`.
-- Controllo audio: A1 2 (decoupling del 5 V dei V3102, 9,65 mm), A2 4, A3 9, A4 0, A5 0.
-- 108 pezzi, 73 righe di distinta. Silicio: TLC2272 x5, CD4069UB, CD4046B, V3205D x2, V3102 x2,
-  78L09, 78L05, 2N3904, 1N5819, 1N4148 + 1N4148W x2. Coincide con la stima di lickshot.md §5
-  (5 trimmer: 2 polarizzazioni, 2 cancellazioni del clock, fondo scala di TEMPO).
+- **PASSA** (2026-11-19, v0.1 corretta: RISULTATI-scheda §2-§3). Scheda allungata da 80 a 95 mm
+  di profondità: col trimmer di taratura della make-up il blocco dell'eco non trovava più posto
+  (due giri NON PASSA). Freerouting chiuso al 1o tentativo su 6 (`d.route_tries = 6`,
+  `d.link_pairs = True` per i trimmer a reostato). Controllo audio A1 da 2 a 3.
+- Giro del 2026-11-18 (280 x 80, prima delle correzioni): PASSA al 4o tentativo su 4.
+- Silicio: TLC2272 x5, CD4069UB, CD4046B, V3205D x2, V3102 x2, 78L09, 78L05, 2N3904, 1N5819,
+  1N4148 + 1N4148W x2. Trimmer: 2 polarizzazioni, 2 cancellazioni del clock, fondo scala di TEMPO
+  (3266W), taratura del giro (3224W SMD 500k).
+- Preventivi per 5 schede: `PREVENTIVI.md` (calcolati su 280 x 80).
 
 ## Forma della scheda
 
-- 280 x 80 mm, 4 strati, orizzontale nel rack. Bordo davanti (y = 0) contro il pannello; la
+- 280 x 95 mm, 4 strati, orizzontale nel rack. Bordo davanti (y = 0) contro il pannello; la
   scheda copre le x da 100 a 380 mm del pannello (`X0` in `lickshot.py`).
 - Pot Alps RK09L **orizzontali**: l'albero esce dal bordo davanti, il fronte del corpo sta sul
   bordo. Il LED da 3 mm è a 90 gradi (impronta Z 6 mm).
@@ -44,21 +44,30 @@ Rigenerare (~4 minuti; con `--solo-schema` pochi secondi):
    modo esponenziale, ottave uguali, nota che sale in senso orario (deduzione mia dal modello:
    `r_alt`). Con un pot A la legge si rovescia. VELOCITÀ e TEMPO lineari; VOLUME e LIVELLO ECO A.
 4. Saturazione del giro: i netlist hanno RIPETIZIONI x 1,1, partitore 15k/10k e x2,5. Qui il 1,1 è
-   dentro il partitore (12,7k/10k = 0,44) e l'x2,5 resta dopo i diodi: un op-amp in meno. Il
-   cursore di RIPETIZIONI (fino a 2,5k) si somma al 12,7k: a metà corsa il giro perde ~0,9 dB.
-   Da simulare con lo stadio vero.
-5. Uscite dei BBD: 47k a massa (carico dei source follower) e trimmer 10k fra OUT1 e OUT2. Valori
-   da rileggere sullo schema d'applicazione del V3205D.
+   dentro il partitore (12,7k/10k = 0,44) e l'x2,5 resta dopo i diodi: un op-amp in meno.
+   **Confermata** (RISULTATI-scheda §2): fondo corsa esatto (+0,83 dB), -0,7 dB a 1/4 e 3/4,
+   -0,9 dB a metà. A RIPETIZIONI tutto il giro si tiene a 0,90 V, come la v0.2.
+5. Uscite dei BBD: **corretta** il 2026-11-18. Lo schema d'applicazione del V3205D mette 100k
+   per uscita (anche RL delle caratteristiche) e 5,6k + 5,6k per sommarle: qui 100k e il trimmer
+   10k. Il cursore del trimmer (~3k) davanti ai 10k della make-up toglieva fino a 2,1 dB al giro:
+   make-up ora con ingresso 47k e reazione 100k + trimmer 500k (taratura del giro, copre la
+   dispersione di -4...+4 dB per chip del datasheet). RISULTATI-scheda §2.
 6. Polarizzazione dei BBD: trimmer 10k fra +5 V e massa, 100k verso l'ingresso, 1 uF sul cursore.
-   Ingresso dal dominio a 9 V con 1 uF, senza buffer (sorgente 8k del partitore -14 dB).
+   Ingresso dal dominio a 9 V con 1 uF, senza buffer (sorgente 8k del partitore -14 dB): costa
+   0,7 dB, recuperati dal trimmer della make-up. Confermata. Lo schema d'applicazione tara lo
+   stesso punto con un trimmer da 100k «per la minima distorsione»: si tara sul pezzo.
 7. Clock: R fra OX2 e OX1, C 100 pF fra OX3 e OX1 (MN3102 p. 107, letto dall'immagine). Il secondo
    V3102 ha OX1 dall'OX3 del primo, OX2 e OX3 aperti. TEMPO = 250k + 22k + trimmer 10k.
-8. Condensatori grandi in ceramica X7R 1206 (10 uF del colpo, 2,2 uF del make-up, 1 uF dei BBD):
-   film se all'ascolto si sente.
+8. Condensatori grandi in ceramica X7R 1206 (1 uF dei BBD e della make-up): film se all'ascolto
+   si sente. Il 10 uF del colpo non c'è più: il colpo entra con 100 nF film e 110k (sotto).
 9. FIRE: tasto normalmente aperto in serie fra il guadagno del colpo e VOLUME, 100k verso VDD/2 a
    tasto aperto.
 10. Pinout di V3102 e V3205D dai datasheet citati nella `desc` dei simboli. Il V3102 viene dal
     gemello MN3102: da confermare sul foglio CoolAudio o sul pezzo (lickshot.md §4).
+11. **Corretta** il 2026-11-18: il colpo entrava con 10 uF -> partitore 1k/100 verso VMID. Il VCO
+    gira sempre: a ogni fronte +-4 mA nel buffer di VDD/2, VMID scosso di +-0,2 V e disturbo nel
+    giro anche a FIRE aperto. Ora 100 nF film -> 110k nell'invertente (19,1k): stesso plateau
+    0,78 V, stesso passa-alto 14,5 Hz, VMID entro +-10 mV (RISULTATI-scheda §3).
 
-Verificato in: Python no / LTspice no (gli stadi veri della scheda non sono simulati; i netlist
-v0.2-v0.3 usano op-amp ideali) / Live no.
+Verificato in: Python no / LTspice sì (stadi audio della scheda col TLC2272 tarato sul modello TI,
+BBD ideali: `sim/lickshot/scheda.inc`, RISULTATI-scheda.md) / Live no.

@@ -88,7 +88,7 @@ for x in (ORECCHIA, W - ORECCHIA):
               f"stroke-width='0.2' stroke-dasharray='1 1'/>")
 
 # nome
-testo(26, 27.5, "LICKSHOT", 7.5, "bold", C["t_modulo"], "start", 0.6)
+testo(26, 27.5, "FLETCHER", 7.5, "bold", C["t_modulo"], "start", 0.6)
 testo(26.4, 34.5, "maelcum", 3.0, colore=SOFT, anchor="start", spazio=0.5)
 
 gruppo("SUONO", 96, 240)
@@ -125,7 +125,7 @@ def qt(x, y, t, size=2.6, colore=None, anchor="start", peso="normal"):
                  f"fill='{colore or C['t_quote']}' text-anchor='{anchor}' {FONT}>{t}</text>")
 
 
-qt(M, M - 3, "LICKSHOT · rack 1U · disposizione approvata (dec. 196, 2026-11-18)", 3.2, C["t_bozza"], peso="bold")
+qt(M, M - 3, "FLETCHER · lickshot rack 1U · disposizione approvata (dec. 196), nome (dec. 197)", 3.2, C["t_bozza"], peso="bold")
 y0 = M + H + 7
 qt(M, y0, f"Pannello {W} × {H} mm (19\" × 1U). Orecchie da {ORECCHIA} mm con le asole del rack (linee tratteggiate).")
 qt(M, y0 + 4.5, "Comandi della dec. 190, su una riga come il Klementz Lickshot Rack (dec. 188): "

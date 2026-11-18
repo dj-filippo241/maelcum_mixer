@@ -2,13 +2,13 @@ quantita;valore;impronta;riferimenti;nota
 2;100u 25V;CP_Radial_D8.0mm_P3.50mm;C1 C5;
 1;1u film;C_Rect_L7.2mm_W4.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2;C10;C1 dell'integratore, film
 1;100n film;C_Rect_L7.2mm_W3.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2;C14;C1 del VCO, film
-1;10u;C_1206_3216Metric;C15;NOTA: 10 uF ceramico X7R; film se serve (passa-alto 14,5 Hz)
+1;100n film;C_Rect_L7.2mm_W3.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2;C15;passa-alto 14,5 Hz con 110k
 1;1u;C_1206_3216Metric;C17;dal dominio 9 V al BBD a 5 V
 1;1u;C_1206_3216Metric;C18;NOTA: tiene pulita la polarizzazione
 1;330n;C_0805_2012Metric;C2;ingresso del 78L09
 2;1u;C_1206_3216Metric;C20 C21;
 1;100p C0G;C_0805_2012Metric;C24;C del clock; ~115 pF per arrivare a 410 ms (RISULTATI §4)
-1;2u2;C_1206_3216Metric;C26;NOTA: accoppiamento dal BBD (7 Hz con 10k)
+1;1u;C_1206_3216Metric;C26;accoppiamento dal BBD (3,4 Hz con 47k)
 1;100n film;C_Rect_L7.2mm_W3.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2;C27;passa-alto del giro, 150 Hz
 13;100n;C_0805_2012Metric;C3 C6 C9 C11 C12 C13 C16 C19 C22 C23 C25 C28 C29;
 1;10u 25V;CP_Radial_D5.0mm_P2.00mm;C30;NOTA: elettrolitico col + verso il mix (VDD/2), il jack sta a 0 V
@@ -26,39 +26,38 @@ quantita;valore;impronta;riferimenti;nota
 1;47;R_1206_3216Metric;R1;47 ohm + 100 uF: picchi del clock fuori dal ramo dei 9 V
 1;10k;R_0805_2012Metric;R10;R in serie al pin 9
 1;10k;R_0805_2012Metric;R11;R1 fisso: tetto a 700 Hz
-1;1k;R_0805_2012Metric;R12;
-1;100;R_0805_2012Metric;R13;partitore 1k/100: +-0,41 V sul VMID
-1;19k1;R_0805_2012Metric;R15;NOTA: G 1,91 -> 0,78 V di plateau = 0 dBu (dec. 187)
-1;100k;R_0805_2012Metric;R16;NOTA: tasto aperto = VOLUME a VDD/2, niente ingresso flottante
-14;10k;R_0805_2012Metric;R2 R3 R7 R14 R17 R18 R19 R21 R29 R33 R34 R36 R37 R38;
-1;40k2;R_0805_2012Metric;R20;attenuatore -14 dB (0,2) prima dei BBD
-2;100k;R_0805_2012Metric;R22 R25;
-1;47k;R_0805_2012Metric;R23;NOTA: carico delle uscite a source follower, da rileggere sul datasheet
-3;47k;R_0805_2012Metric;R24 R26 R27;
-1;22k;R_0805_2012Metric;R28;fisso: 100 kHz a TEMPO zero (41 ms)
-1;49k9;R_0805_2012Metric;R30;make-up x5 (recupera i -14 dB), invertente
-1;10k7;R_0805_2012Metric;R31;
-1;12k7;R_0805_2012Metric;R32;NOTA: 12,7k/10k = 0,44 (1,1 x 0,4 del netlist) prima dei diodi
-1;15k;R_0805_2012Metric;R35;x2,5 dopo i diodi
-1;100;R_0805_2012Metric;R39;
+1;110k;R_0805_2012Metric;R12;x0,173 col 19k1: 0,78 V di plateau. Niente partitore verso VMID: il VCO gira sempre e i suoi fronti scuotevano VDD/2 (RISULTATI-scheda §3)
+1;19k1;R_0805_2012Metric;R13;0,78 V di plateau = 0 dBu (dec. 187)
+1;100k;R_0805_2012Metric;R14;NOTA: tasto aperto = VOLUME a VDD/2, niente ingresso flottante
+1;40k2;R_0805_2012Metric;R18;attenuatore -14 dB (0,2) prima dei BBD
+12;10k;R_0805_2012Metric;R2 R3 R7 R15 R16 R17 R19 R31 R32 R34 R35 R36;
+6;100k;R_0805_2012Metric;R20 R22 R23 R24 R25 R28;
+1;100k;R_0805_2012Metric;R21;carico delle uscite a source follower: RL 100k del datasheet V3205D
+1;22k;R_0805_2012Metric;R26;fisso: 100 kHz a TEMPO zero (41 ms)
+1;47k;R_0805_2012Metric;R27;47k: il cursore del trimmer di cancellazione (~3k) sposta il guadagno di 0,4 dB, non di 1,4
+1;10k7;R_0805_2012Metric;R29;
+1;12k7;R_0805_2012Metric;R30;NOTA: 12,7k/10k = 0,44 (1,1 x 0,4 del netlist) prima dei diodi
+1;15k;R_0805_2012Metric;R33;x2,5 dopo i diodi
+1;100;R_0805_2012Metric;R37;
+1;100k;R_0805_2012Metric;R38;scarica: passa-alto 0,17 Hz sul MONO da 1 MOhm
 1;10k;R_0805_2012Metric;R4;R4 di Nold: soglie 6/22 e 16/22 di VDD con R1
-1;100k;R_0805_2012Metric;R40;scarica: passa-alto 0,17 Hz sul MONO da 1 MOhm
 1;22k;R_0805_2012Metric;R5;R1 di Nold
 1;33k;R_0805_2012Metric;R6;dec. 195 (Nold: 22k): massimo 33 colpi/s
 1;10k;R_0805_2012Metric;R8;RG
 1;5k1;R_0805_2012Metric;R9;RF: G 1,51 a 9 V (lickshot.md §6 punto 1)
 1;10k;Potentiometer_Bourns_3266W_Vertical;RV1;NOTA: polarizzazione dell'ingresso del BBD 1, da tarare sul pezzo
-1;250k B;Potentiometer_Alps_RK09L_Single_Horizontal;RV10;reostato fra pin 1 e cursore: ritardo che cresce in senso orario (dec. 193, lineare); manopola TEMPO, x 272 mm sul pannello
-1;10k B;Potentiometer_Alps_RK09L_Single_Horizontal;RV11;guadagno del giro fino a 1,1; manopola RIPETIZIONI, x 306 mm sul pannello
-1;10k A;Potentiometer_Alps_RK09L_Single_Horizontal;RV12;eco al quadrato del modello; manopola LIVELLO ECO, x 340 mm sul pannello
+1;10k A;Potentiometer_Alps_RK09L_Single_Horizontal;RV10;legge quadratica del modello; manopola VOLUME, x 224 mm sul pannello
+1;250k B;Potentiometer_Alps_RK09L_Single_Horizontal;RV11;reostato fra pin 1 e cursore: ritardo che cresce in senso orario (dec. 193, lineare); manopola TEMPO, x 272 mm sul pannello
+1;10k B;Potentiometer_Alps_RK09L_Single_Horizontal;RV12;guadagno del giro fino a 1,1; manopola RIPETIZIONI, x 306 mm sul pannello
+1;10k A;Potentiometer_Alps_RK09L_Single_Horizontal;RV13;eco al quadrato del modello; manopola LIVELLO ECO, x 340 mm sul pannello
 1;10k;Potentiometer_Bourns_3266W_Vertical;RV2;cancellazione del clock, BBD 1 (schema d'applicazione BL3102)
 1;10k;Potentiometer_Bourns_3266W_Vertical;RV3;NOTA: polarizzazione dell'ingresso del BBD 2
 1;10k;Potentiometer_Bourns_3266W_Vertical;RV4;cancellazione del clock, BBD 2
 1;10k;Potentiometer_Bourns_3266W_Vertical;RV5;fondo scala di TEMPO (reostato)
-1;100k C;Potentiometer_Alps_RK09L_Single_Horizontal;RV6;reostato fra pin 3 e cursore: R scende in modo esponenziale, ottave uguali e nota che sale in senso orario (dec. 194); NOTA: logaritmico inverso (C), oppure A con i capi scambiati; manopola ALTEZZA, x 112 mm sul pannello
-1;500k B;Potentiometer_Alps_RK09L_Single_Horizontal;RV7;reostato fra cursore e pin 3: R scende in senso orario, colpi più fitti (modello lineare); manopola VELOCITÀ, x 146 mm sul pannello
-1;10k B;Potentiometer_Alps_RK09L_Single_Horizontal;RV8;fra VDD/2 e la rampa (dec. 190); manopola PROFONDITÀ, x 190 mm sul pannello
-1;10k A;Potentiometer_Alps_RK09L_Single_Horizontal;RV9;legge quadratica del modello; manopola VOLUME, x 224 mm sul pannello
+1;500k;Potentiometer_Bourns_3224W_Vertical;RV6;SMD 4 mm (3224W, 11 giri): col 3266 il blocco cresceva e l'eco perdeva il posto. Taratura del giro: SUM -> POST = 0 dB (~280k in tutto); 100k-600k copre da -6,6 a +9 dB di guadagno d'inserzione dei due V3205D (datasheet: +-4 dB per chip; RISULTATI-scheda §2)
+1;100k C;Potentiometer_Alps_RK09L_Single_Horizontal;RV7;reostato fra pin 3 e cursore: R scende in modo esponenziale, ottave uguali e nota che sale in senso orario (dec. 194); NOTA: logaritmico inverso (C), oppure A con i capi scambiati; manopola ALTEZZA, x 112 mm sul pannello
+1;500k B;Potentiometer_Alps_RK09L_Single_Horizontal;RV8;reostato fra cursore e pin 3: R scende in senso orario, colpi più fitti (modello lineare); manopola VELOCITÀ, x 146 mm sul pannello
+1;10k B;Potentiometer_Alps_RK09L_Single_Horizontal;RV9;fra VDD/2 e la rampa (dec. 190); manopola PROFONDITÀ, x 190 mm sul pannello
 1;CD4069UBM;SOIC-14_3.9x8.7mm_P1.27mm;U1;U1A + U1B trigger di Schmitt, U1C integratore di Miller; U1D-F ingressi a massa
 1;78L09;TO-92_Inline_Wide;U10;9 V per CMOS e op-amp (61 mW)
 1;78L05;TO-92_Inline_Wide;U11;5 V per BBD e clock (0,15 W)

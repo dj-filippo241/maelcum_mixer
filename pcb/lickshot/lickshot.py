@@ -3,7 +3,7 @@
 Catena (docs/fase4/lickshot.md v0.3 §2-§3):
  LFO CD4069 (VELOCITA) -> buffer -> PROFONDITA -> VCO CD4046 (ALTEZZA) -> passa-alto 14,5 Hz
    -> guadagno a 0 dBu -> FIRE -> VOLUME -> buffer = DRY
- DRY + FB -> somma invertente -> attenuatore -14 dB -> BBD 1 -> BBD 2 -> make-up x5 = POST
+ DRY + FB -> somma invertente -> attenuatore -14 dB -> BBD 1 -> BBD 2 -> make-up tarata (~x5,6) = POST
  POST -> passa-alto 150 Hz -> buffer -> RIPETIZIONI -> diodi -> x2,5 = FB
  DRY + LIVELLO ECO x POST -> mix invertente -> 100 ohm + 10 uF -> jack (sul pannello dietro).
 
@@ -94,8 +94,10 @@ class LickDesign(pcbgen.DesignRiprova):
                     cf.SetPosition(pcbnew.VECTOR2I(p.x + (1 if dx >= 0 else -1) * pcbnew.FromMM(0.25), p.y))
 
 
-d = LickDesign("lickshot", HERE, "LICKSHOT rack 1U (dec. 179-196) - bozza v0.1", board=(280, 80), rev="0.1-bozza")
+d = LickDesign("lickshot", HERE, "FLETCHER - lickshot rack 1U (dec. 179-197) - bozza v0.1", board=(280, 95), rev="0.1-bozza")
 d.gnd = "AGND"
+d.route_tries = 6
+d.link_pairs = True   # cursore e capo dei trimmer a reostato sulla stessa rete (TMPB, POST)
 d.power_nets("+9V", "+5V", "VIN", "VIN5", "RAW12", "AGND")
 
 # pannello: x della scheda = x del pannello - X0 (la scheda va da 100 a 380 mm del pannello)
@@ -125,7 +127,7 @@ def trim(a, w, b, val, note):
 # ---------------------------------------------------------------- alimentazione (§3.1, RISULTATI §6)
 d.block = "ALIMENTAZIONE 12 V -> +9 V e +5 V"
 d.part("J", "Connector_Generic:Conn_01x02", "ingresso DC (cavo)", HDR2, {1: "RAW12", 2: "AGND"}, ref="J1",
-       place=(265, 74, 0), note="NOTA: filo verso la presa DC con blocco sul pannello dietro (dec. 189); "
+       place=(265, 89, 0), note="NOTA: filo verso la presa DC con blocco sul pannello dietro (dec. 189); "
                                 "negativo flottante, la massa arriva dal MONO (RISULTATI §6)")
 d.part("D", "Diode:1N5819", "1N5819", "Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal", {"A": "RAW12", "K": "VIN"},
        note="protezione contro l'inversione (~0,35 V)")
@@ -190,11 +192,11 @@ d.R("VCOR", "ALTA", "10k", note="R1 fisso: tetto a 700 Hz")
 
 # ---------------------------------------------------------------- colpo e FIRE (§3.5)
 d.block = "COLPO: passa-alto 14,5 Hz, guadagno a 0 dBu, FIRE"
-d.C("VCOOUT", "HPA", "10u", C12, note="NOTA: 10 uF ceramico X7R; film se serve (passa-alto 14,5 Hz)")
-d.R("HPA", "HPD", "1k")
-d.R("HPD", "VMID", "100", note="partitore 1k/100: +-0,41 V sul VMID")
-d.R("HPD", "GN", "10k")
-d.R("GN", "COLPO", "19k1", note="NOTA: G 1,91 -> 0,78 V di plateau = 0 dBu (dec. 187)")
+d.C("VCOOUT", "HPA", "100n film", "Capacitor_THT:C_Rect_L7.2mm_W3.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2",
+    note="passa-alto 14,5 Hz con 110k")
+d.R("HPA", "GN", "110k", note="x0,173 col 19k1: 0,78 V di plateau. Niente partitore verso VMID: il VCO "
+                              "gira sempre e i suoi fronti scuotevano VDD/2 (RISULTATI-scheda §3)")
+d.R("GN", "COLPO", "19k1", note="0,78 V di plateau = 0 dBu (dec. 187)")
 d.part("J", "Connector_Generic:Conn_01x02", "FIRE (cavo)", HDR2, {1: "COLPO", 2: "FIREOUT"}, ref="J2",
        place=(268, 22, 0), note="NOTA: fili verso il tasto FIRE da 24 mm sul pannello (premi e tieni, normalmente aperto)")
 d.R("FIREOUT", "VMID", "100k", note="NOTA: tasto aperto = VOLUME a VDD/2, niente ingresso flottante")
@@ -218,8 +220,8 @@ d.C("BIAS1", "AGND", "1u", C12, note="NOTA: tiene pulita la polarizzazione")
 d.part("U", V3205, "V3205D", DIP8, {7: "BBD1IN", 6: "CP1A", 2: "CP2A", 8: "VGGA", 1: "AGND",
                                     3: "B1O1", 4: "B1O2", 5: "+5V"}, ref="U20", note="BBD 1")
 d.C("+5V", "AGND", "100n")
-d.R("B1O1", "AGND", "47k", note="NOTA: carico delle uscite a source follower, da rileggere sul datasheet")
-d.R("B1O2", "AGND", "47k")
+d.R("B1O1", "AGND", "100k", note="carico delle uscite a source follower: RL 100k del datasheet V3205D")
+d.R("B1O2", "AGND", "100k")
 trim("B1O1", "BBD1OUT", "B1O2", "10k", "cancellazione del clock, BBD 1 (schema d'applicazione BL3102)")
 d.C("BBD1OUT", "BBD2IN", "1u", C12)
 trim("+5V", "BIAS2", "AGND", "10k", "NOTA: polarizzazione dell'ingresso del BBD 2")
@@ -228,8 +230,8 @@ d.C("BIAS2", "AGND", "1u", C12)
 d.part("U", V3205, "V3205D", DIP8, {7: "BBD2IN", 6: "CP1B", 2: "CP2B", 8: "VGGB", 1: "AGND",
                                     3: "B2O1", 4: "B2O2", 5: "+5V"}, ref="U21", note="BBD 2")
 d.C("+5V", "AGND", "100n")
-d.R("B2O1", "AGND", "47k")
-d.R("B2O2", "AGND", "47k")
+d.R("B2O1", "AGND", "100k")
+d.R("B2O2", "AGND", "100k")
 trim("B2O1", "BBD2OUT", "B2O2", "10k", "cancellazione del clock, BBD 2")
 d.part("U", V3102, "V3102", DIP8, {1: "+5V", 2: "CP1A", 3: "AGND", 4: "CP2A", 5: "OSC3", 6: "OSC2",
                                    7: "OSC1", 8: "VGGA"}, ref="U22",
@@ -244,9 +246,12 @@ d.C("+5V", "AGND", "100n")
 
 # ---------------------------------------------------------------- make-up e giro (giro-att14.cir)
 d.block = "MAKE-UP x5, PASSA-ALTO 150 Hz, SATURAZIONE (TLC2272)"
-d.C("BBD2OUT", "MKC", "2u2", C12, note="NOTA: accoppiamento dal BBD (7 Hz con 10k)")
-d.R("MKC", "MKN", "10k")
-d.R("MKN", "POST", "49k9", note="make-up x5 (recupera i -14 dB), invertente")
+d.C("BBD2OUT", "MKC", "1u", C12, note="accoppiamento dal BBD (3,4 Hz con 47k)")
+d.R("MKC", "MKN", "47k", note="47k: il cursore del trimmer di cancellazione (~3k) sposta il guadagno di 0,4 dB, non di 1,4")
+d.R("MKN", "MKT", "100k")
+d.part("RV", "Device:R_Potentiometer_Trim", "500k", "Potentiometer_SMD:Potentiometer_Bourns_3224W_Vertical",
+       {1: "MKT", 2: "POST", 3: "POST"}, note="SMD 4 mm (3224W, 11 giri): col 3266 il blocco cresceva e l'eco perdeva il posto. Taratura del giro: SUM -> POST = 0 dB (~280k in tutto); 100k-600k copre "
+     "da -6,6 a +9 dB di guadagno d'inserzione dei due V3205D (datasheet: +-4 dB per chip; RISULTATI-scheda §2)")
 d.C("POST", "HPN", "100n film", "Capacitor_THT:C_Rect_L7.2mm_W3.5mm_P5.00mm_FKS2_FKP2_MKS2_MKP2",
     note="passa-alto del giro, 150 Hz")
 d.R("HPN", "VMID", "10k7")
@@ -271,7 +276,7 @@ d.CP("OUTR", "JOUT", "10u 25V", fp="Capacitor_THT:CP_Radial_D5.0mm_P2.00mm",
      note="NOTA: elettrolitico col + verso il mix (VDD/2), il jack sta a 0 V")
 d.R("JOUT", "AGND", "100k", note="scarica: passa-alto 0,17 Hz sul MONO da 1 MOhm")
 d.part("J", "Connector_Generic:Conn_01x02", "uscita (cavo)", HDR2, {1: "JOUT", 2: "AGND"}, ref="J3",
-       place=(240, 74, 0), note="NOTA: filo verso il jack mono sul pannello dietro (dec. 187)")
+       place=(240, 89, 0), note="NOTA: filo verso il jack mono sul pannello dietro (dec. 187)")
 
 # ---------------------------------------------------------------- comandi del pannello (dec. 196)
 d.block = "COMANDI DEL PANNELLO (pot orizzontali)"
@@ -288,7 +293,7 @@ pot("RIPETIZIONI", ("VMID", "RIPW", "GY"), "10k B", "guadagno del giro fino a 1,
 pot("LIVELLO ECO", ("VMID", "ECOW", "POST"), "10k A", "eco al quadrato del modello")
 
 d.block = "FORI DI FISSAGGIO"
-for k, (x, y) in enumerate(((4, 24), (276, 24), (4, 76), (276, 50)), 1):
+for k, (x, y) in enumerate(((4, 24), (276, 24), (4, 91), (276, 50)), 1):
     d.part("H", "Mechanical:MountingHole", "M3", "MountingHole:MountingHole_3.2mm_M3", {}, ref="H%d" % k,
            place=(x, y, 0), note="NOTA: foro senza pad; massa unica dal MONO (RISULTATI §6)")
 
