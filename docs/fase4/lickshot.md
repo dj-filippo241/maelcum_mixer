@@ -120,6 +120,10 @@ taglia il segnale, l'LFO gira sempre (ascoltato e accettato, dec. 190).
 
 ### 3.6 Eco a due BBD [PROVVISORIO]
 
+- **Dec. 198 (2026-11-19): un solo V3205D e un solo V3102.** Ritardo =
+  4096 / (2 fclk), clock 5-50 kHz → 41-410 ms; C del clock 220 pF. Sotto
+  10 kHz (eco oltre ~205 ms) il clock esce dal datasheet. Il testo sotto
+  descrive la versione a due BBD (v0.2-v0.3): vale per tutto il resto.
 - **BBD**: 2 × CoolAudio V3205D (4096 stadi, DIP-8), in fila: 8192
   stadi, ritardo = 8192 / (2 fclk). Clock 10-100 kHz → 41-410 ms.
   VGG = 14/15 VDD da partitore. Uscite OUT1 e OUT2 sommate con trimmer

@@ -1,5 +1,10 @@
 # FLETCHER (lickshot, dec. 197): due preventivi per 5 schede (2026-11-19)
 
+**Dopo la dec. 198 (un BBD e un clock):** BBD e clock scendono da ~190 a ~100 € per 5 schede
+(5 V3205SD + 5 V3102D, 76 $ + spedizione e IVA d'importazione [S]), e spariscono un trimmer
+3266W, un V3205 e un V3102 per scheda. Totali aggiornati: **A ~455 €** (~91 € a scheda),
+**B ~335 €** (~67 € a scheda). Le tabelle sotto sono quelle a due BBD.
+
 Prezzi letti il 2026-11-19 sui siti dei venditori, senza account e senza caricare file del
 progetto. Distinta: `bom.csv` della scheda v0.1 corretta (103 pezzi per scheda). Cambio 1 $ =
 0,90 € (stima). TME dà prezzi IVA esclusa: +22 %. Gli acquisti restano sospesi fino al prototipo

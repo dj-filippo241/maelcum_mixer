@@ -139,12 +139,36 @@ A 0,9 il ritorno è più basso della v0.2 per i −0,7 dB del pot caricato (§2)
 
 ## 6. Cosa non è simulato
 
-- Il clock (V3102) e il suo residuo sulle uscite dei BBD: nessun modello.
+- Il clock (V3102) e il suo residuo sulle uscite dei BBD: nessun modello. Con un BBD (§7) il
+  clock scende fino a 5 kHz, sotto il minimo del datasheet: fischio e fruscio da misurare.
   Il trimmer di cancellazione si tara sul pezzo.
 - Rumore dei BBD (S/N 60 dB per chip, datasheet).
 - Polarizzazione dei BBD: lo schema d'applicazione del V3205D tara l'ingresso
   con un trimmer da 100k «per la minima distorsione»; qui 10k fra +5 V e massa
   + 100k verso l'ingresso. Stessa funzione: si tara sul pezzo.
+
+## 7. Un solo BBD (dec. 198, 2026-11-19)
+
+`scheda.inc` ha ora un V3205D solo (ritardo 2 × td = 100 ms nel netlist), make-up dal suo
+cursore di cancellazione. Anello aperto (`scheda-anello-47k.cir`), RIPETIZIONI tutto, 1 kHz:
+
+| Inserzione del BBD | 100k | 250k | 270k | 600k |
+|---|---|---|---|---|
+| −4 dB (0,63) | −11,7 / −12,0 dB | −3,8 / −4,1 dB | −3,1 / −3,4 dB | **+3,8 / +3,5 dB** |
+| 0 dB | −7,7 / −8,0 dB | +0,2 / −0,1 dB | +0,9 / +0,6 dB | +7,8 / +7,6 dB |
+| +4 dB (1,58) | **−3,7 / −4,0 dB** | +4,2 / +3,9 dB | +4,9 / +4,6 dB | +11,8 / +11,5 dB |
+
+(tc 0,05 / 0,5.) Taratura a ~275k per +0,83 dB; il trimmer 100k-600k copre tutto il ±4 dB del
+datasheet. Transitori con 275k:
+
+- Giro (FIRE 0,2 s): RIPETIZIONI 0,5 / 0,9 / 1 → ritorno dopo 1,3 s 0,0009 / 0,42 / 0,94 V.
+  Ingresso del BBD 0,29-0,35 V. Come con due BBD.
+- Caso peggiore (FIRE 1 s, tutto al massimo): mix 1,60-7,42 V (2,92 V di picco, margine
+  **3,4 dB**), ritorno 2,22 V di picco, ingresso del BBD 0,41 V, jack a eco zero 0,78 V (0 dBu).
+
+Clock: con 220 pF il fit del MN3102 (scalato con C) dà 50 kHz con 22k e ~5,1 kHz con 282k: 41-405
+ms. Il fit è sulla curva da 100 pF del datasheet: gli estremi si tarano sul pezzo (trimmer di
+fondo scala).
 
 Verificato in: Python no / LTspice sì (stadi audio con TLC2272 tarato sul
 modello TI, BBD ideali) / Live no.

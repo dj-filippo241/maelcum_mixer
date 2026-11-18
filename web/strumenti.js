@@ -122,25 +122,25 @@ export class Njd {
 
 // LICKSHOT (dec. 179-189): copia di proto-max/coefficienti/lickshot.py, che è la fonte dei numeri
 // e il documento delle scelte (nucleo di Nold dal KiCad di Orald-0, CD4046 dal datasheet TI,
-// eco a due BBD senza filtri, dec. 191). prova_lickshot.py --web confronta questa classe col modello campione per
+// eco a un BBD senza filtri, dec. 191 e 198). prova_lickshot.py --web confronta questa classe col modello campione per
 // campione (dump da web/tools/dump_lickshot.mjs). Uscita in volt al jack.
 const L = {
   VDD: 8.6, VOFF: 1.0, K_F0: 0.7, C_VCO: 100e-9, R_VCO: 10e3, P_VCO: 100e3,
   C_LFO: 1e-6, R_LFO: 33e3, P_LFO: 500e3, T_SU: 5e-4, F_HP_OUT: 14.5, V_NOM: 0.775, V_LED: 2.4,
-  N_BBD: 8192, F_HP_GIRO: 150, V_SAT: 1.5, G_MAX: 1.1, T_LISCIO: 0.05,
+  N_BBD: 4096, F_HP_GIRO: 150, V_SAT: 1.5, G_MAX: 1.1, T_LISCIO: 0.05,
 };
 L.LO = (6 / 22) * L.VDD;
 L.A_MAX = (15 / 17) * (L.VDD / 2 - L.VOFF); // PROFONDITÀ a fondo corsa: ~4 ottave (dec. 190)
 L.HI = (16 / 22) * L.VDD;
-L.T_MIN = L.N_BBD / (2 * 100e3);
-L.T_MAX = L.N_BBD / (2 * 10e3);
+L.T_MIN = L.N_BBD / (2 * 50e3); // dec. 198: un BBD, clock 50-5 kHz
+L.T_MAX = L.N_BBD / (2 * 5e3);
 const LISCI_L = ["alt", "vel", "prof", "vol", "tempo", "rip", "eco"];
 const tempoEco = (t) => L.T_MIN + (L.T_MAX - L.T_MIN) * t / 100; // dec. 193: pot lineare
 
 export class Lickshot {
   constructor(fs) {
     this.fs = fs;
-    this.p = { alt: 71, vel: 50, prof: 67, vol: 100, trig: 0, tempo: 33, rip: 40, eco: 40, uno: 0 };
+    this.p = { alt: 71, vel: 50, prof: 67, vol: 100, trig: 0, tempo: 33, rip: 40, eco: 40 };
     this.s = {};
     for (const k of LISCI_L) this.s[k] = this.p[k];
     this.vi = L.VDD / 2; // uscita dell'integratore (U1C) = VCOin
@@ -185,9 +185,9 @@ export class Lickshot {
       this.hpx = x;
       const vv = s.vol / 100;
       const dry = this.hpy * (p.trig > 0.5 ? 1 : 0) * L.V_NOM * vv * vv;
-      // eco: due BBD in fila
+      // eco: un BBD (dec. 198)
       this.td += (tempoEco(s.tempo) * fs - this.td) * kt;
-      this.ck += L.N_BBD / (2 * this.td / fs) / fs * (p.uno > 0.5 ? 0.5 : 1); // clock dei BBD; uno = un BBD solo, clock a metà (prova di ascolto)
+      this.ck += L.N_BBD / (2 * this.td / fs) / fs; // clock del BBD
       const tick = this.ck >= 1;
       if (tick) this.ck -= 1;
       let rpos = this.w - this.td;
@@ -233,5 +233,5 @@ export const STRUMENTI = [
   { nome: "LICKSHOT", mono: 2, comandi: [
     ["ALTEZZA", "alt", 71], ["VELOCITÀ", "vel", 50], ["PROFOND.", "prof", 67],
     ["VOLUME", "vol", 100], ["TEMPO", "tempo", 33], ["RIPETIZ.", "rip", 40], ["ECO", "eco", 40],
-  ], tasti: [["FIRE", "trig", "3"]], levetta: ["ECO", "uno", ["2 BBD", "1 BBD"]] },
+  ], tasti: [["FIRE", "trig", "3"]] },
 ];

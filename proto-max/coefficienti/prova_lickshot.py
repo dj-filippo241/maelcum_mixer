@@ -55,7 +55,7 @@ def copione():
     return [(0.0, {"trig": 1}), (0.6, {"alt": 30, "vel": 90}),
             (0.9, {"tempo": 20, "rip": 80, "eco": 90}), (1.3, {"trig": 0}),
             (1.5, {"prof": 0, "trig": 1}), (1.7, {"trig": 0, "prof": 100}),
-            (1.9, {"vol": 40, "trig": 1}), (2.0, {"uno": 1})]
+            (1.9, {"vol": 40, "trig": 1})]
 
 
 def suona_gen(durata):

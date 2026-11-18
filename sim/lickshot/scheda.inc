@@ -5,7 +5,7 @@
 * Comandi come parametri (posizione elettrica 0...1):
 *   vol = VOLUME, rip = RIPETIZIONI, eco = LIVELLO ECO, tc = cursore del trimmer
 *   di cancellazione del clock (0,5 = centro), ilg = guadagno d'inserzione di
-*   un V3205D (datasheet: 0 dB tip., -4...+4 dB), td = ritardo di un BBD.
+*   un V3205D (datasheet: 0 dB tip., -4...+4 dB), 2*td = ritardo del BBD.
 * BBD (non esiste un modello SPICE): ingresso ad alta impedenza, ritardo ideale,
 * due uscite a source follower uguali (OUT1 e OUT2 ritardate di 4096 e 4097
 * stadi: stesso segnale qui) con resistenza d'uscita {rbo}, deduzione mia.
@@ -58,33 +58,21 @@ Xu5b vmid sumn vdd 0 sum TLC2272S
 Ra1 sum att 40.2k
 Ra2 att vmid 10k
 
-* BBD 1: 1 uF, polarizzazione da trimmer 10k su +5 V (cursore a 2,5 V: 2,5k), 100k
+* BBD (uno solo dal 2026-11-19, dec. 198; prima due in fila): 1 uF, polarizzazione da trimmer 10k su +5 V (cursore a 2,5 V: 2,5k), 100k
 Cb1 att bbd1in 1u
 Vb5 v5 0 5
 Rbt1 v5 bias1 5k
 Rbt2 bias1 0 5k
 Cbs1 bias1 0 1u
 Rbi1 bias1 bbd1in 100k
-Xbbd1 bbd1in b1o1 b1o2 bbd g={ilg} td={td} rbo={rbo}
+Xbbd1 bbd1in b1o1 b1o2 bbd g={ilg} td={2*td} rbo={rbo}
 Rl11 b1o1 0 {rlb}
 Rl12 b1o2 0 {rlb}
 Rtc11 b1o1 bbd1out {10k*tc+1m}
 Rtc12 bbd1out b1o2 {10k*(1-tc)+1m}
-* BBD 2
-Cb2 bbd1out bbd2in 1u
-Rbt3 v5 bias2 5k
-Rbt4 bias2 0 5k
-Cbs2 bias2 0 1u
-Rbi2 bias2 bbd2in 100k
-Xbbd2 bbd2in b2o1 b2o2 bbd g={ilg} td={td} rbo={rbo}
-Rl21 b2o1 0 {rlb}
-Rl22 b2o2 0 {rlb}
-Rtc21 b2o1 bbd2out {10k*tc+1m}
-Rtc22 bbd2out b2o2 {10k*(1-tc)+1m}
-
 * make-up invertente (U6A): scheda v0.1 rmk 10k, rmkf 49,9k; corretta rmk 47k,
 * rmkf 100k + trimmer 500k (tarata a ~280k). Passa-alto 150 Hz e buffer (U6B)
-Cmk bbd2out mkc 2.2u
+Cmk bbd1out mkc 1u
 Rmk1 mkc mkn {rmk}
 Rmk2 mkn post {rmkf}
 Xu6a vmid mkn vdd 0 post TLC2272S
@@ -119,4 +107,4 @@ Rmono jout 0 1Meg
 * punto di lavoro: tutti gli stadi a VDD/2 (senza, il .op non converge)
 .nodeset V(vmid)=4.5 V(vmidr)=4.5 V(dry)=4.5 V(volw)=4.5 V(sumn)=4.5 V(sum)=4.5 V(att)=4.5
 + V(mkn)=4.5 V(post)=4.5 V(hpn)=4.5 V(gy)=4.5 V(ripw)=4.5 V(satd)=4.5 V(satn)=4.5 V(fb)=4.5
-+ V(mxn)=4.5 V(mix)=4.5 V(gn)=4.5 V(colpo)=4.5 V(bbd1in)=2.5 V(bbd2in)=2.5
++ V(mxn)=4.5 V(mix)=4.5 V(gn)=4.5 V(colpo)=4.5 V(bbd1in)=2.5

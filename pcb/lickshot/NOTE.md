@@ -13,14 +13,17 @@ Rigenerare (~4 minuti; con `--solo-schema` pochi secondi):
 
 ## Stato
 
-- **PASSA** (2026-11-19, v0.1 corretta: RISULTATI-scheda §2-§3). Scheda allungata da 80 a 95 mm
+- **PASSA** a un BBD (2026-11-19, dec. 198): Freerouting chiuso al 4o tentativo su 6. Margine
+  stretto: se un giro nuovo dà NON PASSA, alzare `d.route_tries`.
+- PASSA a due BBD (2026-11-19, v0.1 corretta: RISULTATI-scheda §2-§3). Scheda allungata da 80 a 95 mm
   di profondità: col trimmer di taratura della make-up il blocco dell'eco non trovava più posto
   (due giri NON PASSA). Freerouting chiuso al 1o tentativo su 6 (`d.route_tries = 6`,
   `d.link_pairs = True` per i trimmer a reostato). Controllo audio A1 da 2 a 3.
 - Giro del 2026-11-18 (280 x 80, prima delle correzioni): PASSA al 4o tentativo su 4.
-- Silicio: TLC2272 x5, CD4069UB, CD4046B, V3205D x2, V3102 x2, 78L09, 78L05, 2N3904, 1N5819,
+- Silicio (dec. 198: un BBD e un clock): TLC2272 x5, CD4069UB, CD4046B, V3205D, V3102, 78L09, 78L05, 2N3904, 1N5819,
   1N4148 + 1N4148W x2. Trimmer: 2 polarizzazioni, 2 cancellazioni del clock, fondo scala di TEMPO
-  (3266W), taratura del giro (3224W SMD 500k).
+  (3266W), taratura del giro (3224W SMD 500k). Dopo la dec. 198: una polarizzazione e una
+  cancellazione.
 - Preventivi per 5 schede: `PREVENTIVI.md` (calcolati su 280 x 80).
 
 ## Forma della scheda
@@ -56,8 +59,8 @@ Rigenerare (~4 minuti; con `--solo-schema` pochi secondi):
    Ingresso dal dominio a 9 V con 1 uF, senza buffer (sorgente 8k del partitore -14 dB): costa
    0,7 dB, recuperati dal trimmer della make-up. Confermata. Lo schema d'applicazione tara lo
    stesso punto con un trimmer da 100k «per la minima distorsione»: si tara sul pezzo.
-7. Clock: R fra OX2 e OX1, C 100 pF fra OX3 e OX1 (MN3102 p. 107, letto dall'immagine). Il secondo
-   V3102 ha OX1 dall'OX3 del primo, OX2 e OX3 aperti. TEMPO = 250k + 22k + trimmer 10k.
+7. Clock (dec. 198): un solo V3102, R fra OX2 e OX1, C **220 pF** C0G fra OX3 e OX1 (MN3102
+   p. 107, letto dall'immagine): 50-5 kHz, 41-405 ms. TEMPO = 250k + 22k + trimmer 10k.
 8. Condensatori grandi in ceramica X7R 1206 (1 uF dei BBD e della make-up): film se all'ascolto
    si sente. Il 10 uF del colpo non c'è più: il colpo entra con 100 nF film e 110k (sotto).
 9. FIRE: tasto normalmente aperto in serie fra il guadagno del colpo e VOLUME, 100k verso VDD/2 a

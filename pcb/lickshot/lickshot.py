@@ -1,9 +1,9 @@
-"""LICKSHOT: rack 1U fuori dal mixer (dec. 179-196), scheda unica dietro il pannello. Bozza v0.1.
+"""LICKSHOT: rack 1U fuori dal mixer (dec. 179-198), nome FLETCHER (dec. 197), scheda unica dietro il pannello. Bozza v0.1.
 
 Catena (docs/fase4/lickshot.md v0.3 §2-§3):
  LFO CD4069 (VELOCITA) -> buffer -> PROFONDITA -> VCO CD4046 (ALTEZZA) -> passa-alto 14,5 Hz
    -> guadagno a 0 dBu -> FIRE -> VOLUME -> buffer = DRY
- DRY + FB -> somma invertente -> attenuatore -14 dB -> BBD 1 -> BBD 2 -> make-up tarata (~x5,6) = POST
+ DRY + FB -> somma invertente -> attenuatore -14 dB -> BBD (uno, dec. 198) -> make-up tarata (~x5,6) = POST
  POST -> passa-alto 150 Hz -> buffer -> RIPETIZIONI -> diodi -> x2,5 = FB
  DRY + LIVELLO ECO x POST -> mix invertente -> 100 ohm + 10 uF -> jack (sul pannello dietro).
 
@@ -94,7 +94,7 @@ class LickDesign(pcbgen.DesignRiprova):
                     cf.SetPosition(pcbnew.VECTOR2I(p.x + (1 if dx >= 0 else -1) * pcbnew.FromMM(0.25), p.y))
 
 
-d = LickDesign("lickshot", HERE, "FLETCHER - lickshot rack 1U (dec. 179-197) - bozza v0.1", board=(280, 95), rev="0.1-bozza")
+d = LickDesign("lickshot", HERE, "FLETCHER - lickshot rack 1U (dec. 179-198) - bozza v0.1", board=(280, 95), rev="0.1-bozza")
 d.gnd = "AGND"
 d.route_tries = 6
 d.link_pairs = True   # cursore e capo dei trimmer a reostato sulla stessa rete (TMPB, POST)
@@ -212,7 +212,7 @@ d.R("SUM", "ATT", "40k2", note="attenuatore -14 dB (0,2) prima dei BBD")
 d.R("ATT", "VMID", "10k")
 
 # ---------------------------------------------------------------- BBD e clock (§3.6)
-d.block = "ECO: due V3205D, due V3102 (TEMPO)"
+d.block = "ECO: un V3205D, un V3102 (TEMPO), dec. 198"
 d.C("ATT", "BBD1IN", "1u", C12, note="dal dominio 9 V al BBD a 5 V")
 trim("+5V", "BIAS1", "AGND", "10k", "NOTA: polarizzazione dell'ingresso del BBD 1, da tarare sul pezzo")
 d.R("BIAS1", "BBD1IN", "100k")
@@ -223,30 +223,17 @@ d.C("+5V", "AGND", "100n")
 d.R("B1O1", "AGND", "100k", note="carico delle uscite a source follower: RL 100k del datasheet V3205D")
 d.R("B1O2", "AGND", "100k")
 trim("B1O1", "BBD1OUT", "B1O2", "10k", "cancellazione del clock, BBD 1 (schema d'applicazione BL3102)")
-d.C("BBD1OUT", "BBD2IN", "1u", C12)
-trim("+5V", "BIAS2", "AGND", "10k", "NOTA: polarizzazione dell'ingresso del BBD 2")
-d.R("BIAS2", "BBD2IN", "100k")
-d.C("BIAS2", "AGND", "1u", C12)
-d.part("U", V3205, "V3205D", DIP8, {7: "BBD2IN", 6: "CP1B", 2: "CP2B", 8: "VGGB", 1: "AGND",
-                                    3: "B2O1", 4: "B2O2", 5: "+5V"}, ref="U21", note="BBD 2")
-d.C("+5V", "AGND", "100n")
-d.R("B2O1", "AGND", "100k")
-d.R("B2O2", "AGND", "100k")
-trim("B2O1", "BBD2OUT", "B2O2", "10k", "cancellazione del clock, BBD 2")
 d.part("U", V3102, "V3102", DIP8, {1: "+5V", 2: "CP1A", 3: "AGND", 4: "CP2A", 5: "OSC3", 6: "OSC2",
                                    7: "OSC1", 8: "VGGA"}, ref="U22",
-       note="clock 1, oscilla da solo: R fra OX2 e OX1, C fra OX3 e OX1 (MN3102 p. 107)")
+       note="clock, oscilla da solo: R fra OX2 e OX1, C fra OX3 e OX1 (MN3102 p. 107)")
 d.C("+5V", "AGND", "100n")
-d.C("OSC3", "OSC1", "100p C0G", note="C del clock; ~115 pF per arrivare a 410 ms (RISULTATI §4)")
-d.R("OSC2", "TMPA", "22k", note="fisso: 100 kHz a TEMPO zero (41 ms)")
+d.C("OSC3", "OSC1", "220p C0G", note="C del clock: 50-5 kHz con 22k...282k, cioe 41-405 ms con un BBD (dec. 198; fit MN3102 Fig. 1 scalato con C, RISULTATI-lickshot-v02 §4)")
+d.R("OSC2", "TMPA", "22k", note="fisso: 50 kHz a TEMPO zero (41 ms)")
 trim("TMPA", "TMPB", "TMPB", "10k", "fondo scala di TEMPO (reostato)")
-d.part("U", V3102, "V3102", DIP8, {1: "+5V", 2: "CP1B", 3: "AGND", 4: "CP2B", 7: "OSC3", 8: "VGGB"},
-       ref="U23", note="clock 2, eccitazione separata: OX1 dall'OX3 del clock 1, OX2 e OX3 aperti (MN3102 p. 107)")
-d.C("+5V", "AGND", "100n")
 
 # ---------------------------------------------------------------- make-up e giro (giro-att14.cir)
 d.block = "MAKE-UP x5, PASSA-ALTO 150 Hz, SATURAZIONE (TLC2272)"
-d.C("BBD2OUT", "MKC", "1u", C12, note="accoppiamento dal BBD (3,4 Hz con 47k)")
+d.C("BBD1OUT", "MKC", "1u", C12, note="accoppiamento dal BBD (3,4 Hz con 47k)")
 d.R("MKC", "MKN", "47k", note="47k: il cursore del trimmer di cancellazione (~3k) sposta il guadagno di 0,4 dB, non di 1,4")
 d.R("MKN", "MKT", "100k")
 d.part("RV", "Device:R_Potentiometer_Trim", "500k", "Potentiometer_SMD:Potentiometer_Bourns_3224W_Vertical",

@@ -1,8 +1,8 @@
 * Lickshot - giro dell'eco della scheda corretta (.tran), come giro-att14.cir ma
 * con gli stadi veri: colpo dall'uscita quadra del CD4046 (0/9 V, 600 Hz) via
 * passa-alto e guadagno 1,91, FIRE premuto {hold} s, VOLUME tutto, LIVELLO ECO 0.
-* Make-up tarata (rmkf 280k: SUM -> POST = 0 dB, scheda-anello-47k.cir).
-.param vol=1 rip=1 eco=0 tc=0.5 ilg=1 td=50m rbo=1k rlb=100k rmk=47k rmkf=280k hold=0.2
+* Make-up tarata (rmkf 275k con un BBD, dec. 198: SUM -> POST ~ +0,8 dB di giro, scheda-anello-47k.cir).
+.param vol=1 rip=1 eco=0 tc=0.5 ilg=1 td=50m rbo=1k rlb=100k rmk=47k rmkf=275k hold=0.2
 .include scheda.inc
 Vvco vcoout 0 PULSE(0 9 0 1u 1u 0.832m 1.6667m)
 Rlink fb fbx 1m

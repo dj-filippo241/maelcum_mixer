@@ -10,12 +10,12 @@ Vvco vcoout 0 0
 Vt fbx vmid AC 1
 * carico della reazione: 10k verso la massa virtuale della somma
 Rfbl fb vmid 10k
-.step param rmkf list 100k 280k 600k
+.step param rmkf list 100k 250k 270k 600k
 .step param tc list 0.05 0.5
-.step param ilg list 0.71 1 1.41
+.step param ilg list 0.63 1 1.58
 .ac dec 20 100 10k
 .meas ac g_giro FIND mag(V(fb)) AT 1k
-.meas ac g_bbd FIND mag(V(bbd2out)/V(att,vmid)) AT 1k
+.meas ac g_bbd FIND mag(V(bbd1out)/V(att,vmid)) AT 1k
 .meas ac g_mk FIND mag(V(post,vmid)/V(sum,vmid)) AT 1k
 .meas ac g_rip FIND mag(V(fb,vmid)/V(gy,vmid)) AT 1k
 .end
