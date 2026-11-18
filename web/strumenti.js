@@ -1,9 +1,8 @@
 // Due strumenti da banco, fuori dal mixer, che suonano nei moduli MONO:
 //   NJD (MONO 1)      sirena dub classica, rifatta sullo schema ridisegnato da Zack Nelson
 //                     (Zen Instruments, «NJD Dub Siren schematic redraw and PCB», 2022)
-//   LICKSHOT (MONO 2) laser / tromba alla maniera delle macchine lickshot; struttura presa dal
-//                     firmware open source xioTechnologies/Dub-Siren (Synthesiser.c: l'LFO riparte
-//                     a ogni pressione, il gate chiude a fine ciclo, gate lisciato a 100 Hz)
+//   LICKSHOT (MONO 2) nucleo di Nold (LFO CD4069 -> VCO CD4046), valori dallo schema KiCad di
+//                     Orald-0 e dal datasheet TI del CD4046B (dettagli sopra la classe)
 // Uscita in volt, come il jack dello strumento; il motore la porta nella scala di MC-MONO.
 //
 // Cosa viene dallo schema NJD (valori letti sul disegno):
@@ -121,65 +120,79 @@ export class Njd {
   }
 }
 
-// LICKSHOT: un oscillatore a onda quadra (due, leggermente scordati, in TROMBA), un LFO a dente
-// di sega discendente che fa cadere il tono di 3 ottave a ogni colpo (LASER). Il tasto apre il
-// gate e fa ripartire l'LFO; lasciato, il colpo in corso finisce e il gate chiude: un tocco breve
-// = un colpo, tenuto = raffica. Numeri (gamme, 3 ottave, inviluppo del colpo) scelti da me.
+// LICKSHOT: nucleo di Nold («Lickshot-I», 2016), collegamenti letti nel KiCad di Orald-0
+// (github.com/Orald-0/lickshot_dub_siren, cartella «DA SBROGLIARE», sigle di Orald-0 qui sotto).
+// Comandi della dec. 184: ALTEZZA, VELOCITÀ, LFO ON/OFF, VOLUME, LED; il colpo parte dal tasto (dec. 183).
+//
+// Cosa viene dallo schema:
+//   alimentazione  9 V attraverso D4 1N5817 e R21 33 ohm: VDD ~8,6 V (caduta del diodo: deduzione mia)
+//   LFO   CD4069: U1A+U1B = trigger di Schmitt (R1 22k in reazione, R4 10k dall'integratore);
+//         U1C = integratore di Miller con C1 1 uF, corrente da R6 22k + RV2 500k (VELOCITÀ).
+//         Soglie del Schmitt: 6/22 e 16/22 di VDD (con la soglia della porta a VDD/2).
+//         Rampa lenta: T = 0,909 (R6 + RV2) C1 = 20 ms ... 0,47 s, cioè ~48 ... 2,1 colpi al secondo.
+//         I diodi D2/D3 col deviatore SW1 cortocircuitano R6+RV2 in un verso: dente di sega.
+//         Qui SW1 è fisso su D3 (FORMA scartata, dec. 184): risalita veloce, discesa lenta = il tono
+//         cade a ogni colpo. Risalita ~0,5 ms (resistenza d'uscita del 4069 ~500 ohm: deduzione mia).
+//   VCO   CD4046: l'uscita dell'integratore entra nel VCOin (R5 10k), R1 = R2 10k + RV1 50k
+//         (ALTEZZA), C1 = C2 100 nF, R2 al pin 12 aperta (fmin = 0). Frequenza al centro
+//         (VCOin = VDD/2): ~0,7 / (R1 C1) dalla Fig. 4 del datasheet TI SCHS043B (10k, 0,1 uF:
+//         ~700 Hz a 9-10 V; ±30 % fra un chip e l'altro). Legge lineare col VCOin, zero a ~1 V
+//         (soglia: deduzione mia). La rampa va da 2,3 a 6,3 V: il colpo copre ~2 ottave,
+//         da ~1,1 kHz a ~290 Hz con ALTEZZA al massimo, da ~190 a ~50 Hz al minimo.
+//   uscita onda quadra dal pin 4 -> C3 1 uF -> R9 1k su R8 100 ohm (passa-alto a 145 Hz) -> SW3:
+//         il tasto apre e chiude il segnale, l'LFO gira sempre (non riparte alla pressione).
+//   LED   inseguitore Q1 2N3904 sull'uscita dell'integratore, LED e R3 10k: si accende con la rampa.
+// Scelte mie, fuori dallo schema: LFO OFF ferma la rampa a VDD/2 (tono fisso al centro, dec. 184);
+// VOLUME = pot logaritmico; livello 0 dBu (0,775 V sul plateau) a VOLUME pieno (dec. 187).
+const VDD_L = 8.6;
+const LO_L = (6 / 22) * VDD_L, HI_L = (16 / 22) * VDD_L;
+const VOFF_L = 1.0;
+
 export class Lickshot {
   constructor(fs) {
     this.fs = fs;
-    this.p = { tone: 55, rate: 45, lfo: 1, vol: 100, trig: 0 };
-    this.fase = 0; this.fase2 = 0; this.lfoFase = 0;
-    this.gate = 0; this.gg = 0;
-    this.kGate = 1 - Math.exp((-2 * Math.PI * 100) / fs);
-    this.lp = 0;
+    this.p = { alt: 80, vel: 50, lfo: 1, vol: 100, trig: 0 };
+    this.vi = VDD_L / 2; // uscita dell'integratore (U1C) = VCOin
+    this.su = false; // true durante la risalita veloce
+    this.fase = 0;
+    this.hpx = 0; this.hpy = 0;
     this.led = 0;
   }
 
-  set(k, v) {
-    if (k === "trig" && v && !this.p.trig) {
-      this.lfoFase = 0;
-      this.gate = 1;
-    }
-    this.p[k] = v;
-  }
+  set(k, v) { this.p[k] = v; }
 
   process(out, n) {
     const p = this.p, fs = this.fs;
-    const fTono = 120 * Math.pow(20, p.tone / 100); // 120 Hz ... 2,4 kHz
-    const fLfo = 3 * Math.pow(10, p.rate / 100); // 3 ... 30 colpi al secondo
-    const laser = p.lfo > 0;
-    const amp = 0.9 * (p.vol / 100) * (p.vol / 100); // volt di picco
-    const kLp = 1 - Math.exp((-2 * Math.PI * 6000) / fs);
+    const r1 = 10e3 + (1 - p.alt / 100) * 50e3; // RV1 come reostato: a destra 10k
+    const f0 = 0.7 / (r1 * 100e-9);
+    const rl = 22e3 + (1 - p.vel / 100) * 500e3; // R6 + RV2
+    const giu = VDD_L / 2 / (rl * 1e-6) / fs; // volt per campione nella discesa
+    const su = (HI_L - LO_L) / 5e-4 / fs;
+    const kHp = 1 / (1 + 2 * Math.PI * 145 / fs);
+    const amp = 0.775 * (p.vol / 100) * (p.vol / 100);
+    const gate = p.trig ? 1 : 0;
     let ledMax = 0;
     for (let k = 0; k < n; k++) {
-      let f = fTono, inv = 1;
-      if (laser) {
-        f = fTono * Math.pow(2, 3 * (1 - this.lfoFase));
-        inv = Math.exp(-2.5 * this.lfoFase);
-        this.lfoFase += fLfo / fs;
-        if (this.lfoFase >= 1) {
-          this.lfoFase -= 1;
-          if (!p.trig) this.gate = 0; // il colpo è finito e il tasto è su
+      if (p.lfo) {
+        if (this.su) {
+          this.vi += su;
+          if (this.vi >= HI_L) { this.vi = HI_L; this.su = false; }
+        } else {
+          this.vi -= giu;
+          if (this.vi <= LO_L) { this.vi = LO_L; this.su = true; }
         }
-      } else if (!p.trig) this.gate = 0;
-      this.gg += (this.gate - this.gg) * this.kGate;
-      let y = quadra(this.fase, f / fs);
+      } else this.vi = VDD_L / 2;
+      const f = (f0 * Math.max(0, this.vi - VOFF_L)) / (VDD_L / 2 - VOFF_L);
+      const x = quadra(this.fase, f / fs);
       this.fase += f / fs;
       if (this.fase >= 1) this.fase -= 1;
-      if (!laser) {
-        const f2 = f * 1.012;
-        y = 0.5 * (y + quadra(this.fase2, f2 / fs));
-        this.fase2 += f2 / fs;
-        if (this.fase2 >= 1) this.fase2 -= 1;
-      }
-      this.lp += (y - this.lp) * kLp;
-      const v = this.lp * inv * this.gg * amp;
-      out[k] = v;
-      const a = Math.abs(v);
-      if (a > ledMax) ledMax = a;
+      this.hpy = kHp * (this.hpy + x - this.hpx); // C3 su R9 + R8
+      this.hpx = x;
+      out[k] = this.hpy * gate * amp;
+      const l = (this.vi - 2.4) / (HI_L - 2.4); // Q1 + LED: si accende sopra ~2,4 V
+      if (l > ledMax) ledMax = l;
     }
-    this.led = Math.max(this.led, this.gg);
+    this.led = Math.max(this.led, Math.min(1, Math.max(0, ledMax)));
   }
 }
 
@@ -203,6 +216,6 @@ export const STRUMENTI = [
     ["LFO RATE", "lfo", 0, 4], ["MODULATION", "mod", 0, 4], ["OSC RATE", "osc", 25, 4], ["VOLUME", "vol", 100],
   ], tasti: [["S1", "s1", "1"], ["S2", "s2", "2"]], levetta: ["POWER", "power", ["OFF", "ON"]] },
   { nome: "LICKSHOT", mono: 2, comandi: [
-    ["TONE", "tone", 55], ["RATE", "rate", 45], ["VOLUME", "vol", 100],
-  ], tasti: [["FIRE", "trig", "3"]], levetta: ["LFO", "lfo", ["TROMBA", "LASER"], 1] },
+    ["ALTEZZA", "alt", 80], ["VELOCITÀ", "vel", 50], ["VOLUME", "vol", 100],
+  ], tasti: [["FIRE", "trig", "3"]], levetta: ["LFO", "lfo", ["OFF", "ON"], 1] },
 ];

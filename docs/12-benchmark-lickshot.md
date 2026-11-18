@@ -134,6 +134,12 @@ Cosa si ricava, con le deduzioni segnate (d):
 - **La LICKSHOT del banco web** ha la stessa struttura (un LFO a rampa che
   piega un oscillatore quadro), ma i numeri li ha scelti Claude. Con lo schema
   di Nold la si può ricalcolare sui valori veri (d).
+  **Ricalcolata il 2026-11-18 (todo 371)** sullo schema KiCad di Orald-0 e sul
+  datasheet TI del CD4046B (Fig. 4): LFO a dente di sega 2,1-48 colpi al
+  secondo (C 1 µF, 22k + 500k), colpo di ~2 ottave (da ~1,1 kHz a ~290 Hz con
+  ALTEZZA al massimo), passa-alto d'uscita a 145 Hz. Nello schema l'LFO gira
+  sempre e il tasto apre solo il segnale. Dettagli e deduzioni in
+  `web/strumenti.js`; comandi della dec. 184.
 
 Fonti della tabella 1bis: forum.dubsounds.fr/t/diy-lickshot-schematic-pcb/5111 ;
 forum.dubsounds.fr/t/lickshot-siren-schematic/14380 ;
