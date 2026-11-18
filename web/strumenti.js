@@ -122,12 +122,12 @@ export class Njd {
 
 // LICKSHOT (dec. 179-189): copia di proto-max/coefficienti/lickshot.py, che è la fonte dei numeri
 // e il documento delle scelte (nucleo di Nold dal KiCad di Orald-0, CD4046 dal datasheet TI,
-// eco a due BBD). prova_lickshot.py --web confronta questa classe col modello campione per
+// eco a due BBD senza filtri, dec. 191). prova_lickshot.py --web confronta questa classe col modello campione per
 // campione (dump da web/tools/dump_lickshot.mjs). Uscita in volt al jack.
 const L = {
   VDD: 8.6, VOFF: 1.0, K_F0: 0.7, C_VCO: 100e-9, R_VCO: 10e3, P_VCO: 50e3,
   C_LFO: 1e-6, R_LFO: 22e3, P_LFO: 500e3, T_SU: 5e-4, F_HP_OUT: 145, V_NOM: 0.775, V_LED: 2.4,
-  N_BBD: 8192, K_FC: 0.25, FC_MAX: 8000, F_HP_GIRO: 150, V_SAT: 1.5, G_MAX: 1.1, T_LISCIO: 0.05,
+  N_BBD: 8192, F_HP_GIRO: 150, V_SAT: 1.5, G_MAX: 1.1, T_LISCIO: 0.05,
 };
 L.LO = (6 / 22) * L.VDD;
 L.A_MAX = (15 / 17) * (L.VDD / 2 - L.VOFF); // PROFONDITÀ a fondo corsa: ~4 ottave (dec. 190)
@@ -147,7 +147,7 @@ export class Lickshot {
     this.su = false; // risalita veloce in corso
     this.fase = 0;
     this.hpx = 0; this.hpy = 0; this.gx = 0; this.gy = 0;
-    this.pi1 = 0; this.pi2 = 0; this.qi1 = 0; this.qi2 = 0; // anti-alias prima e dopo i BBD
+    this.ck = 0; this.hin = 0; this.hout = 0; // clock dei BBD e tenute (niente filtri, dec. 191)
     this.n = Math.floor(0.5 * fs) + 4;
     this.buf = new Float64Array(this.n);
     this.w = 0;
@@ -187,25 +187,20 @@ export class Lickshot {
       const dry = this.hpy * (p.trig > 0.5 ? 1 : 0) * L.V_NOM * vv * vv;
       // eco: due BBD in fila
       this.td += (tempoEco(s.tempo) * fs - this.td) * kt;
-      const fc = Math.min((L.K_FC * L.N_BBD) / (2 * (this.td / fs)), L.FC_MAX);
-      const g = Math.tan((Math.PI * fc) / fs);
-      const a1 = 1 / (1 + g * (g + Math.SQRT2)), a2 = g * a1, a3 = g * a2;
+      this.ck += L.N_BBD / (2 * this.td / fs) / fs; // clock dei BBD
+      const tick = this.ck >= 1;
+      if (tick) this.ck -= 1;
       let rpos = this.w - this.td;
       while (rpos < 0) rpos += this.n;
       const i0 = Math.floor(rpos), fr = rpos - i0;
       const rd = this.buf[i0 % this.n] * (1 - fr) + this.buf[(i0 + 1) % this.n] * fr;
-      const v3 = rd - this.qi2, v1 = a1 * this.qi1 + a2 * v3;
-      const post = this.qi2 + a2 * this.qi1 + a3 * v3;
-      this.qi1 = 2 * v1 - this.qi1;
-      this.qi2 = 2 * post - this.qi2;
+      if (tick) this.hout = rd; // i BBD tengono il campione fino al clock dopo
+      const post = this.hout;
       this.gy = kg * (this.gy + post - this.gx); // passa-alto nel giro
       this.gx = post;
       const fb = L.V_SAT * Math.tanh((L.G_MAX * (s.rip / 100) * this.gy) / L.V_SAT); // saturazione
-      const w3 = dry + fb - this.pi2, w1 = a1 * this.pi1 + a2 * w3;
-      const pre = this.pi2 + a2 * this.pi1 + a3 * w3;
-      this.pi1 = 2 * w1 - this.pi1;
-      this.pi2 = 2 * pre - this.pi2;
-      this.buf[this.w] = pre;
+      if (tick) this.hin = dry + fb;
+      this.buf[this.w] = this.hin;
       this.w = (this.w + 1) % this.n;
       const ve = s.eco / 100;
       out[k] = dry + ve * ve * post;

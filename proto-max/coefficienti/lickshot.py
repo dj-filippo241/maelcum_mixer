@@ -16,13 +16,15 @@ Nucleo di Nold («Lickshot-I», 2016), collegamenti dal KiCad di Orald-0
   PROFONDITA (dec. 190, al posto di LFO ON/OFF): pot fra la rampa e VDD/2,
         buffer con guadagno verso il VCOin; 0 = tono fisso, 100 = ~4 ottave.
   uscita onda quadra -> C 1 uF su 1k + 100 ohm: passa-alto 145 Hz -> tasto.
-Eco (dec. 182, 185, 186): due BBD da 4096 stadi in fila, T = 8192 / (2 fclk);
-filtri anti-alias a 2 poli prima e dopo, taglio fclk/4 (max 8 kHz); nel
+Eco (dec. 182, 185, 186, 191): due BBD da 4096 stadi in fila,
+T = 8192 / (2 fclk), senza filtri anti-alias ne di ricostruzione: i BBD
+campionano e tengono al ritmo del clock, l'aliasing esce da solo. Il
+fischio del clock non e modellato (livello non dato dal datasheet). Nel
 giro passa-alto 150 Hz e saturazione morbida. TEMPO, RIPETIZIONI,
 LIVELLO ECO.
 
 Deduzioni mie (da ascoltare o da simulare, regola 3): VDD 8,6 V, VOFF 1 V,
-risalita 0,5 ms, taglio anti-alias fclk/4, passa-alto del giro 150 Hz,
+risalita 0,5 ms, passa-alto del giro 150 Hz,
 saturazione tanh a 1,5 V, guadagno del giro fino a 1,1 (oltre 1 l'eco si
 autoalimenta), TEMPO esponenziale 41-410 ms, liscio del tempo 50 ms
 (l'effetto «fionda» quando si gira), VOLUME e LIVELLO ECO a legge
@@ -50,8 +52,6 @@ V_LED = 2.4
 N_BBD = 8192
 T_MIN = N_BBD / (2 * 100e3)   # clock 100 kHz
 T_MAX = N_BBD / (2 * 10e3)    # clock 10 kHz
-K_FC = 0.25
-FC_MAX = 8000.0
 F_HP_GIRO = 150.0
 V_SAT = 1.5
 G_MAX = 1.1
@@ -77,29 +77,6 @@ def tempo_eco(t):
     return T_MIN * (T_MAX / T_MIN) ** (t / 100)
 
 
-def fc_bbd(tempo):
-    return min(K_FC * N_BBD / (2 * tempo), FC_MAX)
-
-
-class Svf:
-    """Passa-basso a 2 poli, Q 0,707 (SVF trapezoidale), taglio variabile."""
-
-    def __init__(self):
-        self.i1 = self.i2 = 0.0
-
-    def __call__(self, x, g):
-        k = math.sqrt(2)
-        a1 = 1 / (1 + g * (g + k))
-        a2 = g * a1
-        a3 = g * a2
-        v3 = x - self.i2
-        v1 = a1 * self.i1 + a2 * v3
-        v2 = self.i2 + a2 * self.i1 + a3 * v3
-        self.i1 = 2 * v1 - self.i1
-        self.i2 = 2 * v2 - self.i2
-        return v2
-
-
 def blep(t, dt):
     if t < dt:
         t /= dt
@@ -118,7 +95,7 @@ class Lickshot:
         self.vi, self.su, self.fase = VDD / 2, False, 0.0
         self.hpx = self.hpy = 0.0
         self.gx = self.gy = 0.0
-        self.pre, self.post = Svf(), Svf()
+        self.ck, self.hin, self.hout = 0.0, 0.0, 0.0  # clock dei BBD e tenute
         self.n = int(0.5 * fs) + 4
         self.buf = [0.0] * self.n
         self.w = 0
@@ -162,19 +139,25 @@ class Lickshot:
         # eco
         tm = tempo_eco(s["tempo"])
         self.td += (tm * fs - self.td) * (1 - math.exp(-1 / (T_LISCIO * fs)))
-        g = math.tan(math.pi * fc_bbd(self.td / fs) / fs)
+        self.ck += N_BBD / (2 * self.td / fs) / fs  # clock: fclk / fs per campione
+        tick = self.ck >= 1
+        self.ck -= tick
         rpos = self.w - self.td
         while rpos < 0:
             rpos += self.n
         i0 = int(rpos)
         fr = rpos - i0
         rd = self.buf[i0 % self.n] * (1 - fr) + self.buf[(i0 + 1) % self.n] * fr
-        post = self.post(rd, g)
+        if tick:
+            self.hout = rd
+        post = self.hout
         kg = 1 / (1 + 2 * math.pi * F_HP_GIRO / fs)
         self.gy = kg * (self.gy + post - self.gx)
         self.gx = post
         fb = V_SAT * math.tanh(G_MAX * s["rip"] / 100 * self.gy / V_SAT)
-        self.buf[self.w] = self.pre(dry + fb, g)
+        if tick:
+            self.hin = dry + fb
+        self.buf[self.w] = self.hin
         self.w = (self.w + 1) % self.n
         ve = s["eco"] / 100
         self.led = max(0.0, min(1.0, (self.vi - V_LED) / (HI - V_LED)))

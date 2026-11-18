@@ -895,8 +895,8 @@ EN.update({
 # LICKSHOT (2026-11-18, dec. 179-189)
 EN.update({
     "LICKSHOT IN RACK 1U (fuori dal mixer)": "LICKSHOT IN A 1U RACK (outside the mixer)",
-    "maelcum mixer — dec. 179-189: una voce, LFO che piega un oscillatore, eco a due BBD dentro la macchina · entra nel mixer da un modulo MONO":
-        "maelcum mixer — dec. 179-189: one voice, an LFO bending an oscillator, two-BBD echo inside the box · enters the mixer through a MONO module",
+    "maelcum mixer — dec. 179-191: una voce, LFO che piega un oscillatore, eco a due BBD dentro la macchina · entra nel mixer da un modulo MONO":
+        "maelcum mixer — dec. 179-191: one voice, an LFO bending an oscillator, two-BBD echo inside the box · enters the mixer through a MONO module",
     "modello, non simulato": "model, not simulated",
     "VELOCITÀ + LFO ON/OFF": "SPEED + LFO ON/OFF",
     "pot 500k · interruttore": "500k pot · switch",
@@ -937,6 +937,9 @@ EN.update({
     "nel mixer (dec. 187)": "in the mixer (dec. 187)",
     "150 Hz nel giro": "150 Hz in the loop",
     "SATURAZIONE": "SATURATION",
+    "senza filtri (dec. 191): aliasing e fischio del clock con TEMPO lungo": "no filters (dec. 191): aliasing and clock whine at long TIME",
+    "numeri da proto-max/coefficienti/lickshot.py: VOFF, risalita, giro e saturazione sono deduzioni da simulare (regola 3); fischio del clock non modellato":
+        "numbers from proto-max/coefficienti/lickshot.py: VOFF, ramp rise, loop and saturation are assumptions still to simulate (rule 3); clock whine not modelled",
     "VELOCITÀ": "SPEED", "pot 500k": "500k pot", "ALTEZZA + PROFONDITÀ": "PITCH + DEPTH",
     "pot 50k · pot sulla rampa": "50k pot · pot on the ramp", "colpo da 0 a ~4 ottave": "shot from 0 to ~4 octaves",
     "rack 1U · alimentatore esterno a spina, DC, connettore con blocco (dec. 189) · 7 manopole, LED, FIRE (dec. 184-185, 188, 190)":

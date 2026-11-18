@@ -19,6 +19,7 @@
 | Trigger | solo il tasto FIRE sul pannello: suona finché è premuto | dec. 183 [F] |
 | Comandi | ALTEZZA, VELOCITÀ, PROFONDITÀ, VOLUME, TEMPO, RIPETIZIONI, LIVELLO ECO; LED dell'LFO; FIRE | dec. 184, 185, 190 [F] |
 | Giro dell'eco | passa-alto e saturazione fissi, senza comandi | dec. 186 [F] |
+| Filtri dei BBD | nessuno: niente anti-alias né ricostruzione | dec. 191 [F] |
 | Uscita | jack mono sbilanciato, 0 dBu nominale, verso un modulo MONO | dec. 187 [F] |
 | Formato | rack 1U | dec. 188 [F] |
 | Alimentazione | alimentatore esterno a spina, DC, connettore con blocco | dec. 189 [F] |
@@ -30,7 +31,7 @@ FIRE ─┐
 LFO CD4069 ─► PROFONDITÀ ─► VCO CD4046 ─► passa-alto 145 Hz ─► FIRE ─► VOLUME ─┬─────────────► MIX ─► USCITA 0 dBu
 (VELOCITÀ)    (pot + buffer)  (ALTEZZA)                                          │                ▲ (LIVELLO ECO)
    └─► LED                                                                       ▼                │
-                                    SOMMA ─► anti-alias ─► BBD 1 ─► BBD 2 ─► anti-alias + make-up ─┤
+                                    SOMMA ─► attenuatore ─► BBD 1 ─► BBD 2 ─► make-up (niente filtri) ─┤
                                       ▲                    clock V3102 (TEMPO)                     │
                                       └── RIPETIZIONI ◄── saturazione ◄── passa-alto 150 Hz ◄──────┘
 ```
@@ -107,12 +108,13 @@ taglia il segnale, l'LFO gira sempre (ascoltato e accettato, dec. 190).
   del TEMPO: da decidere fra RC interno col pot (legge 1/R) e un
   secondo CD4046B come VCO esterno (legge esponenziale come nel modello,
   più l'effetto «fionda» lisciando la tensione). [APERTO]
-- **Anti-alias**: nel modello il taglio segue il clock (fclk/4, max
-  8 kHz). Un filtro che insegue il clock vuole un filtro a capacità
-  commutate o una cella controllata in tensione; la via comune è un
-  filtro fisso a ~3-4 kHz a 2-3 poli prima e dopo. [APERTO: se fisso,
-  il modello va riallineato e ascoltato di nuovo, perché coi tempi corti
-  le ripetizioni diventano più scure di oggi]
+- **Filtri**: nessuno (dec. 191). Restano il trimmer di cancellazione
+  del clock fra OUT1 e OUT2 e i condensatori di accoppiamento. Con
+  TEMPO lungo (clock sotto ~18 kHz) il fischio del clock è udibile: il
+  livello lo dirà la misura, il datasheet non lo dà. Il fischio passa
+  anche nel giro; il passa-alto del giro non lo ferma (è un passa-alto).
+  Da guardare in simulazione: che il fischio, ripetuto dal giro, non
+  saturi la saturazione e non tolga spazio all'eco con RIPETIZIONI alto.
 - **Giro**: passa-alto RC 150 Hz, saturazione a diodi antiparallelo con
   R in serie (ginocchio ~0,5 V al livello dei BBD, ≈ V_SAT 1,5 V del
   modello al livello di linea), RIPETIZIONI pot lineare, somma invertente
@@ -145,8 +147,9 @@ BBD).
 ## 6. Scarti fra modello e hardware
 
 1. VDD 8,6 V nel modello, 9 V regolati qui (§3.1).
-2. Anti-alias che segue il clock nel modello, probabilmente fisso qui
-   (§3.6).
+2. Filtri dei BBD: nessuno, nel modello e qui (dec. 191). Il modello
+   campiona e tiene al ritmo del clock (aliasing sì), ma non ha il fischio
+   del clock.
 3. Il modello non ha il fruscio dei BBD (S/N 60 dB A per chip, datasheet).
 4. Legge di TEMPO: esponenziale nel modello, da fissare col circuito del
    clock (§3.6).
@@ -155,9 +158,9 @@ BBD).
 
 1. Datasheet del V3102 (o scelta del BL3102 col suo datasheet).
 2. Op-amp scelti dal datasheet.
-3. Decisioni aperte di ingegneria: clock del TEMPO e anti-alias fisso o
-   inseguito. Se cambiano il suono, riallineare `lickshot.py`, il banco web
-   e MC-LICKSHOT e farli riascoltare a Filippo.
+3. Decisione aperta di ingegneria: circuito del clock del TEMPO. Se
+   cambia il suono, riallineare `lickshot.py`, il banco web e MC-LICKSHOT
+   e farli riascoltare a Filippo.
 4. Simulazione LTspice dei blocchi analogici (PROFONDITÀ, uscita, giro
    dell'eco col BBD come ritardo ideale, saturazione) in `sim/lickshot/`.
 5. Scheda `pcb/lickshot/lickshot.py` col generatore, dopo la
