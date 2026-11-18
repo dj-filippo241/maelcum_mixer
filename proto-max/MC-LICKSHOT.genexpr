@@ -41,7 +41,7 @@ s_tempo = tempo + t10 * (s_tempo - tempo);
 s_rip = rip + t10 * (s_rip - rip);
 s_eco = eco + t10 * (s_eco - eco);
 // LFO: integratore fra le soglie del Schmitt, discesa lenta, risalita dal diodo
-rl = 22000.0 + (1 - s_vel / 100) * 500000.0;
+rl = 33000.0 + (1 - s_vel / 100) * 500000.0;
 giu = 4.3 / (rl * 1e-06) / samplerate;
 sup = 7818.181818181819 / samplerate;
 vin = vi + su * sup - (1 - su) * giu;

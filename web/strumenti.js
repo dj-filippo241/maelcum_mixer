@@ -126,7 +126,7 @@ export class Njd {
 // campione (dump da web/tools/dump_lickshot.mjs). Uscita in volt al jack.
 const L = {
   VDD: 8.6, VOFF: 1.0, K_F0: 0.7, C_VCO: 100e-9, R_VCO: 10e3, P_VCO: 100e3,
-  C_LFO: 1e-6, R_LFO: 22e3, P_LFO: 500e3, T_SU: 5e-4, F_HP_OUT: 14.5, V_NOM: 0.775, V_LED: 2.4,
+  C_LFO: 1e-6, R_LFO: 33e3, P_LFO: 500e3, T_SU: 5e-4, F_HP_OUT: 14.5, V_NOM: 0.775, V_LED: 2.4,
   N_BBD: 8192, F_HP_GIRO: 150, V_SAT: 1.5, G_MAX: 1.1, T_LISCIO: 0.05,
 };
 L.LO = (6 / 22) * L.VDD;

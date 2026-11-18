@@ -42,7 +42,7 @@ LFO CD4069 ─► PROFONDITÀ ─► VCO CD4046 ─► passa-alto 14,5 Hz ─►
 
 Numeri della catena dal modello (`lickshot.py`, `prova_lickshot.py`):
 colpo da 0 a ~4 ottave secondo PROFONDITÀ (2 ottave a ~2/3), da 2 a
-48 colpi al secondo, eco 41-410 ms, giro con guadagno fino a 1,1 (oltre
+33 colpi al secondo (dec. 195), eco 41-410 ms, giro con guadagno fino a 1,1 (oltre
 1 l'eco si autoalimenta e la saturazione la tiene).
 
 ## 3. Topologia per blocco
@@ -84,7 +84,7 @@ colpo da 0 a ~4 ottave secondo PROFONDITÀ (2 ottave a ~2/3), da 2 a
 
 CD4069UB: U1A + U1B trigger di Schmitt (R1 22k in reazione, R4 10k
 dall'integratore), U1C integratore di Miller con C1 1 µF film; corrente
-da R6 22k + VELOCITÀ 500k. Diodo D3 1N4148 fisso in parallelo alla
+da R6 33k (dec. 195; Nold: 22k) + VELOCITÀ 500k. Diodo D3 1N4148 fisso in parallelo alla
 resistenza di carica: risalita veloce, discesa lenta, il tono cade a
 ogni colpo. Soglie a 6/22 e 16/22 di VDD. LED: inseguitore 2N3904
 sull'uscita dell'integratore, LED e 10k. Le porte libere del CD4069UB

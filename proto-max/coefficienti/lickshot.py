@@ -7,7 +7,7 @@ prova_lickshot.py li confronta).
 Nucleo di Nold («Lickshot-I», 2016), collegamenti dal KiCad di Orald-0
 (github.com/Orald-0/lickshot_dub_siren, «DA SBROGLIARE»):
   LFO   CD4069: trigger di Schmitt (22k / 10k) + integratore di Miller
-        C 1 uF, R = 22k + VELOCITA 500k. Soglie 6/22 e 16/22 di VDD.
+        C 1 uF, R = 33k + VELOCITA 500k (dec. 195; Nold: 22k). Soglie 6/22 e 16/22 di VDD.
         Discesa lenta T = 0,909 R C; risalita dal diodo (D3 fisso: il tono
         cade a ogni colpo, dec. 184 senza FORMA).
   VCO   CD4046: R1 = 10k + ALTEZZA 100k a curva logaritmica (dec. 194:
@@ -45,7 +45,7 @@ C_VCO = 100e-9
 R_VCO = 10e3
 P_VCO = 100e3
 C_LFO = 1e-6
-R_LFO = 22e3
+R_LFO = 33e3  # dec. 195 (Nold: 22k)
 P_LFO = 500e3
 T_SU = 5e-4
 F_HP_OUT = 14.5
