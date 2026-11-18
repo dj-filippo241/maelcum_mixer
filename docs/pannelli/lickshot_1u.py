@@ -47,6 +47,7 @@ SUONO = [("ALTEZZA", 112.0), ("VELOCITÀ", 146.0), ("PROFONDITÀ", 190.0), ("VOL
 LED = ("LFO", 166.0)
 ECO = [("TEMPO", 272.0), ("RIPETIZIONI", 306.0), ("LIVELLO ECO", 340.0)]
 FIRE = ("FIRE", 404.0)
+ACCENSIONE = ("ACCENSIONE", 82.0)   # dec. 199: levetta a sinistra, dopo il nome
 
 el, comandi = [], []
 
@@ -91,6 +92,14 @@ for x in (ORECCHIA, W - ORECCHIA):
 testo(26, 27.5, "FLETCHER", 7.5, "bold", C["t_modulo"], "start", 0.6)
 testo(26.4, 34.5, "maelcum", 3.0, colore=SOFT, anchor="start", spazio=0.5)
 
+# accensione (dec. 199): levetta ON/OFF, niente LED di accensione
+nome, x = ACCENSIONE
+comandi.append(dict(tipo="levetta", nome=nome, x=x, y=Y_POT, foro=6.0, posizioni=["OFF", "ON"]))
+el.append(f"<circle cx='{x}' cy='{Y_POT}' r='3' fill='{C['s_bottone']}'/>")
+el.append(f"<circle cx='{x}' cy='{Y_POT}' r='1.6' fill='{C['p_lickshot']}' stroke='{C['s_bottone']}' stroke-width='0.3'/>")
+testo(x, Y_ETI, "ON", 2.4, colore=SOFT)
+testo(x, Y_POT + 9.5, "OFF", 2.4, colore=SOFT)
+
 gruppo("SUONO", 96, 240)
 gruppo("ECO", 256, 356)
 for nome, x in SUONO:
@@ -125,7 +134,7 @@ def qt(x, y, t, size=2.6, colore=None, anchor="start", peso="normal"):
                  f"fill='{colore or C['t_quote']}' text-anchor='{anchor}' {FONT}>{t}</text>")
 
 
-qt(M, M - 3, "FLETCHER · lickshot rack 1U · disposizione approvata (dec. 196), nome (dec. 197)", 3.2, C["t_bozza"], peso="bold")
+qt(M, M - 3, "FLETCHER · lickshot rack 1U · disposizione (dec. 196), nome (dec. 197), accensione (dec. 199)", 3.2, C["t_bozza"], peso="bold")
 y0 = M + H + 7
 qt(M, y0, f"Pannello {W} × {H} mm (19\" × 1U). Orecchie da {ORECCHIA} mm con le asole del rack (linee tratteggiate).")
 qt(M, y0 + 4.5, "Comandi della dec. 190, su una riga come il Klementz Lickshot Rack (dec. 188): "

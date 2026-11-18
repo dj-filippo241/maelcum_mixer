@@ -129,7 +129,9 @@ d.block = "ALIMENTAZIONE 12 V -> +9 V e +5 V"
 d.part("J", "Connector_Generic:Conn_01x02", "ingresso DC (cavo)", HDR2, {1: "RAW12", 2: "AGND"}, ref="J1",
        place=(265, 89, 0), note="NOTA: filo verso la presa DC con blocco sul pannello dietro (dec. 189); "
                                 "negativo flottante, la massa arriva dal MONO (RISULTATI §6)")
-d.part("D", "Diode:1N5819", "1N5819", "Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal", {"A": "RAW12", "K": "VIN"},
+d.part("J", "Connector_Generic:Conn_01x02", "accensione (cavo)", HDR2, {1: "RAW12", 2: "SW12"}, ref="J4",
+       place=(4, 40, 0), note="fili verso la levetta ON/OFF sul pannello davanti, a sinistra dopo il nome (dec. 199)")
+d.part("D", "Diode:1N5819", "1N5819", "Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal", {"A": "SW12", "K": "VIN"},
        note="protezione contro l'inversione (~0,35 V)")
 d.CP("VIN", "AGND", "100u 25V")
 d.part("U", "Regulator_Linear:L78L09_TO92", "78L09", "Package_TO_SOT_THT:TO-92_Inline_Wide",
@@ -153,8 +155,8 @@ d.C("VMIDR", "AGND", "10u", C12, note="NOTA: filtra il rumore del partitore (1,6
 # ---------------------------------------------------------------- LFO (§3.2, Nold)
 d.block = "LFO CD4069UB: trigger di Schmitt + integratore, LED"
 d.part("U", CD4069, "CD4069UBM", SOIC14, {1: "SCHIN", 2: "SCHA", 3: "SCHA", 4: "SCH", 5: "INTIN", 6: "RAMP",
-                                          9: "AGND", 11: "AGND", 13: "AGND", 7: "AGND", 14: "+9V"},
-       ref="U1", note="U1A + U1B trigger di Schmitt, U1C integratore di Miller; U1D-F ingressi a massa")
+                                          9: "LDIN", 8: "LDOUT", 11: "AGND", 13: "AGND", 7: "AGND", 14: "+9V"},
+       ref="U1", note="U1A + U1B trigger di Schmitt, U1C integratore di Miller; U1D sente FIRE per il LED (dec. 200); U1E-F ingressi a massa")
 d.C("+9V", "AGND", "100n")
 d.R("RAMP", "SCHIN", "10k", note="R4 di Nold: soglie 6/22 e 16/22 di VDD con R1")
 d.R("SCH", "SCHIN", "22k", note="R1 di Nold")
@@ -167,8 +169,18 @@ d.part("Q", "Transistor_BJT:2N3904", "2N3904", "Package_TO_SOT_THT:TO-92_Inline_
        {"B": "RAMP", "C": "+9V", "E": "LEDE"}, note="inseguitore del LED sull'uscita dell'integratore")
 d.R("LEDE", "LEDA", "10k")
 c = COM["LFO"]
-d.part("D", "Device:LED", "LED 3 mm rosso", LED_FP, {1: "AGND", 2: "LEDA"}, place=(c["x"] - X0, 0.3, 180),
+d.part("D", "Device:LED", "LED 3 mm rosso", LED_FP, {1: "LEDK", 2: "LEDA"}, place=(c["x"] - X0, 0.3, 180),
        anchor=LED_ANCORA, note="NOTA: LED a 90 gradi; l'altezza Z va fatta coincidere con quella dell'albero dei pot")
+
+d.block = "LED SOLO A FIRE PREMUTO (dec. 200)"
+d.C("FIREOUT", "LDIN", "100n", note="il colpo dopo il tasto: c'e solo a FIRE premuto")
+d.R("LDIN", "LDOUT", "1M", note="U1D autopolarizzato: amplifica il colpo fino ai rail")
+d.part("D", "Diode:1N4148W", "1N4148W", "Diode_SMD:D_SOD-123", {"A": "LDOUT", "K": "LDEN"}, note="rivelatore di picco")
+d.C("LDEN", "AGND", "470n", note="~50 ms: il LED si spegne ~0,1 s dopo il rilascio")
+d.R("LDEN", "AGND", "100k")
+d.R("LDEN", "LDB", "100k")
+d.part("Q", "Transistor_BJT:2N3904", "2N3904", "Package_TO_SOT_THT:TO-92_Inline_Wide",
+       {"B": "LDB", "C": "LEDK", "E": "AGND"}, note="chiude il catodo del LED solo a FIRE premuto")
 
 # ---------------------------------------------------------------- PROFONDITA (§3.3, profondita.cir)
 d.block = "BUFFER DELLA RAMPA, VDD/2 e PROFONDITA (TLC2272)"

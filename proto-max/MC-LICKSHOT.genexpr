@@ -90,4 +90,4 @@ dl.write(hin);
 ve = s_eco / 100;
 out1 = (dry + ve * ve * hout) / 4.360865946243008;
 out2 = out1;
-out3 = min(max((vi - 2.4) / 3.854545454545455, 0), 1);
+out3 = min(max((vi - 2.4) / 3.854545454545455, 0), 1) * (trig > 0.5);  // dec. 200: LED solo a FIRE premuto

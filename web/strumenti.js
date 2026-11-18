@@ -205,7 +205,7 @@ export class Lickshot {
       const ve = s.eco / 100;
       out[k] = dry + ve * ve * post;
       const l = (this.vi - L.V_LED) / (L.HI - L.V_LED); // Q1 + LED
-      if (l > ledMax) ledMax = l;
+      if (p.trig > 0.5 && l > ledMax) ledMax = l; // dec. 200: LED solo a FIRE premuto
     }
     this.led = Math.max(this.led, Math.min(1, Math.max(0, ledMax)));
   }

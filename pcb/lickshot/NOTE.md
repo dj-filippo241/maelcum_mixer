@@ -13,7 +13,9 @@ Rigenerare (~4 minuti; con `--solo-schema` pochi secondi):
 
 ## Stato
 
-- **PASSA** a un BBD (2026-11-19, dec. 198): Freerouting chiuso al 4o tentativo su 6. Margine
+- **PASSA** con levetta e LED a FIRE (2026-11-19, dec. 199-200): Freerouting chiuso al 1o
+  tentativo su 6. Controllo audio A2 da 4 a 7.
+- PASSA a un BBD (2026-11-19, dec. 198): Freerouting chiuso al 4o tentativo su 6. Margine
   stretto: se un giro nuovo dà NON PASSA, alzare `d.route_tries`.
 - PASSA a due BBD (2026-11-19, v0.1 corretta: RISULTATI-scheda §2-§3). Scheda allungata da 80 a 95 mm
   di profondità: col trimmer di taratura della make-up il blocco dell'eco non trovava più posto
@@ -32,6 +34,8 @@ Rigenerare (~4 minuti; con `--solo-schema` pochi secondi):
   scheda copre le x da 100 a 380 mm del pannello (`X0` in `lickshot.py`).
 - Pot Alps RK09L **orizzontali**: l'albero esce dal bordo davanti, il fronte del corpo sta sul
   bordo. Il LED da 3 mm è a 90 gradi (impronta Z 6 mm).
+- Levetta di accensione (dec. 199) davanti a sinistra: fili su J4, in serie sul +12 V prima del
+  1N5819. LED dell'LFO solo a FIRE premuto (dec. 200): U1D + rivelatore di picco + 2N3904 sul catodo.
 - FIRE (24 mm), jack d'uscita e presa DC stanno sui pannelli e arrivano coi fili: J2 (FIRE, vicino
   al tasto a destra), J3 (uscita) e J1 (DC) sul bordo dietro.
 - Quattro fori M3 senza pad: la massa arriva solo dal MONO (RISULTATI §6).

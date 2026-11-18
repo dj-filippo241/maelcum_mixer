@@ -172,5 +172,5 @@ class Lickshot:
         self.buf[self.w] = self.hin
         self.w = (self.w + 1) % self.n
         ve = s["eco"] / 100
-        self.led = max(0.0, min(1.0, (self.vi - V_LED) / (HI - V_LED)))
+        self.led = max(0.0, min(1.0, (self.vi - V_LED) / (HI - V_LED))) * (p["trig"] > 0.5)  # dec. 200
         return dry + ve * ve * post

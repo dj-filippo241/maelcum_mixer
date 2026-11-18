@@ -100,7 +100,7 @@ def genexpr():
     r("ve = s_eco / 100;")
     r(f"out1 = (dry + ve * ve * hout) / {fx.LIV!r};")
     r("out2 = out1;")
-    r(f"out3 = min(max((vi - {L.V_LED!r}) / {L.HI - L.V_LED!r}, 0), 1);")
+    r(f"out3 = min(max((vi - {L.V_LED!r}) / {L.HI - L.V_LED!r}, 0), 1) * (trig > 0.5);  // dec. 200: LED solo a FIRE premuto")
     return "\n".join(g.righe) + "\n"
 
 
