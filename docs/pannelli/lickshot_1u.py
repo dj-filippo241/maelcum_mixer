@@ -1,4 +1,4 @@
-"""Bozza del pannello della lickshot, rack 1U (dec. 188, 190).
+"""Pannello della lickshot, rack 1U (dec. 188, 190; disposizione approvata, dec. 196).
 
 Uso:  python3 docs/pannelli/lickshot_1u.py
 Scrive docs/pannelli/lickshot-1u.svg e docs/pannelli/lickshot-1u.json
@@ -125,7 +125,7 @@ def qt(x, y, t, size=2.6, colore=None, anchor="start", peso="normal"):
                  f"fill='{colore or C['t_quote']}' text-anchor='{anchor}' {FONT}>{t}</text>")
 
 
-qt(M, M - 3, "LICKSHOT · rack 1U · BOZZA della disposizione (2026-11-18), da approvare", 3.2, C["t_bozza"], peso="bold")
+qt(M, M - 3, "LICKSHOT · rack 1U · disposizione approvata (dec. 196, 2026-11-18)", 3.2, C["t_bozza"], peso="bold")
 y0 = M + H + 7
 qt(M, y0, f"Pannello {W} × {H} mm (19\" × 1U). Orecchie da {ORECCHIA} mm con le asole del rack (linee tratteggiate).")
 qt(M, y0 + 4.5, "Comandi della dec. 190, su una riga come il Klementz Lickshot Rack (dec. 188): "

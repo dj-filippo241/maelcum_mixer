@@ -182,10 +182,9 @@ foglio CoolAudio o sul pezzo comprato (lezione del LSK389, todo 339).
 ## 5. Pannello e scheda [PROVVISORIO]
 
 Rack 1U (44,45 mm), largo 19". Sul pannello: 7 pot, LED, FIRE.
-Bozza della disposizione (2026-11-18, richiesta di Filippo «simile a
-quella Klementz»): `docs/pannelli/lickshot-1u.svg`, da
-`docs/pannelli/lickshot_1u.py`. Da approvare: la disposizione resta di
-Filippo (dec. 188).
+Disposizione approvata (dec. 196, «simile a quella Klementz»):
+`docs/pannelli/lickshot-1u.svg` e coordinate `lickshot-1u.json`, da
+`docs/pannelli/lickshot_1u.py`.
 Dietro: jack d'uscita e ingresso DC. Una scheda orizzontale dietro il
 pannello coi pot a 90°, oppure pot a filo su una scheda verticale: lo
 decide la disposizione di Filippo (regola del pannello). Stima: ~5
