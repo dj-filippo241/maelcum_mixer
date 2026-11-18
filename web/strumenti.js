@@ -135,12 +135,12 @@ L.HI = (16 / 22) * L.VDD;
 L.T_MIN = L.N_BBD / (2 * 100e3);
 L.T_MAX = L.N_BBD / (2 * 10e3);
 const LISCI_L = ["alt", "vel", "prof", "vol", "tempo", "rip", "eco"];
-const tempoEco = (t) => L.T_MIN * Math.pow(L.T_MAX / L.T_MIN, t / 100);
+const tempoEco = (t) => L.T_MIN + (L.T_MAX - L.T_MIN) * t / 100; // dec. 193: pot lineare
 
 export class Lickshot {
   constructor(fs) {
     this.fs = fs;
-    this.p = { alt: 80, vel: 50, prof: 67, vol: 100, trig: 0, tempo: 60, rip: 40, eco: 40 };
+    this.p = { alt: 80, vel: 50, prof: 67, vol: 100, trig: 0, tempo: 33, rip: 40, eco: 40 };
     this.s = {};
     for (const k of LISCI_L) this.s[k] = this.p[k];
     this.vi = L.VDD / 2; // uscita dell'integratore (U1C) = VCOin
@@ -232,6 +232,6 @@ export const STRUMENTI = [
   ], tasti: [["S1", "s1", "1"], ["S2", "s2", "2"]], levetta: ["POWER", "power", ["OFF", "ON"]] },
   { nome: "LICKSHOT", mono: 2, comandi: [
     ["ALTEZZA", "alt", 80], ["VELOCITÀ", "vel", 50], ["PROFOND.", "prof", 67],
-    ["VOLUME", "vol", 100], ["TEMPO", "tempo", 60], ["RIPETIZ.", "rip", 40], ["ECO", "eco", 40],
+    ["VOLUME", "vol", 100], ["TEMPO", "tempo", 33], ["RIPETIZ.", "rip", 40], ["ECO", "eco", 40],
   ], tasti: [["FIRE", "trig", "3"]] },
 ];

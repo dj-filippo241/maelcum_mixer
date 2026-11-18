@@ -83,7 +83,7 @@ def genexpr():
     r(f"dry = hpy * (trig > 0.5) * {L.V_NOM!r} * vv * vv;")
     r("// eco: due BBD in fila senza filtri (dec. 191), tempo lisciato (fionda);")
     r("// i BBD campionano e tengono al ritmo del clock")
-    r(f"tm = {L.T_MIN!r} * pow({L.T_MAX / L.T_MIN!r}, s_tempo / 100);")
+    r(f"tm = {L.T_MIN!r} + {L.T_MAX - L.T_MIN!r} * s_tempo / 100;")
     r(f"td = td + (tm * samplerate - td) * (1 - exp(-1 / ({L.T_LISCIO!r} * samplerate)));")
     r(f"ck = ck + {L.N_BBD / 2!r} / (td / samplerate) / samplerate;")
     r("tick = ck >= 1;")

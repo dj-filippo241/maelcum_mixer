@@ -87,7 +87,7 @@ sul pezzo.
 | 75 % | 231 ms | 244 | 253 | 262 | 318 |
 | 100 % | 410 ms | 410 | 410 | 410 | 410 |
 
-Pot A modellato a due tratti (x % a metà corsa). Il valore a metà corsa
+Scelta: **pot lineare** (dec. 193). Pot A modellato a due tratti (x % a metà corsa). Il valore a metà corsa
 dipende dal costruttore: si legge sul datasheet del pot scelto.
 
 Verificato in: Python no / LTspice sì (PROFONDITÀ, giro) / Live no.

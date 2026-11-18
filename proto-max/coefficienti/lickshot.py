@@ -26,7 +26,8 @@ LIVELLO ECO.
 Deduzioni mie (da ascoltare o da simulare, regola 3): VDD 8,6 V, VOFF 1 V,
 risalita 0,5 ms, passa-alto del giro 150 Hz,
 saturazione tanh a 1,5 V, guadagno del giro fino a 1,1 (oltre 1 l'eco si
-autoalimenta), TEMPO esponenziale 41-410 ms, liscio del tempo 50 ms
+autoalimenta), TEMPO lineare 41-410 ms (dec. 193: pot lineare
+nell'RC del clock V3102, ritardo proporzionale a R), liscio del tempo 50 ms
 (l'effetto «fionda» quando si gira), VOLUME e LIVELLO ECO a legge
 quadratica (pot logaritmico), livello 0 dBu (0,775 V) sul plateau.
 """
@@ -61,7 +62,7 @@ T_LISCIO = 0.05
 # A_MAX da 16 = (VDD/2 - VOFF + A) / (VDD/2 - VOFF - A): 4 ottave a fondo corsa.
 A_MAX = 15 / 17 * (VDD / 2 - VOFF)
 INIZIALI = {"alt": 80.0, "vel": 50.0, "prof": 67.0, "vol": 100.0, "trig": 0.0,
-            "tempo": 60.0, "rip": 40.0, "eco": 40.0}
+            "tempo": 33.0, "rip": 40.0, "eco": 40.0}
 
 
 def f0(alt):
@@ -74,7 +75,8 @@ def periodo_lfo(vel):
 
 
 def tempo_eco(t):
-    return T_MIN * (T_MAX / T_MIN) ** (t / 100)
+    # dec. 193: pot lineare nell'RC del V3102, ritardo proporzionale alla corsa
+    return T_MIN + (T_MAX - T_MIN) * t / 100
 
 
 def blep(t, dt):
