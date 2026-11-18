@@ -213,7 +213,12 @@ clock dei due BBD, fondo scala di TEMPO).
 3. ~~Legge di TEMPO~~: pot lineare (dec. 193), modelli riallineati.
 4. ~~Simulazione di PROFONDITÀ e del giro~~ (v0.2). ~~Stadio d'uscita,
    mix, alimentazione~~ (v0.3). Resta: IDD del V3205D dal datasheet.
-5. Scheda `pcb/lickshot/lickshot.py` col generatore, dopo la
-   disposizione del pannello di Filippo.
+5. ~~Scheda~~: `pcb/lickshot/lickshot.py` a PASSA (2026-11-18): una
+   scheda orizzontale 280 x 80 mm coi pot RK09L a 90 gradi alle x della
+   dec. 196; FIRE, jack e DC coi fili. Scelte da confermare in
+   `pcb/lickshot/NOTE.md` (scheda orizzontale, pot C di ALTEZZA,
+   saturazione con un op-amp in meno, valori attorno ai BBD).
+6. Simulare gli stadi veri della scheda (op-amp TLC2272, partitore
+   12,7k/10k della saturazione, uscite dei BBD).
 
 Verificato in: Python (modello) sì / LTspice sì (PROFONDITÀ, giro, mix) / Live no.
