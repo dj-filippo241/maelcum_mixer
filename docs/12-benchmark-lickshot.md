@@ -210,6 +210,8 @@ fonte non lo dice; **(d)** = deduzione mia.
 
 ## Cosa resta da decidere per un rack abbinato al mixer
 
+> Chiuse il 2026-11-17 e 2026-11-18: dec. 179-189 in `docs/01-decisioni-bloccate.md` (famiglia A, una voce, eco BBD a due chip con passa-alto e saturazione nel giro, solo tasto, comandi, ingresso da un MONO, rack 1U, alimentatore a spina).
+
 Sono domande per Filippo, non proposte. Le scelte di pannello e di comandi
 restano sue (memoria «pannello e moduli li decide Filippo»).
 
