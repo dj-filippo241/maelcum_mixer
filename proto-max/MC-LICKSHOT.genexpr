@@ -13,6 +13,7 @@ Param trig(0, min=0, max=1);
 Param tempo(33, min=0, max=100);
 Param rip(40, min=0, max=100);
 Param eco(40, min=0, max=100);
+Param uno(0, min=0, max=1);
 History vi(4.3);
 History su(0);
 History fase(0);
@@ -75,7 +76,8 @@ dry = hpy * (trig > 0.5) * 0.775 * vv * vv;
 // i BBD campionano e tengono al ritmo del clock
 tm = 0.04096 + 0.36864 * s_tempo / 100;
 td = td + (tm * samplerate - td) * (1 - exp(-1 / (0.05 * samplerate)));
-ck = ck + 4096.0 / (td / samplerate) / samplerate;
+ck = ck + 4096.0 / (td / samplerate) / samplerate * (1 - 0.5 * (uno > 0.5));
+// uno = 1: prova di ascolto, un solo BBD sullo stesso arco di tempi (clock a meta)
 tick = ck >= 1;
 ck = ck - tick;
 rd = dl.read(td, interp="linear");

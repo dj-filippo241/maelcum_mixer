@@ -39,7 +39,7 @@ def genexpr():
     r(f"// out1 = out2 = uscita (1,0 = {fx.LIV:.4f} V); out3 = LED dell'LFO.")
     r()
     for nome, ini in L.INIZIALI.items():
-        mx = 1 if nome == "trig" else 100
+        mx = 1 if nome in ("trig", "uno") else 100
         r(f"Param {nome}({ini:g}, min=0, max={mx});")
     for nome in ("vi", "su", "fase", "hpx", "hpy", "gx", "gy",
                  "ck", "hin", "hout"):
@@ -85,7 +85,8 @@ def genexpr():
     r("// i BBD campionano e tengono al ritmo del clock")
     r(f"tm = {L.T_MIN!r} + {L.T_MAX - L.T_MIN!r} * s_tempo / 100;")
     r(f"td = td + (tm * samplerate - td) * (1 - exp(-1 / ({L.T_LISCIO!r} * samplerate)));")
-    r(f"ck = ck + {L.N_BBD / 2!r} / (td / samplerate) / samplerate;")
+    r(f"ck = ck + {L.N_BBD / 2!r} / (td / samplerate) / samplerate * (1 - 0.5 * (uno > 0.5));")
+    r("// uno = 1: prova di ascolto, un solo BBD sullo stesso arco di tempi (clock a meta)")
     r("tick = ck >= 1;")
     r("ck = ck - tick;")
     r('rd = dl.read(td, interp="linear");')
@@ -112,6 +113,7 @@ def patch(codice):
     for j, (ng, nl) in enumerate(DIAL[4:]):
         p.dial(ng, nl, L.INIZIALI[ng], [8 + 60 * j, 70, 54, 48])
     p.tab("trig", "FIRE", ["-", "FIRE"], 0, [190, 78, 50, 36])
+    p.tab("uno", "ECO", ["2 BBD", "1 BBD"], 0, [262, 8, 56, 36])
     p.meter("obj-led", 2, [246, 8, 8, 56], "LED")
     p.nota("FIRE: clic = acceso, clic = spento; da un controller mappalo su un "
            "CC. Uscita a livello del jack: mettila in MC-MONO.", [8, 124, 250, 40])

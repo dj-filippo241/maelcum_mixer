@@ -140,7 +140,7 @@ const tempoEco = (t) => L.T_MIN + (L.T_MAX - L.T_MIN) * t / 100; // dec. 193: po
 export class Lickshot {
   constructor(fs) {
     this.fs = fs;
-    this.p = { alt: 71, vel: 50, prof: 67, vol: 100, trig: 0, tempo: 33, rip: 40, eco: 40 };
+    this.p = { alt: 71, vel: 50, prof: 67, vol: 100, trig: 0, tempo: 33, rip: 40, eco: 40, uno: 0 };
     this.s = {};
     for (const k of LISCI_L) this.s[k] = this.p[k];
     this.vi = L.VDD / 2; // uscita dell'integratore (U1C) = VCOin
@@ -187,7 +187,7 @@ export class Lickshot {
       const dry = this.hpy * (p.trig > 0.5 ? 1 : 0) * L.V_NOM * vv * vv;
       // eco: due BBD in fila
       this.td += (tempoEco(s.tempo) * fs - this.td) * kt;
-      this.ck += L.N_BBD / (2 * this.td / fs) / fs; // clock dei BBD
+      this.ck += L.N_BBD / (2 * this.td / fs) / fs * (p.uno > 0.5 ? 0.5 : 1); // clock dei BBD; uno = un BBD solo, clock a metà (prova di ascolto)
       const tick = this.ck >= 1;
       if (tick) this.ck -= 1;
       let rpos = this.w - this.td;
@@ -233,5 +233,5 @@ export const STRUMENTI = [
   { nome: "LICKSHOT", mono: 2, comandi: [
     ["ALTEZZA", "alt", 71], ["VELOCITÀ", "vel", 50], ["PROFOND.", "prof", 67],
     ["VOLUME", "vol", 100], ["TEMPO", "tempo", 33], ["RIPETIZ.", "rip", 40], ["ECO", "eco", 40],
-  ], tasti: [["FIRE", "trig", "3"]] },
+  ], tasti: [["FIRE", "trig", "3"]], levetta: ["ECO", "uno", ["2 BBD", "1 BBD"]] },
 ];

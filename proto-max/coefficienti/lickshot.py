@@ -24,6 +24,10 @@ campionano e tengono al ritmo del clock, l'aliasing esce da solo. Il
 fischio del clock non e modellato (livello non dato dal datasheet). Nel
 giro passa-alto 150 Hz e saturazione morbida. TEMPO, RIPETIZIONI,
 LIVELLO ECO.
+PROVA DI ASCOLTO (opzione 7 dei preventivi, 2026-11-19, non decisa): «uno» = 1
+simula un solo BBD da 4096 stadi sullo stesso arco di tempi: clock a meta
+(50-5 kHz invece di 100-10 kHz), meta campioni, piu aliasing. Il fischio del
+clock (piu basso, udibile da ~115 ms) non e nel modello.
 
 Deduzioni mie (da ascoltare o da simulare, regola 3): VDD 8,6 V, VOFF 1 V,
 risalita 0,5 ms, passa-alto del giro 150 Hz,
@@ -64,7 +68,7 @@ T_LISCIO = 0.05
 # A_MAX da 16 = (VDD/2 - VOFF + A) / (VDD/2 - VOFF - A): 4 ottave a fondo corsa.
 A_MAX = 15 / 17 * (VDD / 2 - VOFF)
 INIZIALI = {"alt": 71.0, "vel": 50.0, "prof": 67.0, "vol": 100.0, "trig": 0.0,
-            "tempo": 33.0, "rip": 40.0, "eco": 40.0}
+            "tempo": 33.0, "rip": 40.0, "eco": 40.0, "uno": 0.0}
 
 
 def r_alt(alt):
@@ -148,7 +152,7 @@ class Lickshot:
         # eco
         tm = tempo_eco(s["tempo"])
         self.td += (tm * fs - self.td) * (1 - math.exp(-1 / (T_LISCIO * fs)))
-        self.ck += N_BBD / (2 * self.td / fs) / fs  # clock: fclk / fs per campione
+        self.ck += N_BBD / (2 * self.td / fs) / fs * (1 - 0.5 * (p["uno"] > 0.5))  # clock: fclk / fs; un BBD: meta
         tick = self.ck >= 1
         self.ck -= tick
         rpos = self.w - self.td
