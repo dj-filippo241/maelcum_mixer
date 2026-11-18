@@ -1,11 +1,12 @@
-# FASE 4 — Lickshot in rack 1U: architettura v0.2 (2026-11-18)
+# FASE 4 — Lickshot in rack 1U: architettura v0.3 (2026-11-18)
 
 > **Stato: v0.2 — requisiti e catena chiusi, topologia per blocchi
 > scelta, componenti [PROVVISORIO — regola 3]. v0.2: datasheet del clock
 > (MN3102), op-amp TLC2272, un V3102 per BBD, rail dei BBD a 5 V,
 > attenuatore −14 dB; PROFONDITÀ e giro simulati in LTspice
 > (`sim/lickshot/RISULTATI-lickshot-v02.md`). Legge di TEMPO: pot
-> lineare (dec. 193).** Metodo (regola 4): requisito → funzione di
+> lineare (dec. 193). v0.3: mix e uscita simulati, alimentazione
+> calcolata (§5-§6 del RISULTATI); bozza del pannello (§5).** Metodo (regola 4): requisito → funzione di
 > trasferimento → topologia → componenti → simulazione → PCB. Questo
 > documento arriva alla topologia e alla prima scelta dei componenti.
 > Il modello che suona (banco web e MC-LICKSHOT) sta in
@@ -55,7 +56,13 @@ colpo da 0 a ~4 ottave secondo PROFONDITÀ (2 ottave a ~2/3), da 2 a
   audio a bassa tensione. Il nucleo di Nold gira a ~8,6 V (9 V di
   batteria meno il diodo): a 9 V regolati le frequenze salgono di ~5 %;
   `lickshot.py` va riallineato (VDD) quando la tensione è fissata.
+- Consumo (v0.3, `RISULTATI-lickshot-v02.md` §6): 9 V ≤ 23 mA, 5 V
+  ≤ 27 mA, ~60 mA dall'ingresso. Alimentatore 12 V stabilizzato da
+  almeno 200 mA. Il 78L09 prende l'ingresso dopo il 1N5819 (61 mW).
 - **+5 V** (78L05) per i due V3205D e i due V3102 (v0.2; prima 7,5 V).
+  v0.3: il 78L05 prende l'ingresso attraverso 47 Ω + 100 µF, non i 9 V:
+  i picchi del clock restano fuori dal ramo audio (0,15 W nel 78L05).
+  IDD del V3205D da rileggere sul datasheet (stimato 10 mA per chip).
   Tutte le caratteristiche del V3205D sono date a 5 V (datasheet,
   «Electrical Characteristics»); il MN3102 garantisce i 200 mW solo
   sotto 7 V (datasheet p. 108). Il V3205D lavora fra 4 e 8 V.
@@ -147,8 +154,13 @@ taglia il segnale, l'LFO gira sempre (ascoltato e accettato, dec. 190).
   R in serie (ginocchio ~0,5 V al livello dei BBD, ≈ V_SAT 1,5 V del
   modello al livello di linea), RIPETIZIONI pot lineare, somma invertente
   con l'ingresso.
-- **Mix**: asciutto + LIVELLO ECO (pot log) × uscita dei BBD, op-amp
-  d'uscita, 100 Ω e condensatore verso il jack.
+- **Mix** (v0.3, simulato in `mix-uscita.cir`): somma invertente
+  riferita a VDD/2, asciutto e eco da 10k, reazione 10k: eco a guadagno 1
+  con LIVELLO ECO tutto, come il modello. Uscita: 100 Ω + 10 µF verso il
+  jack, 100k di scarica (passa-alto 0,17 Hz sul MONO da 1 MΩ). Il colpo
+  esce a 0 dBu; nel caso peggiore (FIRE tenuto, RIPETIZIONI, LIVELLO ECO
+  e VOLUME tutti) il mix arriva a 3,31 V di picco: 2,5 dB sotto il rail
+  del TLC2272.
 
 ## 4. Piedinature (solo dai datasheet)
 
@@ -168,6 +180,10 @@ foglio CoolAudio o sul pezzo comprato (lezione del LSK389, todo 339).
 ## 5. Pannello e scheda [PROVVISORIO]
 
 Rack 1U (44,45 mm), largo 19". Sul pannello: 7 pot, LED, FIRE.
+Bozza della disposizione (2026-11-18, richiesta di Filippo «simile a
+quella Klementz»): `docs/pannelli/lickshot-1u.svg`, da
+`docs/pannelli/lickshot_1u.py`. Da approvare: la disposizione resta di
+Filippo (dec. 188).
 Dietro: jack d'uscita e ingresso DC. Una scheda orizzontale dietro il
 pannello coi pot a 90°, oppure pot a filo su una scheda verticale: lo
 decide la disposizione di Filippo (regola del pannello). Stima: ~5
@@ -194,9 +210,9 @@ clock dei due BBD, fondo scala di TEMPO).
    CoolAudio del V3102 per la conferma.
 2. ~~Op-amp~~: TLC2272 (v0.2).
 3. ~~Legge di TEMPO~~: pot lineare (dec. 193), modelli riallineati.
-4. ~~Simulazione di PROFONDITÀ e del giro~~ (v0.2). Restano: stadio
-   d'uscita e mix (calcolo semplice), alimentazione.
+4. ~~Simulazione di PROFONDITÀ e del giro~~ (v0.2). ~~Stadio d'uscita,
+   mix, alimentazione~~ (v0.3). Resta: IDD del V3205D dal datasheet.
 5. Scheda `pcb/lickshot/lickshot.py` col generatore, dopo la
    disposizione del pannello di Filippo.
 
-Verificato in: Python (modello) sì / LTspice sì (PROFONDITÀ, giro) / Live no.
+Verificato in: Python (modello) sì / LTspice sì (PROFONDITÀ, giro, mix) / Live no.

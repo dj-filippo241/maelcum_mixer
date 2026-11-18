@@ -90,4 +90,62 @@ sul pezzo.
 Scelta: **pot lineare** (dec. 193). Pot A modellato a due tratti (x % a metà corsa). Il valore a metà corsa
 dipende dal costruttore: si legge sul datasheet del pot scelto.
 
-Verificato in: Python no / LTspice sì (PROFONDITÀ, giro) / Live no.
+## 5. Mix e stadio d'uscita (`mix-uscita.cir`, v0.3)
+
+Caso peggiore: FIRE tenuto 1 s, onda quadra ±0,775 V (0 dBu sul plateau,
+VOLUME tutto), RIPETIZIONI tutto, giro con attenuatore −14 dB. Mix:
+somma invertente riferita a VDD/2, asciutto e eco con 10k, reazione 10k
+(eco a guadagno 1 a LIVELLO ECO tutto, come `lickshot.py`: uscita =
+asciutto + eco² × ritorno). Uscita: 100 Ω + 10 µF verso il jack, 100k di
+scarica, carico 1 MΩ (ingresso del MONO, `docs/fase4/mic-mono-moduli.md`).
+
+| LIVELLO ECO (elettrico) | Picco del mix | Ritorno dei BBD (picco) | Jack, efficace a eco 0 |
+|---|---|---|---|
+| 0 | 0,775 V | 2,43 V | 0,774 V (0 dBu) |
+| 0,5 | 2,29 V | 3,02 V | — |
+| 1 | **3,31 V** | 2,54 V | — |
+
+- Il colpo da solo esce a 0 dBu, il valore della dec. 187.
+- Picco massimo del mix 3,31 V contro ±4,4 V del TLC2272 a 9 V: margine
+  **2,5 dB** nel caso peggiore (tutto al massimo e FIRE tenuto). Con FIRE
+  tenuto il giro sale a 2,5-3,0 V di picco al ritorno, più dei 2,09 V del
+  colpo breve (§2): l'asciutto continua a entrare nel giro. Il ritorno
+  resta sotto il rail (3,02 V).
+- Al jack: +7,6 dBu di picco al massimo; il MONO regge +18 dBu.
+- Passa-alto dell'uscita: 10 µF su 91k (100k ∥ 1 MΩ) = 0,17 Hz.
+- Il mix inverte la polarità del colpo. Ininfluente: la lickshot è una
+  sorgente sola su un MONO (deduzione mia; la dec. 187 non chiede una
+  polarità).
+
+## 6. Alimentazione (calcolo, v0.3)
+
+Correnti massime dai datasheet, dove ci sono:
+
+| Ramo | Parte | Corrente | Fonte |
+|---|---|---|---|
+| 9 V | 5 × TLC2272 | 15 mA (3 mA max ciascuno) | TI SLOS190H, «Electrical Characteristics», IDD |
+| 9 V | CD4069UB con porte in zona lineare | ≤ 5 mA | deduzione mia: porte senza buffer in zona lineare assorbono corrente; da misurare |
+| 9 V | CD4046B (solo VCO), LED, partitori | ≤ 3 mA | deduzione mia |
+| 5 V | 2 × V3102 a vuoto | 1 mA (0,5 mA tip.) | MN3102 p. 106, IDD |
+| 5 V | 2 × carico del clock (2800 pF × 5 V × 100 kHz × 2 fasi) | 5,6 mA | V3205D (capacità del clock) e calcolo |
+| 5 V | 2 × V3205D | ≤ 20 mA | deduzione mia (10 mA per chip): IDD da rileggere sul datasheet V3205D |
+
+Totale: 9 V ≤ 23 mA, 5 V ≤ 27 mA, ~60 mA dall'ingresso coi due
+regolatori a riposo.
+
+- Ingresso: 12 V da alimentatore stabilizzato, 1N5819 in serie (~0,35 V),
+  100 µF / 25 V. Alimentatore da almeno **200 mA** (come il Klementz,
+  < 200 mA dichiarati): 3 volte il consumo.
+- **78L09** dall'ingresso: (11,65 − 9) V × 23 mA = 61 mW.
+- **78L05** dall'ingresso attraverso **47 Ω + 100 µF**: il resistore
+  scarica 1,3 V e il condensatore tiene i picchi del clock lontani dal
+  ramo dei 9 V (i due regolatori non sono in fila). (10,4 − 5) V × 27 mA
+  = 0,15 W: ~30 °C sopra l'ambiente in TO-92 (θJA ~200 °C/W, deduzione mia
+  da rileggere sul datasheet del regolatore scelto).
+- Margine di caduta: il 78L09 vuole ~1,7 V (deduzione mia); a 12 V − 5 %
+  restano 11,05 V: 0,35 V di margine. Un alimentatore non stabilizzato
+  a vuoto sale sopra 12 V: va bene, il 78L09 regge fino a 30 V.
+- Massa: il negativo dell'alimentatore è flottante (dec. 189); la massa
+  arriva dal MONO con la calza del cavo.
+
+Verificato in: Python no / LTspice sì (PROFONDITÀ, giro, mix) / Live no.

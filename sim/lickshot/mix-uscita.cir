@@ -1,0 +1,56 @@
+* Lickshot - mix e stadio d'uscita (v0.3), con il giro dell eco della v0.2
+* (attenuatore -14 dB, giro-att14.cir). Caso peggiore: FIRE tenuto 1 s,
+* onda quadra +-0,775 V (0 dBu sul plateau, uscita del colpo dopo VOLUME
+* tutto), RIPETIZIONI tutto, LIVELLO ECO tutto.
+* Mix: somma invertente (asciutto 10k, eco 10k, reazione 10k) riferita a
+* VDD/2 (= 0 qui). Uscita: 100 ohm + 10 uF verso il jack, 100k di scarica
+* verso massa, carico = ingresso del MONO (1 Mohm, mic-mono-moduli.md).
+* Op-amp ideali (E lineari): si confrontano i picchi coi rail del
+* TLC2272 a VDD 9 V (+-4,4 V attorno a VDD/2).
+.param ATT=0.2 TD=0.1 rip=1 eco=1 hold=1
+Bdry dry 0 V={0.775*sgn(sin(2*pi*600*time))*(time<hold)}
+* somma del giro (asciutto + ritorno)
+R1 dry s 10k
+R2 fb s 10k
+Rf1 s sum 10k
+Esum sum 0 0 s 1e6
+Ra1 sum a 40k
+Ra2 a 0 10k
+Ebbd bbd_in 0 a 0 1
+Rt1 bbd_in l1 1k
+T1 l1 0 l2 0 Z0=1k Td={TD}
+Rt2 l2 0 1k
+Ebd bbd_out 0 l2 0 2
+R3 bbd_out m 10k
+R4 m post {10k/ATT}
+Emk post 0 0 m 1e6
+Chp post h 100n
+Rhp h 0 10.6k
+Eh gy 0 h 0 1
+Erip rp 0 gy 0 {1.1*rip}
+R5 rp d 15k
+R6 d 0 10k
+D1 d 0 D1N4148
+D2 0 d D1N4148
+Esat fb 0 d 0 2.5
+* LIVELLO ECO: partitore del pot (eco = posizione elettrica 0...1)
+Eeco ecol 0 post 0 {eco}
+* mix invertente
+Rmd dry mx 10k
+Rme ecol mx 10k
+Rmf mx mix 10k
+Emix mix 0 0 mx 1e6
+* uscita
+Ro mix o1 100
+Co o1 jack 10u
+Rpd jack 0 100k
+Rload jack 0 1Meg
+.model D1N4148 D(Is=2.52n Rs=0.568 N=1.752 Cjo=4p M=0.4 tt=20n)
+.step param eco list 0 0.5 1
+.tran 0 1.5 0 20u
+.meas tran mix_pk MAX abs(V(mix)) FROM 0 TO 1.5
+.meas tran post_pk MAX abs(V(post)) FROM 0 TO 1.5
+.meas tran sum_pk MAX abs(V(sum)) FROM 0 TO 1.5
+.meas tran jack_rms RMS V(jack) FROM 0.05 TO 0.1
+.meas tran jack_pk MAX abs(V(jack)) FROM 0.2 TO 1.5
+.end
