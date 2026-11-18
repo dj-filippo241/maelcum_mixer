@@ -937,6 +937,10 @@ EN.update({
     "nel mixer (dec. 187)": "in the mixer (dec. 187)",
     "150 Hz nel giro": "150 Hz in the loop",
     "SATURAZIONE": "SATURATION",
+    "VELOCITÀ": "SPEED", "pot 500k": "500k pot", "ALTEZZA + PROFONDITÀ": "PITCH + DEPTH",
+    "pot 50k · pot sulla rampa": "50k pot · pot on the ramp", "colpo da 0 a ~4 ottave": "shot from 0 to ~4 octaves",
+    "rack 1U · alimentatore esterno a spina, DC, connettore con blocco (dec. 189) · 7 manopole, LED, FIRE (dec. 184-185, 188, 190)":
+        "1U rack · external DC wall adapter, locking connector (dec. 189) · 7 knobs, LED, FIRE (dec. 184-185, 188, 190)",
     "145 Hz": "145 Hz", "FIRE": "FIRE", "BBD 1": "BBD 1", "BBD 2": "BBD 2",
     "morbida, diodi": "soft, diodes",
     "RIPETIZIONI": "REPEATS",

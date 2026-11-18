@@ -7,7 +7,7 @@
 
 Param alt(80, min=0, max=100);
 Param vel(50, min=0, max=100);
-Param lfo(1, min=0, max=1);
+Param prof(67, min=0, max=100);
 Param vol(100, min=0, max=100);
 Param trig(0, min=0, max=1);
 Param tempo(60, min=0, max=100);
@@ -28,6 +28,7 @@ History td(7827.1054588182);
 Delay dl(48000);
 History s_alt(80.0);
 History s_vel(50.0);
+History s_prof(67.0);
 History s_vol(100.0);
 History s_tempo(60.0);
 History s_rip(40.0);
@@ -35,6 +36,7 @@ History s_eco(40.0);
 t10 = exp(-1 / (0.010 * samplerate));
 s_alt = alt + t10 * (s_alt - alt);
 s_vel = vel + t10 * (s_vel - vel);
+s_prof = prof + t10 * (s_prof - prof);
 s_vol = vol + t10 * (s_vol - vol);
 s_tempo = tempo + t10 * (s_tempo - tempo);
 s_rip = rip + t10 * (s_rip - rip);
@@ -43,17 +45,17 @@ s_eco = eco + t10 * (s_eco - eco);
 rl = 22000.0 + (1 - s_vel / 100) * 500000.0;
 giu = 4.3 / (rl * 1e-06) / samplerate;
 sup = 7818.181818181819 / samplerate;
-lon = lfo > 0.5;
 vin = vi + su * sup - (1 - su) * giu;
 hhi = su * (vin >= 6.254545454545455);
 hlo = (1 - su) * (vin <= 2.3454545454545452);
-vin = min(max(vin, 2.3454545454545452), 6.254545454545455);
-su = lon * (su * (1 - hhi) + hlo) + (1 - lon) * su;
-vi = lon * vin + (1 - lon) * 4.3;
+vi = min(max(vin, 2.3454545454545452), 6.254545454545455);
+su = su * (1 - hhi) + hlo;
+// PROFONDITA (dec. 190): pot fra la rampa e VDD/2, buffer verso il VCOin
+vco = 4.3 + s_prof / 100 * 2.911764705882353 * (vi - 4.3) / 1.9545454545454548;
 // VCO: frequenza lineare col VCOin, f0 al centro (datasheet TI, Fig. 4)
 r1 = 10000.0 + (1 - s_alt / 100) * 50000.0;
 fz = 0.7 / (r1 * 1e-07);
-fq = fz * max(0, vi - 1.0) / 3.3;
+fq = fz * max(0, vco - 1.0) / 3.3;
 dt = max(fq / samplerate, 1e-9);
 // onda quadra con PolyBLEP
 ta = fase / dt;

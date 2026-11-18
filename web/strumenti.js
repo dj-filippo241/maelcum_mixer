@@ -130,16 +130,17 @@ const L = {
   N_BBD: 8192, K_FC: 0.25, FC_MAX: 8000, F_HP_GIRO: 150, V_SAT: 1.5, G_MAX: 1.1, T_LISCIO: 0.05,
 };
 L.LO = (6 / 22) * L.VDD;
+L.A_MAX = (15 / 17) * (L.VDD / 2 - L.VOFF); // PROFONDITÀ a fondo corsa: ~4 ottave (dec. 190)
 L.HI = (16 / 22) * L.VDD;
 L.T_MIN = L.N_BBD / (2 * 100e3);
 L.T_MAX = L.N_BBD / (2 * 10e3);
-const LISCI_L = ["alt", "vel", "vol", "tempo", "rip", "eco"];
+const LISCI_L = ["alt", "vel", "prof", "vol", "tempo", "rip", "eco"];
 const tempoEco = (t) => L.T_MIN * Math.pow(L.T_MAX / L.T_MIN, t / 100);
 
 export class Lickshot {
   constructor(fs) {
     this.fs = fs;
-    this.p = { alt: 80, vel: 50, lfo: 1, vol: 100, trig: 0, tempo: 60, rip: 40, eco: 40 };
+    this.p = { alt: 80, vel: 50, prof: 67, vol: 100, trig: 0, tempo: 60, rip: 40, eco: 40 };
     this.s = {};
     for (const k of LISCI_L) this.s[k] = this.p[k];
     this.vi = L.VDD / 2; // uscita dell'integratore (U1C) = VCOin
@@ -168,16 +169,15 @@ export class Lickshot {
       for (const q of LISCI_L) s[q] = p[q] + t10 * (s[q] - p[q]);
       const fz = L.K_F0 / ((L.R_VCO + (1 - s.alt / 100) * L.P_VCO) * L.C_VCO);
       const giu = L.VDD / 2 / ((L.R_LFO + (1 - s.vel / 100) * L.P_LFO) * L.C_LFO) / fs;
-      if (p.lfo > 0.5) {
-        if (this.su) {
-          this.vi += su;
-          if (this.vi >= L.HI) { this.vi = L.HI; this.su = false; }
-        } else {
-          this.vi -= giu;
-          if (this.vi <= L.LO) { this.vi = L.LO; this.su = true; }
-        }
-      } else this.vi = L.VDD / 2;
-      const f = (fz * Math.max(0, this.vi - L.VOFF)) / (L.VDD / 2 - L.VOFF);
+      if (this.su) {
+        this.vi += su;
+        if (this.vi >= L.HI) { this.vi = L.HI; this.su = false; }
+      } else {
+        this.vi -= giu;
+        if (this.vi <= L.LO) { this.vi = L.LO; this.su = true; }
+      }
+      const vco = L.VDD / 2 + (s.prof / 100) * L.A_MAX * (this.vi - L.VDD / 2) / ((L.HI - L.LO) / 2); // PROFONDITÀ
+      const f = (fz * Math.max(0, vco - L.VOFF)) / (L.VDD / 2 - L.VOFF);
       const x = quadra(this.fase, Math.max(f / fs, 1e-9));
       this.fase += f / fs;
       if (this.fase >= 1) this.fase -= 1;
@@ -236,7 +236,7 @@ export const STRUMENTI = [
     ["LFO RATE", "lfo", 0, 4], ["MODULATION", "mod", 0, 4], ["OSC RATE", "osc", 25, 4], ["VOLUME", "vol", 100],
   ], tasti: [["S1", "s1", "1"], ["S2", "s2", "2"]], levetta: ["POWER", "power", ["OFF", "ON"]] },
   { nome: "LICKSHOT", mono: 2, comandi: [
-    ["ALTEZZA", "alt", 80], ["VELOCITÀ", "vel", 50], ["VOLUME", "vol", 100],
-    ["TEMPO", "tempo", 60], ["RIPETIZ.", "rip", 40], ["ECO", "eco", 40],
-  ], tasti: [["FIRE", "trig", "3"]], levetta: ["LFO", "lfo", ["OFF", "ON"], 1] },
+    ["ALTEZZA", "alt", 80], ["VELOCITÀ", "vel", 50], ["PROFOND.", "prof", 67],
+    ["VOLUME", "vol", 100], ["TEMPO", "tempo", 60], ["RIPETIZ.", "rip", 40], ["ECO", "eco", 40],
+  ], tasti: [["FIRE", "trig", "3"]] },
 ];

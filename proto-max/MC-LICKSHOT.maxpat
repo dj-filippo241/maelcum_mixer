@@ -179,7 +179,7 @@
 								"box": {
 									"id": "obj-cb",
 									"maxclass": "codebox",
-									"code": "// MC-LICKSHOT - lickshot in rack (dec. 179-189), modello lickshot.py.\n// GENERATO da proto-max/coefficienti/genera_lickshot.py: non modificare.\n// LFO CD4069 a dente di sega -> VCO CD4046 -> passa-alto 145 Hz -> FIRE\n// -> VOLUME -> eco a due BBD (anti-alias prima e dopo, nel giro passa-alto\n// e saturazione). in1, in2 ignorati.\n// out1 = out2 = uscita (1,0 = 4.3609 V); out3 = LED dell'LFO.\n\nParam alt(80, min=0, max=100);\nParam vel(50, min=0, max=100);\nParam lfo(1, min=0, max=1);\nParam vol(100, min=0, max=100);\nParam trig(0, min=0, max=1);\nParam tempo(60, min=0, max=100);\nParam rip(40, min=0, max=100);\nParam eco(40, min=0, max=100);\nHistory vi(4.3);\nHistory su(0);\nHistory fase(0);\nHistory hpx(0);\nHistory hpy(0);\nHistory gx(0);\nHistory gy(0);\nHistory pi1(0);\nHistory pi2(0);\nHistory qi1(0);\nHistory qi2(0);\nHistory td(7827.1054588182);\nDelay dl(48000);\nHistory s_alt(80.0);\nHistory s_vel(50.0);\nHistory s_vol(100.0);\nHistory s_tempo(60.0);\nHistory s_rip(40.0);\nHistory s_eco(40.0);\nt10 = exp(-1 / (0.010 * samplerate));\ns_alt = alt + t10 * (s_alt - alt);\ns_vel = vel + t10 * (s_vel - vel);\ns_vol = vol + t10 * (s_vol - vol);\ns_tempo = tempo + t10 * (s_tempo - tempo);\ns_rip = rip + t10 * (s_rip - rip);\ns_eco = eco + t10 * (s_eco - eco);\n// LFO: integratore fra le soglie del Schmitt, discesa lenta, risalita dal diodo\nrl = 22000.0 + (1 - s_vel / 100) * 500000.0;\ngiu = 4.3 / (rl * 1e-06) / samplerate;\nsup = 7818.181818181819 / samplerate;\nlon = lfo > 0.5;\nvin = vi + su * sup - (1 - su) * giu;\nhhi = su * (vin >= 6.254545454545455);\nhlo = (1 - su) * (vin <= 2.3454545454545452);\nvin = min(max(vin, 2.3454545454545452), 6.254545454545455);\nsu = lon * (su * (1 - hhi) + hlo) + (1 - lon) * su;\nvi = lon * vin + (1 - lon) * 4.3;\n// VCO: frequenza lineare col VCOin, f0 al centro (datasheet TI, Fig. 4)\nr1 = 10000.0 + (1 - s_alt / 100) * 50000.0;\nfz = 0.7 / (r1 * 1e-07);\nfq = fz * max(0, vi - 1.0) / 3.3;\ndt = max(fq / samplerate, 1e-9);\n// onda quadra con PolyBLEP\nta = fase / dt;\ntc = (fase - 1) / dt;\nxq = (fase < 0.5) * 2 - 1 + (fase < dt) * (ta + ta - ta * ta - 1) + (fase > 1 - dt) * (tc * tc + tc + tc + 1);\nt2 = fase + 0.5 - (fase + 0.5 >= 1);\ntb = t2 / dt;\nte = (t2 - 1) / dt;\nxq = xq - (t2 < dt) * (tb + tb - tb * tb - 1) - (t2 > 1 - dt) * (te * te + te + te + 1);\nfase = fase + fq / samplerate;\nfase = fase - (fase >= 1);\nkhp = 1 / (1 + 911.06186954104 / samplerate);\nhpy = khp * (hpy + xq - hpx);\nhpx = xq;\nvv = s_vol / 100;\ndry = hpy * (trig > 0.5) * 0.775 * vv * vv;\n// eco: due BBD in fila, tempo lisciato (fionda), anti-alias fclk/4\ntm = 0.04096 * pow(10.0, s_tempo / 100);\ntd = td + (tm * samplerate - td) * (1 - exp(-1 / (0.05 * samplerate)));\nfcb = min(1024.0 / (td / samplerate), 8000.0);\ngb = tan(3.141592653589793 * fcb / samplerate);\na1 = 1 / (1 + gb * (gb + 1.4142135623730951));\na2 = gb * a1;\na3 = gb * a2;\nrd = dl.read(td, interp=\"linear\");\n// anti-alias dopo i BBD\nv3 = rd - qi2;\nv1 = a1 * qi1 + a2 * v3;\npost = qi2 + a2 * qi1 + a3 * v3;\nqi1 = 2 * v1 - qi1;\nqi2 = 2 * post - qi2;\n// giro: passa-alto e saturazione\nkg = 1 / (1 + 942.4777960769379 / samplerate);\ngy = kg * (gy + post - gx);\ngx = post;\nfb = 1.5 * tanh(1.1 * s_rip / 100 * gy / 1.5);\n// anti-alias prima dei BBD\nw3 = dry + fb - pi2;\nw1 = a1 * pi1 + a2 * w3;\npre = pi2 + a2 * pi1 + a3 * w3;\npi1 = 2 * w1 - pi1;\npi2 = 2 * pre - pi2;\ndl.write(pre);\nve = s_eco / 100;\nout1 = (dry + ve * ve * post) / 4.360865946243008;\nout2 = out1;\nout3 = min(max((vi - 2.4) / 3.854545454545455, 0), 1);\n",
+									"code": "// MC-LICKSHOT - lickshot in rack (dec. 179-189), modello lickshot.py.\n// GENERATO da proto-max/coefficienti/genera_lickshot.py: non modificare.\n// LFO CD4069 a dente di sega -> VCO CD4046 -> passa-alto 145 Hz -> FIRE\n// -> VOLUME -> eco a due BBD (anti-alias prima e dopo, nel giro passa-alto\n// e saturazione). in1, in2 ignorati.\n// out1 = out2 = uscita (1,0 = 4.3609 V); out3 = LED dell'LFO.\n\nParam alt(80, min=0, max=100);\nParam vel(50, min=0, max=100);\nParam prof(67, min=0, max=100);\nParam vol(100, min=0, max=100);\nParam trig(0, min=0, max=1);\nParam tempo(60, min=0, max=100);\nParam rip(40, min=0, max=100);\nParam eco(40, min=0, max=100);\nHistory vi(4.3);\nHistory su(0);\nHistory fase(0);\nHistory hpx(0);\nHistory hpy(0);\nHistory gx(0);\nHistory gy(0);\nHistory pi1(0);\nHistory pi2(0);\nHistory qi1(0);\nHistory qi2(0);\nHistory td(7827.1054588182);\nDelay dl(48000);\nHistory s_alt(80.0);\nHistory s_vel(50.0);\nHistory s_prof(67.0);\nHistory s_vol(100.0);\nHistory s_tempo(60.0);\nHistory s_rip(40.0);\nHistory s_eco(40.0);\nt10 = exp(-1 / (0.010 * samplerate));\ns_alt = alt + t10 * (s_alt - alt);\ns_vel = vel + t10 * (s_vel - vel);\ns_prof = prof + t10 * (s_prof - prof);\ns_vol = vol + t10 * (s_vol - vol);\ns_tempo = tempo + t10 * (s_tempo - tempo);\ns_rip = rip + t10 * (s_rip - rip);\ns_eco = eco + t10 * (s_eco - eco);\n// LFO: integratore fra le soglie del Schmitt, discesa lenta, risalita dal diodo\nrl = 22000.0 + (1 - s_vel / 100) * 500000.0;\ngiu = 4.3 / (rl * 1e-06) / samplerate;\nsup = 7818.181818181819 / samplerate;\nvin = vi + su * sup - (1 - su) * giu;\nhhi = su * (vin >= 6.254545454545455);\nhlo = (1 - su) * (vin <= 2.3454545454545452);\nvi = min(max(vin, 2.3454545454545452), 6.254545454545455);\nsu = su * (1 - hhi) + hlo;\n// PROFONDITA (dec. 190): pot fra la rampa e VDD/2, buffer verso il VCOin\nvco = 4.3 + s_prof / 100 * 2.911764705882353 * (vi - 4.3) / 1.9545454545454548;\n// VCO: frequenza lineare col VCOin, f0 al centro (datasheet TI, Fig. 4)\nr1 = 10000.0 + (1 - s_alt / 100) * 50000.0;\nfz = 0.7 / (r1 * 1e-07);\nfq = fz * max(0, vco - 1.0) / 3.3;\ndt = max(fq / samplerate, 1e-9);\n// onda quadra con PolyBLEP\nta = fase / dt;\ntc = (fase - 1) / dt;\nxq = (fase < 0.5) * 2 - 1 + (fase < dt) * (ta + ta - ta * ta - 1) + (fase > 1 - dt) * (tc * tc + tc + tc + 1);\nt2 = fase + 0.5 - (fase + 0.5 >= 1);\ntb = t2 / dt;\nte = (t2 - 1) / dt;\nxq = xq - (t2 < dt) * (tb + tb - tb * tb - 1) - (t2 > 1 - dt) * (te * te + te + te + 1);\nfase = fase + fq / samplerate;\nfase = fase - (fase >= 1);\nkhp = 1 / (1 + 911.06186954104 / samplerate);\nhpy = khp * (hpy + xq - hpx);\nhpx = xq;\nvv = s_vol / 100;\ndry = hpy * (trig > 0.5) * 0.775 * vv * vv;\n// eco: due BBD in fila, tempo lisciato (fionda), anti-alias fclk/4\ntm = 0.04096 * pow(10.0, s_tempo / 100);\ntd = td + (tm * samplerate - td) * (1 - exp(-1 / (0.05 * samplerate)));\nfcb = min(1024.0 / (td / samplerate), 8000.0);\ngb = tan(3.141592653589793 * fcb / samplerate);\na1 = 1 / (1 + gb * (gb + 1.4142135623730951));\na2 = gb * a1;\na3 = gb * a2;\nrd = dl.read(td, interp=\"linear\");\n// anti-alias dopo i BBD\nv3 = rd - qi2;\nv1 = a1 * qi1 + a2 * v3;\npost = qi2 + a2 * qi1 + a3 * v3;\nqi1 = 2 * v1 - qi1;\nqi2 = 2 * post - qi2;\n// giro: passa-alto e saturazione\nkg = 1 / (1 + 942.4777960769379 / samplerate);\ngy = kg * (gy + post - gx);\ngx = post;\nfb = 1.5 * tanh(1.1 * s_rip / 100 * gy / 1.5);\n// anti-alias prima dei BBD\nw3 = dry + fb - pi2;\nw1 = a1 * pi1 + a2 * w3;\npre = pi2 + a2 * pi1 + a3 * w3;\npi1 = 2 * w1 - pi1;\npi2 = 2 * pre - pi2;\ndl.write(pre);\nve = s_eco / 100;\nout1 = (dry + ve * ve * post) / 4.360865946243008;\nout2 = out1;\nout3 = min(max((vi - 2.4) / 3.854545454545455, 0), 1);\n",
 									"numinlets": 2,
 									"numoutlets": 3,
 									"outlettype": [
@@ -445,6 +445,64 @@
 					],
 					"saved_attribute_attributes": {
 						"valueof": {
+							"parameter_longname": "PROFONDITA",
+							"parameter_shortname": "PROFONDITA",
+							"parameter_initial_enable": 1,
+							"parameter_type": 0,
+							"parameter_mmax": 100.0,
+							"parameter_initial": [
+								67.0
+							],
+							"parameter_unitstyle": 5
+						}
+					},
+					"varname": "PROFONDITA",
+					"numinlets": 1,
+					"numoutlets": 2,
+					"outlettype": [
+						"",
+						"float"
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "obj-c2-pre",
+					"maxclass": "newobj",
+					"text": "prepend prof",
+					"numinlets": 1,
+					"numoutlets": 1,
+					"outlettype": [
+						""
+					],
+					"patching_rect": [
+						280,
+						140,
+						85,
+						22
+					]
+				}
+			},
+			{
+				"box": {
+					"id": "obj-c3",
+					"maxclass": "live.dial",
+					"parameter_enable": 1,
+					"patching_rect": [
+						370,
+						80,
+						44,
+						48
+					],
+					"presentation": 1,
+					"presentation_rect": [
+						188,
+						8,
+						54,
+						48
+					],
+					"saved_attribute_attributes": {
+						"valueof": {
 							"parameter_longname": "VOLUME",
 							"parameter_shortname": "VOLUME",
 							"parameter_initial_enable": 1,
@@ -467,7 +525,7 @@
 			},
 			{
 				"box": {
-					"id": "obj-c2-pre",
+					"id": "obj-c3-pre",
 					"maxclass": "newobj",
 					"text": "prepend vol",
 					"numinlets": 1,
@@ -476,7 +534,7 @@
 						""
 					],
 					"patching_rect": [
-						280,
+						370,
 						140,
 						85,
 						22
@@ -485,11 +543,11 @@
 			},
 			{
 				"box": {
-					"id": "obj-c3",
+					"id": "obj-c4",
 					"maxclass": "live.dial",
 					"parameter_enable": 1,
 					"patching_rect": [
-						370,
+						460,
 						80,
 						44,
 						48
@@ -525,7 +583,7 @@
 			},
 			{
 				"box": {
-					"id": "obj-c3-pre",
+					"id": "obj-c4-pre",
 					"maxclass": "newobj",
 					"text": "prepend tempo",
 					"numinlets": 1,
@@ -534,7 +592,7 @@
 						""
 					],
 					"patching_rect": [
-						370,
+						460,
 						140,
 						85,
 						22
@@ -543,11 +601,11 @@
 			},
 			{
 				"box": {
-					"id": "obj-c4",
+					"id": "obj-c5",
 					"maxclass": "live.dial",
 					"parameter_enable": 1,
 					"patching_rect": [
-						460,
+						550,
 						80,
 						44,
 						48
@@ -583,7 +641,7 @@
 			},
 			{
 				"box": {
-					"id": "obj-c4-pre",
+					"id": "obj-c5-pre",
 					"maxclass": "newobj",
 					"text": "prepend rip",
 					"numinlets": 1,
@@ -592,7 +650,7 @@
 						""
 					],
 					"patching_rect": [
-						460,
+						550,
 						140,
 						85,
 						22
@@ -601,11 +659,11 @@
 			},
 			{
 				"box": {
-					"id": "obj-c5",
+					"id": "obj-c6",
 					"maxclass": "live.dial",
 					"parameter_enable": 1,
 					"patching_rect": [
-						550,
+						640,
 						80,
 						44,
 						48
@@ -641,74 +699,9 @@
 			},
 			{
 				"box": {
-					"id": "obj-c5-pre",
-					"maxclass": "newobj",
-					"text": "prepend eco",
-					"numinlets": 1,
-					"numoutlets": 1,
-					"outlettype": [
-						""
-					],
-					"patching_rect": [
-						550,
-						140,
-						85,
-						22
-					]
-				}
-			},
-			{
-				"box": {
-					"id": "obj-c6",
-					"maxclass": "live.tab",
-					"parameter_enable": 1,
-					"patching_rect": [
-						640,
-						80,
-						44,
-						48
-					],
-					"presentation": 1,
-					"presentation_rect": [
-						190,
-						8,
-						50,
-						18
-					],
-					"saved_attribute_attributes": {
-						"valueof": {
-							"parameter_longname": "LFO",
-							"parameter_shortname": "LFO",
-							"parameter_initial_enable": 1,
-							"parameter_type": 2,
-							"parameter_enum": [
-								"OFF",
-								"ON"
-							],
-							"parameter_mmax": 1.0,
-							"parameter_initial": [
-								1
-							],
-							"parameter_unitstyle": 0
-						}
-					},
-					"varname": "LFO",
-					"numinlets": 1,
-					"numoutlets": 3,
-					"outlettype": [
-						"",
-						"",
-						"float"
-					],
-					"num_lines_patching": 1,
-					"num_lines_presentation": 1
-				}
-			},
-			{
-				"box": {
 					"id": "obj-c6-pre",
 					"maxclass": "newobj",
-					"text": "prepend lfo",
+					"text": "prepend eco",
 					"numinlets": 1,
 					"numoutlets": 1,
 					"outlettype": [
@@ -736,9 +729,9 @@
 					"presentation": 1,
 					"presentation_rect": [
 						190,
-						34,
+						78,
 						50,
-						30
+						36
 					],
 					"saved_attribute_attributes": {
 						"valueof": {
@@ -1106,28 +1099,28 @@
 				0
 			],
 			"obj-c2": [
-				"VOLUME",
-				"VOLUME",
+				"PROFONDITA",
+				"PROFONDITA",
 				0
 			],
 			"obj-c3": [
-				"TEMPO",
-				"TEMPO",
+				"VOLUME",
+				"VOLUME",
 				0
 			],
 			"obj-c4": [
-				"RIPETIZIONI",
-				"RIPETIZIONI",
+				"TEMPO",
+				"TEMPO",
 				0
 			],
 			"obj-c5": [
-				"LIVELLO ECO",
-				"LIVELLO ECO",
+				"RIPETIZIONI",
+				"RIPETIZIONI",
 				0
 			],
 			"obj-c6": [
-				"LFO",
-				"LFO",
+				"LIVELLO ECO",
+				"LIVELLO ECO",
 				0
 			],
 			"obj-c7": [

@@ -23,8 +23,9 @@ import lickshot as L  # noqa: E402
 from genera import Codice  # noqa: E402
 from genera_fx import Patch, lisci, scrivi  # noqa: E402
 
-DIAL = [("alt", "ALTEZZA"), ("vel", "VELOCITA"), ("vol", "VOLUME"),
-        ("tempo", "TEMPO"), ("rip", "RIPETIZIONI"), ("eco", "LIVELLO ECO")]
+DIAL = [("alt", "ALTEZZA"), ("vel", "VELOCITA"), ("prof", "PROFONDITA"),
+        ("vol", "VOLUME"), ("tempo", "TEMPO"), ("rip", "RIPETIZIONI"),
+        ("eco", "LIVELLO ECO")]
 
 
 def genexpr():
@@ -38,7 +39,7 @@ def genexpr():
     r(f"// out1 = out2 = uscita (1,0 = {fx.LIV:.4f} V); out3 = LED dell'LFO.")
     r()
     for nome, ini in L.INIZIALI.items():
-        mx = 1 if nome in ("lfo", "trig") else 100
+        mx = 1 if nome == "trig" else 100
         r(f"Param {nome}({ini:g}, min=0, max={mx});")
     for nome in ("vi", "su", "fase", "hpx", "hpy", "gx", "gy",
                  "pi1", "pi2", "qi1", "qi2"):
@@ -46,22 +47,22 @@ def genexpr():
         r(f"History {nome}({ini!r});")
     r(f"History td({L.tempo_eco(L.INIZIALI['tempo']) * 48000!r});")
     r("Delay dl(48000);")
-    lisci(r, ["alt", "vel", "vol", "tempo", "rip", "eco"], L.INIZIALI)
+    lisci(r, ["alt", "vel", "prof", "vol", "tempo", "rip", "eco"], L.INIZIALI)
     r("// LFO: integratore fra le soglie del Schmitt, discesa lenta, risalita dal diodo")
     r(f"rl = {L.R_LFO!r} + (1 - s_vel / 100) * {L.P_LFO!r};")
     r(f"giu = {L.VDD / 2!r} / (rl * {L.C_LFO!r}) / samplerate;")
     r(f"sup = {(L.HI - L.LO) / L.T_SU!r} / samplerate;")
-    r("lon = lfo > 0.5;")
     r("vin = vi + su * sup - (1 - su) * giu;")
     r(f"hhi = su * (vin >= {L.HI!r});")
     r(f"hlo = (1 - su) * (vin <= {L.LO!r});")
-    r(f"vin = min(max(vin, {L.LO!r}), {L.HI!r});")
-    r("su = lon * (su * (1 - hhi) + hlo) + (1 - lon) * su;")
-    r(f"vi = lon * vin + (1 - lon) * {L.VDD / 2!r};")
+    r(f"vi = min(max(vin, {L.LO!r}), {L.HI!r});")
+    r("su = su * (1 - hhi) + hlo;")
+    r("// PROFONDITA (dec. 190): pot fra la rampa e VDD/2, buffer verso il VCOin")
+    r(f"vco = {L.VDD / 2!r} + s_prof / 100 * {L.A_MAX!r} * (vi - {L.VDD / 2!r}) / {(L.HI - L.LO) / 2!r};")
     r("// VCO: frequenza lineare col VCOin, f0 al centro (datasheet TI, Fig. 4)")
     r(f"r1 = {L.R_VCO!r} + (1 - s_alt / 100) * {L.P_VCO!r};")
     r(f"fz = {L.K_F0!r} / (r1 * {L.C_VCO!r});")
-    r(f"fq = fz * max(0, vi - {L.VOFF!r}) / {L.VDD / 2 - L.VOFF!r};")
+    r(f"fq = fz * max(0, vco - {L.VOFF!r}) / {L.VDD / 2 - L.VOFF!r};")
     r("dt = max(fq / samplerate, 1e-9);")
     r("// onda quadra con PolyBLEP")
     r("ta = fase / dt;")
@@ -117,12 +118,11 @@ def genexpr():
 def patch(codice):
     p = Patch()
     p.gen(codice, 3)
-    for j, (ng, nl) in enumerate(DIAL[:3]):
+    for j, (ng, nl) in enumerate(DIAL[:4]):
         p.dial(ng, nl, L.INIZIALI[ng], [8 + 60 * j, 8, 54, 48])
-    for j, (ng, nl) in enumerate(DIAL[3:]):
+    for j, (ng, nl) in enumerate(DIAL[4:]):
         p.dial(ng, nl, L.INIZIALI[ng], [8 + 60 * j, 70, 54, 48])
-    p.tab("lfo", "LFO", ["OFF", "ON"], 1, [190, 8, 50, 18])
-    p.tab("trig", "FIRE", ["-", "FIRE"], 0, [190, 34, 50, 30])
+    p.tab("trig", "FIRE", ["-", "FIRE"], 0, [190, 78, 50, 36])
     p.meter("obj-led", 2, [246, 8, 8, 56], "LED")
     p.nota("FIRE: clic = acceso, clic = spento; da un controller mappalo su un "
            "CC. Uscita a livello del jack: mettila in MC-MONO.", [8, 124, 250, 40])

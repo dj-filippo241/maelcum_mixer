@@ -1048,12 +1048,12 @@ def lickshot():
     d = Diagram("lickshot", 1560, 940, "LICKSHOT IN RACK 1U (fuori dal mixer)",
                 "maelcum mixer — dec. 179-189: una voce, LFO che piega un oscillatore, eco a due BBD dentro la macchina · entra nel mixer da un modulo MONO",
                 "modello, non simulato", AMBER)
-    VEL = d.box(40, 100, 210, 58, "VELOCITÀ + LFO ON/OFF", ["pot 500k · interruttore"], "ctrl", tsize=11.5)
-    ALT = d.box(300, 100, 200, 58, "ALTEZZA", ["pot 50k"], "ctrl", tsize=11.5)
+    VEL = d.box(40, 100, 210, 58, "VELOCITÀ", ["pot 500k"], "ctrl", tsize=11.5)
+    ALT = d.box(300, 100, 200, 58, "ALTEZZA + PROFONDITÀ", ["pot 50k · pot sulla rampa"], "ctrl", tsize=11.5)
     y = 200
     LFO = d.box(40, y, 210, 100, "LFO CD4069", ["Schmitt + integratore 1 µF", "dente di sega 2-48 colpi/s",
                                                 "discesa lenta: il tono cade"])
-    VCO = d.box(300, y, 200, 100, "VCO CD4046", ["onda quadra", "f0 ≈ 0,7 / (R1·C1)", "colpo di ~2 ottave"])
+    VCO = d.box(300, y, 200, 100, "VCO CD4046", ["onda quadra", "f0 ≈ 0,7 / (R1·C1)", "colpo da 0 a ~4 ottave"])
     HP = d.box(550, y, 170, 100, "PASSA-ALTO", ["1 µF su 1,1k", "145 Hz"])
     FIRE = d.box(770, y, 180, 100, "FIRE", ["tasto: suona finché premuto", "l'LFO gira sempre"], "dark")
     VOL = d.box(1000, y, 150, 100, "VOLUME", ["pot logaritmico"])
@@ -1091,7 +1091,7 @@ def lickshot():
     d.arrow([RIP.l, (SOM.cx, RIP.cy), (SOM.cx, SOM.y + SOM.h + 2)], "fb")
     d.text(250, yg + 100, "oltre 1 l'eco si autoalimenta e la saturazione la tiene: ruggito, non rottura", 10.5, FB)
     d.box(40, 780, 1480, 72, "",
-          ["rack 1U · alimentatore esterno a spina, DC, connettore con blocco (dec. 189) · 6 manopole, LFO ON/OFF, LED, FIRE (dec. 184-185, 188)",
+          ["rack 1U · alimentatore esterno a spina, DC, connettore con blocco (dec. 189) · 7 manopole, LED, FIRE (dec. 184-185, 188, 190)",
            "!numeri da proto-max/coefficienti/lickshot.py: VOFF, risalita, anti-alias, giro e saturazione sono deduzioni da simulare (regola 3)"],
           "note", align="start", lsize=10.5)
     d.legend(886, [("audio", "audio"), ("fb", "giro dell'eco"), ("cv", "comando / CV"), ("dashed", "nel mixer")])

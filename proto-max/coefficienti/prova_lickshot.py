@@ -54,7 +54,7 @@ def copione():
     """(secondi, comandi) in ordine: tasto, comandi mossi a meta."""
     return [(0.0, {"trig": 1}), (0.6, {"alt": 30, "vel": 90}),
             (0.9, {"tempo": 20, "rip": 80, "eco": 90}), (1.3, {"trig": 0}),
-            (1.5, {"lfo": 0, "trig": 1}), (1.7, {"trig": 0, "lfo": 1}),
+            (1.5, {"prof": 0, "trig": 1}), (1.7, {"trig": 0, "prof": 100}),
             (1.9, {"vol": 40, "trig": 1})]
 
 
@@ -107,20 +107,38 @@ def main():
     controlla("niente valori non numerici", all(math.isfinite(x) for x in a), "")
 
     print("2. numeri")
-    m = L.Lickshot(FS, alt=100, vel=0, eco=0, trig=1)
+    for prof, ott in ((67, 2.0), (100, 4.0)):
+        m = L.Lickshot(FS, alt=100, vel=0, eco=0, trig=1, prof=prof)
+        fi, giri = [], 0
+        for _ in range(int(3 * FS)):
+            su = m.su
+            m.campione()
+            fi.append(m.f)
+            giri += su and not m.su
+        fi = fi[int(FS):]
+        a = prof / 100 * L.A_MAX
+        alto = L.f0(100) * (L.VDD / 2 + a - L.VOFF) / (L.VDD / 2 - L.VOFF)
+        basso = L.f0(100) * (L.VDD / 2 - a - L.VOFF) / (L.VDD / 2 - L.VOFF)
+        mis = math.log2(max(fi) / min(fi))
+        controlla(f"colpo, ALTEZZA 100, PROFONDITA {prof}", abs(max(fi) / alto - 1) < 0.01
+                  and abs(min(fi) / basso - 1) < 0.01 and abs(mis - ott) < 0.1,
+                  f"{max(fi):.0f} -> {min(fi):.0f} Hz, {mis:.2f} ottave (calcolo {alto:.0f} -> {basso:.0f})")
+    controlla("colpi al secondo, VELOCITA 0", abs(giri / 3 - 1 / L.periodo_lfo(0)) < 0.4,
+              f"{giri / 3:.2f} (calcolo {1 / L.periodo_lfo(0):.2f})")
+    m = L.Lickshot(FS, alt=100, vel=0, eco=0, trig=1, prof=67)
     y = [m.campione() for _ in range(int(3 * FS))]
     fr = frequenze(y[int(FS):], FS)
     alto = L.f0(100) * (L.HI - L.VOFF) / (L.VDD / 2 - L.VOFF)
-    basso = L.f0(100) * (L.LO - L.VOFF) / (L.VDD / 2 - L.VOFF)
-    controlla("colpo con ALTEZZA al massimo", abs(max(fr) / alto - 1) < 0.02
-              and abs(min(fr) / basso - 1) < 0.05,
-              f"{max(fr):.0f} -> {min(fr):.0f} Hz (calcolo {alto:.0f} -> {basso:.0f})")
-    salti = sum(1 for p, q in zip(fr, fr[1:]) if q > 1.8 * p)
-    controlla("colpi al secondo, VELOCITA 0", abs(salti / 2 - 1 / L.periodo_lfo(0)) < 0.3,
-              f"{salti / 2:.1f} (calcolo {1 / L.periodo_lfo(0):.2f})")
+    controlla("quadra in uscita, cima del colpo", abs(max(fr) / alto - 1) < 0.02,
+              f"{max(fr):.0f} Hz (calcolo {alto:.0f})")
+    m = L.Lickshot(FS, prof=0, trig=1, eco=0)
+    y = [m.campione() for _ in range(int(1 * FS))]
+    fr = frequenze(y[int(0.5 * FS):], FS)
+    controlla("PROFONDITA 0 = tono fisso", max(fr) / min(fr) < 1.01,
+              f"{min(fr):.1f}-{max(fr):.1f} Hz (f0 {L.f0(80):.1f})")
     # ritardo dell'eco: un colpo di 20 ms, poi solo eco
     for tt in (0, 60, 100):
-        m = L.Lickshot(FS, tempo=tt, rip=0, eco=100, vol=100, lfo=0, trig=1)
+        m = L.Lickshot(FS, tempo=tt, rip=0, eco=100, vol=100, prof=0, trig=1)
         y = []
         for i in range(int(0.6 * FS)):
             m.p["trig"] = 1.0 if i < 0.02 * FS else 0.0

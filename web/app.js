@@ -284,7 +284,7 @@ STRUMENTI.forEach((st, i) => {
     const nc = st.comandi.length > 4 ? 3 : 2; // la LICKSHOT ha 6 manopole: tre colonne
     const c = nc === 2
       ? { tipo: "manopola", nome: eti, x: x + 14 + (j % 2) * 36, y: y + 24 + Math.floor(j / 2) * 26, cappuccio: 13, scatti }
-      : { tipo: "manopola", nome: eti, x: x + 11 + (j % 3) * 21, y: y + 24 + Math.floor(j / 3) * 26, cappuccio: 11, scatti };
+      : { tipo: "manopola", nome: eti, x: x + 11 + (j % 3) * 21, y: y + 22 + Math.floor(j / 3) * 23, cappuccio: 10, scatti };
     const gc = el("g", { class: "manopola comando" }, g);
     const v0 = scatti ? (Math.round((d / 100) * (scatti - 1)) * 100) / (scatti - 1) : d;
     const ctl = { c, b: { tipo: "strum", i, k, def: v0, scatti }, val: v0, g: gc, dove: st.nome };
@@ -293,8 +293,8 @@ STRUMENTI.forEach((st, i) => {
     comandi.push(ctl);
     attiva(ctl);
   });
-  const [eL, kL, voci, dL = 0] = st.levetta;
-  {
+  if (st.levetta) {
+    const [eL, kL, voci, dL = 0] = st.levetta;
     const c = { tipo: "bottone", nome: eL, x: x + WP / 2, y: y + 78 };
     const gc = el("g", { class: "bottone click" }, g);
     const ctl = { c, b: { tipo: "strum", i, k: kL, def: dL }, val: dL, g: gc, dove: st.nome };

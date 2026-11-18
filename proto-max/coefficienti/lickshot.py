@@ -13,6 +13,8 @@ Nucleo di Nold («Lickshot-I», 2016), collegamenti dal KiCad di Orald-0
   VCO   CD4046: R1 = 10k + ALTEZZA 50k, C1 100 nF, R2 aperta.
         f0 (VCOin = VDD/2) ~ 0,7 / (R1 C1): Fig. 4 del datasheet TI
         SCHS043B. Legge lineare, zero a VOFF.
+  PROFONDITA (dec. 190, al posto di LFO ON/OFF): pot fra la rampa e VDD/2,
+        buffer con guadagno verso il VCOin; 0 = tono fisso, 100 = ~4 ottave.
   uscita onda quadra -> C 1 uF su 1k + 100 ohm: passa-alto 145 Hz -> tasto.
 Eco (dec. 182, 185, 186): due BBD da 4096 stadi in fila, T = 8192 / (2 fclk);
 filtri anti-alias a 2 poli prima e dopo, taglio fclk/4 (max 8 kHz); nel
@@ -55,7 +57,10 @@ V_SAT = 1.5
 G_MAX = 1.1
 T_LISCIO = 0.05
 
-INIZIALI = {"alt": 80.0, "vel": 50.0, "lfo": 1.0, "vol": 100.0, "trig": 0.0,
+# PROFONDITA (dec. 190): VCOin = VDD/2 + prof * A_MAX * rampa normalizzata;
+# A_MAX da 16 = (VDD/2 - VOFF + A) / (VDD/2 - VOFF - A): 4 ottave a fondo corsa.
+A_MAX = 15 / 17 * (VDD / 2 - VOFF)
+INIZIALI = {"alt": 80.0, "vel": 50.0, "prof": 67.0, "vol": 100.0, "trig": 0.0,
             "tempo": 60.0, "rip": 40.0, "eco": 40.0}
 
 
@@ -109,7 +114,7 @@ class Lickshot:
     def __init__(self, fs, **p):
         self.fs = fs
         self.p = dict(INIZIALI, **p)
-        self.s = {k: self.p[k] for k in ("alt", "vel", "vol", "tempo", "rip", "eco")}
+        self.s = {k: self.p[k] for k in ("alt", "vel", "prof", "vol", "tempo", "rip", "eco")}
         self.vi, self.su, self.fase = VDD / 2, False, 0.0
         self.hpx = self.hpy = 0.0
         self.gx = self.gy = 0.0
@@ -130,18 +135,17 @@ class Lickshot:
         rl = R_LFO + (1 - s["vel"] / 100) * P_LFO
         giu = VDD / 2 / (rl * C_LFO) / fs
         su = (HI - LO) / T_SU / fs
-        if p["lfo"] > 0.5:
-            if self.su:
-                self.vi += su
-                if self.vi >= HI:
-                    self.vi, self.su = HI, False
-            else:
-                self.vi -= giu
-                if self.vi <= LO:
-                    self.vi, self.su = LO, True
+        if self.su:
+            self.vi += su
+            if self.vi >= HI:
+                self.vi, self.su = HI, False
         else:
-            self.vi = VDD / 2
-        f = fz * max(0.0, self.vi - VOFF) / (VDD / 2 - VOFF)
+            self.vi -= giu
+            if self.vi <= LO:
+                self.vi, self.su = LO, True
+        vco = VDD / 2 + s["prof"] / 100 * A_MAX * (self.vi - VDD / 2) / ((HI - LO) / 2)
+        f = fz * max(0.0, vco - VOFF) / (VDD / 2 - VOFF)
+        self.f = f
         dt = max(f / fs, 1e-9)
         t = self.fase
         x = (1.0 if t < 0.5 else -1.0) + blep(t, dt)
